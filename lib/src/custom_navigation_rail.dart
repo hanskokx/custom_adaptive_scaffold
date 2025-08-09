@@ -103,6 +103,9 @@ class CustomNavigationRail extends StatefulWidget implements NavigationRail {
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
+    this.leadingAtTop = true,
+    this.trailingAtBottom = false,
+    this.scrollable = false,
   })  : assert(destinations.length >= 2),
         assert(
           selectedIndex == null ||
@@ -337,6 +340,38 @@ class CustomNavigationRail extends StatefulWidget implements NavigationRail {
   /// that is null, defaults to [StadiumBorder].
   @override
   final ShapeBorder? indicatorShape;
+
+  /// Pin the [leading] widget to the top.
+  ///
+  /// If `true`, the [leading] widget is pinned to the top of the
+  /// [NavigationRail]. Otherwise it precedes directly the main group of
+  /// [destinations].
+  ///
+  /// See also [scrollable] for a description of the interplay of these
+  /// parameters.
+  @override
+  final bool leadingAtTop;
+
+  /// Pin the [trailing] widget to the bottom.
+  ///
+  /// If `true`, the [trailing] widget is pinned to the bottom of the
+  /// [NavigationRail]. Otherwise it follows directly the main group of
+  /// [destinations].
+  ///
+  /// See also [scrollable] for a description of the interplay of these
+  /// parameters.
+  @override
+  final bool trailingAtBottom;
+  
+  /// Whether the main group of items should be scrollable when vertical space
+  /// is insufficient to show all of [destinations], [leading] and [trailing].
+  ///
+  /// If [leadingAtTop] or [trailingAtBottom] are false, [leading] or [trailing]
+  /// widgets, respectively, are part of the main group in addition to
+  /// [destinations]. Otherwise these are statical at the top or bottom,
+  /// respectively.
+  @override
+  final bool scrollable;
 
   /// Returns the animation that controls the [CustomNavigationRail.extended] state.
   ///
