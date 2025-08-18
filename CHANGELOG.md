@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Fixes compatibility with Flutter 3.35.x
+
 ## 2.0.1
 
 * Backported memory leak fix (See: <https://github.com/flutter/packages/pull/8546>)

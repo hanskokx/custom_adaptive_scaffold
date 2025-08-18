@@ -491,7 +491,7 @@ void main() {
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final NavigationRail navigationRailView = tester.firstWidget(
+      final CustomNavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -537,7 +537,7 @@ void main() {
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final NavigationRail navigationRailView = tester.firstWidget(
+      final CustomNavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -716,8 +716,8 @@ void main() {
           ),
         ),
       );
-      final NavigationRail rail =
-          tester.widget<NavigationRail>(find.byType(CustomNavigationRail));
+      final CustomNavigationRail rail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
       expect(rail.groupAlignment, equals(groupAlignment));
     },
   );
@@ -884,8 +884,8 @@ void main() {
         ),
       );
 
-      final NavigationRail rail =
-          tester.widget<NavigationRail>(find.byType(CustomNavigationRail));
+      final CustomNavigationRail rail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
       expect(rail.labelType, NavigationRailLabelType.all);
     },
   );

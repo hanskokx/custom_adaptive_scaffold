@@ -207,7 +207,7 @@ void main() {
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final NavigationRail navigationRailView = tester.firstWidget(
+      final CustomNavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -249,7 +249,7 @@ void main() {
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final NavigationRail navigationRailView = tester.firstWidget(
+      final CustomNavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -291,7 +291,7 @@ void main() {
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final NavigationRail navigationRailView = tester.firstWidget(
+      final CustomNavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -333,7 +333,7 @@ void main() {
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final NavigationRail navigationRailView = tester.firstWidget(
+      final CustomNavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
