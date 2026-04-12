@@ -6,6 +6,7 @@
 
 export "src/adaptive_layout.dart";
 export "src/adaptive_scaffold.dart";
+export "src/adaptive_scaffold_controller.dart";
 export "src/breakpoints.dart";
 export "src/custom_navigation_bar.dart" show CustomNavigationDestination;
 export "src/custom_navigation_bar_theme.dart";

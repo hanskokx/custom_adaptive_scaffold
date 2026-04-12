@@ -57,6 +57,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _selectedTab = 0;
   int _transitionDuration = 1000;
+  final AdaptiveScaffoldController _scaffoldController =
+      AdaptiveScaffoldController();
 
   // Initialize transition time variable.
   @override
@@ -65,6 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _transitionDuration = widget.transitionDuration;
     });
+  }
+
+  @override
+  void dispose() {
+    _scaffoldController.dispose();
+    super.dispose();
   }
 
   // #docregion Example
@@ -125,9 +133,37 @@ class _MyHomePageState extends State<MyHomePage> {
           label: "Inbox",
         ),
       ],
-      smallBody: (_) => ListView.builder(
-        itemCount: children.length,
-        itemBuilder: (_, int idx) => children[idx],
+      controller: _scaffoldController,
+      smallBody: (_) => ListView(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    const Text(
+                      "Small-screen controller demo",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Tap to switch from body to secondaryBody on compact layouts.",
+                    ),
+                    const SizedBox(height: 12),
+                    FilledButton(
+                      onPressed: _scaffoldController.showSecondaryBody,
+                      child: const Text("Show secondaryBody"),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          ...children,
+        ],
       ),
       body: (_) => GridView.count(crossAxisCount: 2, children: children),
       mediumLargeBody: (_) =>
@@ -135,11 +171,33 @@ class _MyHomePageState extends State<MyHomePage> {
       largeBody: (_) => GridView.count(crossAxisCount: 4, children: children),
       extraLargeBody: (_) =>
           GridView.count(crossAxisCount: 5, children: children),
-      // Define a default secondaryBody.
-      // Override the default secondaryBody during the smallBreakpoint to be
-      // empty. Must use AdaptiveScaffold.emptyBuilder to ensure it is properly
-      // overridden.
-      smallSecondaryBody: AdaptiveScaffold.emptyBuilder,
+      smallSecondaryBody: (_) => Center(
+        child: Card(
+          margin: const EdgeInsets.all(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text(
+                  "secondaryBody",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  "This pane is shown on small screens when the controller focus is secondaryBody.",
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                FilledButton.tonal(
+                  onPressed: _scaffoldController.showBody,
+                  child: const Text("Back to body"),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
       secondaryBody: (_) => Container(
         color: const Color.fromARGB(255, 234, 158, 192),
       ),

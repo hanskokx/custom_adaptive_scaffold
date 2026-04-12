@@ -226,12 +226,11 @@ class CustomNavigationBar extends StatelessWidget {
         labelBehavior ??
             navigationBarTheme.labelBehavior ??
             defaults.labelBehavior!;
-    final ShapeBorder shape = indicatorShape ??
+    final ShapeBorder effectiveIndicatorShape = indicatorShape ??
         navigationBarTheme.indicatorShape ??
         defaults.indicatorShape!;
 
     return Material(
-      shape: shape,
       color: backgroundColor ??
           navigationBarTheme.backgroundColor ??
           defaults.backgroundColor!,
@@ -262,7 +261,7 @@ class CustomNavigationBar extends StatelessWidget {
                         selectedAnimation: animation,
                         labelBehavior: effectiveLabelBehavior,
                         indicatorColor: indicatorColor,
-                        indicatorShape: indicatorShape,
+                        indicatorShape: effectiveIndicatorShape,
                         overlayColor: overlayColor,
                         onTap: _handleTap(i),
                         child: destinations[i],
@@ -487,6 +486,20 @@ class _NavigationDestinationBuilderState
         _NavigationDestinationInfo.of(context);
     final NavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
+    final bool isSelected = widget.animation.isForwardOrCompleted;
+
+    final WidgetStateProperty<Color?>? baseOverlayColor =
+        info.overlayColor ?? navigationBarTheme.overlayColor;
+    final WidgetStateProperty<Color?>? effectiveOverlayColor = isSelected
+        ? WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+            if (states.contains(WidgetState.hovered) ||
+                states.contains(WidgetState.focused) ||
+                states.contains(WidgetState.pressed)) {
+              return Colors.transparent;
+            }
+            return baseOverlayColor?.resolve(states);
+          })
+        : baseOverlayColor;
 
     return _NavigationBarDestinationSemantics(
       child: _NavigationBarDestinationTooltip(
@@ -494,7 +507,7 @@ class _NavigationDestinationBuilderState
         child: ClipRect(
           child: InkWell(
             customBorder: widget.shape,
-            overlayColor: info.overlayColor ?? navigationBarTheme.overlayColor,
+            overlayColor: effectiveOverlayColor,
             onTap: widget.enabled ? info.onTap : null,
             child: Stack(
               alignment: Alignment.center,
@@ -505,6 +518,7 @@ class _NavigationDestinationBuilderState
                   animation: widget.animation,
                   color: widget.color,
                   shape: widget.shape,
+                  width: double.infinity,
                   height: double.infinity,
                 ),
                 _StatusTransitionWidgetBuilder(

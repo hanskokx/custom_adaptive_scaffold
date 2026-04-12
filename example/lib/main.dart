@@ -600,6 +600,28 @@ class _ItemList extends StatelessWidget {
               ),
             ),
           ),
+          if (!Breakpoints.mediumAndUp.isActive(context) && items.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: FilledButton.tonalIcon(
+                  onPressed: () {
+                    final _Item firstItem = items.first;
+                    selectCard(_allItems.indexOf(firstItem));
+                    Navigator.of(context).pushNamed(
+                      _ExtractRouteArguments.routeName,
+                      arguments: _ScreenArguments(
+                        item: firstItem,
+                        selectCard: selectCard,
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.swap_horiz),
+                  label: const Text("Show secondary pane"),
+                ),
+              ),
+            ),
           Expanded(
             child: ListView.builder(
               itemCount: items.length,
@@ -662,43 +684,66 @@ class _ItemListTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: CircleAvatar(
-                    radius: 18,
-                    child: Image.asset(
-                      email.image,
-                      width: 100,
-                      height: 100,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  title: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        email.sender,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        softWrap: false,
-                        overflow: TextOverflow.clip,
+                LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    final double availableWidth = constraints.maxWidth;
+                    final double avatarDiameter =
+                        availableWidth.isFinite && availableWidth > 0
+                            ? (availableWidth - 8).clamp(20.0, 36.0).toDouble()
+                            : 36.0;
+                    final bool showTrailing =
+                        !availableWidth.isFinite || availableWidth >= 220;
+
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      minLeadingWidth: avatarDiameter,
+                      horizontalTitleGap: showTrailing ? 12 : 8,
+                      leading: SizedBox.square(
+                        dimension: avatarDiameter,
+                        child: CircleAvatar(
+                          radius: avatarDiameter / 2,
+                          child: Image.asset(
+                            email.image,
+                            width: 100,
+                            height: 100,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                      const SizedBox(height: 3),
-                      Text(
-                        "${email.time} ago",
-                        style: Theme.of(context).textTheme.bodySmall,
-                        softWrap: false,
-                        overflow: TextOverflow.clip,
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            email.sender,
+                            style: Theme.of(context).textTheme.bodyLarge,
+                            softWrap: false,
+                            overflow: TextOverflow.clip,
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            "${email.time} ago",
+                            style: Theme.of(context).textTheme.bodySmall,
+                            softWrap: false,
+                            overflow: TextOverflow.clip,
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                  trailing: Container(
-                    padding: const EdgeInsets.all(8.0),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(50)),
-                    ),
-                    child: Icon(Icons.star_outline, color: Colors.grey[500]),
-                  ),
+                      trailing: showTrailing
+                          ? Container(
+                              padding: const EdgeInsets.all(8.0),
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(50)),
+                              ),
+                              child: Icon(
+                                Icons.star_outline,
+                                color: Colors.grey[500],
+                              ),
+                            )
+                          : null,
+                    );
+                  },
                 ),
                 const SizedBox(height: 13),
                 Text(
