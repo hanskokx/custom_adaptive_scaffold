@@ -889,6 +889,77 @@ void main() {
       expect(rail.labelType, NavigationRailLabelType.all);
     },
   );
+
+  testWidgets(
+    "adaptive scaffold controller toggles small body and keeps medium dual-pane",
+    (WidgetTester tester) async {
+      final AdaptiveScaffoldController controller =
+          AdaptiveScaffoldController();
+
+      await tester.binding.setSurfaceSize(SimulatedLayout.small.size);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData.fromView(tester.view)
+                .copyWith(size: SimulatedLayout.small.size),
+            child: AdaptiveScaffold(
+              destinations: TestScaffold.destinations,
+              smallBreakpoint: TestBreakpoint0(),
+              mediumBreakpoint: TestBreakpoint800(),
+              mediumLargeBreakpoint: TestBreakpoint1000(),
+              largeBreakpoint: TestBreakpoint1200(),
+              extraLargeBreakpoint: TestBreakpoint1600(),
+              controller: controller,
+              smallBody: (_) => Container(key: const Key("smallListPane")),
+              body: (_) => const SizedBox.shrink(),
+              smallSecondaryBody: (_) =>
+                  Container(key: const Key("smallDetailsPane")),
+              secondaryBody: (_) => const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Default intent is details on collapsed layouts.
+      expect(find.byKey(const Key("smallListPane")), findsNothing);
+      expect(find.byKey(const Key("smallDetailsPane")), findsOneWidget);
+
+      controller.showBody();
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key("smallListPane")), findsOneWidget);
+      expect(find.byKey(const Key("smallDetailsPane")), findsNothing);
+
+      await tester.binding.setSurfaceSize(SimulatedLayout.medium.size);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData.fromView(tester.view)
+                .copyWith(size: SimulatedLayout.medium.size),
+            child: AdaptiveScaffold(
+              destinations: TestScaffold.destinations,
+              smallBreakpoint: TestBreakpoint0(),
+              mediumBreakpoint: TestBreakpoint800(),
+              mediumLargeBreakpoint: TestBreakpoint1000(),
+              largeBreakpoint: TestBreakpoint1200(),
+              extraLargeBreakpoint: TestBreakpoint1600(),
+              controller: controller,
+              body: (_) => Container(key: const Key("mediumListPane")),
+              secondaryBody: (_) =>
+                  Container(key: const Key("mediumDetailsPane")),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key("mediumListPane")), findsOneWidget);
+      expect(find.byKey(const Key("mediumDetailsPane")), findsOneWidget);
+
+      controller.dispose();
+    },
+  );
 }
 
 /// An empty widget that implements [PreferredSizeWidget] to ensure that

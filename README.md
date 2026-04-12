@@ -38,6 +38,108 @@ properly. `AdaptiveScaffold` is much simpler to use but is not the best if you
 would like high customizability. Apps that would like more refined layout and/or
 animation should use `AdaptiveLayout`.
 
+### Panel Primary/Secondary Behavior
+
+`AdaptiveScaffold` now supports an optional pane-intent controller for
+primary/secondary style flows:
+
+- `controller: AdaptiveScaffoldController?`
+
+When a controller is provided, pane visibility on collapsed layouts can be
+controlled explicitly:
+
+- On the `smallBreakpoint`:
+  - `PanelFocus.body` shows the body/list pane.
+  - `PanelFocus.secondaryBody` shows the secondary/details pane.
+- On `mediumBreakpoint` and larger:
+  - Layout remains dual-pane according to existing slot configuration.
+  - Controller intent does not force one pane to hide.
+
+Important behavior details:
+
+- This is fully opt-in. If `controller` is not supplied, behavior
+  remains unchanged.
+- The collapsed pane switch is only active when both
+  `controller != null` and `secondaryBody != null`.
+- `AdaptiveScaffoldController` defaults to `PanelFocus.secondaryBody`.
+- `AdaptiveScaffold` listens to controller updates and rebuilds automatically.
+- `AdaptiveScaffoldScope` is inserted only when a controller is provided.
+
+This design keeps routing concerns outside the package. The package controls
+pane intent and layout visibility only.
+
+### AdaptiveBody Context
+
+`AdaptiveScaffold` now wraps active body and secondaryBody slot content in
+`AdaptiveBody`, which exposes whether the current layout is collapsed:
+
+```dart
+final bool isCollapsed = AdaptiveBody.of(context)?.viewIsCollapsed ?? false;
+```
+
+This allows descendants to adapt UI behavior (for example, showing an inline
+back affordance only on collapsed layouts) without coupling to route state.
+
+### Primary/Secondary API Summary
+
+New exports are available from `package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart`:
+
+- `PanelFocus` enum (`body`, `secondaryBody`)
+- `AdaptiveScaffoldController`
+  - `showBody()`
+  - `showSecondaryBody()`
+- `AdaptiveScaffoldScope`
+  - `AdaptiveScaffoldScope.of(context)`
+  - `AdaptiveScaffoldScope.maybeOf(context)`
+- `AdaptiveBody`
+  - `AdaptiveBody.of(context)`
+  - `viewIsCollapsed`
+
+### Primary/Secondary Example
+
+```dart
+class _MailScreenState extends State<MailScreen> {
+  final AdaptiveScaffoldController _controller = AdaptiveScaffoldController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AdaptiveScaffold(
+      destinations: const <NavigationDestination>[
+        NavigationDestination(icon: Icon(Icons.inbox), label: "Inbox"),
+        NavigationDestination(icon: Icon(Icons.send), label: "Sent"),
+      ],
+      controller: _controller,
+      smallBody: (context) => MessageList(
+        onMessageTap: () => _controller.showSecondaryBody(),
+      ),
+      body: (context) => MessageList(
+        onMessageTap: () => _controller.showSecondaryBody(),
+      ),
+      smallSecondaryBody: (context) => MessageDetails(
+        onBack: _controller.showBody,
+      ),
+      secondaryBody: (context) => const MessageDetails(),
+    );
+  }
+}
+```
+
+### Migration Notes
+
+- Existing users of `AdaptiveScaffold` do not need to change anything.
+- To adopt pane intent behavior incrementally:
+  1. Add an `AdaptiveScaffoldController`.
+  2. Pass it to `AdaptiveScaffold(controller: ...)`.
+  3. Toggle intent with `showBody()` and `showSecondaryBody()` from UI events.
+  4. Use `AdaptiveBody.of(context)?.viewIsCollapsed` in descendants when
+     collapsed-specific behavior is needed.
+
 ### Example Usage
 
 <?code-excerpt "example/lib/adaptive_scaffold_demo.dart (Example)"?>

@@ -437,8 +437,6 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     final ShapeBorder? indicatorShape = widget.indicatorShape ??
         navigationRailTheme.indicatorShape ??
         defaults.indicatorShape;
-    final bool shapeIsRoundedRectangle =
-        indicatorShape is RoundedRectangleBorder;
 
     // For backwards compatibility, in M2 the opacity of the unselected icons needs
     // to be set to the default if it isn't in the given theme. This can be removed
@@ -484,15 +482,6 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
                         for (int i = 0; i < widget.destinations.length; i += 1)
                           Container(
                             margin: railDestinationMargin,
-                            decoration: BoxDecoration(
-                              borderRadius: shapeIsRoundedRectangle
-                                  ? indicatorShape.borderRadius
-                                  : null,
-                              color: widget.selectedIndex == i && useIndicator
-                                  ? indicatorColor ??
-                                      Theme.of(context).colorScheme.secondary
-                                  : Colors.transparent,
-                            ),
                             child: RailDestination(
                               minWidth: widget.minWidth,
                               minExtendedWidth: widget.minExtendedWidth,

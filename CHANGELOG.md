@@ -1,3 +1,19 @@
+## 3.0.0
+
+* This version leveraged the usage of AI-assisted coding. Please submit bug
+  reports for any behavioral regressions or unexpected behavior.
+* Adds an optional collapsed-pane controller API to `AdaptiveScaffold` via the `controller` parameter.
+* Adds `AdaptiveScaffoldController`, `AdaptiveScaffoldScope`, and `PanelFocus` for controlling collapsed body/secondaryBody visibility.
+* `PanelFocus` uses slot-aligned values:
+  * `PanelFocus.body`
+  * `PanelFocus.secondaryBody`
+* `AdaptiveScaffoldController` exposes:
+  * `showBody()`
+  * `showSecondaryBody()`
+* Adds documentation and examples for collapsed body/secondaryBody pane control.
+* [FIX] Fixed the shape of the indicators in both the navigation bar and
+  navigation rail.
+
 ## 2.0.2
 
 * Fixes compatibility with Flutter 3.35.x

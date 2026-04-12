@@ -382,6 +382,15 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
       return end;
     }
 
+    double clampNonNegative(double value) => value < 0 ? 0 : value;
+
+    Size tightSize(double width, double height) {
+      return Size(
+        width.clamp(0.0, size.width).toDouble(),
+        height.clamp(0.0, size.height).toDouble(),
+      );
+    }
+
     if (hasChild(_SlotIds.topNavigation.name)) {
       final Size childSize = layoutChild(
         _SlotIds.topNavigation.name,
@@ -460,8 +469,10 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
       }
     }
 
-    final double remainingWidth = size.width - rightMargin - leftMargin;
-    final double remainingHeight = size.height - bottomMargin - topMargin;
+    final double remainingWidth =
+        clampNonNegative(size.width - rightMargin - leftMargin);
+    final double remainingHeight =
+        clampNonNegative(size.height - bottomMargin - topMargin);
     final double halfWidth = size.width / 2;
     final double halfHeight = size.height / 2;
     final double hingeWidth = hinge != null ? hinge!.right - hinge!.left : 0;
@@ -475,7 +486,7 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
           currentBodySize = layoutChild(
             _SlotIds.body.name,
             BoxConstraints.tight(
-              Size(remainingWidth, remainingHeight),
+              tightSize(remainingWidth, remainingHeight),
             ),
           );
         } else if (bodyOrientation == Axis.horizontal) {
@@ -488,7 +499,10 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
           currentBodySize = layoutChild(
             _SlotIds.body.name,
             BoxConstraints.tight(
-              Size(animatedSize(beginWidth, remainingWidth), remainingHeight),
+              tightSize(
+                animatedSize(beginWidth, remainingWidth),
+                remainingHeight,
+              ),
             ),
           );
         } else {
@@ -501,7 +515,10 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
           currentBodySize = layoutChild(
             _SlotIds.body.name,
             BoxConstraints.tight(
-              Size(remainingWidth, animatedSize(beginHeight, remainingHeight)),
+              tightSize(
+                remainingWidth,
+                animatedSize(beginHeight, remainingHeight),
+              ),
             ),
           );
         }
@@ -528,7 +545,7 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
             currentBodySize = layoutChild(
               _SlotIds.body.name,
               BoxConstraints.tight(
-                Size(
+                tightSize(
                   animatedSize(remainingWidth, finalBodySize),
                   remainingHeight,
                 ),
@@ -537,7 +554,7 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
             layoutChild(
               _SlotIds.secondaryBody.name,
               BoxConstraints.tight(
-                Size(finalSBodySize, remainingHeight),
+                tightSize(finalSBodySize, remainingHeight),
               ),
             );
           } else {
@@ -558,13 +575,13 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
             currentSBodySize = layoutChild(
               _SlotIds.secondaryBody.name,
               BoxConstraints.tight(
-                Size(animatedSize(0, finalSBodySize), remainingHeight),
+                tightSize(animatedSize(0, finalSBodySize), remainingHeight),
               ),
             );
             layoutChild(
               _SlotIds.body.name,
               BoxConstraints.tight(
-                Size(finalBodySize, remainingHeight),
+                tightSize(finalBodySize, remainingHeight),
               ),
             );
           }
@@ -573,7 +590,7 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
           currentBodySize = layoutChild(
             _SlotIds.body.name,
             BoxConstraints.tight(
-              Size(
+              tightSize(
                 remainingWidth,
                 animatedSize(
                   remainingHeight,
@@ -587,7 +604,7 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
           layoutChild(
             _SlotIds.secondaryBody.name,
             BoxConstraints.tight(
-              Size(
+              tightSize(
                 remainingWidth,
                 bodyRatio == null
                     ? halfHeight - bottomMargin
@@ -648,7 +665,7 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
       layoutChild(
         _SlotIds.body.name,
         BoxConstraints.tight(
-          Size(remainingWidth, remainingHeight),
+          tightSize(remainingWidth, remainingHeight),
         ),
       );
       positionChild(_SlotIds.body.name, Offset(leftMargin, topMargin));
@@ -656,7 +673,7 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
       layoutChild(
         _SlotIds.secondaryBody.name,
         BoxConstraints.tight(
-          Size(remainingWidth, remainingHeight),
+          tightSize(remainingWidth, remainingHeight),
         ),
       );
     }
