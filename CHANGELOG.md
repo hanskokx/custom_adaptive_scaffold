@@ -1,4 +1,4 @@
-## Unreleased
+## 3.0.0
 
 * This version leveraged the usage of AI-assisted coding. Please submit bug
   reports for any behavioral regressions or unexpected behavior.
