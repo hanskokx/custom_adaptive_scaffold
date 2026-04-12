@@ -7,10 +7,12 @@ enum PanelFocus { body, secondaryBody }
 ///
 /// On wider layouts both panes can still be visible; this intent is primarily
 /// used for collapsed layouts where only one pane is shown.
-class AdaptiveScaffoldController extends ValueNotifier<PanelFocus> {
+class AdaptiveScaffoldController extends ValueNotifier<PanelFocus?> {
   AdaptiveScaffoldController({
-    PanelFocus initialIntent = PanelFocus.secondaryBody,
+    PanelFocus? initialIntent,
   }) : super(initialIntent);
+
+  bool get hasExplicitIntent => value != null;
 
   void showSecondaryBody() {
     if (value == PanelFocus.secondaryBody) return;

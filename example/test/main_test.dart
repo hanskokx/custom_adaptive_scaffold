@@ -47,7 +47,7 @@ void main() {
     expect(mediumLargeBody, findsNothing);
     expect(largeBody, findsNothing);
     expect(extraLargeBody, findsNothing);
-    expect(smallSBody, findsNothing);
+    expect(smallSBody, findsOneWidget);
     expect(sBody, findsNothing);
     expect(mediumLargeSBody, findsNothing);
     expect(largeSBody, findsNothing);

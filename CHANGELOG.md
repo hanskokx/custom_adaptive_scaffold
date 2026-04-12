@@ -1,3 +1,11 @@
+## 3.0.1
+
+* [FIX] Attaching an `AdaptiveScaffoldController` without `initialIntent` now
+  preserves legacy small-layout behavior until `showBody()` or
+  `showSecondaryBody()` is called.
+* `AdaptiveScaffoldController` now exposes:
+  * optional `initialIntent`
+
 ## 3.0.0
 
 * This version leveraged the usage of AI-assisted coding. Please submit bug
@@ -11,6 +19,7 @@
   * `showBody()`
   * `showSecondaryBody()`
 * Adds documentation and examples for collapsed body/secondaryBody pane control.
+
 * [FIX] Fixed the shape of the indicators in both the navigation bar and
   navigation rail.
 

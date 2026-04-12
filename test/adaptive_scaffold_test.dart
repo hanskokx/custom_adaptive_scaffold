@@ -891,7 +891,7 @@ void main() {
   );
 
   testWidgets(
-    "adaptive scaffold controller toggles small body and keeps medium dual-pane",
+    "adaptive scaffold controller preserves legacy small layout until intent is explicit",
     (WidgetTester tester) async {
       final AdaptiveScaffoldController controller =
           AdaptiveScaffoldController();
@@ -921,7 +921,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      // Default intent is details on collapsed layouts.
+      // Attached but untouched controller preserves legacy dual-pane behavior.
+      expect(find.byKey(const Key("smallListPane")), findsOneWidget);
+      expect(find.byKey(const Key("smallDetailsPane")), findsOneWidget);
+
+      controller.showSecondaryBody();
+      await tester.pumpAndSettle();
+
       expect(find.byKey(const Key("smallListPane")), findsNothing);
       expect(find.byKey(const Key("smallDetailsPane")), findsOneWidget);
 
@@ -956,6 +962,84 @@ void main() {
 
       expect(find.byKey(const Key("mediumListPane")), findsOneWidget);
       expect(find.byKey(const Key("mediumDetailsPane")), findsOneWidget);
+
+      controller.dispose();
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold controller can start with explicit details intent",
+    (WidgetTester tester) async {
+      final AdaptiveScaffoldController controller = AdaptiveScaffoldController(
+        initialIntent: PanelFocus.secondaryBody,
+      );
+
+      await tester.binding.setSurfaceSize(SimulatedLayout.small.size);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData.fromView(tester.view)
+                .copyWith(size: SimulatedLayout.small.size),
+            child: AdaptiveScaffold(
+              destinations: TestScaffold.destinations,
+              smallBreakpoint: TestBreakpoint0(),
+              mediumBreakpoint: TestBreakpoint800(),
+              mediumLargeBreakpoint: TestBreakpoint1000(),
+              largeBreakpoint: TestBreakpoint1200(),
+              extraLargeBreakpoint: TestBreakpoint1600(),
+              controller: controller,
+              smallBody: (_) => Container(key: const Key("smallListPane")),
+              body: (_) => const SizedBox.shrink(),
+              smallSecondaryBody: (_) =>
+                  Container(key: const Key("smallDetailsPane")),
+              secondaryBody: (_) => const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key("smallListPane")), findsNothing);
+      expect(find.byKey(const Key("smallDetailsPane")), findsOneWidget);
+
+      controller.dispose();
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold controller can start with explicit body intent",
+    (WidgetTester tester) async {
+      final AdaptiveScaffoldController controller = AdaptiveScaffoldController(
+        initialIntent: PanelFocus.body,
+      );
+
+      await tester.binding.setSurfaceSize(SimulatedLayout.small.size);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData.fromView(tester.view)
+                .copyWith(size: SimulatedLayout.small.size),
+            child: AdaptiveScaffold(
+              destinations: TestScaffold.destinations,
+              smallBreakpoint: TestBreakpoint0(),
+              mediumBreakpoint: TestBreakpoint800(),
+              mediumLargeBreakpoint: TestBreakpoint1000(),
+              largeBreakpoint: TestBreakpoint1200(),
+              extraLargeBreakpoint: TestBreakpoint1600(),
+              controller: controller,
+              smallBody: (_) => Container(key: const Key("smallListPane")),
+              body: (_) => const SizedBox.shrink(),
+              smallSecondaryBody: (_) =>
+                  Container(key: const Key("smallDetailsPane")),
+              secondaryBody: (_) => const SizedBox.shrink(),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key("smallListPane")), findsOneWidget);
+      expect(find.byKey(const Key("smallDetailsPane")), findsNothing);
 
       controller.dispose();
     },

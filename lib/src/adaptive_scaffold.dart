@@ -628,8 +628,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         .toList();
 
     final bool viewIsCollapsed = widget.smallBreakpoint.isActive(context);
-    final bool hasCollapsiblePrimarySecondary =
-        widget.controller != null && widget.secondaryBody != null;
+    final bool hasCollapsiblePrimarySecondary = widget.controller != null &&
+        widget.secondaryBody != null &&
+        widget.controller!.hasExplicitIntent;
     final bool showPrimaryOnSmall = !hasCollapsiblePrimarySecondary ||
         widget.controller!.value == PanelFocus.body;
     final bool showSecondaryOnSmall = !hasCollapsiblePrimarySecondary ||

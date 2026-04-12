@@ -60,8 +60,14 @@ Important behavior details:
 - This is fully opt-in. If `controller` is not supplied, behavior
   remains unchanged.
 - The collapsed pane switch is only active when both
-  `controller != null` and `secondaryBody != null`.
-- `AdaptiveScaffoldController` defaults to `PanelFocus.secondaryBody`.
+  `controller != null`, `secondaryBody != null`, and the controller has an
+  explicit pane intent.
+- `AdaptiveScaffoldController()` starts with no explicit pane intent, so
+  collapsed layouts preserve legacy dual-pane behavior until
+  `showBody()` or `showSecondaryBody()` is called.
+- Pass `initialIntent` to opt into immediate collapsed single-pane behavior:
+  - `AdaptiveScaffoldController(initialIntent: PanelFocus.body)`
+  - `AdaptiveScaffoldController(initialIntent: PanelFocus.secondaryBody)`
 - `AdaptiveScaffold` listens to controller updates and rebuilds automatically.
 - `AdaptiveScaffoldScope` is inserted only when a controller is provided.
 
