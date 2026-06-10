@@ -301,6 +301,37 @@ void main() {
   );
 
   testWidgets(
+    "standardBottomNavigationBar normalizes plain NavigationDestination widgets",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          selectedIcon: Icon(Icons.home),
+          label: "Home",
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.person_outline),
+          selectedIcon: Icon(Icons.person),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: AdaptiveScaffold.standardBottomNavigationBar(
+              destinations: destinations,
+            ),
+          ),
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.byType(CustomNavigationDestination), findsNWidgets(2));
+    },
+  );
+
+  testWidgets(
     "when destinations passed with all data, it shall not be null",
     (WidgetTester tester) async {
       const List<CustomNavigationDestination> destinations =

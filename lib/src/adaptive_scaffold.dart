@@ -419,6 +419,21 @@ class AdaptiveScaffold extends StatefulWidget {
   }) {
     return Builder(
       builder: (BuildContext context) {
+        final List<NavigationDestination> bottomBarDestinations =
+            destinations.map((NavigationDestination destination) {
+          if (destination is CustomNavigationDestination) {
+            return destination;
+          }
+
+          return CustomNavigationDestination(
+            key: destination.key,
+            icon: destination.icon,
+            label: destination.label,
+            selectedIcon: destination.selectedIcon,
+            tooltip: destination.tooltip,
+            enabled: destination.enabled,
+          );
+        }).toList(growable: false);
         final NavigationBarThemeData currentNavBarTheme =
             NavigationBarTheme.of(context);
         return NavigationBarTheme(
@@ -436,7 +451,7 @@ class AdaptiveScaffold extends StatefulWidget {
             data: MediaQuery.of(context).removePadding(removeTop: true),
             child: CustomNavigationBar(
               selectedIndex: currentIndex ?? 0,
-              destinations: destinations,
+              destinations: bottomBarDestinations,
               onDestinationSelected: onDestinationSelected,
             ),
           ),

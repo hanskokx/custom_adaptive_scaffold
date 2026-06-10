@@ -1,3 +1,11 @@
+## 3.0.2
+
+* [FIX] `AdaptiveScaffold.standardBottomNavigationBar` now normalizes plain
+  `NavigationDestination` values to `CustomNavigationDestination` to prevent
+  `_NavigationDestinationInfo` assertion failures in `CustomNavigationBar`.
+* Adds a regression test covering plain `NavigationDestination` input in
+  `standardBottomNavigationBar`.
+
 ## 3.0.1
 
 * [FIX] Attaching an `AdaptiveScaffoldController` without `initialIntent` now
