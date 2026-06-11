@@ -1473,15 +1473,15 @@ Rect _navigationBarDestinationHighlightRect({
       }
       final Rect combined =
           effectiveIconRect.expandToInclude(measuredLabelRect);
-      final double leftEdge =
-          (combined.left - horizontalPadding).clamp(0.0, fullRect.right);
-      final double rightEdge =
-          (fullRect.right - leftEdge).clamp(leftEdge, fullRect.right);
-      return Rect.fromLTRB(
-        leftEdge,
-        (combined.top - topPadding).clamp(0.0, fullRect.bottom),
-        rightEdge,
-        (combined.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
+      const double contentExtraHorizontalPadding = 4.0;
+      const double contentExtraVerticalPadding = 4.0;
+      final double contentHorizontalPadding =
+          horizontalPadding + contentExtraHorizontalPadding;
+      final Rect contentRect = combined.inflate(contentExtraVerticalPadding);
+      return expandAndClamp(
+        contentRect,
+        leftPadding: contentHorizontalPadding,
+        rightPadding: contentHorizontalPadding,
       );
     case NavigationDestinationFillMode.label:
       if (!shouldUseLabelBounds) {
