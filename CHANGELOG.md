@@ -2,9 +2,9 @@
 
 * **[FEAT] Configurable rail destination fill modes** —
   `CustomNavigationRail` now supports:
-  * `destinationFillMode` (`NavigationRailDestinationFillMode`, default
-    `iconOnly`) to select fill/highlight scope:
-    `iconOnly`, `content`, `textOnly`, `fullWidget`.
+  * `destinationFillMode` (`NavigationDestinationFillMode`, default
+    `icon`) to select fill/highlight scope:
+    `none`, `icon`, `content`, `label`, `full`.
   * `destinationFillShape` (`ShapeBorder?`) to customize fill/highlight shape.
   * Fill color now resolves from theme indicator color
     (`NavigationRailThemeData.indicatorColor`).
@@ -12,9 +12,14 @@
   `AdaptiveScaffold.standardNavigationRail` now forwards:
   * `destinationFillMode`
   * `destinationFillShape`
+* **[FEAT] AdaptiveScaffold navigation theme support** —
+  `AdaptiveScaffoldNavigationThemeData` now supports:
+  * `destinationFillMode`
+  * `destinationFillShape`
+  and `AdaptiveScaffold` applies these values to navigation rail rendering.
 * **[MIGRATION] Re-enable legacy full-fill appearance explicitly** —
   If your app previously relied on full selected-destination fill, set
-  `destinationFillMode: NavigationRailDestinationFillMode.fullWidget` on
+  `destinationFillMode: NavigationDestinationFillMode.full` on
   `CustomNavigationRail` (or via `AdaptiveScaffold.standardNavigationRail`)
   during upgrade.
 * **[DOC] README updates** — documented the new opt-in API and clarified that

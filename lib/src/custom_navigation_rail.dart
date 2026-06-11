@@ -106,7 +106,7 @@ class CustomNavigationRail extends StatefulWidget {
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
-    this.destinationFillMode = NavigationRailDestinationFillMode.iconOnly,
+    this.destinationFillMode = NavigationDestinationFillMode.icon,
     this.destinationFillShape,
     this.leadingAtTop = true,
     this.trailingAtBottom = false,
@@ -333,8 +333,8 @@ class CustomNavigationRail extends StatefulWidget {
 
   /// Controls where destination fill/highlight is painted.
   ///
-  /// Defaults to [NavigationRailDestinationFillMode.iconOnly].
-  final NavigationRailDestinationFillMode destinationFillMode;
+  /// Defaults to [NavigationDestinationFillMode.icon].
+  final NavigationDestinationFillMode destinationFillMode;
 
   /// Optional shape used for destination fill/highlight when
   /// [destinationFillMode] is configured.

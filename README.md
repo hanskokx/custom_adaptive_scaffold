@@ -36,6 +36,8 @@ several places:
     `mainAxisAlignment`).
   - Configurable rail destination fill/highlight via
     `destinationFillMode` and `destinationFillShape`.
+  - `AdaptiveScaffold` exposes the same fill options through
+    `navigationTheme: AdaptiveScaffoldNavigationThemeData(...)`.
 - Theme extensions:
   - `CustomNavigationBarThemeData`: `margin`, `padding`,
     `tooltipVerticalOffset`.
@@ -301,17 +303,18 @@ where the indicator sits behind the icon area.
 When you want custom destination fill/highlight scopes, choose a
 `destinationFillMode`:
 
-- `iconOnly`
+- `none`
+- `icon`
 - `content`
-- `textOnly`
-- `fullWidget`
+- `label`
+- `full`
 
 Example using full-widget fill plus a custom shape:
 
 ```dart
 CustomNavigationRail(
   selectedIndex: selectedIndex,
-  destinationFillMode: NavigationRailDestinationFillMode.fullWidget,
+  destinationFillMode: NavigationDestinationFillMode.full,
   destinationFillShape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(12),
   ),
@@ -327,17 +330,31 @@ Color is resolved from theme indicator color (`NavigationRailThemeData.indicator
 AdaptiveScaffold.standardNavigationRail(
   selectedIndex: selectedIndex,
   destinations: railDestinations,
-  destinationFillMode: NavigationRailDestinationFillMode.fullWidget,
+  destinationFillMode: NavigationDestinationFillMode.full,
   destinationFillShape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(12),
   ),
 )
 ```
 
+For `AdaptiveScaffold`, configure fill/highlight through
+`AdaptiveScaffoldNavigationThemeData`:
+
+```dart
+AdaptiveScaffold(
+  destinations: destinations,
+  navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+    destinationFillMode: NavigationDestinationFillMode.label,
+    destinationFillShape: StadiumBorder(),
+  ),
+  body: (BuildContext context) => const Placeholder(),
+)
+```
+
 Migration step for existing apps (pre 4.0.0):
 
 If your app previously depended on full selected-destination fill behavior,
-set `destinationFillMode: NavigationRailDestinationFillMode.fullWidget` on
+set `destinationFillMode: NavigationDestinationFillMode.full` on
 `CustomNavigationRail` (or on `AdaptiveScaffold.standardNavigationRail` when
 using the helper).
 

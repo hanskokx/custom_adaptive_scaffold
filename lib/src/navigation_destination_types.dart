@@ -23,25 +23,22 @@ enum NavigationDestinationAnimation {
   scale,
 }
 
-/// Controls where rail destination selection fill and interaction effects are
-/// painted.
-enum NavigationRailDestinationFillMode {
+/// Controls where navigation destination selection fill and interaction effects
+/// are painted.
+enum NavigationDestinationFillMode {
   /// No fill or highlight is painted.
   none,
 
   /// Paint fill/highlight around the icon area only.
   ///
   /// This is the default behavior.
-  iconOnly,
+  icon,
 
   /// Paint fill/highlight across icon and label area.
   content,
 
   /// Paint fill/highlight starting from the label left edge extending to the
   /// right boundary of the destination.
-  ///
-  /// Like [textOnly] but unconstrained on the right — useful for extended rails
-  /// where the label fills the remaining width.
   label,
 
   /// Paint fill/highlight across the whole destination widget.

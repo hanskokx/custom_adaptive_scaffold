@@ -46,6 +46,8 @@ class AdaptiveScaffoldNavigationThemeData {
         NavigationDestinationAnimation.none,
     this.compactNavigationRailDestinationTransitionCurve = Curves.easeInOut,
     this.compactNavigationRailDestinationTransitionDuration,
+    this.destinationFillMode = NavigationDestinationFillMode.icon,
+    this.destinationFillShape,
   });
 
   /// Optional label behavior for the compact (medium breakpoint) navigation rail.
@@ -76,6 +78,16 @@ class AdaptiveScaffoldNavigationThemeData {
 
   /// Optional duration used by compact rail icon transitions.
   final Duration? compactNavigationRailDestinationTransitionDuration;
+
+  /// Controls where rail destination fill/highlight is painted.
+  ///
+  /// Defaults to [NavigationDestinationFillMode.icon].
+  final NavigationDestinationFillMode destinationFillMode;
+
+  /// Optional shape for destination fill/highlight.
+  ///
+  /// If null, the resolved navigation rail indicator shape is used.
+  final ShapeBorder? destinationFillShape;
 }
 
 /// Implements the basic visual layout structure for
@@ -166,8 +178,6 @@ class AdaptiveScaffold extends StatefulWidget {
     this.navigationRailDestinationBuilder,
     this.groupAlignment,
     this.padding,
-    this.destinationFillMode = NavigationRailDestinationFillMode.iconOnly,
-    this.destinationFillShape,
     this.controller,
     this.navigationTheme = const AdaptiveScaffoldNavigationThemeData(),
   }) : assert(
@@ -364,16 +374,6 @@ class AdaptiveScaffold extends StatefulWidget {
   /// Applies a [Padding] around the [NavigationRail].
   final EdgeInsetsGeometry? padding;
 
-  /// Controls where rail destination fill/highlight is painted.
-  ///
-  /// Defaults to [NavigationRailDestinationFillMode.iconOnly].
-  final NavigationRailDestinationFillMode destinationFillMode;
-
-  /// Optional shape for destination fill/highlight.
-  ///
-  /// If null, the resolved navigation rail indicator shape is used.
-  final ShapeBorder? destinationFillShape;
-
   /// Optional controller for collapsed primary/secondary pane intent.
   ///
   /// When provided and [secondaryBody] is also provided, the active intent is
@@ -429,8 +429,8 @@ class AdaptiveScaffold extends StatefulWidget {
         NavigationDestinationAnimation.none,
     Curve iconTransitionCurve = Curves.easeInOut,
     Duration? iconTransitionDuration,
-    NavigationRailDestinationFillMode destinationFillMode =
-        NavigationRailDestinationFillMode.iconOnly,
+    NavigationDestinationFillMode destinationFillMode =
+        NavigationDestinationFillMode.icon,
     ShapeBorder? destinationFillShape,
   }) {
     if (extended && width == 72) {
@@ -764,8 +764,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   .compactNavigationRailDestinationTransitionCurve,
               iconTransitionDuration: effectiveNavigationTheme
                   .compactNavigationRailDestinationTransitionDuration,
-              destinationFillMode: widget.destinationFillMode,
-              destinationFillShape: widget.destinationFillShape,
+              destinationFillMode: effectiveNavigationTheme.destinationFillMode,
+              destinationFillShape:
+                  effectiveNavigationTheme.destinationFillShape,
             ),
           ),
           widget.mediumLargeBreakpoint: SlotLayout.from(
@@ -786,8 +787,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               labelType: navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
-              destinationFillMode: widget.destinationFillMode,
-              destinationFillShape: widget.destinationFillShape,
+              destinationFillMode: effectiveNavigationTheme.destinationFillMode,
+              destinationFillShape:
+                  effectiveNavigationTheme.destinationFillShape,
             ),
           ),
           widget.largeBreakpoint: SlotLayout.from(
@@ -811,8 +813,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
               padding: widget.padding,
-              destinationFillMode: widget.destinationFillMode,
-              destinationFillShape: widget.destinationFillShape,
+              destinationFillMode: effectiveNavigationTheme.destinationFillMode,
+              destinationFillShape:
+                  effectiveNavigationTheme.destinationFillShape,
             ),
           ),
           widget.extraLargeBreakpoint: SlotLayout.from(
@@ -836,8 +839,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
               padding: widget.padding,
-              destinationFillMode: widget.destinationFillMode,
-              destinationFillShape: widget.destinationFillShape,
+              destinationFillMode: effectiveNavigationTheme.destinationFillMode,
+              destinationFillShape:
+                  effectiveNavigationTheme.destinationFillShape,
             ),
           ),
         },

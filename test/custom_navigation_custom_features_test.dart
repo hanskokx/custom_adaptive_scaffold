@@ -139,7 +139,7 @@ void main() {
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
-            destinationFillMode: NavigationRailDestinationFillMode.full,
+            destinationFillMode: NavigationDestinationFillMode.full,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),
@@ -175,7 +175,7 @@ void main() {
     }
   });
 
-  testWidgets("iconOnly fill mode keeps indicator-sized interaction rect",
+  testWidgets("icon fill mode keeps indicator-sized interaction rect",
       (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -183,7 +183,7 @@ void main() {
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
-            destinationFillMode: NavigationRailDestinationFillMode.iconOnly,
+            destinationFillMode: NavigationDestinationFillMode.icon,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),
@@ -230,7 +230,7 @@ void main() {
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
-            destinationFillMode: NavigationRailDestinationFillMode.full,
+            destinationFillMode: NavigationDestinationFillMode.full,
             destinationFillShape: fillShape,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
