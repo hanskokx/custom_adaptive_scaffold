@@ -215,6 +215,9 @@ class _RailDestinationState extends State<RailDestination>
         destinationHoverRegion == NavigationDestinationRegion.none;
     final bool isLabelFillMode =
         destinationFillRegion == NavigationDestinationRegion.label;
+    final bool usesLabelRegion =
+        destinationFillRegion == NavigationDestinationRegion.label ||
+            destinationHoverRegion == NavigationDestinationRegion.label;
     final bool isCustomFillMode = !isDefaultFillPath && !isNoneFillMode;
     final bool shouldPaintSelectedFill = selected && isCustomFillMode;
     final bool shouldShowIconIndicator =
@@ -473,10 +476,11 @@ class _RailDestinationState extends State<RailDestination>
         final Widget labelSpacing = SizedBox(
           height: material3
               ? lerpDouble(
-                  0,
-                  _verticalIconLabelSpacingM3,
-                  appearingAnimationValue,
-                )!
+                    0,
+                    _verticalIconLabelSpacingM3,
+                    appearingAnimationValue,
+                  )! +
+                  (usesLabelRegion ? 4.0 : 0.0)
               : 0,
         );
         final Widget bottomSpacing = SizedBox(
@@ -543,8 +547,10 @@ class _RailDestinationState extends State<RailDestination>
         final Widget topSpacing = SizedBox(
           height: material3 ? 0 : _verticalDestinationPaddingWithLabel,
         );
-        final Widget labelSpacing =
-            SizedBox(height: material3 ? _verticalIconLabelSpacingM3 : 0);
+        final Widget labelSpacing = SizedBox(
+          height: (material3 ? _verticalIconLabelSpacingM3 : 0) +
+              (usesLabelRegion ? 4.0 : 0.0),
+        );
         final Widget bottomSpacing = SizedBox(
           height: material3
               ? _verticalDestinationSpacingM3
@@ -874,18 +880,10 @@ Rect _destinationHighlightRect({
       );
     case NavigationDestinationRegion.label:
       if (!hasVisibleText) {
-        return expandAndClamp(
-          effectiveIconRect,
-          leftPadding: horizontalPadding,
-          rightPadding: horizontalPadding,
-        );
+        return iconRect;
       }
       if (measuredLabelRect == null) {
-        return expandAndClamp(
-          effectiveIconRect,
-          leftPadding: horizontalPadding,
-          rightPadding: horizontalPadding,
-        );
+        return iconRect;
       }
       final Rect labelBand = measuredLabelRect;
       final double leadingAnchor =
@@ -893,12 +891,14 @@ Rect _destinationHighlightRect({
       final double left =
           (leadingAnchor - horizontalPadding).clamp(0.0, fullRect.right);
       final double right = fullRect.right;
-      final double centerY = labelBand.center.dy;
-      final double top =
-          (centerY - (_kIndicatorHeight / 2)).clamp(0.0, fullRect.bottom);
+      final double desiredTop = labelBand.center.dy - (_kIndicatorHeight / 2);
+      double top = desiredTop;
+      top = top.clamp(
+        0.0,
+        (fullRect.bottom - _kIndicatorHeight).clamp(0.0, fullRect.bottom),
+      );
       final double bottom =
           (top + _kIndicatorHeight).clamp(0.0, fullRect.bottom);
-
       return Rect.fromLTRB(
         left,
         top,

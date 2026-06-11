@@ -1509,14 +1509,9 @@ Rect _navigationBarDestinationHighlightRect({
       );
     case NavigationDestinationRegion.label:
       if (!shouldUseLabelBounds) {
-        return expandAndClamp(
-          effectiveIconRect,
-          leftPadding: horizontalPadding,
-          rightPadding: horizontalPadding,
-        );
+        return effectiveIconRect;
       }
       final Rect labelBand = measuredLabelRect;
-      const double labelVerticalOffset = 2.0;
       double targetWidth = labelBand.width + (horizontalPadding * 2);
       final double minimumWidth = _kIndicatorWidth + (horizontalPadding * 2);
       if (targetWidth < minimumWidth) {
@@ -1542,9 +1537,12 @@ Rect _navigationBarDestinationHighlightRect({
       if (right < left) {
         right = left;
       }
-      final double centerY = labelBand.center.dy + labelVerticalOffset;
-      final double top =
-          (centerY - (_kIndicatorHeight / 2)).clamp(0.0, fullRect.bottom);
+      final double desiredTop = labelBand.center.dy - (_kIndicatorHeight / 2);
+      double top = desiredTop;
+      top = top.clamp(
+        0.0,
+        (fullRect.bottom - _kIndicatorHeight).clamp(0.0, fullRect.bottom),
+      );
       final double bottom =
           (top + _kIndicatorHeight).clamp(0.0, fullRect.bottom);
       return Rect.fromLTRB(
