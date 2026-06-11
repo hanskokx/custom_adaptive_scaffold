@@ -721,6 +721,18 @@ class SemanticsTester {
   final WidgetTester tester;
   SemanticsHandle? _semanticsHandle;
 
+  SemanticsOwner? get _semanticsOwner {
+    for (final RenderView renderView in RendererBinding.instance.renderViews) {
+      final SemanticsOwner? owner = renderView.owner?.semanticsOwner;
+      if (owner != null) {
+        return owner;
+      }
+    }
+    return null;
+  }
+
+  SemanticsNode? get _rootSemanticsNode => _semanticsOwner?.rootSemanticsNode;
+
   /// Release resources held by this semantics tester.
   ///
   /// Call this function at the end of any test that uses a semantics tester. It
@@ -733,8 +745,7 @@ class SemanticsTester {
   }
 
   @override
-  String toString() =>
-      "SemanticsTester for ${tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode}";
+  String toString() => "SemanticsTester for $_rootSemanticsNode";
 
   bool _stringAttributesEqual(
     List<StringAttribute> first,
@@ -917,8 +928,7 @@ class SemanticsTester {
     }
 
     visit(
-      ancestor ??
-          tester.binding.pipelineOwner.semanticsOwner!.rootSemanticsNode!,
+      ancestor ?? _rootSemanticsNode!,
     );
 
     return result;
@@ -975,8 +985,7 @@ class SemanticsTester {
   String generateTestSemanticsExpressionForCurrentSemanticsTree(
     DebugSemanticsDumpOrder childOrder,
   ) {
-    final SemanticsNode? node =
-        tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode;
+    final SemanticsNode? node = _rootSemanticsNode;
     return _generateSemanticsTestForNode(node, 0, childOrder);
   }
 
@@ -1130,7 +1139,7 @@ class _HasSemantics extends Matcher {
     Map<dynamic, dynamic> matchState,
   ) {
     final bool doesMatch = _semantics._matches(
-      item.tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode,
+      item._rootSemanticsNode,
       matchState,
       ignoreTransform: ignoreTransform,
       ignoreRect: ignoreRect,
@@ -1144,7 +1153,7 @@ class _HasSemantics extends Matcher {
         childOrder,
       );
     }
-    if (item.tester.binding.pipelineOwner.semanticsOwner == null) {
+    if (item._semanticsOwner == null) {
       matchState["additional-notes"] =
           "(Check that the SemanticsTester has not been disposed early.)";
     }

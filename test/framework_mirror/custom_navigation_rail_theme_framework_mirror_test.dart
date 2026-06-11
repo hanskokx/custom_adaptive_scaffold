@@ -98,7 +98,9 @@ void main() {
       expect(_destinationSize(tester).width, 72.0);
       expect(_selectedIconTheme(tester).size, 24.0);
       expect(
-          _selectedIconTheme(tester).color, material2Theme.colorScheme.primary);
+        _selectedIconTheme(tester).color,
+        material2Theme.colorScheme.primary,
+      );
       expect(_selectedIconTheme(tester).opacity, 1.0);
       expect(_unselectedIconTheme(tester).size, 24.0);
       expect(

@@ -240,8 +240,10 @@ void main() {
         ),
       );
 
-      expect(tester.getSize(_barFinder(impl)).height,
-          defaultHeight + bottomPadding);
+      expect(
+        tester.getSize(_barFinder(impl)).height,
+        defaultHeight + bottomPadding,
+      );
     });
 
     testWidgets("${_implName(impl)} NavigationBar labelBehavior parity", (
