@@ -213,15 +213,13 @@ class _RailDestinationState extends State<RailDestination>
         destinationFillRegion == NavigationDestinationRegion.none;
     final bool isNoneHoverMode =
         destinationHoverRegion == NavigationDestinationRegion.none;
-    final bool isLabelFillMode =
-        destinationFillRegion == NavigationDestinationRegion.label;
     final bool usesLabelRegion =
         destinationFillRegion == NavigationDestinationRegion.label ||
             destinationHoverRegion == NavigationDestinationRegion.label;
     final bool isCustomFillMode = !isDefaultFillPath && !isNoneFillMode;
     final bool shouldPaintSelectedFill = selected && isCustomFillMode;
     final bool shouldShowIconIndicator =
-        (widget.useIndicator ?? false) && !isLabelFillMode && !isNoneFillMode;
+        (widget.useIndicator ?? false) && isDefaultFillPath;
     final Color? selectedFillColor = indicatorColor;
 
     final IconThemeData unselectedIconTheme =
@@ -821,8 +819,16 @@ Rect _destinationHighlightRect({
   final double horizontalPadding = useFallbackHorizontalPadding
       ? _horizontalDestinationPadding
       : fillPadding.left;
-  final double topPadding = fillPadding.top;
-  final double bottomPadding = fillPadding.bottom;
+  final bool hasExplicitVerticalFillPadding =
+      fillPadding.top > 0 || fillPadding.bottom > 0;
+  final bool useFallbackVerticalPadding = !hasExplicitVerticalFillPadding &&
+      mode == NavigationDestinationRegion.content;
+  final double topPadding = useFallbackVerticalPadding
+      ? _verticalIconLabelSpacingM3
+      : fillPadding.top;
+  final double bottomPadding = useFallbackVerticalPadding
+      ? _verticalIconLabelSpacingM3
+      : fillPadding.bottom;
 
   Rect expandAndClamp(
     Rect rect, {
@@ -877,6 +883,13 @@ Rect _destinationHighlightRect({
               effectiveIconRect.width,
               size.height,
             );
+      if (isCollapsed) {
+        return expandAndClamp(
+          combined,
+          leftPadding: horizontalPadding,
+          rightPadding: horizontalPadding,
+        );
+      }
       // Keep hover content mode anchored to the icon region on the leading side.
       final double leftEdge = effectiveIconRect.left.clamp(0.0, fullRect.right);
       return Rect.fromLTRB(
