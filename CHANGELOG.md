@@ -1,3 +1,16 @@
+## 4.0.2
+
+* **[FEAT] Destination hover shape is now configurable independently**
+  * Added `destinationHoverShape` alongside `destinationFillShape` on
+    `CustomNavigationBar`, `CustomNavigationRail`, `RailDestination`, and
+    `AdaptiveScaffoldNavigationThemeData` (applied via `AdaptiveScaffold.navigationTheme`).
+  * When set, `destinationHoverShape` controls the shape of the hover/ink
+    interaction independently from the selected-fill shape.
+  * When omitted, hover shape falls back to `destinationFillShape`, preserving
+    existing behavior.
+
+* No breaking API changes in this release.
+
 ## 4.0.1
 
 * **[FEAT] Adaptive rail examples now support explicit expand/collapse flows**

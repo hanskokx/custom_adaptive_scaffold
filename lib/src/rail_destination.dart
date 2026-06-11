@@ -24,6 +24,7 @@ class RailDestination extends StatefulWidget {
     this.destinationFillRegion,
     this.destinationHoverRegion,
     this.destinationFillShape,
+    this.destinationHoverShape,
     this.disabled = false,
     this.extended = true,
     this.padding,
@@ -54,6 +55,7 @@ class RailDestination extends StatefulWidget {
   final NavigationDestinationRegion? destinationFillRegion;
   final NavigationDestinationRegion? destinationHoverRegion;
   final ShapeBorder? destinationFillShape;
+  final ShapeBorder? destinationHoverShape;
   final bool disabled;
   final bool extended;
   final EdgeInsetsGeometry? padding;
@@ -249,6 +251,12 @@ class _RailDestinationState extends State<RailDestination>
     final bool shouldPaintSelectedFill = selected && isCustomFillMode;
     final bool shouldShowIconIndicator =
         (widget.useIndicator ?? false) && isDefaultFillPath;
+    final ShapeBorder effectiveIconIndicatorShape =
+        widget.destinationFillShape ??
+            indicatorShape ??
+            (destinationFillRegion == NavigationDestinationRegion.full
+                ? const RoundedRectangleBorder()
+                : const StadiumBorder());
     final Color? selectedFillColor = indicatorColor;
 
     final IconThemeData unselectedIconTheme =
@@ -410,7 +418,7 @@ class _RailDestinationState extends State<RailDestination>
                     child: _AddIndicator(
                       addIndicator: shouldShowIconIndicator,
                       indicatorColor: indicatorColor,
-                      indicatorShape: indicatorShape,
+                      indicatorShape: effectiveIconIndicatorShape,
                       isCircular: !material3,
                       indicatorAnimation: _destinationAnimation,
                       child: animatedThemedIcon,
@@ -542,7 +550,7 @@ class _RailDestinationState extends State<RailDestination>
                   _AddIndicator(
                     addIndicator: shouldShowIconIndicator,
                     indicatorColor: indicatorColor,
-                    indicatorShape: indicatorShape,
+                    indicatorShape: effectiveIconIndicatorShape,
                     isCircular: false,
                     indicatorAnimation: _destinationAnimation,
                     child: DestinationRegionBoundary(
@@ -613,7 +621,7 @@ class _RailDestinationState extends State<RailDestination>
                 _AddIndicator(
                   addIndicator: shouldShowIconIndicator,
                   indicatorColor: indicatorColor,
-                  indicatorShape: indicatorShape,
+                  indicatorShape: effectiveIconIndicatorShape,
                   isCircular: false,
                   indicatorAnimation: _destinationAnimation,
                   child: DestinationRegionBoundary(
@@ -643,7 +651,8 @@ class _RailDestinationState extends State<RailDestination>
             : const StadiumBorder();
     final ShapeBorder effectiveFillShape =
         widget.destinationFillShape ?? indicatorShape ?? defaultFillShape;
-    final ShapeBorder effectiveInkShape = effectiveFillShape;
+    final ShapeBorder effectiveInkShape =
+        widget.destinationHoverShape ?? effectiveFillShape;
     final bool hasVisibleText = !collapsed
         ? switch (labelType) {
             NavigationRailLabelType.none => false,

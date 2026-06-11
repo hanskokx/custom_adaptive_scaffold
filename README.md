@@ -35,8 +35,8 @@ several places:
   - Extended layout controls (`leadingAtTop`, `trailingAtBottom`, `scrollable`,
     `mainAxisAlignment`).
   - Configurable rail destination fill/highlight via
-    `destinationFillRegion`, `destinationHoverRegion`, and
-    `destinationFillShape`.
+    `destinationFillRegion`, `destinationHoverRegion`,
+    `destinationFillShape`, and `destinationHoverShape`.
   - `AdaptiveScaffold` exposes the same fill options through
     `navigationTheme: AdaptiveScaffoldNavigationThemeData(...)`.
 - Theme extensions:
@@ -353,7 +353,9 @@ AdaptiveScaffold(
 ```
 
 To control hover/pressed interaction region independently, use
-`destinationHoverRegion` (defaults to `destinationFillRegion` when omitted):
+`destinationHoverRegion` (defaults to `destinationFillRegion` when omitted).
+To control hover/pressed interaction shape independently, use
+`destinationHoverShape` (defaults to `destinationFillShape` when omitted):
 
 ```dart
 AdaptiveScaffold(
@@ -361,6 +363,10 @@ AdaptiveScaffold(
   navigationTheme: const AdaptiveScaffoldNavigationThemeData(
     destinationFillRegion: NavigationDestinationRegion.icon,
     destinationHoverRegion: NavigationDestinationRegion.full,
+    destinationFillShape: StadiumBorder(),
+    destinationHoverShape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
   ),
   body: (BuildContext context) => const Placeholder(),
 )
