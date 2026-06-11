@@ -763,7 +763,7 @@ class SemanticsTester {
       if (first[i] is LocaleStringAttribute &&
           (second[i] is! LocaleStringAttribute ||
               second[i].range != first[i].range ||
-              (second[i] as LocaleStringAttribute).locale !=
+              (first[i] as LocaleStringAttribute).locale !=
                   (second[i] as LocaleStringAttribute).locale)) {
         return false;
       }
