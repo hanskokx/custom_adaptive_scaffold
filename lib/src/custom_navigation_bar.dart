@@ -809,8 +809,11 @@ class _NavigationDestinationBuilderState
         info.destinationFillShape ?? widget.shape ?? const StadiumBorder();
     final TextDirection textDirection = Directionality.of(context);
     final EdgeInsets fillPadding = widget.padding.resolve(textDirection);
-    final bool hasVisibleText =
-        info.labelBehavior != NavigationDestinationLabelBehavior.alwaysHide;
+    final bool hasVisibleText = switch (info.labelBehavior) {
+      NavigationDestinationLabelBehavior.alwaysHide => false,
+      NavigationDestinationLabelBehavior.alwaysShow => true,
+      NavigationDestinationLabelBehavior.onlyShowSelected => isSelected,
+    };
     final bool material3 = theme.useMaterial3;
     final ColorScheme colors = theme.colorScheme;
     final bool primaryColorAlphaModified =
@@ -1270,12 +1273,21 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return _DestinationLayoutAnimationBuilder(
       builder: (BuildContext context, Animation<double> animation) {
+        final _NavigationDestinationInfo info =
+            _NavigationDestinationInfo.of(context);
+        // For onlyShowSelected, freeze the icon y-position so icons don't
+        // shift up/down as labels appear. The label still fades via the
+        // selection animation below.
+        final Animation<double> positionAnimation = info.labelBehavior ==
+                NavigationDestinationLabelBehavior.onlyShowSelected
+            ? kAlwaysDismissedAnimation
+            : animation;
         return RepaintBoundary(
           child: Padding(
             padding: padding,
             child: CustomMultiChildLayout(
               delegate: _NavigationDestinationLayoutDelegate(
-                animation: animation,
+                animation: positionAnimation,
               ),
               children: <Widget>[
                 LayoutId(
@@ -1481,11 +1493,7 @@ Rect _navigationBarDestinationHighlightRect({
       return effectiveIconRect;
     case NavigationDestinationRegion.content:
       if (!shouldUseLabelBounds) {
-        return expandAndClamp(
-          effectiveIconRect,
-          leftPadding: horizontalPadding,
-          rightPadding: horizontalPadding,
-        );
+        return effectiveIconRect;
       }
       final Rect combined =
           effectiveIconRect.expandToInclude(measuredLabelRect);

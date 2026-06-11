@@ -852,11 +852,7 @@ Rect _destinationHighlightRect({
       return iconRect;
     case NavigationDestinationRegion.content:
       if (!hasVisibleText) {
-        return expandAndClamp(
-          effectiveIconRect,
-          leftPadding: horizontalPadding,
-          rightPadding: horizontalPadding,
-        );
+        return iconRect;
       }
       final Rect combined = measuredLabelRect != null
           ? effectiveIconRect.expandToInclude(measuredLabelRect)
