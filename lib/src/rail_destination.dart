@@ -475,16 +475,14 @@ class _RailDestinationState extends State<RailDestination>
         final double minHeight = material3 ? 0 : minWidth;
         final Widget topSpacing =
             SizedBox(height: material3 ? 0 : verticalPadding);
-        final Widget labelSpacing = SizedBox(
-          height: material3
-              ? lerpDouble(
-                    0,
-                    _verticalIconLabelSpacingM3,
-                    appearingAnimationValue,
-                  )! +
-                  (usesLabelRegion ? 4.0 : 0.0)
-              : 0,
-        );
+        final double labelSpacing = material3
+            ? lerpDouble(
+                  0,
+                  _verticalIconLabelSpacingM3,
+                  appearingAnimationValue,
+                )! +
+                (usesLabelRegion ? 4.0 : 0.0)
+            : 0;
         final Widget bottomSpacing = SizedBox(
           height: material3 ? _verticalDestinationSpacingM3 : verticalPadding,
         );
@@ -529,7 +527,7 @@ class _RailDestinationState extends State<RailDestination>
                       ),
                     ),
                   ),
-                  labelSpacing,
+                  SizedBox(height: labelSpacing),
                   Align(
                     alignment: Alignment.topCenter,
                     heightFactor: appearingAnimationValue,
@@ -537,7 +535,10 @@ class _RailDestinationState extends State<RailDestination>
                     child: FadeTransition(
                       alwaysIncludeSemantics: true,
                       opacity: labelFadeAnimation,
-                      child: measuredLabel,
+                      child: DestinationRegionBoundary(
+                        regionKey: _labelRegionKey,
+                        child: styledLabel,
+                      ),
                     ),
                   ),
                   bottomSpacing,
@@ -551,10 +552,9 @@ class _RailDestinationState extends State<RailDestination>
         final Widget topSpacing = SizedBox(
           height: material3 ? 0 : _verticalDestinationPaddingWithLabel,
         );
-        final Widget labelSpacing = SizedBox(
-          height: (material3 ? _verticalIconLabelSpacingM3 : 0) +
-              (usesLabelRegion ? 4.0 : 0.0),
-        );
+        final double labelSpacing =
+            (material3 ? _verticalIconLabelSpacingM3 : 0) +
+                (usesLabelRegion ? 4.0 : 0.0);
         final Widget bottomSpacing = SizedBox(
           height: material3
               ? _verticalDestinationSpacingM3
@@ -598,8 +598,11 @@ class _RailDestinationState extends State<RailDestination>
                     ),
                   ),
                 ),
-                labelSpacing,
-                measuredLabel,
+                SizedBox(height: labelSpacing),
+                DestinationRegionBoundary(
+                  regionKey: _labelRegionKey,
+                  child: styledLabel,
+                ),
                 bottomSpacing,
               ],
             ),
