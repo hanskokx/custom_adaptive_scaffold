@@ -492,11 +492,12 @@ class _LargeComposeIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 5, 0, 12),
+      // Keep the leading header and compose pill inset from both rail edges.
+      padding: const EdgeInsets.fromLTRB(12.0, 5, 12, 12),
       child: Column(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.fromLTRB(6, 0, 0, 0),
+            padding: const EdgeInsets.symmetric(horizontal: 6),
             child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
