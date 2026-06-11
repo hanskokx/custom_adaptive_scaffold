@@ -470,8 +470,23 @@ class AdaptiveScaffold extends StatefulWidget {
     }
     return Builder(
       builder: (BuildContext context) {
+        final TextDirection textDirection = Directionality.of(context);
+        final EdgeInsets resolvedOuterPadding =
+            (padding ?? const EdgeInsets.all(8.0)).resolve(textDirection);
+        final bool fullFillRail =
+            destinationFillRegion == NavigationDestinationRegion.full;
+        final EdgeInsetsGeometry effectiveOuterPadding = fullFillRail
+            ? EdgeInsets.only(
+                top: resolvedOuterPadding.top,
+                bottom: resolvedOuterPadding.bottom,
+              )
+            : resolvedOuterPadding;
+
+        final List<NavigationRailDestination> effectiveDestinations =
+            destinations;
+
         return Padding(
-          padding: padding ?? const EdgeInsets.all(8.0),
+          padding: effectiveOuterPadding,
           child: TweenAnimationBuilder<double>(
             tween: Tween<double>(end: width),
             duration: const Duration(milliseconds: 220),
@@ -501,7 +516,7 @@ class AdaptiveScaffold extends StatefulWidget {
                             unselectedIconTheme: unselectedIconTheme,
                             selectedLabelTextStyle: selectedLabelTextStyle,
                             unselectedLabelTextStyle: unSelectedLabelTextStyle,
-                            destinations: destinations,
+                            destinations: effectiveDestinations,
                             iconTransitionAnimation: iconTransitionAnimation,
                             iconTransitionCurve: iconTransitionCurve,
                             iconTransitionDuration: iconTransitionDuration,

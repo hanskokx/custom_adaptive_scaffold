@@ -1512,7 +1512,7 @@ Rect _navigationBarDestinationHighlightRect({
       );
     case NavigationDestinationRegion.label:
       if (!shouldUseLabelBounds) {
-        return effectiveIconRect;
+        return Rect.zero;
       }
       final Rect labelBand = measuredLabelRect;
       double targetWidth = labelBand.width + (horizontalPadding * 2);

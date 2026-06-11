@@ -228,14 +228,16 @@ class _RailDestinationState extends State<RailDestination>
     final double minWidth =
         widget.minWidth ?? navigationRailTheme.minWidth ?? defaults.minWidth!;
 
+    final NavigationDestinationRegion? destinationFillRegion =
+        widget.destinationFillRegion;
     final double minExtendedWidth = (widget.minExtendedWidth ??
             navigationRailTheme.minExtendedWidth ??
             defaults.minExtendedWidth!) -
-        paddingAndMarginWidth;
+        (destinationFillRegion == NavigationDestinationRegion.full
+            ? 0
+            : paddingAndMarginWidth);
 
     final bool selected = widget.selected ?? false;
-    final NavigationDestinationRegion? destinationFillRegion =
-        widget.destinationFillRegion;
     final NavigationDestinationRegion? destinationHoverRegion =
         widget.destinationHoverRegion ?? destinationFillRegion;
     final bool isDefaultFillPath = destinationFillRegion == null ||
@@ -725,7 +727,22 @@ class _RailDestinationState extends State<RailDestination>
               iconRegionKey: _iconRegionKey,
               labelRegionKey: _labelRegionKey,
               fillPadding: destinationPadding,
-              child: content,
+              child:
+                  destinationFillRegion == NavigationDestinationRegion.full &&
+                          !collapsed
+                      ? SizedBox(
+                          width: double.infinity,
+                          child: Align(
+                            alignment: AlignmentDirectional.topCenter,
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                start: _horizontalDestinationSpacingM3,
+                              ),
+                              child: content,
+                            ),
+                          ),
+                        )
+                      : content,
             ),
             Semantics(
               label: widget.indexLabel,
@@ -927,10 +944,10 @@ Rect _destinationHighlightRect({
       );
     case NavigationDestinationRegion.label:
       if (!hasVisibleText) {
-        return iconRect;
+        return Rect.zero;
       }
       if (measuredLabelRect == null) {
-        return iconRect;
+        return Rect.zero;
       }
       final Rect labelBand = measuredLabelRect;
       final double leadingAnchor =

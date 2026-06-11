@@ -554,12 +554,26 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
                     defaults.unselectedIconTheme!.opacity,
               );
 
-    final bool isRTLDirection = Directionality.of(context) == TextDirection.rtl;
+    final TextDirection textDirection = Directionality.of(context);
+    final bool isRTLDirection = textDirection == TextDirection.rtl;
     final bool isCustom = navigationRailTheme is CustomNavigationRailThemeData;
-    final EdgeInsetsGeometry? railDestinationMargin =
+    EdgeInsetsGeometry? railDestinationMargin =
         isCustom ? navigationRailTheme.margin : null;
     final EdgeInsetsGeometry? railDestinationPadding =
         isCustom ? navigationRailTheme.padding : null;
+    EdgeInsets? fullFillHorizontalMargin;
+
+    if (widget.destinationFillRegion == NavigationDestinationRegion.full &&
+        railDestinationMargin != null) {
+      final EdgeInsets resolvedMargin = railDestinationMargin.resolve(
+        textDirection,
+      );
+      fullFillHorizontalMargin = resolvedMargin;
+      railDestinationMargin = EdgeInsets.only(
+        top: resolvedMargin.top,
+        bottom: resolvedMargin.bottom,
+      );
+    }
 
     Widget mainGroup = Column(
       mainAxisSize: widget.mainAxisAlignment != null
@@ -573,6 +587,11 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
         ],
         for (int i = 0; i < widget.destinations.length; i += 1)
           Container(
+            width: widget.extended &&
+                    widget.destinationFillRegion ==
+                        NavigationDestinationRegion.full
+                ? double.infinity
+                : null,
             margin: railDestinationMargin,
             child: _NavigationRailDestinationTooltip(
               message: _tooltipMessageForDestination(widget.destinations[i]),
@@ -592,8 +611,25 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
                 labelTextStyle: widget.selectedIndex == i
                     ? selectedLabelTextStyle
                     : unselectedLabelTextStyle,
-                padding:
-                    railDestinationPadding ?? widget.destinations[i].padding,
+                padding: () {
+                  EdgeInsetsGeometry? effectivePadding =
+                      railDestinationPadding ?? widget.destinations[i].padding;
+
+                  if (fullFillHorizontalMargin != null) {
+                    final EdgeInsets resolvedPadding =
+                        (effectivePadding ?? EdgeInsets.zero).resolve(
+                      textDirection,
+                    );
+                    effectivePadding = EdgeInsets.fromLTRB(
+                      resolvedPadding.left + fullFillHorizontalMargin.left,
+                      resolvedPadding.top,
+                      resolvedPadding.right + fullFillHorizontalMargin.right,
+                      resolvedPadding.bottom,
+                    );
+                  }
+
+                  return effectivePadding;
+                }(),
                 useIndicator: useIndicator,
                 indicatorColor: indicatorColor,
                 indicatorShape: indicatorShape,
