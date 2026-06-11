@@ -1386,14 +1386,6 @@ Rect _navigationBarDestinationHighlightRect({
   GlobalKey? labelRegionKey,
 }) {
   final Rect fullRect = Offset.zero & size;
-  final bool isDefaultFillPath =
-      mode == null || mode == NavigationDestinationFillMode.icon;
-  if (isDefaultFillPath) {
-    return fullRect;
-  }
-  if (mode == NavigationDestinationFillMode.full) {
-    return fullRect;
-  }
 
   final Rect fallbackIconRect = Rect.fromLTWH(
     (size.width - _kIndicatorWidth) / 2,
@@ -1409,6 +1401,14 @@ Rect _navigationBarDestinationHighlightRect({
       ? _resolveRegionRect(labelRegionKey, referenceBox)
       : null;
   final Rect effectiveIconRect = measuredIconRect ?? fallbackIconRect;
+  final bool isDefaultFillPath =
+      mode == null || mode == NavigationDestinationFillMode.icon;
+  if (isDefaultFillPath) {
+    return effectiveIconRect;
+  }
+  if (mode == NavigationDestinationFillMode.full) {
+    return fullRect;
+  }
   final bool hasLabelBounds = measuredLabelRect != null &&
       measuredLabelRect.width > 0 &&
       measuredLabelRect.height > 0;
@@ -1462,7 +1462,7 @@ Rect _navigationBarDestinationHighlightRect({
     case NavigationDestinationFillMode.none:
       return Rect.zero;
     case NavigationDestinationFillMode.icon:
-      return fullRect;
+      return effectiveIconRect;
     case NavigationDestinationFillMode.content:
       if (!shouldUseLabelBounds) {
         return expandAndClamp(

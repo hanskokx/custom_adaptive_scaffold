@@ -217,6 +217,50 @@ void main() {
     expect(rect.height, 32);
   });
 
+  testWidgets("bar icon fill mode keeps indicator-sized interaction rect", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          bottomNavigationBar: CustomNavigationBar(
+            selectedIndex: 0,
+            destinationFillMode: NavigationDestinationFillMode.icon,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: "Home",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: "Search",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) =>
+          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect rect = rectCallback!();
+
+    expect(rect.width, 64);
+    expect(rect.height, 32);
+  });
+
   testWidgets("destinationFillShape is applied to interaction shape", (
     WidgetTester tester,
   ) async {
