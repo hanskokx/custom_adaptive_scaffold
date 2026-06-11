@@ -1,3 +1,18 @@
+## Unreleased
+
+* **[BREAKING] AdaptiveScaffold navigation theme API rename**
+  * `compactNavigationRailLabelType` -> `compactLabelType`
+  * `smallNavigationBarLabelBehavior` -> `smallLabelBehavior`
+  * `smallNavigationBarDestinationTransitionAnimation` -> `transitionAnimation`
+  * `compactNavigationRailDestinationTransitionCurve` -> `transitionCurve`
+  * `compactNavigationRailDestinationTransitionDuration` -> `transitionDuration`
+* **[BREAKING] Removed duplicate compact-rail transition animation field**
+  * `compactNavigationRailDestinationTransitionAnimation` was removed.
+  * Use `transitionAnimation` for both compact rail and small navigation bar.
+* **[FEAT] Added navigation label enum aliases**
+  * `NavigationLabelType` (alias for rail label type)
+  * `NavigationLabelBehavior` (alias for bar label behavior)
+
 ## 4.0.0
 
 * **[FEAT] Configurable rail destination fill modes** —

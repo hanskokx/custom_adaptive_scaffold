@@ -32,20 +32,20 @@ typedef NavigationRailDestinationBuilder = NavigationRailDestination Function(
   NavigationDestination destination,
 );
 
+typedef NavigationLabelType = NavigationRailLabelType;
+typedef NavigationLabelBehavior = NavigationDestinationLabelBehavior;
+
 /// Optional, adaptive-navigation-specific overrides for [AdaptiveScaffold].
 ///
 /// All fields are opt-in. When left null/default, [AdaptiveScaffold] keeps
 /// its legacy behavior and defers to the existing Material themes.
 class AdaptiveScaffoldNavigationThemeData {
   const AdaptiveScaffoldNavigationThemeData({
-    this.compactNavigationRailLabelType,
-    this.smallNavigationBarLabelBehavior,
-    this.smallNavigationBarDestinationTransitionAnimation =
-        NavigationDestinationAnimation.none,
-    this.compactNavigationRailDestinationTransitionAnimation =
-        NavigationDestinationAnimation.none,
-    this.compactNavigationRailDestinationTransitionCurve = Curves.easeInOut,
-    this.compactNavigationRailDestinationTransitionDuration,
+    this.compactLabelType,
+    this.smallLabelBehavior,
+    this.transitionAnimation = NavigationDestinationAnimation.none,
+    this.transitionCurve = Curves.easeInOut,
+    this.transitionDuration,
     this.destinationFillMode = NavigationDestinationFillMode.icon,
     this.destinationFillShape,
   });
@@ -53,31 +53,24 @@ class AdaptiveScaffoldNavigationThemeData {
   /// Optional label behavior for the compact (medium breakpoint) navigation rail.
   ///
   /// When null, [ThemeData.navigationRailTheme.labelType] is used.
-  final NavigationRailLabelType? compactNavigationRailLabelType;
+  final NavigationLabelType? compactLabelType;
 
   /// Optional label behavior for the small breakpoint navigation bar.
   ///
   /// When null, [NavigationBarThemeData.labelBehavior] is used.
-  final NavigationDestinationLabelBehavior? smallNavigationBarLabelBehavior;
+  final NavigationLabelBehavior? smallLabelBehavior;
 
-  /// Icon transition preset used for plain [NavigationDestination] items in the
-  /// small breakpoint navigation bar.
+  /// Icon transition preset used by small breakpoint navigation bar and
+  /// compact (medium breakpoint) navigation rail destinations.
   ///
   /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
-  final NavigationDestinationAnimation
-      smallNavigationBarDestinationTransitionAnimation;
-
-  /// Icon transition preset used for compact (medium breakpoint) rail icons.
-  ///
-  /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
-  final NavigationDestinationAnimation
-      compactNavigationRailDestinationTransitionAnimation;
+  final NavigationDestinationAnimation transitionAnimation;
 
   /// Curve used by compact rail icon transitions.
-  final Curve compactNavigationRailDestinationTransitionCurve;
+  final Curve transitionCurve;
 
   /// Optional duration used by compact rail icon transitions.
-  final Duration? compactNavigationRailDestinationTransitionDuration;
+  final Duration? transitionDuration;
 
   /// Controls where rail destination fill/highlight is painted.
   ///
@@ -423,7 +416,7 @@ class AdaptiveScaffold extends StatefulWidget {
     IconThemeData? unselectedIconTheme,
     TextStyle? selectedLabelTextStyle,
     TextStyle? unSelectedLabelTextStyle,
-    NavigationRailLabelType? labelType = NavigationRailLabelType.none,
+    NavigationLabelType? labelType = NavigationLabelType.none,
     EdgeInsetsGeometry? padding,
     NavigationDestinationAnimation iconTransitionAnimation =
         NavigationDestinationAnimation.none,
@@ -488,7 +481,7 @@ class AdaptiveScaffold extends StatefulWidget {
     int? currentIndex,
     double iconSize = 24,
     ValueChanged<int>? onDestinationSelected,
-    NavigationDestinationLabelBehavior? labelBehavior,
+    NavigationLabelBehavior? labelBehavior,
     NavigationDestinationAnimation transitionAnimation =
         NavigationDestinationAnimation.none,
     NavigationDestinationFillMode destinationFillMode =
@@ -758,17 +751,15 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType:
-                  effectiveNavigationTheme.compactNavigationRailLabelType ??
-                      navRailTheme.labelType,
+              labelType: effectiveNavigationTheme.compactLabelType ??
+                  navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
-              iconTransitionAnimation: effectiveNavigationTheme
-                  .compactNavigationRailDestinationTransitionAnimation,
-              iconTransitionCurve: effectiveNavigationTheme
-                  .compactNavigationRailDestinationTransitionCurve,
-              iconTransitionDuration: effectiveNavigationTheme
-                  .compactNavigationRailDestinationTransitionDuration,
+              iconTransitionAnimation:
+                  effectiveNavigationTheme.transitionAnimation,
+              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
+              iconTransitionDuration:
+                  effectiveNavigationTheme.transitionDuration,
               destinationFillMode: effectiveNavigationTheme.destinationFillMode,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
@@ -861,10 +852,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                     currentIndex: widget.selectedIndex,
                     destinations: widget.destinations,
                     onDestinationSelected: widget.onSelectedIndexChange,
-                    labelBehavior: effectiveNavigationTheme
-                        .smallNavigationBarLabelBehavior,
-                    transitionAnimation: effectiveNavigationTheme
-                        .smallNavigationBarDestinationTransitionAnimation,
+                    labelBehavior: effectiveNavigationTheme.smallLabelBehavior,
+                    transitionAnimation:
+                        effectiveNavigationTheme.transitionAnimation,
                     destinationFillMode:
                         effectiveNavigationTheme.destinationFillMode,
                     destinationFillShape:

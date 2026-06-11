@@ -351,6 +351,30 @@ AdaptiveScaffold(
 )
 ```
 
+Navigation behavior overrides are also configured through
+`AdaptiveScaffoldNavigationThemeData`:
+
+```dart
+AdaptiveScaffold(
+  destinations: destinations,
+  navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+    compactLabelType: NavigationLabelType.selected,
+    smallLabelBehavior: NavigationLabelBehavior.alwaysShow,
+    transitionAnimation: NavigationDestinationAnimation.fadeSwap,
+    transitionCurve: Curves.easeOutCubic,
+    transitionDuration: Duration(milliseconds: 220),
+  ),
+  body: (BuildContext context) => const Placeholder(),
+)
+```
+
+Notes:
+
+- `transitionAnimation` is shared by both compact rail and small navigation
+  bar destination transitions.
+- `NavigationLabelType` and `NavigationLabelBehavior` are convenience aliases
+  for rail and bar label behavior enums.
+
 Migration step for existing apps (pre 4.0.0):
 
 If your app previously depended on full selected-destination fill behavior,
