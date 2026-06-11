@@ -15,8 +15,8 @@
     destinations.
   * Added manual tooltip visibility handling for navigation components to
     improve behavior consistency across interaction modes.
-  * Tooltip behavior remains opt-in/explicit through destination tooltip
-    values.
+  * Tooltip behavior now falls back to destination labels when no explicit
+    tooltip text is provided.
 * **[FIX] Rail destination transition overflow edge cases were addressed**
   * Refined extended/collapsed transition behavior in destination layout to
     avoid transient horizontal overflow during width-animation boundary frames.

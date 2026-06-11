@@ -168,9 +168,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final TooltipVisibility railTooltipVisibility = tester
-        .widgetList<TooltipVisibility>(find.byType(TooltipVisibility))
-        .first;
+    final TooltipVisibility railTooltipVisibility =
+        tester.widget<TooltipVisibility>(
+      find
+          .ancestor(
+            of: find.byIcon(Icons.settings_outlined),
+            matching: find.byType(TooltipVisibility),
+          )
+          .first,
+    );
     expect(railTooltipVisibility.visible, isFalse);
 
     await tester.longPress(find.byIcon(Icons.home));
@@ -235,9 +241,15 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final TooltipVisibility barTooltipVisibility = tester
-        .widgetList<TooltipVisibility>(find.byType(TooltipVisibility))
-        .first;
+    final TooltipVisibility barTooltipVisibility =
+        tester.widget<TooltipVisibility>(
+      find
+          .ancestor(
+            of: find.byIcon(Icons.settings_outlined),
+            matching: find.byType(TooltipVisibility),
+          )
+          .first,
+    );
     expect(barTooltipVisibility.visible, isFalse);
 
     await tester.longPress(find.byIcon(Icons.home));
