@@ -465,9 +465,18 @@ class AdaptiveScaffold extends StatefulWidget {
       builder: (BuildContext context) {
         return Padding(
           padding: padding ?? const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: width,
-            height: MediaQuery.sizeOf(context).height,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(end: width),
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeInOutCubic,
+            builder:
+                (BuildContext context, double animatedWidth, Widget? child) {
+              return SizedBox(
+                width: animatedWidth,
+                height: MediaQuery.sizeOf(context).height,
+                child: child,
+              );
+            },
             child: LayoutBuilder(
               builder: (BuildContext context, BoxConstraints constraints) {
                 return SingleChildScrollView(

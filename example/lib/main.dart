@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "dart:async";
+
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/material.dart";
 
@@ -67,6 +69,14 @@ class _MyHomePageState extends State<MyHomePage>
   // The index of the navigation screen. Only impacts body/secondaryBody
   int _navigationIndex = 0;
 
+  // Whether the large navigation rail is shown in its extended state.
+  bool _isLargeRailExtended = true;
+
+  // Delay rendering expanded-only rail content until width animation settles.
+  bool _showExpandedRailContent = true;
+
+  Timer? _expandedRailContentTimer;
+
   // The controllers used for the staggered animation of the navigation elements.
   late AnimationController _inboxIconSlideController;
   late AnimationController _articleIconSlideController;
@@ -114,11 +124,37 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void dispose() {
+    _expandedRailContentTimer?.cancel();
     _inboxIconSlideController.dispose();
     _articleIconSlideController.dispose();
     _chatIconSlideController.dispose();
     _videoIconSlideController.dispose();
     super.dispose();
+  }
+
+  void _collapseRail() {
+    _expandedRailContentTimer?.cancel();
+    setState(() {
+      _showExpandedRailContent = false;
+      _isLargeRailExtended = false;
+    });
+  }
+
+  void _expandRail() {
+    _expandedRailContentTimer?.cancel();
+    setState(() {
+      _isLargeRailExtended = true;
+      _showExpandedRailContent = false;
+    });
+
+    _expandedRailContentTimer = Timer(const Duration(milliseconds: 220), () {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _showExpandedRailContent = true;
+      });
+    });
   }
 
   @override
@@ -313,15 +349,21 @@ class _MyHomePageState extends State<MyHomePage>
                 // The AdaptiveScaffold builder here greatly simplifies
                 // navigational elements.
                 builder: (_) => AdaptiveScaffold.standardNavigationRail(
-                  leading: const _LargeComposeIcon(),
+                  leading: _showExpandedRailContent
+                      ? _LargeComposeIcon(
+                          onCollapsePressed: _collapseRail,
+                        )
+                      : _MediumComposeIcon(
+                          onMenuPressed: _expandRail,
+                        ),
                   onDestinationSelected: (int index) {
                     setState(() {
                       _navigationIndex = index;
                     });
                   },
                   selectedIndex: _navigationIndex,
-                  trailing: trailingNavRail,
-                  extended: true,
+                  trailing: _showExpandedRailContent ? trailingNavRail : null,
+                  extended: _isLargeRailExtended,
                   destinations:
                       destinations.map((NavigationDestination destination) {
                     return AdaptiveScaffold.toRailDestination(destination);
@@ -333,15 +375,21 @@ class _MyHomePageState extends State<MyHomePage>
                 // The AdaptiveScaffold builder here greatly simplifies
                 // navigational elements.
                 builder: (_) => AdaptiveScaffold.standardNavigationRail(
-                  leading: const _LargeComposeIcon(),
+                  leading: _showExpandedRailContent
+                      ? _LargeComposeIcon(
+                          onCollapsePressed: _collapseRail,
+                        )
+                      : _MediumComposeIcon(
+                          onMenuPressed: _expandRail,
+                        ),
                   onDestinationSelected: (int index) {
                     setState(() {
                       _navigationIndex = index;
                     });
                   },
                   selectedIndex: _navigationIndex,
-                  trailing: trailingNavRail,
-                  extended: true,
+                  trailing: _showExpandedRailContent ? trailingNavRail : null,
+                  extended: _isLargeRailExtended,
                   destinations:
                       destinations.map((NavigationDestination destination) {
                     return AdaptiveScaffold.toRailDestination(destination);
@@ -353,15 +401,21 @@ class _MyHomePageState extends State<MyHomePage>
                 // The AdaptiveScaffold builder here greatly simplifies
                 // navigational elements.
                 builder: (_) => AdaptiveScaffold.standardNavigationRail(
-                  leading: const _LargeComposeIcon(),
+                  leading: _showExpandedRailContent
+                      ? _LargeComposeIcon(
+                          onCollapsePressed: _collapseRail,
+                        )
+                      : _MediumComposeIcon(
+                          onMenuPressed: _expandRail,
+                        ),
                   onDestinationSelected: (int index) {
                     setState(() {
                       _navigationIndex = index;
                     });
                   },
                   selectedIndex: _navigationIndex,
-                  trailing: trailingNavRail,
-                  extended: true,
+                  trailing: _showExpandedRailContent ? trailingNavRail : null,
+                  extended: _isLargeRailExtended,
                   destinations:
                       destinations.map((NavigationDestination destination) {
                     return AdaptiveScaffold.toRailDestination(destination);
@@ -470,7 +524,9 @@ class _SmallComposeIcon extends StatelessWidget {
 }
 
 class _MediumComposeIcon extends StatelessWidget {
-  const _MediumComposeIcon();
+  const _MediumComposeIcon({this.onMenuPressed});
+
+  final VoidCallback? onMenuPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -478,7 +534,10 @@ class _MediumComposeIcon extends StatelessWidget {
       children: <Widget>[
         Container(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 18),
-          child: const Icon(Icons.menu),
+          child: IconButton(
+            onPressed: onMenuPressed,
+            icon: const Icon(Icons.menu),
+          ),
         ),
         const _SmallComposeIcon(),
       ],
@@ -487,7 +546,9 @@ class _MediumComposeIcon extends StatelessWidget {
 }
 
 class _LargeComposeIcon extends StatelessWidget {
-  const _LargeComposeIcon();
+  const _LargeComposeIcon({required this.onCollapsePressed});
+
+  final VoidCallback onCollapsePressed;
 
   @override
   Widget build(BuildContext context) {
@@ -498,14 +559,17 @@ class _LargeComposeIcon extends StatelessWidget {
         children: <Widget>[
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: const Row(
+            child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Text(
+                const Text(
                   "REPLY",
                   style: TextStyle(color: Colors.deepPurple, fontSize: 15),
                 ),
-                Icon(Icons.menu_open, size: 22),
+                IconButton(
+                  onPressed: onCollapsePressed,
+                  icon: const Icon(Icons.menu_open, size: 22),
+                ),
               ],
             ),
           ),
