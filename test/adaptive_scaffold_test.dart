@@ -947,7 +947,7 @@ void main() {
             child: AdaptiveScaffold(
               destinations: destinations,
               navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-                compactLabelBehavior: NavigationRailLabelType.none,
+                compactLabelType: NavigationRailLabelType.none,
               ),
             ),
           ),

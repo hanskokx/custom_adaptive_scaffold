@@ -52,7 +52,7 @@ NavigationDestinationLabelBehavior? _labelBehaviorFromType(
 /// its legacy behavior and defers to the existing Material themes.
 class AdaptiveScaffoldNavigationThemeData {
   const AdaptiveScaffoldNavigationThemeData({
-    this.compactLabelBehavior,
+    this.compactLabelType,
     this.expandedLabelBehavior,
     this.transitionAnimation = NavigationDestinationAnimation.none,
     this.transitionCurve = Curves.easeInOut,
@@ -74,7 +74,7 @@ class AdaptiveScaffoldNavigationThemeData {
   /// [NavigationDestinationLabelBehavior.alwaysShow].
   ///
   /// When null, rail and bar each use their theme defaults.
-  final NavigationRailLabelType? compactLabelBehavior;
+  final NavigationRailLabelType? compactLabelType;
 
   /// Optional label behavior for expanded navigation rail breakpoints.
   ///
@@ -783,7 +783,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.compactLabelBehavior ??
+                labelType: effectiveNavigationTheme.compactLabelType ??
                   navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
@@ -902,7 +902,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                     destinations: widget.destinations,
                     onDestinationSelected: widget.onSelectedIndexChange,
                     labelBehavior:
-                        effectiveNavigationTheme.compactLabelBehavior,
+                      effectiveNavigationTheme.compactLabelType,
                     transitionAnimation:
                         effectiveNavigationTheme.transitionAnimation,
                     destinationFillRegion:

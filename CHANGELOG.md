@@ -14,7 +14,7 @@
     defaults from the active widget/theme instead of assuming zero/`42`.
 * **[FEAT] AdaptiveScaffold adds consolidated adaptive navigation overrides**
   * New `navigationTheme` accepts `AdaptiveScaffoldNavigationThemeData` for
-    shared compact/small label behavior via `compactLabelBehavior`, expanded
+    shared compact/small label behavior via `compactLabelType`, expanded
     rail label behavior via `expandedLabelBehavior`, shared destination
     transition animation, compact rail transition curve/duration, and
     destination fill mode/shape.
