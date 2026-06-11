@@ -381,8 +381,10 @@ void main() {
     await tester.longPress(find.text(label));
     final Size scaledTooltipSize = tester.getSize(find.text(label).last);
     expect(scaledTooltipSize.width, greaterThan(defaultTooltipSize.width));
-    expect(scaledTooltipSize.height,
-        greaterThanOrEqualTo(defaultTooltipSize.height));
+    expect(
+      scaledTooltipSize.height,
+      greaterThanOrEqualTo(defaultTooltipSize.height),
+    );
   });
 
   testWidgets("Material3 - NavigationBar shows tooltips with text scaling", (
@@ -443,8 +445,10 @@ void main() {
 
     final Size scaledTooltipSize = tester.getSize(find.text(label).last);
     expect(scaledTooltipSize.width, greaterThan(defaultTooltipSize.width));
-    expect(scaledTooltipSize.height,
-        greaterThanOrEqualTo(defaultTooltipSize.height));
+    expect(
+      scaledTooltipSize.height,
+      greaterThanOrEqualTo(defaultTooltipSize.height),
+    );
   });
 
   testWidgets(

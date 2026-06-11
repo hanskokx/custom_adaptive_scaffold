@@ -7040,7 +7040,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
     TestSemantics(
       actions: <SemanticsAction>[
         SemanticsAction.tap,
-        SemanticsAction.longPress
+        SemanticsAction.longPress,
       ],
       children: <TestSemantics>[
         TestSemantics(
@@ -7051,7 +7051,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
           ],
           actions: <SemanticsAction>[
             SemanticsAction.tap,
-            SemanticsAction.focus
+            SemanticsAction.focus,
           ],
           label: "Abc\nTab 1 of 4",
           textDirection: TextDirection.ltr,
@@ -7061,7 +7061,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
     TestSemantics(
       actions: <SemanticsAction>[
         SemanticsAction.tap,
-        SemanticsAction.longPress
+        SemanticsAction.longPress,
       ],
       children: <TestSemantics>[
         TestSemantics(
@@ -7071,7 +7071,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
           ],
           actions: <SemanticsAction>[
             SemanticsAction.tap,
-            SemanticsAction.focus
+            SemanticsAction.focus,
           ],
           label: "Def\nTab 2 of 4",
           textDirection: TextDirection.ltr,
@@ -7081,7 +7081,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
     TestSemantics(
       actions: <SemanticsAction>[
         SemanticsAction.tap,
-        SemanticsAction.longPress
+        SemanticsAction.longPress,
       ],
       children: <TestSemantics>[
         TestSemantics(
@@ -7091,7 +7091,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
           ],
           actions: <SemanticsAction>[
             SemanticsAction.tap,
-            SemanticsAction.focus
+            SemanticsAction.focus,
           ],
           label: "Ghi\nTab 3 of 4",
           textDirection: TextDirection.ltr,
@@ -7101,7 +7101,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
     TestSemantics(
       actions: <SemanticsAction>[
         SemanticsAction.tap,
-        SemanticsAction.longPress
+        SemanticsAction.longPress,
       ],
       children: <TestSemantics>[
         TestSemantics(
@@ -7111,7 +7111,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
           ],
           actions: <SemanticsAction>[
             SemanticsAction.tap,
-            SemanticsAction.focus
+            SemanticsAction.focus,
           ],
           label: "Jkl\nTab 4 of 4",
           textDirection: TextDirection.ltr,
