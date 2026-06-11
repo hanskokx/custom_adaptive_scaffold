@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.light().copyWith(
-        navigationRailTheme: const NavigationRailThemeData(
+        navigationRailTheme: const CustomNavigationRailThemeData(
           selectedIconTheme: IconThemeData(
             color: Colors.red,
             size: 28,
@@ -31,6 +31,14 @@ class MyApp extends StatelessWidget {
             fontSize: 14,
             color: Colors.black,
           ),
+          margin: EdgeInsets.symmetric(vertical: 4),
+          padding: EdgeInsets.symmetric(horizontal: 6),
+        ),
+        navigationBarTheme: const CustomNavigationBarThemeData(
+          tooltipVerticalOffset: 56,
+          margin: EdgeInsets.symmetric(horizontal: 4),
+          padding: EdgeInsets.symmetric(vertical: 2),
+          labelPadding: EdgeInsets.only(top: 6),
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           type: BottomNavigationBarType.fixed,
@@ -106,31 +114,66 @@ class _MyHomePageState extends State<MyHomePage> {
           _selectedTab = index;
         });
       },
-      destinations: const <NavigationDestination>[
-        CustomNavigationDestination(
+      destinations: <CustomNavigationDestination>[
+        // Default: no animation, full-item indicator.
+        const CustomNavigationDestination(
           icon: Icon(Icons.inbox_outlined),
           selectedIcon: Icon(Icons.inbox),
           label: "Inbox",
         ),
-        CustomNavigationDestination(
+        // Built-in fade-swap transition between icons.
+        const CustomNavigationDestination(
           icon: Icon(Icons.article_outlined),
           selectedIcon: Icon(Icons.article),
           label: "Articles",
+          transitionAnimation: NavigationDestinationAnimation.fadeSwap,
+          transitionCurve: Curves.easeInOut,
         ),
-        CustomNavigationDestination(
+        // Label hidden; indicator scoped to icon only.
+        const CustomNavigationDestination(
           icon: Icon(Icons.chat_outlined),
           selectedIcon: Icon(Icons.chat),
           label: "Chat",
+          hideLabel: true,
+          iconIndicatorShape: CircleBorder(),
         ),
         CustomNavigationDestination(
-          icon: Icon(Icons.video_call_outlined),
-          selectedIcon: Icon(Icons.video_call),
+          icon: const Icon(Icons.video_call_outlined),
+          selectedIcon: const Icon(Icons.video_call),
           label: "Video",
+          transitionBuilder: (
+            BuildContext context,
+            Animation<double> animation,
+            bool isSelecting,
+            Widget unselectedIcon,
+            Widget selectedIcon,
+            Widget unselectedLabel,
+            Widget selectedLabel,
+          ) {
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                FadeTransition(
+                  opacity: animation,
+                  child: animation.isForwardOrCompleted
+                      ? selectedIcon
+                      : unselectedIcon,
+                ),
+                const SizedBox(height: 4),
+                FadeTransition(
+                  opacity: animation,
+                  child: animation.isForwardOrCompleted
+                      ? selectedLabel
+                      : unselectedLabel,
+                ),
+              ],
+            );
+          },
         ),
-        CustomNavigationDestination(
+        const CustomNavigationDestination(
           icon: Icon(Icons.home_outlined),
           selectedIcon: Icon(Icons.home),
-          label: "Inbox",
+          label: "Home",
         ),
       ],
       controller: _scaffoldController,

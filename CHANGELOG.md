@@ -1,3 +1,68 @@
+## 4.0.0
+
+* **[FEAT] Configurable rail destination fill modes** —
+  `CustomNavigationRail` now supports:
+  * `destinationFillMode` (`NavigationRailDestinationFillMode`, default
+    `iconOnly`) to select fill/highlight scope:
+    `iconOnly`, `content`, `textOnly`, `fullWidget`.
+  * `destinationFillShape` (`ShapeBorder?`) to customize fill/highlight shape.
+  * Fill color now resolves from theme indicator color
+    (`NavigationRailThemeData.indicatorColor`).
+* **[FEAT] AdaptiveScaffold rail helper support** —
+  `AdaptiveScaffold.standardNavigationRail` now forwards:
+  * `destinationFillMode`
+  * `destinationFillShape`
+* **[MIGRATION] Re-enable legacy full-fill appearance explicitly** —
+  If your app previously relied on full selected-destination fill, set
+  `destinationFillMode: NavigationRailDestinationFillMode.fullWidget` on
+  `CustomNavigationRail` (or via `AdaptiveScaffold.standardNavigationRail`)
+  during upgrade.
+* **[DOC] README updates** — documented the new opt-in API and clarified that
+  Flutter-parity selection behavior remains the default.
+
+* **[FEAT] Per-destination label visibility** — `CustomNavigationDestination`
+  now accepts `hideLabel: true` to suppress the label on individual destinations
+  independently of the bar-level `NavigationDestinationLabelBehavior`.
+* **[FEAT] Destination-level full-content transitions** —
+  `CustomNavigationDestination.transitionBuilder` can now animate icon and label
+  state together using themed `unselected/selected` icon and label widgets.
+* **[FEAT] Rail destination transitions** — `CustomNavigationRail` now supports:
+  * `iconTransitionAnimation`
+  * `iconTransitionCurve`
+  * `iconTransitionDuration`
+  * `destinationTransitionBuilder`
+  for configurable destination transition behavior on rail layouts.
+* **[FEAT] Animated icon transitions** — `CustomNavigationDestination` accepts:
+  * `transitionAnimation` (`NavigationDestinationAnimation`) — built-in presets:
+    `none` (default, existing snap behavior), `fadeSwap` (cross-fade), `scale`
+    (scale-in / scale-out).
+  * `transitionCurve` (`Curve`, default `Curves.easeInOut`) — curve applied to
+    the transition.
+  * `transitionDuration` (`Duration?`) — overrides the bar's animation duration.
+  * `iconBuilder` (`NavigationDestinationIconBuilder?`) — fully custom builder
+    receiving the `Animation<double>`, a `bool isSelecting` direction flag
+    (`true` while transitioning toward selected, `false` toward deselected),
+    and both themed icon widgets; takes priority over `transitionAnimation`
+    when set.
+  * New typedef `NavigationDestinationIconBuilder` and enum
+    `NavigationDestinationAnimation` exported from the package root.
+* **[FIX] Tooltip now truly optional** — `CustomNavigationDestination.tooltip`
+  being `null` no longer falls back to the label text. Pass a non-null string
+  to show a tooltip; omit it (or pass `null`) for no tooltip at all.
+* **[SYNC] Upstream framework parity updates**:
+  * Restores role-based semantics on the custom navigation bar (`tabBar` / `tab`).
+  * Aligns destination semantics behavior with upstream (enabled/button semantics,
+    web label semantics handling).
+  * Aligns `NavigationIndicator` rendering with upstream `Ink` usage.
+  * Aligns default label padding behavior with upstream defaults.
+* **[FEAT] Scoped selection indicator** — `CustomNavigationDestination` accepts:
+  * `iconIndicatorShape` (`ShapeBorder?`) — draws the selection indicator around
+    the icon widget only; suppresses the default full-item indicator.
+  * `labelIndicatorShape` (`ShapeBorder?`) — draws the selection indicator around
+    the label widget only; suppresses the default full-item indicator.
+  * Both fields can be set simultaneously for independent icon + label bubbles.
+  * When both are null the existing full-item indicator behavior is preserved.
+
 ## 3.0.2
 
 * [FIX] `AdaptiveScaffold.standardBottomNavigationBar` now normalizes plain

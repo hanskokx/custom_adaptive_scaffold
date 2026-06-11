@@ -157,6 +157,7 @@ class CustomNavigationBarThemeData
       padding: padding ?? this.padding,
       tooltipVerticalOffset:
           tooltipVerticalOffset ?? this.tooltipVerticalOffset,
+      labelPadding: labelPadding ?? this.labelPadding,
     );
   }
 
@@ -207,6 +208,11 @@ class CustomNavigationBarThemeData
       tooltipVerticalOffset:
           lerpDouble(a?.tooltipVerticalOffset, b?.tooltipVerticalOffset, t) ??
               42,
+      labelPadding: EdgeInsetsGeometry.lerp(
+        a?.labelPadding,
+        b?.labelPadding,
+        t,
+      ),
     );
   }
 
@@ -226,6 +232,7 @@ class CustomNavigationBarThemeData
         margin,
         padding,
         tooltipVerticalOffset,
+        labelPadding,
       );
 
   @override
@@ -250,7 +257,8 @@ class CustomNavigationBarThemeData
         other.overlayColor == overlayColor &&
         other.margin == margin &&
         other.padding == padding &&
-        other.tooltipVerticalOffset == tooltipVerticalOffset;
+        other.tooltipVerticalOffset == tooltipVerticalOffset &&
+        other.labelPadding == labelPadding;
   }
 
   @override
@@ -327,6 +335,13 @@ class CustomNavigationBarThemeData
         "tooltipVerticalOffset",
         tooltipVerticalOffset,
         defaultValue: 42,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<EdgeInsetsGeometry?>(
+        "labelPadding",
+        labelPadding,
+        defaultValue: null,
       ),
     );
   }
