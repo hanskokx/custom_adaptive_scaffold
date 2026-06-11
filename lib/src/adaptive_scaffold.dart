@@ -783,7 +783,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-                labelType: effectiveNavigationTheme.compactLabelType ??
+              labelType: effectiveNavigationTheme.compactLabelType ??
                   navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
@@ -901,8 +901,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                     currentIndex: widget.selectedIndex,
                     destinations: widget.destinations,
                     onDestinationSelected: widget.onSelectedIndexChange,
-                    labelBehavior:
-                      effectiveNavigationTheme.compactLabelType,
+                    labelBehavior: effectiveNavigationTheme.compactLabelType,
                     transitionAnimation:
                         effectiveNavigationTheme.transitionAnimation,
                     destinationFillRegion:
