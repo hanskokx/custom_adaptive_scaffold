@@ -603,60 +603,57 @@ class _RailDestinationState extends State<RailDestination>
       selected: widget.selected,
       child: Material(
         type: MaterialType.transparency,
-        child: SizedBox(
-          width: double.infinity,
-          child: Stack(
-            key: _destinationRegionKey,
-            children: <Widget>[
-              if (shouldPaintSelectedFill && selectedFillColor != null)
-                Positioned.fill(
-                  child: IgnorePointer(
-                    child: _DestinationSelectionFill(
-                      color: selectedFillColor,
-                      shape: effectiveFillShape,
-                      animation: _destinationAnimation,
-                      mode: destinationFillMode,
-                      useMaterial3: material3,
-                      isCollapsed: collapsed,
-                      indicatorOffset: indicatorOffset,
-                      applyXOffset: applyXOffset,
-                      textDirection: textDirection,
-                      hasVisibleText: hasVisibleText,
-                      destinationRegionKey: _destinationRegionKey,
-                      iconRegionKey: _iconRegionKey,
-                      labelRegionKey: _labelRegionKey,
-                      fillPadding: destinationPadding,
-                    ),
+        child: Stack(
+          key: _destinationRegionKey,
+          children: <Widget>[
+            if (shouldPaintSelectedFill && selectedFillColor != null)
+              Positioned.fill(
+                child: IgnorePointer(
+                  child: _DestinationSelectionFill(
+                    color: selectedFillColor,
+                    shape: effectiveFillShape,
+                    animation: _destinationAnimation,
+                    mode: destinationFillMode,
+                    useMaterial3: material3,
+                    isCollapsed: collapsed,
+                    indicatorOffset: indicatorOffset,
+                    applyXOffset: applyXOffset,
+                    textDirection: textDirection,
+                    hasVisibleText: hasVisibleText,
+                    destinationRegionKey: _destinationRegionKey,
+                    iconRegionKey: _iconRegionKey,
+                    labelRegionKey: _labelRegionKey,
+                    fillPadding: destinationPadding,
                   ),
                 ),
+              ),
 
-              /// This is the splash overlay when hovering over a
-              /// [CustomNavigationDestination] in a [NavigationRail].
-              _IndicatorInkWell(
-                onTap: widget.disabled ? null : widget.onTap,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(minWidth / 2.0),
-                ),
-                customBorder: effectiveInkShape,
-                splashColor: isNoneFillMode ? null : effectiveSplashColor,
-                hoverColor: isNoneFillMode ? null : effectiveHoverColor,
-                useMaterial3: material3,
-                isCollapsed: collapsed,
-                indicatorOffset: indicatorOffset,
-                applyXOffset: applyXOffset,
-                destinationFillMode: destinationFillMode,
-                textDirection: textDirection,
-                hasVisibleText: hasVisibleText,
-                iconRegionKey: _iconRegionKey,
-                labelRegionKey: _labelRegionKey,
-                fillPadding: destinationPadding,
-                child: content,
+            /// This is the splash overlay when hovering over a
+            /// [CustomNavigationDestination] in a [NavigationRail].
+            _IndicatorInkWell(
+              onTap: widget.disabled ? null : widget.onTap,
+              borderRadius: BorderRadius.all(
+                Radius.circular(minWidth / 2.0),
               ),
-              Semantics(
-                label: widget.indexLabel,
-              ),
-            ],
-          ),
+              customBorder: effectiveInkShape,
+              splashColor: isNoneFillMode ? null : effectiveSplashColor,
+              hoverColor: isNoneFillMode ? null : effectiveHoverColor,
+              useMaterial3: material3,
+              isCollapsed: collapsed,
+              indicatorOffset: indicatorOffset,
+              applyXOffset: applyXOffset,
+              destinationFillMode: destinationFillMode,
+              textDirection: textDirection,
+              hasVisibleText: hasVisibleText,
+              iconRegionKey: _iconRegionKey,
+              labelRegionKey: _labelRegionKey,
+              fillPadding: destinationPadding,
+              child: content,
+            ),
+            Semantics(
+              label: widget.indexLabel,
+            ),
+          ],
         ),
       ),
     );
