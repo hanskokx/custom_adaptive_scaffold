@@ -833,20 +833,33 @@ Rect _destinationHighlightRect({
       );
     case NavigationDestinationFillMode.label:
       if (!hasVisibleText) {
-        return expandAndClamp(
-          effectiveIconRect,
-          leftPadding: horizontalPadding,
-          rightPadding: horizontalPadding,
+        return Rect.zero;
+      }
+      if (textDirection == TextDirection.ltr) {
+        final double iconRight =
+            effectiveIconRect.right.clamp(fullRect.left, fullRect.right);
+        final double labelLeft = measuredLabelRect != null
+            ? measuredLabelRect.left.clamp(fullRect.left, fullRect.right)
+            : iconRight;
+        final double leftEdge = labelLeft < iconRight ? iconRight : labelLeft;
+        return Rect.fromLTRB(
+          leftEdge,
+          fullRect.top,
+          fullRect.right,
+          fullRect.bottom,
         );
       }
-      // Start just past the icon's right edge — doesn't cover the icon but
-      // leaves natural breathing room before the label text begins.
-      final double labelLeft =
-          effectiveIconRect.right.clamp(fullRect.left, fullRect.right);
+
+      final double iconLeft =
+          effectiveIconRect.left.clamp(fullRect.left, fullRect.right);
+      final double labelRight = measuredLabelRect != null
+          ? measuredLabelRect.right.clamp(fullRect.left, fullRect.right)
+          : iconLeft;
+      final double rightEdge = labelRight > iconLeft ? iconLeft : labelRight;
       return Rect.fromLTRB(
-        labelLeft,
+        fullRect.left,
         fullRect.top,
-        fullRect.right,
+        rightEdge,
         fullRect.bottom,
       );
     case NavigationDestinationFillMode.full:
