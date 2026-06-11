@@ -336,8 +336,8 @@ class _RailDestinationState extends State<RailDestination>
           : labelTextStyle,
       child: widget.label,
     );
-    final Widget measuredLabel = KeyedSubtree(
-      key: _labelRegionKey,
+    final Widget measuredLabel = DestinationRegionBoundary(
+      regionKey: _labelRegionKey,
       child: styledLabel,
     );
 
@@ -375,17 +375,19 @@ class _RailDestinationState extends State<RailDestination>
               width: minWidth,
               height: material3 ? null : minWidth,
               child: Center(
-                child: SizedBox(
-                  key: _iconRegionKey,
-                  width: iconSlotWidth,
-                  height: iconSlotHeight,
-                  child: _AddIndicator(
-                    addIndicator: shouldShowIconIndicator,
-                    indicatorColor: indicatorColor,
-                    indicatorShape: indicatorShape,
-                    isCircular: !material3,
-                    indicatorAnimation: _destinationAnimation,
-                    child: animatedThemedIcon,
+                child: DestinationRegionBoundary(
+                  regionKey: _iconRegionKey,
+                  child: SizedBox(
+                    width: iconSlotWidth,
+                    height: iconSlotHeight,
+                    child: _AddIndicator(
+                      addIndicator: shouldShowIconIndicator,
+                      indicatorColor: indicatorColor,
+                      indicatorShape: indicatorShape,
+                      isCircular: !material3,
+                      indicatorAnimation: _destinationAnimation,
+                      child: animatedThemedIcon,
+                    ),
                   ),
                 ),
               ),
@@ -518,11 +520,13 @@ class _RailDestinationState extends State<RailDestination>
                     indicatorShape: indicatorShape,
                     isCircular: false,
                     indicatorAnimation: _destinationAnimation,
-                    child: SizedBox(
-                      key: _iconRegionKey,
-                      width: iconSlotWidth,
-                      height: iconSlotHeight,
-                      child: Center(child: animatedThemedIcon),
+                    child: DestinationRegionBoundary(
+                      regionKey: _iconRegionKey,
+                      child: SizedBox(
+                        width: iconSlotWidth,
+                        height: iconSlotHeight,
+                        child: Center(child: animatedThemedIcon),
+                      ),
                     ),
                   ),
                   labelSpacing,
@@ -585,11 +589,13 @@ class _RailDestinationState extends State<RailDestination>
                   indicatorShape: indicatorShape,
                   isCircular: false,
                   indicatorAnimation: _destinationAnimation,
-                  child: SizedBox(
-                    key: _iconRegionKey,
-                    width: iconSlotWidth,
-                    height: iconSlotHeight,
-                    child: Center(child: animatedThemedIcon),
+                  child: DestinationRegionBoundary(
+                    regionKey: _iconRegionKey,
+                    child: SizedBox(
+                      width: iconSlotWidth,
+                      height: iconSlotHeight,
+                      child: Center(child: animatedThemedIcon),
+                    ),
                   ),
                 ),
                 labelSpacing,

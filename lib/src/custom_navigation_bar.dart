@@ -8,6 +8,7 @@ import "package:flutter/foundation.dart" show kIsWeb;
 import "package:flutter/material.dart";
 
 import "custom_navigation_bar_theme.dart";
+import "destination_region_boundary.dart";
 import "navigation_destination_types.dart";
 
 const double _kIndicatorHeight = 32;
@@ -1292,20 +1293,17 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
               children: <Widget>[
                 LayoutId(
                   id: _NavigationDestinationLayoutDelegate.iconId,
-                  child: RepaintBoundary(
-                    key: iconKey,
+                  child: DestinationRegionBoundary(
+                    regionKey: iconKey,
                     child: icon,
                   ),
                 ),
                 LayoutId(
                   id: _NavigationDestinationLayoutDelegate.labelId,
-                  child: RepaintBoundary(
-                    key: labelKey,
-                    child: FadeTransition(
-                      alwaysIncludeSemantics: true,
-                      opacity: animation,
-                      child: label,
-                    ),
+                  child: DestinationRegionBoundary(
+                    regionKey: labelKey,
+                    opacity: animation,
+                    child: label,
                   ),
                 ),
               ],
