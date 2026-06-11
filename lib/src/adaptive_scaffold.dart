@@ -32,10 +32,8 @@ typedef NavigationRailDestinationBuilder = NavigationRailDestination Function(
   NavigationDestination destination,
 );
 
-typedef NavigationLabelBehavior = NavigationRailLabelType;
-
 NavigationDestinationLabelBehavior? _labelBehaviorFromType(
-  NavigationLabelBehavior? labelBehavior,
+  NavigationRailLabelType? labelBehavior,
 ) {
   return switch (labelBehavior) {
     null => null,
@@ -76,7 +74,7 @@ class AdaptiveScaffoldNavigationThemeData {
   /// [NavigationDestinationLabelBehavior.alwaysShow].
   ///
   /// When null, rail and bar each use their theme defaults.
-  final NavigationLabelBehavior? compactLabelBehavior;
+  final NavigationRailLabelType? compactLabelBehavior;
 
   /// Optional label behavior for expanded navigation rail breakpoints.
   ///
@@ -84,7 +82,7 @@ class AdaptiveScaffoldNavigationThemeData {
   /// breakpoints.
   ///
   /// When null, defaults to [NavigationRailLabelType.all].
-  final NavigationLabelBehavior? expandedLabelBehavior;
+  final NavigationRailLabelType? expandedLabelBehavior;
 
   /// Icon transition preset used by small breakpoint navigation bar and
   /// compact (medium breakpoint) navigation rail destinations.
@@ -514,7 +512,7 @@ class AdaptiveScaffold extends StatefulWidget {
     int? currentIndex,
     double iconSize = 24,
     ValueChanged<int>? onDestinationSelected,
-    NavigationLabelBehavior? labelBehavior,
+    NavigationRailLabelType? labelBehavior,
     NavigationDestinationAnimation transitionAnimation =
         NavigationDestinationAnimation.none,
     NavigationDestinationRegion? destinationFillRegion,

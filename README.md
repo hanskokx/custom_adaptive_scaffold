@@ -373,8 +373,8 @@ Navigation behavior overrides are also configured through
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-    compactLabelBehavior: NavigationLabelBehavior.selected,
-    expandedLabelBehavior: NavigationLabelBehavior.all,
+    compactLabelBehavior: NavigationRailLabelType.selected,
+    expandedLabelBehavior: NavigationRailLabelType.all,
     transitionAnimation: NavigationDestinationAnimation.fadeSwap,
     transitionCurve: Curves.easeOutCubic,
     transitionDuration: Duration(milliseconds: 220),
@@ -390,7 +390,7 @@ Notes:
 - `compactLabelBehavior` configures compact rail labels directly, and maps to
   the corresponding small navigation bar label behavior.
 - `expandedLabelBehavior` applies only to expanded rails (medium-large and up).
-  Defaults to `NavigationLabelBehavior.all` and supports
+  Defaults to `NavigationRailLabelType.all` and supports
   `none`, `selected`, and `all`.
 
 Compatibility note:

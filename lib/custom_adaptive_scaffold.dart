@@ -4,6 +4,8 @@
 //
 // Forked, modified, and maintained by Hans Kokx beginning in 2024.
 
+export "package:flutter/material.dart" show NavigationRailLabelType;
+
 export "src/adaptive_layout.dart";
 export "src/adaptive_scaffold.dart";
 export "src/adaptive_scaffold_controller.dart";

@@ -20,8 +20,6 @@
     destination fill mode/shape.
   * `expandedLabelBehavior` is scoped to extended rail layouts and defaults to
     `all`, while supporting `none`, `selected`, and `all`.
-  * Added `NavigationLabelBehavior` typedef alias for compact/small label
-    behavior configuration.
 * **[FEAT] Navigation destination fill/highlight is now configurable across
   custom bars, rails, and AdaptiveScaffold helpers**
   * `CustomNavigationBar`, `CustomNavigationRail`,

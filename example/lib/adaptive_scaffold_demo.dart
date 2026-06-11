@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // An option to override the default transition duration.
       transitionDuration: Duration(milliseconds: _transitionDuration),
       navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-        compactLabelBehavior: NavigationLabelBehavior.selected,
+        compactLabelBehavior: NavigationRailLabelType.selected,
         transitionAnimation: NavigationDestinationAnimation.fadeSwap,
         transitionCurve: Curves.easeOutCubic,
         transitionDuration: Duration(milliseconds: 220),
