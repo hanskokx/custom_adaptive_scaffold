@@ -201,7 +201,9 @@ class _RailDestinationState extends State<RailDestination>
     final bool selected = widget.selected ?? false;
     final NavigationRailDestinationFillMode destinationFillMode =
         widget.destinationFillMode;
-    final bool shouldPaintSelectedFill = selected;
+    final bool isNoneFillMode =
+        destinationFillMode == NavigationRailDestinationFillMode.none;
+    final bool shouldPaintSelectedFill = selected && !isNoneFillMode;
     final Color? selectedFillColor = indicatorColor;
 
     final IconThemeData unselectedIconTheme =
@@ -566,6 +568,8 @@ class _RailDestinationState extends State<RailDestination>
     final ShapeBorder effectiveInkShape = effectiveFillShape;
     final bool hasVisibleText =
         labelType != NavigationRailLabelType.none || !collapsed;
+    final bool isNoneMode =
+        destinationFillMode == NavigationRailDestinationFillMode.none;
 
     final ColorScheme colors = Theme.of(context).colorScheme;
     final bool primaryColorAlphaModified =
@@ -612,7 +616,7 @@ class _RailDestinationState extends State<RailDestination>
               borderRadius: BorderRadius.all(
                 Radius.circular(minWidth / 2.0),
               ),
-              customBorder: effectiveInkShape,
+              customBorder: isNoneMode ? null : effectiveInkShape,
               splashColor: effectiveSplashColor,
               hoverColor: effectiveHoverColor,
               useMaterial3: material3,
@@ -715,7 +719,7 @@ Rect _destinationHighlightRect({
   GlobalKey? labelRegionKey,
 }) {
   final Rect fullRect = Offset.zero & size;
-  if (mode == NavigationRailDestinationFillMode.fullWidget) {
+  if (mode == NavigationRailDestinationFillMode.full) {
     return fullRect;
   }
 
@@ -743,7 +747,7 @@ Rect _destinationHighlightRect({
       fillPadding.left > 0 || fillPadding.right > 0;
   final bool useFallbackHorizontalPadding = !hasExplicitHorizontalFillPadding &&
       (mode == NavigationRailDestinationFillMode.content ||
-          mode == NavigationRailDestinationFillMode.textOnly);
+          mode == NavigationRailDestinationFillMode.label);
   final double horizontalPadding = useFallbackHorizontalPadding
       ? _horizontalDestinationPadding
       : fillPadding.left;
@@ -787,6 +791,8 @@ Rect _destinationHighlightRect({
   }
 
   switch (mode) {
+    case NavigationRailDestinationFillMode.none:
+      return Rect.zero;
     case NavigationRailDestinationFillMode.iconOnly:
       return expandAndClamp(
         effectiveIconRect,
@@ -821,7 +827,7 @@ Rect _destinationHighlightRect({
         rightEdge,
         (combined.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
       );
-    case NavigationRailDestinationFillMode.textOnly:
+    case NavigationRailDestinationFillMode.label:
       if (!hasVisibleText) {
         return expandAndClamp(
           effectiveIconRect,
@@ -829,34 +835,17 @@ Rect _destinationHighlightRect({
           rightPadding: horizontalPadding,
         );
       }
-      // Pad symmetrically outward from the label's own edges, then shift into
-      // bounds if needed — never mirror from the left, which cramps wide labels.
-      final Rect labelBase = measuredLabelRect ??
-          Rect.fromLTWH(
-            effectiveIconRect.left,
-            0.0,
-            effectiveIconRect.width,
-            size.height,
-          );
-      double textLeft = labelBase.left - horizontalPadding;
-      double textRight = labelBase.right + horizontalPadding;
-      if (textLeft < fullRect.left) {
-        textRight += fullRect.left - textLeft;
-        textLeft = fullRect.left;
-      }
-      if (textRight > fullRect.right) {
-        textLeft -= textRight - fullRect.right;
-        textRight = fullRect.right;
-      }
-      textLeft = textLeft.clamp(fullRect.left, fullRect.right);
-      textRight = textRight.clamp(textLeft, fullRect.right);
+      // Start just past the icon's right edge — doesn't cover the icon but
+      // leaves natural breathing room before the label text begins.
+      final double labelLeft =
+          effectiveIconRect.right.clamp(fullRect.left, fullRect.right);
       return Rect.fromLTRB(
-        textLeft,
+        labelLeft,
         fullRect.top,
-        textRight,
+        fullRect.right,
         fullRect.bottom,
       );
-    case NavigationRailDestinationFillMode.fullWidget:
+    case NavigationRailDestinationFillMode.full:
       return fullRect;
   }
 }

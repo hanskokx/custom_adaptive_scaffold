@@ -139,7 +139,7 @@ void main() {
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
-            destinationFillMode: NavigationRailDestinationFillMode.fullWidget,
+            destinationFillMode: NavigationRailDestinationFillMode.full,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),
@@ -230,7 +230,7 @@ void main() {
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
-            destinationFillMode: NavigationRailDestinationFillMode.fullWidget,
+            destinationFillMode: NavigationRailDestinationFillMode.full,
             destinationFillShape: fillShape,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
