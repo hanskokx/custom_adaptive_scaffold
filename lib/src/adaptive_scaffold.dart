@@ -491,6 +491,9 @@ class AdaptiveScaffold extends StatefulWidget {
     NavigationDestinationLabelBehavior? labelBehavior,
     NavigationDestinationAnimation transitionAnimation =
         NavigationDestinationAnimation.none,
+    NavigationDestinationFillMode destinationFillMode =
+        NavigationDestinationFillMode.icon,
+    ShapeBorder? destinationFillShape,
   }) {
     return Builder(
       builder: (BuildContext context) {
@@ -530,6 +533,8 @@ class AdaptiveScaffold extends StatefulWidget {
               destinations: bottomBarDestinations,
               onDestinationSelected: onDestinationSelected,
               labelBehavior: labelBehavior,
+              destinationFillMode: destinationFillMode,
+              destinationFillShape: destinationFillShape,
             ),
           ),
         );
@@ -860,6 +865,10 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                         .smallNavigationBarLabelBehavior,
                     transitionAnimation: effectiveNavigationTheme
                         .smallNavigationBarDestinationTransitionAnimation,
+                    destinationFillMode:
+                        effectiveNavigationTheme.destinationFillMode,
+                    destinationFillShape:
+                        effectiveNavigationTheme.destinationFillShape,
                   ),
                 ),
               },
