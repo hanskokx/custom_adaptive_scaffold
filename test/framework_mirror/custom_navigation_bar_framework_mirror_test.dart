@@ -569,11 +569,11 @@ void main() {
 
       expect(find.text("B"), findsOneWidget);
       await tester.longPress(find.text("B"));
-      expect(find.byTooltip("B"), findsOneWidget);
+      expect(find.byTooltip("B"), findsNothing);
 
       expect(find.text("C"), findsOneWidget);
       await tester.longPress(find.text("C"));
-      expect(find.byTooltip("C"), findsOneWidget);
+      expect(find.byTooltip("C"), findsNothing);
     },
     tags: <String>["divergence"],
   );
@@ -607,7 +607,6 @@ void main() {
         hasEnabledState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -621,7 +620,6 @@ void main() {
         hasEnabledState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -635,7 +633,6 @@ void main() {
         hasEnabledState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -652,7 +649,6 @@ void main() {
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -667,7 +663,6 @@ void main() {
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -681,7 +676,6 @@ void main() {
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -718,8 +712,6 @@ void main() {
         hasSelectedState: true,
         hasEnabledState: true,
         isButton: true,
-        hasTapAction: true,
-        hasLongPressAction: true,
       ),
     );
   });
@@ -754,7 +746,6 @@ void main() {
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -768,7 +759,6 @@ void main() {
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -785,7 +775,6 @@ void main() {
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),
@@ -800,7 +789,6 @@ void main() {
         isSelected: true,
         isButton: true,
         hasTapAction: true,
-        hasLongPressAction: true,
         hasFocusAction: true,
         isFocusable: true,
       ),

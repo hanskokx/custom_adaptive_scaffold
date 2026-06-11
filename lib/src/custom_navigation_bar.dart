@@ -845,7 +845,6 @@ class _NavigationDestinationBuilderState
       enabled: widget.enabled,
       child: _NavigationBarDestinationTooltip(
         message: widget.tooltip?.isNotEmpty == true ? widget.tooltip : null,
-        fallbackMessage: widget.label,
         child: ClipRect(
           child: Stack(
             key: _destinationRegionKey,
@@ -1743,27 +1742,21 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
   ///
   /// When [message] is null no [Tooltip] is rendered and [child] is returned
   /// directly, so passing `tooltip: null` on a
-  /// [CustomNavigationDestination] truly suppresses the tooltip instead of
-  /// falling back to the label text.
+  /// [CustomNavigationDestination] truly suppresses the tooltip.
   const _NavigationBarDestinationTooltip({
     required this.message,
-    required this.fallbackMessage,
     required this.child,
   });
 
   /// The explicit text rendered in the tooltip.
   final String? message;
 
-  /// The fallback text used when [message] is null.
-  final String fallbackMessage;
-
   /// The widget that, when long-pressed, will show the tooltip.
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final String resolvedMessage = message ?? fallbackMessage;
-    if (resolvedMessage.isEmpty) return child;
+    if (message == null || message!.isEmpty) return child;
 
     final ThemeData theme = Theme.of(context);
     final NavigationBarThemeData navigationBarTheme = theme.navigationBarTheme;
@@ -1775,7 +1768,7 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
     }
 
     return _NavigationBarTooltipGestureTarget(
-      message: resolvedMessage,
+      message: message!,
       verticalOffset: tooltipVerticalOffset,
       child: child,
     );

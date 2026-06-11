@@ -207,8 +207,6 @@ void main() {
   testWidgets("bar tooltips appear on long-press and secondary click", (
     WidgetTester tester,
   ) async {
-    const barFallbackTooltip = "bar_settings_tooltip";
-
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -224,7 +222,7 @@ void main() {
               CustomNavigationDestination(
                 icon: Icon(Icons.settings_outlined),
                 selectedIcon: Icon(Icons.settings),
-                label: barFallbackTooltip,
+                label: "Settings",
               ),
             ],
           ),
@@ -241,16 +239,13 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    final TooltipVisibility barTooltipVisibility =
-        tester.widget<TooltipVisibility>(
-      find
-          .ancestor(
-            of: find.byIcon(Icons.settings_outlined),
-            matching: find.byType(TooltipVisibility),
-          )
-          .first,
+    expect(
+      find.ancestor(
+        of: find.byIcon(Icons.settings_outlined),
+        matching: find.byType(TooltipVisibility),
+      ),
+      findsNothing,
     );
-    expect(barTooltipVisibility.visible, isFalse);
 
     await tester.longPress(find.byIcon(Icons.home));
     await tester.pumpAndSettle();
@@ -268,13 +263,7 @@ void main() {
     await mouse.up();
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip(barFallbackTooltip), findsOneWidget);
-
-    final Tooltip barTooltip = tester
-        .widgetList<Tooltip>(find.byType(Tooltip))
-        .where((Tooltip tooltip) => tooltip.message == barFallbackTooltip)
-        .first;
-    expect(barTooltip.triggerMode, TooltipTriggerMode.manual);
+    expect(find.byTooltip("Settings"), findsNothing);
   });
 
   testWidgets(
