@@ -439,8 +439,8 @@ class CustomNavigationDestination extends NavigationDestination {
     late final EdgeInsetsGeometry padding;
 
     if (navigationBarTheme is CustomNavigationBarThemeData) {
-      margin = navigationBarTheme.margin;
-      padding = navigationBarTheme.padding;
+      margin = navigationBarTheme.margin ?? EdgeInsets.zero;
+      padding = navigationBarTheme.padding ?? EdgeInsets.zero;
     } else {
       margin = EdgeInsets.zero;
       padding = EdgeInsets.zero;
@@ -1694,7 +1694,7 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
     double tooltipVerticalOffset = 42;
 
     if (navigationBarTheme is CustomNavigationBarThemeData) {
-      tooltipVerticalOffset = navigationBarTheme.tooltipVerticalOffset;
+      tooltipVerticalOffset = navigationBarTheme.tooltipVerticalOffset ?? 42;
     }
 
     return Tooltip(

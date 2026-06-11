@@ -51,9 +51,9 @@ class CustomNavigationBarThemeData
     this.iconTheme,
     this.labelBehavior,
     this.overlayColor,
-    this.margin = EdgeInsets.zero,
-    this.padding = EdgeInsets.zero,
-    this.tooltipVerticalOffset = 42,
+    this.margin,
+    this.padding,
+    this.tooltipVerticalOffset,
     this.labelPadding,
   });
 
@@ -108,14 +108,14 @@ class CustomNavigationBarThemeData
   @override
   final WidgetStateProperty<Color?>? overlayColor;
 
-  /// Applies a margin around navigation items. Defaults to [EdgeInsets.zero].
-  final EdgeInsetsGeometry margin;
+  /// Applies a margin around navigation items.
+  final EdgeInsetsGeometry? margin;
 
-  /// Applies padding around navigation item content. Defaults to [EdgeInsets.zero].
-  final EdgeInsetsGeometry padding;
+  /// Applies padding around navigation item content.
+  final EdgeInsetsGeometry? padding;
 
-  /// Defines the vertical offset of tooltip popovers. Defaults to 42.
-  final double tooltipVerticalOffset;
+  /// Defines the vertical offset of tooltip popovers.
+  final double? tooltipVerticalOffset;
 
   /// Applies padding around navigation item labels. Defaults to [EdgeInsets.zero].
   @override
@@ -201,13 +201,13 @@ class CustomNavigationBarThemeData
         t,
         Color.lerp,
       ),
-      margin:
-          EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t) ?? EdgeInsets.zero,
-      padding:
-          EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t) ?? EdgeInsets.zero,
-      tooltipVerticalOffset:
-          lerpDouble(a?.tooltipVerticalOffset, b?.tooltipVerticalOffset, t) ??
-              42,
+        margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+        padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+        tooltipVerticalOffset: lerpDouble(
+        a?.tooltipVerticalOffset,
+        b?.tooltipVerticalOffset,
+        t,
+        ),
       labelPadding: EdgeInsetsGeometry.lerp(
         a?.labelPadding,
         b?.labelPadding,
@@ -320,21 +320,21 @@ class CustomNavigationBarThemeData
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "margin",
         margin,
-        defaultValue: EdgeInsets.zero,
+        defaultValue: null,
       ),
     );
     properties.add(
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "padding",
         padding,
-        defaultValue: EdgeInsets.zero,
+        defaultValue: null,
       ),
     );
     properties.add(
       DiagnosticsProperty<double?>(
         "tooltipVerticalOffset",
         tooltipVerticalOffset,
-        defaultValue: 42,
+        defaultValue: null,
       ),
     );
     properties.add(

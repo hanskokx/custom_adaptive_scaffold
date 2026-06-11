@@ -26,6 +26,14 @@ void main() {
     );
   });
 
+  test("package-only NavigationBar theme fields stay opt-in by default", () {
+    const data = CustomNavigationBarThemeData();
+
+    expect(data.margin, isNull);
+    expect(data.padding, isNull);
+    expect(data.tooltipVerticalOffset, isNull);
+  });
+
   test("CustomNavigationBarThemeData lerp special cases", () {
     expect(CustomNavigationBarThemeData.lerp(null, null, 0), null);
     const data = CustomNavigationBarThemeData();
@@ -65,6 +73,9 @@ void main() {
       ),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
       overlayColor: WidgetStatePropertyAll<Color>(Color(0x00000095)),
+      margin: EdgeInsets.all(4),
+      padding: EdgeInsets.symmetric(horizontal: 6),
+      tooltipVerticalOffset: 64,
       labelPadding: EdgeInsets.all(8),
     ).debugFillProperties(builder);
 
@@ -87,6 +98,9 @@ void main() {
         "iconTheme: WidgetStatePropertyAll(IconThemeData#fd5c3(color: Color(alpha: 0.0000, red: 0.0000, green: 0.0000, blue: 0.5922, colorSpace: ColorSpace.sRGB)))",
         "labelBehavior: NavigationDestinationLabelBehavior.alwaysHide",
         "overlayColor: WidgetStatePropertyAll(Color(alpha: 0.0000, red: 0.0000, green: 0.0000, blue: 0.5843, colorSpace: ColorSpace.sRGB))",
+        "margin: EdgeInsets.all(4.0)",
+        "padding: EdgeInsets(6.0, 0.0, 6.0, 0.0)",
+        "tooltipVerticalOffset: 64.0",
         "labelPadding: EdgeInsets.all(8.0)",
       ]),
     );

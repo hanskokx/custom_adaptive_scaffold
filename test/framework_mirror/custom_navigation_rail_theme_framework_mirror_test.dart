@@ -20,6 +20,13 @@ void main() {
     );
   });
 
+  test("package-only NavigationRail theme fields stay opt-in by default", () {
+    const data = CustomNavigationRailThemeData();
+
+    expect(data.margin, isNull);
+    expect(data.padding, isNull);
+  });
+
   testWidgets(
     "Material3 - Default values are used when no NavigationRail or CustomNavigationRailThemeData properties are specified",
     (WidgetTester tester) async {
@@ -309,6 +316,8 @@ void main() {
       useIndicator: true,
       indicatorColor: Color(0x00000096),
       indicatorShape: CircleBorder(),
+      margin: EdgeInsets.all(4),
+      padding: EdgeInsets.symmetric(horizontal: 6),
     ).debugFillProperties(builder);
 
     final List<String> description = builder.properties
@@ -350,6 +359,8 @@ void main() {
       description[10],
       "indicatorShape: CircleBorder(BorderSide(width: 0.0, style: none))",
     );
+    expect(description[11], "margin: EdgeInsets.all(4.0)");
+    expect(description[12], "padding: EdgeInsets(6.0, 0.0, 6.0, 0.0)");
   });
 }
 

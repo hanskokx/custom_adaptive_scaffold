@@ -174,10 +174,12 @@ class _RailDestinationState extends State<RailDestination>
     late final EdgeInsets destinationMargin;
 
     if (navigationRailTheme is CustomNavigationRailThemeData) {
-      destinationPadding = (widget.padding ?? navigationRailTheme.padding)
+      destinationPadding =
+        (widget.padding ?? navigationRailTheme.padding ?? EdgeInsets.zero)
           .resolve(textDirection);
       destinationMargin =
-          (widget.margin ?? navigationRailTheme.margin).resolve(textDirection);
+        (widget.margin ?? navigationRailTheme.margin ?? EdgeInsets.zero)
+          .resolve(textDirection);
     } else {
       destinationPadding =
           (widget.padding ?? EdgeInsets.zero).resolve(textDirection);
