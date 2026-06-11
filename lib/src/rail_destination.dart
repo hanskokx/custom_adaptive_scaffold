@@ -563,8 +563,12 @@ class _RailDestinationState extends State<RailDestination>
         );
     }
 
+    final ShapeBorder defaultFillShape =
+        destinationFillMode == NavigationDestinationFillMode.full
+            ? const RoundedRectangleBorder()
+            : const StadiumBorder();
     final ShapeBorder effectiveFillShape =
-        widget.destinationFillShape ?? indicatorShape ?? const StadiumBorder();
+        widget.destinationFillShape ?? indicatorShape ?? defaultFillShape;
     final ShapeBorder effectiveInkShape = effectiveFillShape;
     final bool hasVisibleText =
         labelType != NavigationRailLabelType.none || !collapsed;
