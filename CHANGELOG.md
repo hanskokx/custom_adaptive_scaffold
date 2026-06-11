@@ -1,3 +1,34 @@
+## 4.0.1
+
+* **[FEAT] Adaptive rail examples now support explicit expand/collapse flows**
+  * Updated the primary example to demonstrate interactive expanded and
+    collapsed navigation rail states.
+  * Added menu affordances in the example to collapse and re-expand the rail.
+  * Added smoother visual transition behavior between compact and extended
+    rail states in the example experience.
+* **[FEAT] AdaptiveScaffold standard rail helper now animates rail width changes**
+  * `AdaptiveScaffold.standardNavigationRail` now transitions between compact
+    and extended widths with an animated width tween.
+  * Improves visual continuity for apps that toggle `extended` at runtime.
+* **[FEAT] Tooltip behavior for custom navigation destinations was expanded**
+  * Enhanced tooltip support across custom navigation rail and navigation bar
+    destinations.
+  * Added manual tooltip visibility handling for navigation components to
+    improve behavior consistency across interaction modes.
+  * Tooltip behavior remains opt-in/explicit through destination tooltip
+    values.
+* **[FIX] Rail destination transition overflow edge cases were addressed**
+  * Refined extended/collapsed transition behavior in destination layout to
+    avoid transient horizontal overflow during width-animation boundary frames.
+  * Improved compact/extended handoff behavior so destination composition is
+    more stable while animating.
+* **[TEST] Framework-mirror and custom-feature coverage updates**
+  * Added/updated tests for tooltip behavior and manual visibility handling.
+  * Corrected formatting and expectations around long-press/focus semantics
+    action assertions in framework-mirror tests.
+
+* No breaking API changes in this release.
+
 ## 4.0.0
 
 * **[CHANGE] Compact rail fill/highlight now defaults to Flutter-style
