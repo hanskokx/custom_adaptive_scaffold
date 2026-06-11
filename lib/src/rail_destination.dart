@@ -572,6 +572,9 @@ class _RailDestinationState extends State<RailDestination>
     final ShapeBorder effectiveInkShape = effectiveFillShape;
     final bool hasVisibleText =
         labelType != NavigationRailLabelType.none || !collapsed;
+    final bool showLabelHighlight = labelType != NavigationRailLabelType.none;
+    final bool suppressHoverHighlight =
+        labelType == NavigationRailLabelType.selected && !selected;
     final bool isNoneMode =
         destinationFillMode == NavigationDestinationFillMode.none;
 
@@ -581,9 +584,11 @@ class _RailDestinationState extends State<RailDestination>
     final Color effectiveSplashColor = primaryColorAlphaModified
         ? colors.primary
         : colors.primary.withValues(alpha: 0.12);
-    final Color effectiveHoverColor = primaryColorAlphaModified
+    final Color effectiveBaseHoverColor = primaryColorAlphaModified
         ? colors.primary
         : colors.primary.withValues(alpha: 0.04);
+    final Color effectiveHoverColor =
+        suppressHoverHighlight ? Colors.transparent : effectiveBaseHoverColor;
 
     return Semantics(
       container: true,
@@ -605,6 +610,7 @@ class _RailDestinationState extends State<RailDestination>
                     applyXOffset: applyXOffset,
                     textDirection: textDirection,
                     hasVisibleText: hasVisibleText,
+                    showLabelHighlight: showLabelHighlight,
                     destinationRegionKey: _destinationRegionKey,
                     iconRegionKey: _iconRegionKey,
                     labelRegionKey: _labelRegionKey,
@@ -629,6 +635,7 @@ class _RailDestinationState extends State<RailDestination>
               destinationFillMode: destinationFillMode,
               textDirection: textDirection,
               hasVisibleText: hasVisibleText,
+              showLabelHighlight: showLabelHighlight,
               iconRegionKey: _iconRegionKey,
               labelRegionKey: _labelRegionKey,
               fillPadding: destinationPadding,
@@ -652,6 +659,7 @@ class _IndicatorInkWell extends InkResponse {
     required this.destinationFillMode,
     required this.textDirection,
     required this.hasVisibleText,
+    required this.showLabelHighlight,
     required this.iconRegionKey,
     required this.labelRegionKey,
     required this.fillPadding,
@@ -686,6 +694,9 @@ class _IndicatorInkWell extends InkResponse {
   // Whether text is currently visible in the destination.
   final bool hasVisibleText;
 
+  // Whether label highlight behavior is enabled for the current label type.
+  final bool showLabelHighlight;
+
   // Keys used to resolve actual icon/label bounds.
   final GlobalKey iconRegionKey;
   final GlobalKey labelRegionKey;
@@ -701,6 +712,7 @@ class _IndicatorInkWell extends InkResponse {
           textDirection: textDirection,
           mode: destinationFillMode,
           hasVisibleText: hasVisibleText,
+          showLabelHighlight: showLabelHighlight,
           referenceBox: referenceBox,
           iconRegionKey: iconRegionKey,
           labelRegionKey: labelRegionKey,
@@ -717,6 +729,7 @@ Rect _destinationHighlightRect({
   required TextDirection textDirection,
   required NavigationDestinationFillMode mode,
   required bool hasVisibleText,
+  required bool showLabelHighlight,
   required EdgeInsets fillPadding,
   RenderBox? referenceBox,
   GlobalKey? iconRegionKey,
@@ -832,35 +845,32 @@ Rect _destinationHighlightRect({
         (combined.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
       );
     case NavigationDestinationFillMode.label:
-      if (!hasVisibleText) {
+      if (!showLabelHighlight) {
         return Rect.zero;
       }
+      if (measuredLabelRect == null) {
+        return Rect.zero;
+      }
+      final Rect labelBand = measuredLabelRect;
       if (textDirection == TextDirection.ltr) {
-        final double iconRight =
-            effectiveIconRect.right.clamp(fullRect.left, fullRect.right);
-        final double labelLeft = measuredLabelRect != null
-            ? measuredLabelRect.left.clamp(fullRect.left, fullRect.right)
-            : iconRight;
-        final double leftEdge = labelLeft < iconRight ? iconRight : labelLeft;
         return Rect.fromLTRB(
-          leftEdge,
-          fullRect.top,
+          fullRect.left,
+          (labelBand.top - topPadding).clamp(0.0, fullRect.bottom),
           fullRect.right,
-          fullRect.bottom,
+          (labelBand.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
         );
       }
 
-      final double iconLeft =
-          effectiveIconRect.left.clamp(fullRect.left, fullRect.right);
-      final double labelRight = measuredLabelRect != null
-          ? measuredLabelRect.right.clamp(fullRect.left, fullRect.right)
-          : iconLeft;
-      final double rightEdge = labelRight > iconLeft ? iconLeft : labelRight;
+      final double rightEdge =
+          (measuredLabelRect.right + horizontalPadding).clamp(
+        fullRect.left,
+        fullRect.right,
+      );
       return Rect.fromLTRB(
         fullRect.left,
-        fullRect.top,
+        (labelBand.top - topPadding).clamp(0.0, fullRect.bottom),
         rightEdge,
-        fullRect.bottom,
+        (labelBand.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
       );
     case NavigationDestinationFillMode.full:
       return fullRect;
@@ -877,6 +887,7 @@ class _DestinationSelectionFill extends StatelessWidget {
     required this.applyXOffset,
     required this.textDirection,
     required this.hasVisibleText,
+    required this.showLabelHighlight,
     required this.destinationRegionKey,
     required this.iconRegionKey,
     required this.labelRegionKey,
@@ -891,6 +902,7 @@ class _DestinationSelectionFill extends StatelessWidget {
   final bool applyXOffset;
   final TextDirection textDirection;
   final bool hasVisibleText;
+  final bool showLabelHighlight;
   final GlobalKey destinationRegionKey;
   final GlobalKey iconRegionKey;
   final GlobalKey labelRegionKey;
@@ -908,6 +920,7 @@ class _DestinationSelectionFill extends StatelessWidget {
         applyXOffset: applyXOffset,
         textDirection: textDirection,
         hasVisibleText: hasVisibleText,
+        showLabelHighlight: showLabelHighlight,
         destinationRegionKey: destinationRegionKey,
         iconRegionKey: iconRegionKey,
         labelRegionKey: labelRegionKey,
@@ -928,6 +941,7 @@ class _DestinationSelectionFillPainter extends CustomPainter {
     required this.applyXOffset,
     required this.textDirection,
     required this.hasVisibleText,
+    required this.showLabelHighlight,
     required this.destinationRegionKey,
     required this.iconRegionKey,
     required this.labelRegionKey,
@@ -942,6 +956,7 @@ class _DestinationSelectionFillPainter extends CustomPainter {
   final bool applyXOffset;
   final TextDirection textDirection;
   final bool hasVisibleText;
+  final bool showLabelHighlight;
   final GlobalKey destinationRegionKey;
   final GlobalKey iconRegionKey;
   final GlobalKey labelRegionKey;
@@ -959,6 +974,7 @@ class _DestinationSelectionFillPainter extends CustomPainter {
       textDirection: textDirection,
       mode: mode,
       hasVisibleText: hasVisibleText,
+      showLabelHighlight: showLabelHighlight,
       fillPadding: fillPadding,
       referenceBox: destinationBox,
       iconRegionKey: iconRegionKey,
@@ -978,6 +994,7 @@ class _DestinationSelectionFillPainter extends CustomPainter {
         applyXOffset != oldDelegate.applyXOffset ||
         textDirection != oldDelegate.textDirection ||
         hasVisibleText != oldDelegate.hasVisibleText ||
+        showLabelHighlight != oldDelegate.showLabelHighlight ||
         destinationRegionKey != oldDelegate.destinationRegionKey ||
         iconRegionKey != oldDelegate.iconRegionKey ||
         labelRegionKey != oldDelegate.labelRegionKey ||
