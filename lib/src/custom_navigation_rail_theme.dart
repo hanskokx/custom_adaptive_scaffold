@@ -209,8 +209,8 @@ class CustomNavigationRailThemeData
       indicatorShape: ShapeBorder.lerp(a?.indicatorShape, b?.indicatorShape, t),
       minWidth: lerpDouble(a?.minWidth, b?.minWidth, t),
       minExtendedWidth: lerpDouble(a?.minExtendedWidth, b?.minExtendedWidth, t),
-        margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
-        padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
     );
   }
 

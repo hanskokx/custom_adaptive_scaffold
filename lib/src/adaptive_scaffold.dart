@@ -46,7 +46,7 @@ class AdaptiveScaffoldNavigationThemeData {
     this.transitionAnimation = NavigationDestinationAnimation.none,
     this.transitionCurve = Curves.easeInOut,
     this.transitionDuration,
-    this.destinationFillMode = NavigationDestinationFillMode.icon,
+    this.destinationFillMode,
     this.destinationFillShape,
   });
 
@@ -74,8 +74,9 @@ class AdaptiveScaffoldNavigationThemeData {
 
   /// Controls where rail destination fill/highlight is painted.
   ///
-  /// Defaults to [NavigationDestinationFillMode.icon].
-  final NavigationDestinationFillMode destinationFillMode;
+  /// When null, uses Flutter's default indicator path.
+  /// Passing [NavigationDestinationFillMode.icon] behaves the same as null.
+  final NavigationDestinationFillMode? destinationFillMode;
 
   /// Optional shape for destination fill/highlight.
   ///
@@ -422,8 +423,7 @@ class AdaptiveScaffold extends StatefulWidget {
         NavigationDestinationAnimation.none,
     Curve iconTransitionCurve = Curves.easeInOut,
     Duration? iconTransitionDuration,
-    NavigationDestinationFillMode destinationFillMode =
-        NavigationDestinationFillMode.icon,
+    NavigationDestinationFillMode? destinationFillMode,
     ShapeBorder? destinationFillShape,
   }) {
     if (extended && width == 72) {
@@ -484,8 +484,7 @@ class AdaptiveScaffold extends StatefulWidget {
     NavigationLabelBehavior? labelBehavior,
     NavigationDestinationAnimation transitionAnimation =
         NavigationDestinationAnimation.none,
-    NavigationDestinationFillMode destinationFillMode =
-        NavigationDestinationFillMode.icon,
+    NavigationDestinationFillMode? destinationFillMode,
     ShapeBorder? destinationFillShape,
   }) {
     return Builder(

@@ -201,13 +201,13 @@ class CustomNavigationBarThemeData
         t,
         Color.lerp,
       ),
-        margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
-        padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
-        tooltipVerticalOffset: lerpDouble(
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+      tooltipVerticalOffset: lerpDouble(
         a?.tooltipVerticalOffset,
         b?.tooltipVerticalOffset,
         t,
-        ),
+      ),
       labelPadding: EdgeInsetsGeometry.lerp(
         a?.labelPadding,
         b?.labelPadding,

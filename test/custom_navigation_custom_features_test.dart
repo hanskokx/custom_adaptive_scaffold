@@ -158,7 +158,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget is InkResponse,
+      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -256,5 +256,166 @@ void main() {
 
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
     expect(firstInk.customBorder, same(fillShape));
+  });
+
+  testWidgets("bar label fill mode uses label-only fixed-height pill", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          bottomNavigationBar: CustomNavigationBar(
+            selectedIndex: 0,
+            destinationFillMode: NavigationDestinationFillMode.label,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: "Home",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: "Search",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) =>
+          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+    );
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect localRect = rectCallback!();
+    final Rect rect = localRect.shift(firstBox.localToGlobal(Offset.zero));
+
+    final Rect iconRect = tester.getRect(find.byIcon(Icons.home).first);
+    final Rect labelRect = tester.getRect(find.text("Home").first);
+
+    expect(rect.height, 32);
+    expect(rect.overlaps(labelRect), isTrue);
+    expect(rect.width, greaterThan(labelRect.width));
+    expect((rect.center.dx - labelRect.center.dx).abs(), lessThanOrEqualTo(1));
+    expect(
+      (rect.center.dy - labelRect.center.dy).abs(),
+      lessThan((rect.center.dy - iconRect.center.dy).abs()),
+    );
+  });
+
+  testWidgets("rail label fill mode uses label-only fixed-height pill", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            labelType: NavigationRailLabelType.all,
+            destinationFillMode: NavigationDestinationFillMode.label,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+    );
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect localRect = rectCallback!();
+    final Rect rect = localRect.shift(firstBox.localToGlobal(Offset.zero));
+
+    final Rect iconRect = tester.getRect(find.byIcon(Icons.home).first);
+    final Rect labelRect = tester.getRect(find.text("Home").first);
+
+    expect(rect.height, 32);
+    expect(rect.overlaps(labelRect), isTrue);
+    expect(rect.width, greaterThan(labelRect.width));
+    expect(rect.overlaps(iconRect), isFalse);
+    expect(rect.left, lessThanOrEqualTo(iconRect.left));
+    expect(
+      rect.right,
+      firstBox.localToGlobal(Offset.zero).dx + firstBox.size.width,
+    );
+    expect(
+      (rect.center.dy - labelRect.center.dy).abs(),
+      lessThan((rect.center.dy - iconRect.center.dy).abs()),
+    );
+  });
+
+  testWidgets("rail extended label mode avoids icon overlap", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            extended: true,
+            selectedIndex: 0,
+            labelType: NavigationRailLabelType.none,
+            destinationFillMode: NavigationDestinationFillMode.label,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Feed"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+    );
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect localRect = rectCallback!();
+    final Rect rect = localRect.shift(firstBox.localToGlobal(Offset.zero));
+
+    final Rect iconRect = tester.getRect(find.byIcon(Icons.home).first);
+    final Rect labelRect = tester.getRect(find.text("Feed").first);
+
+    expect(rect.height, 32);
+    expect(rect.overlaps(iconRect), isFalse);
+    expect(rect.overlaps(labelRect), isTrue);
+    expect(
+      rect.right,
+      firstBox.localToGlobal(Offset.zero).dx + firstBox.size.width,
+    );
   });
 }

@@ -106,7 +106,7 @@ class CustomNavigationRail extends StatefulWidget {
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
-    this.destinationFillMode = NavigationDestinationFillMode.icon,
+    this.destinationFillMode,
     this.destinationFillShape,
     this.leadingAtTop = true,
     this.trailingAtBottom = false,
@@ -333,8 +333,12 @@ class CustomNavigationRail extends StatefulWidget {
 
   /// Controls where destination fill/highlight is painted.
   ///
-  /// Defaults to [NavigationDestinationFillMode.icon].
-  final NavigationDestinationFillMode destinationFillMode;
+  /// When null, this widget follows Flutter's default indicator path.
+  /// Passing [NavigationDestinationFillMode.icon] behaves the same as null.
+  ///
+  /// Pass [NavigationDestinationFillMode.none] to explicitly disable custom
+  /// fill/highlight behavior.
+  final NavigationDestinationFillMode? destinationFillMode;
 
   /// Optional shape used for destination fill/highlight when
   /// [destinationFillMode] is configured.

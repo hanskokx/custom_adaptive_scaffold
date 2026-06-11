@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
-  hide NavigationIndicator;
+    hide NavigationIndicator;
 import "package:flutter/material.dart";
 import "package:flutter/rendering.dart";
 import "package:flutter_test/flutter_test.dart";
@@ -97,7 +97,8 @@ void main() {
       expect(_railMaterial(tester).elevation, 0);
       expect(_destinationSize(tester).width, 72.0);
       expect(_selectedIconTheme(tester).size, 24.0);
-      expect(_selectedIconTheme(tester).color, material2Theme.colorScheme.primary);
+      expect(
+          _selectedIconTheme(tester).color, material2Theme.colorScheme.primary);
       expect(_selectedIconTheme(tester).opacity, 1.0);
       expect(_unselectedIconTheme(tester).size, 24.0);
       expect(

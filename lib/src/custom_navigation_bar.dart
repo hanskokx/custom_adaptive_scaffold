@@ -101,7 +101,7 @@ class CustomNavigationBar extends StatelessWidget {
     this.overlayColor,
     this.labelTextStyle,
     this.labelPadding,
-    this.destinationFillMode = NavigationDestinationFillMode.icon,
+    this.destinationFillMode,
     this.destinationFillShape,
     this.maintainBottomViewPadding = false,
   })  : assert(destinations.length >= 2),
@@ -229,7 +229,13 @@ class CustomNavigationBar extends StatelessWidget {
 
   /// Controls where destination fill/highlight and interaction effects are
   /// painted.
-  final NavigationDestinationFillMode destinationFillMode;
+  ///
+  /// When null, this widget follows Flutter's default indicator path.
+  /// Passing [NavigationDestinationFillMode.icon] behaves the same as null.
+  ///
+  /// Pass [NavigationDestinationFillMode.none] to explicitly disable custom
+  /// fill/highlight behavior.
+  final NavigationDestinationFillMode? destinationFillMode;
 
   /// Optional shape for destination fill/highlight.
   ///
@@ -777,12 +783,15 @@ class _NavigationDestinationBuilderState
         NavigationBarTheme.of(context);
     final ThemeData theme = Theme.of(context);
     final bool isSelected = widget.animation.isForwardOrCompleted;
-    final NavigationDestinationFillMode destinationFillMode =
+    final NavigationDestinationFillMode? destinationFillMode =
         info.destinationFillMode;
+    final bool isDefaultFillPath = destinationFillMode == null ||
+        destinationFillMode == NavigationDestinationFillMode.icon;
     final bool isNoneFillMode =
         destinationFillMode == NavigationDestinationFillMode.none;
+    final bool isCustomFillMode = !isDefaultFillPath && !isNoneFillMode;
     final bool shouldPaintSelectedFill = isSelected &&
-        !isNoneFillMode &&
+        isCustomFillMode &&
         widget.iconIndicatorShape == null &&
         widget.labelIndicatorShape == null;
     final ShapeBorder effectiveFillShape =
@@ -804,16 +813,17 @@ class _NavigationDestinationBuilderState
 
     final WidgetStateProperty<Color?>? baseOverlayColor =
         info.overlayColor ?? navigationBarTheme.overlayColor;
-    final WidgetStateProperty<Color?>? effectiveOverlayColor = isSelected
-        ? WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-            if (states.contains(WidgetState.hovered) ||
-                states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed)) {
-              return Colors.transparent;
-            }
-            return baseOverlayColor?.resolve(states);
-          })
-        : baseOverlayColor;
+    final WidgetStateProperty<Color?>? effectiveOverlayColor =
+        isSelected && isCustomFillMode
+            ? WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                if (states.contains(WidgetState.hovered) ||
+                    states.contains(WidgetState.focused) ||
+                    states.contains(WidgetState.pressed)) {
+                  return Colors.transparent;
+                }
+                return baseOverlayColor?.resolve(states);
+              })
+            : baseOverlayColor;
 
     return _NavigationBarDestinationSemantics(
       enabled: widget.enabled,
@@ -822,6 +832,7 @@ class _NavigationDestinationBuilderState
         child: ClipRect(
           child: Stack(
             key: _destinationRegionKey,
+            fit: StackFit.expand,
             alignment: Alignment.center,
             children: <Widget>[
               if (shouldPaintSelectedFill && widget.color != null)
@@ -830,6 +841,7 @@ class _NavigationDestinationBuilderState
                     child: _DestinationSelectionFill(
                       color: widget.color!,
                       shape: effectiveFillShape,
+                      animation: widget.animation,
                       mode: destinationFillMode,
                       textDirection: textDirection,
                       hasVisibleText: hasVisibleText,
@@ -843,10 +855,10 @@ class _NavigationDestinationBuilderState
               _NavigationBarIndicatorInkWell(
                 onTap: widget.enabled ? info.onTap : null,
                 overlayColor: effectiveOverlayColor,
-                customBorder: isNoneFillMode ? null : effectiveFillShape,
+                customBorder: effectiveFillShape,
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
-                splashColor: effectiveSplashColor,
-                hoverColor: effectiveHoverColor,
+                splashColor: isCustomFillMode ? effectiveSplashColor : null,
+                hoverColor: isCustomFillMode ? effectiveHoverColor : null,
                 useMaterial3: material3,
                 destinationFillMode: destinationFillMode,
                 textDirection: textDirection,
@@ -860,8 +872,7 @@ class _NavigationDestinationBuilderState
                     // Full-item indicator: only shown when no scoped indicator is set.
                     if (widget.iconIndicatorShape == null &&
                         widget.labelIndicatorShape == null &&
-                        destinationFillMode ==
-                            NavigationDestinationFillMode.none)
+                        isDefaultFillPath)
                       NavigationIndicator(
                         animation: widget.animation,
                         color: widget.color,
@@ -1037,7 +1048,7 @@ class _NavigationDestinationInfo extends InheritedWidget {
   final EdgeInsetsGeometry? labelPadding;
 
   /// Where destination fill/highlight and interaction effects are painted.
-  final NavigationDestinationFillMode destinationFillMode;
+  final NavigationDestinationFillMode? destinationFillMode;
 
   /// Optional override shape for destination fill/highlight.
   final ShapeBorder? destinationFillShape;
@@ -1335,7 +1346,7 @@ class _NavigationBarIndicatorInkWell extends InkResponse {
         );
 
   final bool useMaterial3;
-  final NavigationDestinationFillMode destinationFillMode;
+  final NavigationDestinationFillMode? destinationFillMode;
   final TextDirection textDirection;
   final bool hasVisibleText;
   final GlobalKey iconRegionKey;
@@ -1360,7 +1371,7 @@ class _NavigationBarIndicatorInkWell extends InkResponse {
 Rect _navigationBarDestinationHighlightRect({
   required Size size,
   required TextDirection textDirection,
-  required NavigationDestinationFillMode mode,
+  required NavigationDestinationFillMode? mode,
   required bool hasVisibleText,
   required EdgeInsets fillPadding,
   RenderBox? referenceBox,
@@ -1368,6 +1379,11 @@ Rect _navigationBarDestinationHighlightRect({
   GlobalKey? labelRegionKey,
 }) {
   final Rect fullRect = Offset.zero & size;
+  final bool isDefaultFillPath =
+      mode == null || mode == NavigationDestinationFillMode.icon;
+  if (isDefaultFillPath) {
+    return fullRect;
+  }
   if (mode == NavigationDestinationFillMode.full) {
     return fullRect;
   }
@@ -1439,16 +1455,7 @@ Rect _navigationBarDestinationHighlightRect({
     case NavigationDestinationFillMode.none:
       return Rect.zero;
     case NavigationDestinationFillMode.icon:
-      final Rect iconPillCoreRect = Rect.fromCenter(
-        center: effectiveIconRect.center,
-        width: _kIndicatorWidth,
-        height: _kIndicatorHeight,
-      );
-      return expandAndClamp(
-        iconPillCoreRect,
-        leftPadding: horizontalPadding,
-        rightPadding: horizontalPadding,
-      );
+      return fullRect;
     case NavigationDestinationFillMode.content:
       if (!shouldUseLabelBounds) {
         return expandAndClamp(
@@ -1478,11 +1485,42 @@ Rect _navigationBarDestinationHighlightRect({
         );
       }
       final Rect labelBand = measuredLabelRect;
+      const double labelVerticalOffset = 2.0;
+      double targetWidth = labelBand.width + (horizontalPadding * 2);
+      final double minimumWidth = _kIndicatorWidth + (horizontalPadding * 2);
+      if (targetWidth < minimumWidth) {
+        targetWidth = minimumWidth;
+      }
+
+      double left = labelBand.center.dx - (targetWidth / 2);
+      double right = labelBand.center.dx + (targetWidth / 2);
+
+      if (left < fullRect.left) {
+        final double delta = fullRect.left - left;
+        left += delta;
+        right += delta;
+      }
+      if (right > fullRect.right) {
+        final double delta = right - fullRect.right;
+        left -= delta;
+        right -= delta;
+      }
+
+      left = left.clamp(fullRect.left, fullRect.right);
+      right = right.clamp(fullRect.left, fullRect.right);
+      if (right < left) {
+        right = left;
+      }
+      final double centerY = labelBand.center.dy + labelVerticalOffset;
+      final double top =
+          (centerY - (_kIndicatorHeight / 2)).clamp(0.0, fullRect.bottom);
+      final double bottom =
+          (top + _kIndicatorHeight).clamp(0.0, fullRect.bottom);
       return Rect.fromLTRB(
-        fullRect.left,
-        (labelBand.top - topPadding).clamp(0.0, fullRect.bottom),
-        fullRect.right,
-        (labelBand.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
+        left,
+        top,
+        right,
+        bottom,
       );
     case NavigationDestinationFillMode.full:
       return fullRect;
@@ -1493,6 +1531,7 @@ class _DestinationSelectionFill extends StatelessWidget {
   const _DestinationSelectionFill({
     required this.color,
     required this.shape,
+    required this.animation,
     required this.mode,
     required this.textDirection,
     required this.hasVisibleText,
@@ -1504,6 +1543,7 @@ class _DestinationSelectionFill extends StatelessWidget {
 
   final Color color;
   final ShapeBorder shape;
+  final Animation<double> animation;
   final NavigationDestinationFillMode mode;
   final TextDirection textDirection;
   final bool hasVisibleText;
@@ -1514,19 +1554,38 @@ class _DestinationSelectionFill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomPaint(
-      painter: _DestinationSelectionFillPainter(
-        color: color,
-        shape: shape,
-        mode: mode,
-        textDirection: textDirection,
-        hasVisibleText: hasVisibleText,
-        destinationRegionKey: destinationRegionKey,
-        iconRegionKey: iconRegionKey,
-        labelRegionKey: labelRegionKey,
-        fillPadding: fillPadding,
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (BuildContext context, Widget? child) {
+        final double scale = animation.isDismissed
+            ? 0.0
+            : Tween<double>(begin: .4, end: 1.0).transform(
+                CurveTween(curve: Curves.easeInOutCubicEmphasized)
+                    .transform(animation.value),
+              );
+        return Opacity(
+          opacity: animation.value,
+          child: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.diagonal3Values(scale, 1.0, 1.0),
+            child: child,
+          ),
+        );
+      },
+      child: CustomPaint(
+        painter: _DestinationSelectionFillPainter(
+          color: color,
+          shape: shape,
+          mode: mode,
+          textDirection: textDirection,
+          hasVisibleText: hasVisibleText,
+          destinationRegionKey: destinationRegionKey,
+          iconRegionKey: iconRegionKey,
+          labelRegionKey: labelRegionKey,
+          fillPadding: fillPadding,
+        ),
+        child: const SizedBox.expand(),
       ),
-      child: const SizedBox.expand(),
     );
   }
 }
