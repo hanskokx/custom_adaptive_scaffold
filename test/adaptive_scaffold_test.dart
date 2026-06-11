@@ -947,7 +947,7 @@ void main() {
             child: AdaptiveScaffold(
               destinations: destinations,
               navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-                compactLabelType: NavigationLabelType.none,
+                compactLabelBehavior: NavigationLabelBehavior.none,
               ),
             ),
           ),
@@ -957,6 +957,118 @@ void main() {
       final CustomNavigationRail compactRail = tester
           .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
       expect(compactRail.labelType, NavigationRailLabelType.none);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold navigationTheme can override expanded rail labels",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const NavigationRailThemeData(
+              labelType: NavigationRailLabelType.all,
+            ),
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(1300, 600)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+              navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+                expandedLabelBehavior: NavigationLabelBehavior.none,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail expandedRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(expandedRail.labelType, NavigationRailLabelType.none);
+
+      expect(find.text("Home"), findsNothing);
+      expect(find.text("Profile"), findsNothing);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold expanded rail defaults to all labels",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(1300, 600)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail expandedRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(expandedRail.labelType, NavigationRailLabelType.all);
+      expect(find.text("Home"), findsOneWidget);
+      expect(find.text("Profile"), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold expanded rail selected mode shows selected label only",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(1300, 600)),
+            child: AdaptiveScaffold(
+              selectedIndex: 0,
+              destinations: destinations,
+              navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+                expandedLabelBehavior: NavigationLabelBehavior.selected,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail expandedRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(expandedRail.labelType, NavigationRailLabelType.selected);
+      expect(find.text("Home"), findsOneWidget);
+      expect(find.text("Profile"), findsNothing);
     },
   );
 

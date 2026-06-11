@@ -32,8 +32,21 @@ typedef NavigationRailDestinationBuilder = NavigationRailDestination Function(
   NavigationDestination destination,
 );
 
-typedef NavigationLabelType = NavigationRailLabelType;
-typedef NavigationLabelBehavior = NavigationDestinationLabelBehavior;
+typedef NavigationLabelBehavior = NavigationRailLabelType;
+
+NavigationDestinationLabelBehavior? _labelBehaviorFromType(
+  NavigationLabelBehavior? labelBehavior,
+) {
+  return switch (labelBehavior) {
+    null => null,
+    NavigationRailLabelType.none =>
+      NavigationDestinationLabelBehavior.alwaysHide,
+    NavigationRailLabelType.selected =>
+      NavigationDestinationLabelBehavior.onlyShowSelected,
+    NavigationRailLabelType.all =>
+      NavigationDestinationLabelBehavior.alwaysShow,
+  };
+}
 
 /// Optional, adaptive-navigation-specific overrides for [AdaptiveScaffold].
 ///
@@ -41,24 +54,37 @@ typedef NavigationLabelBehavior = NavigationDestinationLabelBehavior;
 /// its legacy behavior and defers to the existing Material themes.
 class AdaptiveScaffoldNavigationThemeData {
   const AdaptiveScaffoldNavigationThemeData({
-    this.compactLabelType,
-    this.smallLabelBehavior,
+    this.compactLabelBehavior,
+    this.expandedLabelBehavior,
     this.transitionAnimation = NavigationDestinationAnimation.none,
     this.transitionCurve = Curves.easeInOut,
     this.transitionDuration,
-    this.destinationFillMode,
+    this.destinationFillRegion,
+    this.destinationHoverRegion,
     this.destinationFillShape,
   });
 
-  /// Optional label behavior for the compact (medium breakpoint) navigation rail.
+  /// Optional label behavior for compact rail and small navigation bar.
   ///
-  /// When null, [ThemeData.navigationRailTheme.labelType] is used.
-  final NavigationLabelType? compactLabelType;
+  /// For rail, this is passed as [NavigationRail.labelType].
+  /// For bar, it is mapped as:
+  /// [NavigationRailLabelType.none] ->
+  /// [NavigationDestinationLabelBehavior.alwaysHide],
+  /// [NavigationRailLabelType.selected] ->
+  /// [NavigationDestinationLabelBehavior.onlyShowSelected],
+  /// [NavigationRailLabelType.all] ->
+  /// [NavigationDestinationLabelBehavior.alwaysShow].
+  ///
+  /// When null, rail and bar each use their theme defaults.
+  final NavigationLabelBehavior? compactLabelBehavior;
 
-  /// Optional label behavior for the small breakpoint navigation bar.
+  /// Optional label behavior for expanded navigation rail breakpoints.
   ///
-  /// When null, [NavigationBarThemeData.labelBehavior] is used.
-  final NavigationLabelBehavior? smallLabelBehavior;
+  /// This only applies to the extended rail used on medium-large and up
+  /// breakpoints.
+  ///
+  /// When null, defaults to [NavigationRailLabelType.all].
+  final NavigationLabelBehavior? expandedLabelBehavior;
 
   /// Icon transition preset used by small breakpoint navigation bar and
   /// compact (medium breakpoint) navigation rail destinations.
@@ -72,11 +98,16 @@ class AdaptiveScaffoldNavigationThemeData {
   /// Optional duration used by compact rail icon transitions.
   final Duration? transitionDuration;
 
-  /// Controls where rail destination fill/highlight is painted.
+  /// Controls where destination selected fill/highlight is painted.
   ///
   /// When null, uses Flutter's default indicator path.
-  /// Passing [NavigationDestinationFillMode.icon] behaves the same as null.
-  final NavigationDestinationFillMode? destinationFillMode;
+  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
+  final NavigationDestinationRegion? destinationFillRegion;
+
+  /// Controls where destination hover/ink effects are painted.
+  ///
+  /// When null, this follows [destinationFillRegion].
+  final NavigationDestinationRegion? destinationHoverRegion;
 
   /// Optional shape for destination fill/highlight.
   ///
@@ -417,13 +448,14 @@ class AdaptiveScaffold extends StatefulWidget {
     IconThemeData? unselectedIconTheme,
     TextStyle? selectedLabelTextStyle,
     TextStyle? unSelectedLabelTextStyle,
-    NavigationLabelType? labelType = NavigationLabelType.none,
+    NavigationRailLabelType? labelType = NavigationRailLabelType.none,
     EdgeInsetsGeometry? padding,
     NavigationDestinationAnimation iconTransitionAnimation =
         NavigationDestinationAnimation.none,
     Curve iconTransitionCurve = Curves.easeInOut,
     Duration? iconTransitionDuration,
-    NavigationDestinationFillMode? destinationFillMode,
+    NavigationDestinationRegion? destinationFillRegion,
+    NavigationDestinationRegion? destinationHoverRegion,
     ShapeBorder? destinationFillShape,
   }) {
     if (extended && width == 72) {
@@ -460,7 +492,8 @@ class AdaptiveScaffold extends StatefulWidget {
                         iconTransitionAnimation: iconTransitionAnimation,
                         iconTransitionCurve: iconTransitionCurve,
                         iconTransitionDuration: iconTransitionDuration,
-                        destinationFillMode: destinationFillMode,
+                        destinationFillRegion: destinationFillRegion,
+                        destinationHoverRegion: destinationHoverRegion,
                         destinationFillShape: destinationFillShape,
                       ),
                     ),
@@ -484,7 +517,8 @@ class AdaptiveScaffold extends StatefulWidget {
     NavigationLabelBehavior? labelBehavior,
     NavigationDestinationAnimation transitionAnimation =
         NavigationDestinationAnimation.none,
-    NavigationDestinationFillMode? destinationFillMode,
+    NavigationDestinationRegion? destinationFillRegion,
+    NavigationDestinationRegion? destinationHoverRegion,
     ShapeBorder? destinationFillShape,
   }) {
     return Builder(
@@ -524,8 +558,9 @@ class AdaptiveScaffold extends StatefulWidget {
               selectedIndex: currentIndex ?? 0,
               destinations: bottomBarDestinations,
               onDestinationSelected: onDestinationSelected,
-              labelBehavior: labelBehavior,
-              destinationFillMode: destinationFillMode,
+              labelBehavior: _labelBehaviorFromType(labelBehavior),
+              destinationFillRegion: destinationFillRegion,
+              destinationHoverRegion: destinationHoverRegion,
               destinationFillShape: destinationFillShape,
             ),
           ),
@@ -750,7 +785,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.compactLabelType ??
+              labelType: effectiveNavigationTheme.compactLabelBehavior ??
                   navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
@@ -759,7 +794,10 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
               iconTransitionDuration:
                   effectiveNavigationTheme.transitionDuration,
-              destinationFillMode: effectiveNavigationTheme.destinationFillMode,
+              destinationFillRegion:
+                  effectiveNavigationTheme.destinationFillRegion,
+              destinationHoverRegion:
+                  effectiveNavigationTheme.destinationHoverRegion,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
             ),
@@ -779,10 +817,14 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: navRailTheme.labelType,
+              labelType: effectiveNavigationTheme.expandedLabelBehavior ??
+                  NavigationRailLabelType.all,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
-              destinationFillMode: effectiveNavigationTheme.destinationFillMode,
+              destinationFillRegion:
+                  effectiveNavigationTheme.destinationFillRegion,
+              destinationHoverRegion:
+                  effectiveNavigationTheme.destinationHoverRegion,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
             ),
@@ -807,8 +849,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
+              labelType: effectiveNavigationTheme.expandedLabelBehavior ??
+                  NavigationRailLabelType.all,
               padding: widget.padding,
-              destinationFillMode: effectiveNavigationTheme.destinationFillMode,
+              destinationFillRegion:
+                  effectiveNavigationTheme.destinationFillRegion,
+              destinationHoverRegion:
+                  effectiveNavigationTheme.destinationHoverRegion,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
             ),
@@ -833,8 +880,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
+              labelType: effectiveNavigationTheme.expandedLabelBehavior ??
+                  NavigationRailLabelType.all,
               padding: widget.padding,
-              destinationFillMode: effectiveNavigationTheme.destinationFillMode,
+              destinationFillRegion:
+                  effectiveNavigationTheme.destinationFillRegion,
+              destinationHoverRegion:
+                  effectiveNavigationTheme.destinationHoverRegion,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
             ),
@@ -851,11 +903,14 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                     currentIndex: widget.selectedIndex,
                     destinations: widget.destinations,
                     onDestinationSelected: widget.onSelectedIndexChange,
-                    labelBehavior: effectiveNavigationTheme.smallLabelBehavior,
+                    labelBehavior:
+                        effectiveNavigationTheme.compactLabelBehavior,
                     transitionAnimation:
                         effectiveNavigationTheme.transitionAnimation,
-                    destinationFillMode:
-                        effectiveNavigationTheme.destinationFillMode,
+                    destinationFillRegion:
+                        effectiveNavigationTheme.destinationFillRegion,
+                    destinationHoverRegion:
+                        effectiveNavigationTheme.destinationHoverRegion,
                     destinationFillShape:
                         effectiveNavigationTheme.destinationFillShape,
                   ),

@@ -101,12 +101,11 @@ class _MyHomePageState extends State<MyHomePage> {
       // An option to override the default transition duration.
       transitionDuration: Duration(milliseconds: _transitionDuration),
       navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-        compactLabelType: NavigationLabelType.selected,
-        smallLabelBehavior: NavigationLabelBehavior.alwaysShow,
+        compactLabelBehavior: NavigationLabelBehavior.selected,
         transitionAnimation: NavigationDestinationAnimation.fadeSwap,
         transitionCurve: Curves.easeOutCubic,
         transitionDuration: Duration(milliseconds: 220),
-        destinationFillMode: NavigationDestinationFillMode.content,
+        destinationFillRegion: NavigationDestinationRegion.content,
         destinationFillShape: StadiumBorder(),
       ),
       // An option to override the default breakpoints used for small, medium,

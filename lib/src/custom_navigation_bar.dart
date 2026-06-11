@@ -101,7 +101,8 @@ class CustomNavigationBar extends StatelessWidget {
     this.overlayColor,
     this.labelTextStyle,
     this.labelPadding,
-    this.destinationFillMode,
+    this.destinationFillRegion,
+    this.destinationHoverRegion,
     this.destinationFillShape,
     this.maintainBottomViewPadding = false,
   })  : assert(destinations.length >= 2),
@@ -227,15 +228,20 @@ class CustomNavigationBar extends StatelessWidget {
   /// is used.
   final EdgeInsetsGeometry? labelPadding;
 
-  /// Controls where destination fill/highlight and interaction effects are
-  /// painted.
+  /// Controls where destination selected fill/highlight is painted.
   ///
   /// When null, this widget follows Flutter's default indicator path.
-  /// Passing [NavigationDestinationFillMode.icon] behaves the same as null.
+  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
   ///
-  /// Pass [NavigationDestinationFillMode.none] to explicitly disable custom
+  /// Pass [NavigationDestinationRegion.none] to explicitly disable custom
   /// fill/highlight behavior.
-  final NavigationDestinationFillMode? destinationFillMode;
+  final NavigationDestinationRegion? destinationFillRegion;
+
+  /// Controls where destination hover and pressed interaction effects are
+  /// painted.
+  ///
+  /// When null, this follows [destinationFillRegion].
+  final NavigationDestinationRegion? destinationHoverRegion;
 
   /// Optional shape for destination fill/highlight.
   ///
@@ -313,7 +319,8 @@ class CustomNavigationBar extends StatelessWidget {
                               overlayColor: overlayColor,
                               labelTextStyle: labelTextStyle,
                               labelPadding: labelPadding,
-                              destinationFillMode: destinationFillMode,
+                              destinationFillRegion: destinationFillRegion,
+                              destinationHoverRegion: destinationHoverRegion,
                               destinationFillShape: destinationFillShape,
                               onTap: _handleTap(i),
                               child: destinations[i],
@@ -783,12 +790,16 @@ class _NavigationDestinationBuilderState
         NavigationBarTheme.of(context);
     final ThemeData theme = Theme.of(context);
     final bool isSelected = widget.animation.isForwardOrCompleted;
-    final NavigationDestinationFillMode? destinationFillMode =
-        info.destinationFillMode;
-    final bool isDefaultFillPath = destinationFillMode == null ||
-        destinationFillMode == NavigationDestinationFillMode.icon;
+    final NavigationDestinationRegion? destinationFillRegion =
+        info.destinationFillRegion;
+    final NavigationDestinationRegion? destinationHoverRegion =
+        info.destinationHoverRegion ?? destinationFillRegion;
+    final bool isDefaultFillPath = destinationFillRegion == null ||
+        destinationFillRegion == NavigationDestinationRegion.icon;
     final bool isNoneFillMode =
-        destinationFillMode == NavigationDestinationFillMode.none;
+        destinationFillRegion == NavigationDestinationRegion.none;
+    final bool isNoneHoverMode =
+        destinationHoverRegion == NavigationDestinationRegion.none;
     final bool isCustomFillMode = !isDefaultFillPath && !isNoneFillMode;
     final bool shouldPaintSelectedFill = isSelected &&
         isCustomFillMode &&
@@ -841,7 +852,7 @@ class _NavigationDestinationBuilderState
                       color: widget.color!,
                       shape: effectiveFillShape,
                       animation: widget.animation,
-                      mode: destinationFillMode,
+                      mode: destinationFillRegion,
                       textDirection: textDirection,
                       hasVisibleText: hasVisibleText,
                       destinationRegionKey: _destinationRegionKey,
@@ -856,10 +867,10 @@ class _NavigationDestinationBuilderState
                 overlayColor: effectiveOverlayColor,
                 customBorder: effectiveFillShape,
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
-                splashColor: isCustomFillMode ? effectiveSplashColor : null,
-                hoverColor: isCustomFillMode ? effectiveHoverColor : null,
+                splashColor: isNoneHoverMode ? null : effectiveSplashColor,
+                hoverColor: isNoneHoverMode ? null : effectiveHoverColor,
                 useMaterial3: material3,
-                destinationFillMode: destinationFillMode,
+                destinationHoverRegion: destinationHoverRegion,
                 textDirection: textDirection,
                 hasVisibleText: hasVisibleText,
                 iconRegionKey: _iconRegionKey,
@@ -974,7 +985,8 @@ class _NavigationDestinationInfo extends InheritedWidget {
     required this.overlayColor,
     required this.labelTextStyle,
     required this.labelPadding,
-    required this.destinationFillMode,
+    required this.destinationFillRegion,
+    required this.destinationHoverRegion,
     required this.destinationFillShape,
     required this.onTap,
     required super.child,
@@ -1054,8 +1066,11 @@ class _NavigationDestinationInfo extends InheritedWidget {
   /// Optional label padding override for destination labels.
   final EdgeInsetsGeometry? labelPadding;
 
-  /// Where destination fill/highlight and interaction effects are painted.
-  final NavigationDestinationFillMode? destinationFillMode;
+  /// Where destination selected fill/highlight is painted.
+  final NavigationDestinationRegion? destinationFillRegion;
+
+  /// Where destination hover/ink interaction effects are painted.
+  final NavigationDestinationRegion? destinationHoverRegion;
 
   /// Optional override shape for destination fill/highlight.
   final ShapeBorder? destinationFillShape;
@@ -1092,7 +1107,8 @@ class _NavigationDestinationInfo extends InheritedWidget {
         labelBehavior != oldWidget.labelBehavior ||
         labelTextStyle != oldWidget.labelTextStyle ||
         labelPadding != oldWidget.labelPadding ||
-        destinationFillMode != oldWidget.destinationFillMode ||
+        destinationFillRegion != oldWidget.destinationFillRegion ||
+        destinationHoverRegion != oldWidget.destinationHoverRegion ||
         destinationFillShape != oldWidget.destinationFillShape ||
         onTap != oldWidget.onTap;
   }
@@ -1332,7 +1348,7 @@ class _DestinationLayoutAnimationBuilder extends StatelessWidget {
 class _NavigationBarIndicatorInkWell extends InkResponse {
   const _NavigationBarIndicatorInkWell({
     required this.useMaterial3,
-    required this.destinationFillMode,
+    required this.destinationHoverRegion,
     required this.textDirection,
     required this.hasVisibleText,
     required this.iconRegionKey,
@@ -1353,7 +1369,7 @@ class _NavigationBarIndicatorInkWell extends InkResponse {
         );
 
   final bool useMaterial3;
-  final NavigationDestinationFillMode? destinationFillMode;
+  final NavigationDestinationRegion? destinationHoverRegion;
   final TextDirection textDirection;
   final bool hasVisibleText;
   final GlobalKey iconRegionKey;
@@ -1365,7 +1381,7 @@ class _NavigationBarIndicatorInkWell extends InkResponse {
     return () => _navigationBarDestinationHighlightRect(
           size: referenceBox.size,
           textDirection: textDirection,
-          mode: destinationFillMode,
+          mode: destinationHoverRegion,
           hasVisibleText: hasVisibleText,
           fillPadding: fillPadding,
           referenceBox: referenceBox,
@@ -1378,7 +1394,7 @@ class _NavigationBarIndicatorInkWell extends InkResponse {
 Rect _navigationBarDestinationHighlightRect({
   required Size size,
   required TextDirection textDirection,
-  required NavigationDestinationFillMode? mode,
+  required NavigationDestinationRegion? mode,
   required bool hasVisibleText,
   required EdgeInsets fillPadding,
   RenderBox? referenceBox,
@@ -1402,11 +1418,11 @@ Rect _navigationBarDestinationHighlightRect({
       : null;
   final Rect effectiveIconRect = measuredIconRect ?? fallbackIconRect;
   final bool isDefaultFillPath =
-      mode == null || mode == NavigationDestinationFillMode.icon;
+      mode == null || mode == NavigationDestinationRegion.icon;
   if (isDefaultFillPath) {
     return effectiveIconRect;
   }
-  if (mode == NavigationDestinationFillMode.full) {
+  if (mode == NavigationDestinationRegion.full) {
     return fullRect;
   }
   final bool hasLabelBounds = measuredLabelRect != null &&
@@ -1417,8 +1433,8 @@ Rect _navigationBarDestinationHighlightRect({
   final bool hasExplicitHorizontalFillPadding =
       fillPadding.left > 0 || fillPadding.right > 0;
   final bool useFallbackHorizontalPadding = !hasExplicitHorizontalFillPadding &&
-      (mode == NavigationDestinationFillMode.content ||
-          mode == NavigationDestinationFillMode.label);
+      (mode == NavigationDestinationRegion.content ||
+          mode == NavigationDestinationRegion.label);
   final double horizontalPadding = useFallbackHorizontalPadding
       ? _horizontalDestinationPadding
       : fillPadding.left;
@@ -1459,11 +1475,11 @@ Rect _navigationBarDestinationHighlightRect({
   }
 
   switch (mode) {
-    case NavigationDestinationFillMode.none:
+    case NavigationDestinationRegion.none:
       return Rect.zero;
-    case NavigationDestinationFillMode.icon:
+    case NavigationDestinationRegion.icon:
       return effectiveIconRect;
-    case NavigationDestinationFillMode.content:
+    case NavigationDestinationRegion.content:
       if (!shouldUseLabelBounds) {
         return expandAndClamp(
           effectiveIconRect,
@@ -1483,7 +1499,7 @@ Rect _navigationBarDestinationHighlightRect({
         leftPadding: contentHorizontalPadding,
         rightPadding: contentHorizontalPadding,
       );
-    case NavigationDestinationFillMode.label:
+    case NavigationDestinationRegion.label:
       if (!shouldUseLabelBounds) {
         return expandAndClamp(
           effectiveIconRect,
@@ -1529,7 +1545,7 @@ Rect _navigationBarDestinationHighlightRect({
         right,
         bottom,
       );
-    case NavigationDestinationFillMode.full:
+    case NavigationDestinationRegion.full:
       return fullRect;
   }
 }
@@ -1551,7 +1567,7 @@ class _DestinationSelectionFill extends StatelessWidget {
   final Color color;
   final ShapeBorder shape;
   final Animation<double> animation;
-  final NavigationDestinationFillMode mode;
+  final NavigationDestinationRegion mode;
   final TextDirection textDirection;
   final bool hasVisibleText;
   final GlobalKey destinationRegionKey;
@@ -1612,7 +1628,7 @@ class _DestinationSelectionFillPainter extends CustomPainter {
 
   final Color color;
   final ShapeBorder shape;
-  final NavigationDestinationFillMode mode;
+  final NavigationDestinationRegion mode;
   final TextDirection textDirection;
   final bool hasVisibleText;
   final GlobalKey destinationRegionKey;

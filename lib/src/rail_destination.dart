@@ -21,7 +21,8 @@ class RailDestination extends StatefulWidget {
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
-    this.destinationFillMode,
+    this.destinationFillRegion,
+    this.destinationHoverRegion,
     this.destinationFillShape,
     this.disabled = false,
     this.extended = true,
@@ -50,7 +51,8 @@ class RailDestination extends StatefulWidget {
   final bool? useIndicator;
   final Color? indicatorColor;
   final ShapeBorder? indicatorShape;
-  final NavigationDestinationFillMode? destinationFillMode;
+  final NavigationDestinationRegion? destinationFillRegion;
+  final NavigationDestinationRegion? destinationHoverRegion;
   final ShapeBorder? destinationFillShape;
   final bool disabled;
   final bool extended;
@@ -201,18 +203,22 @@ class _RailDestinationState extends State<RailDestination>
         paddingAndMarginWidth;
 
     final bool selected = widget.selected ?? false;
-    final NavigationDestinationFillMode? destinationFillMode =
-        widget.destinationFillMode;
-    final bool isDefaultFillPath = destinationFillMode == null ||
-        destinationFillMode == NavigationDestinationFillMode.icon;
+    final NavigationDestinationRegion? destinationFillRegion =
+        widget.destinationFillRegion;
+    final NavigationDestinationRegion? destinationHoverRegion =
+        widget.destinationHoverRegion ?? destinationFillRegion;
+    final bool isDefaultFillPath = destinationFillRegion == null ||
+        destinationFillRegion == NavigationDestinationRegion.icon;
     final bool isNoneFillMode =
-        destinationFillMode == NavigationDestinationFillMode.none;
+        destinationFillRegion == NavigationDestinationRegion.none;
+    final bool isNoneHoverMode =
+        destinationHoverRegion == NavigationDestinationRegion.none;
     final bool isLabelFillMode =
-        destinationFillMode == NavigationDestinationFillMode.label;
+        destinationFillRegion == NavigationDestinationRegion.label;
     final bool isCustomFillMode = !isDefaultFillPath && !isNoneFillMode;
     final bool shouldPaintSelectedFill = selected && isCustomFillMode;
     final bool shouldShowIconIndicator =
-        (widget.useIndicator ?? false) && !isLabelFillMode;
+        (widget.useIndicator ?? false) && !isLabelFillMode && !isNoneFillMode;
     final Color? selectedFillColor = indicatorColor;
 
     final IconThemeData unselectedIconTheme =
@@ -236,6 +242,8 @@ class _RailDestinationState extends State<RailDestination>
     final NavigationRailLabelType labelType = widget.labelType ??
         navigationRailTheme.labelType ??
         defaults.labelType!;
+    final NavigationRailLabelType layoutLabelType =
+        !collapsed ? NavigationRailLabelType.none : labelType;
 
     final IconThemeData iconTheme =
         selected ? selectedIconTheme : unselectedIconTheme;
@@ -346,7 +354,7 @@ class _RailDestinationState extends State<RailDestination>
         ? (isLargeIconSize ? iconTheme.size! : _kIndicatorHeight)
         : (iconTheme.size ?? _kIndicatorHeight);
 
-    switch (labelType) {
+    switch (layoutLabelType) {
       case NavigationRailLabelType.none:
         final Widget? spacing = material3
             ? const SizedBox(height: _verticalDestinationSpacingM3 / 2)
@@ -398,6 +406,11 @@ class _RailDestinationState extends State<RailDestination>
             ),
           );
         } else {
+          final bool showExpandedLabel = switch (labelType) {
+            NavigationRailLabelType.none => false,
+            NavigationRailLabelType.selected => selected,
+            NavigationRailLabelType.all => true,
+          };
           final Animation<double> labelFadeAnimation = extendedAnimation.drive(
             CurveTween(curve: const Interval(0.0, 0.25)),
           );
@@ -418,20 +431,24 @@ class _RailDestinationState extends State<RailDestination>
                   children: <Widget>[
                     iconPart,
                     Flexible(
-                      child: Align(
-                        heightFactor: 1.0,
-                        widthFactor: extendedAnimation.value,
-                        alignment: AlignmentDirectional.centerStart,
-                        child: FadeTransition(
-                          alwaysIncludeSemantics: true,
-                          opacity: labelFadeAnimation,
-                          child: measuredLabel,
-                        ),
-                      ),
+                      child: showExpandedLabel
+                          ? Align(
+                              heightFactor: 1.0,
+                              widthFactor: extendedAnimation.value,
+                              alignment: AlignmentDirectional.centerStart,
+                              child: FadeTransition(
+                                alwaysIncludeSemantics: true,
+                                opacity: labelFadeAnimation,
+                                child: measuredLabel,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
                     ),
                     SizedBox(
-                      width: _horizontalDestinationPadding *
-                          extendedAnimation.value,
+                      width: showExpandedLabel
+                          ? _horizontalDestinationPadding *
+                              extendedAnimation.value
+                          : 0,
                     ),
                   ],
                 ),
@@ -579,14 +596,23 @@ class _RailDestinationState extends State<RailDestination>
     }
 
     final ShapeBorder defaultFillShape =
-        destinationFillMode == NavigationDestinationFillMode.full
+        destinationFillRegion == NavigationDestinationRegion.full
             ? const RoundedRectangleBorder()
             : const StadiumBorder();
     final ShapeBorder effectiveFillShape =
         widget.destinationFillShape ?? indicatorShape ?? defaultFillShape;
     final ShapeBorder effectiveInkShape = effectiveFillShape;
-    final bool hasVisibleText =
-        labelType != NavigationRailLabelType.none || !collapsed;
+    final bool hasVisibleText = !collapsed
+        ? switch (labelType) {
+            NavigationRailLabelType.none => false,
+            NavigationRailLabelType.selected => selected,
+            NavigationRailLabelType.all => true,
+          }
+        : switch (labelType) {
+            NavigationRailLabelType.none => false,
+            NavigationRailLabelType.selected => selected,
+            NavigationRailLabelType.all => true,
+          };
 
     final ColorScheme colors = Theme.of(context).colorScheme;
     final bool primaryColorAlphaModified =
@@ -613,7 +639,7 @@ class _RailDestinationState extends State<RailDestination>
                     color: selectedFillColor,
                     shape: effectiveFillShape,
                     animation: _destinationAnimation,
-                    mode: destinationFillMode,
+                    mode: destinationFillRegion,
                     useMaterial3: material3,
                     isCollapsed: collapsed,
                     indicatorOffset: indicatorOffset,
@@ -636,13 +662,13 @@ class _RailDestinationState extends State<RailDestination>
                 Radius.circular(minWidth / 2.0),
               ),
               customBorder: effectiveInkShape,
-              splashColor: isNoneFillMode ? null : effectiveSplashColor,
-              hoverColor: isNoneFillMode ? null : effectiveHoverColor,
+              splashColor: isNoneHoverMode ? null : effectiveSplashColor,
+              hoverColor: isNoneHoverMode ? null : effectiveHoverColor,
               useMaterial3: material3,
               isCollapsed: collapsed,
               indicatorOffset: indicatorOffset,
               applyXOffset: applyXOffset,
-              destinationFillMode: destinationFillMode,
+              destinationHoverRegion: destinationHoverRegion,
               textDirection: textDirection,
               hasVisibleText: hasVisibleText,
               iconRegionKey: _iconRegionKey,
@@ -666,7 +692,7 @@ class _IndicatorInkWell extends InkResponse {
     required this.isCollapsed,
     required this.indicatorOffset,
     required this.applyXOffset,
-    required this.destinationFillMode,
+    required this.destinationHoverRegion,
     required this.textDirection,
     required this.hasVisibleText,
     required this.iconRegionKey,
@@ -698,8 +724,8 @@ class _IndicatorInkWell extends InkResponse {
   // The text direction used to adjust the indicator horizontal offset.
   final TextDirection textDirection;
 
-  // Where fill/highlight should be painted.
-  final NavigationDestinationFillMode? destinationFillMode;
+  // Where hover/highlight should be painted.
+  final NavigationDestinationRegion? destinationHoverRegion;
 
   // Whether text is currently visible in the destination.
   final bool hasVisibleText;
@@ -718,7 +744,7 @@ class _IndicatorInkWell extends InkResponse {
           indicatorOffset: indicatorOffset,
           applyXOffset: applyXOffset,
           textDirection: textDirection,
-          mode: destinationFillMode,
+          mode: destinationHoverRegion,
           hasVisibleText: hasVisibleText,
           referenceBox: referenceBox,
           iconRegionKey: iconRegionKey,
@@ -735,7 +761,7 @@ Rect _destinationHighlightRect({
   required Offset indicatorOffset,
   required bool applyXOffset,
   required TextDirection textDirection,
-  required NavigationDestinationFillMode? mode,
+  required NavigationDestinationRegion? mode,
   required bool hasVisibleText,
   required EdgeInsets fillPadding,
   RenderBox? referenceBox,
@@ -758,11 +784,11 @@ Rect _destinationHighlightRect({
     _kIndicatorHeight,
   );
   final bool isDefaultFillPath =
-      mode == null || mode == NavigationDestinationFillMode.icon;
+      mode == null || mode == NavigationDestinationRegion.icon;
   if (isDefaultFillPath) {
     return iconRect;
   }
-  if (mode == NavigationDestinationFillMode.full) {
+  if (mode == NavigationDestinationRegion.full) {
     return fullRect;
   }
   final Rect? measuredIconRect = referenceBox != null && iconRegionKey != null
@@ -775,8 +801,8 @@ Rect _destinationHighlightRect({
   final bool hasExplicitHorizontalFillPadding =
       fillPadding.left > 0 || fillPadding.right > 0;
   final bool useFallbackHorizontalPadding = !hasExplicitHorizontalFillPadding &&
-      (mode == NavigationDestinationFillMode.content ||
-          mode == NavigationDestinationFillMode.label);
+      (mode == NavigationDestinationRegion.content ||
+          mode == NavigationDestinationRegion.label);
   final double horizontalPadding = useFallbackHorizontalPadding
       ? _horizontalDestinationPadding
       : fillPadding.left;
@@ -820,11 +846,11 @@ Rect _destinationHighlightRect({
   }
 
   switch (mode) {
-    case NavigationDestinationFillMode.none:
+    case NavigationDestinationRegion.none:
       return Rect.zero;
-    case NavigationDestinationFillMode.icon:
+    case NavigationDestinationRegion.icon:
       return iconRect;
-    case NavigationDestinationFillMode.content:
+    case NavigationDestinationRegion.content:
       if (!hasVisibleText) {
         return expandAndClamp(
           effectiveIconRect,
@@ -840,10 +866,8 @@ Rect _destinationHighlightRect({
               effectiveIconRect.width,
               size.height,
             );
-      // Left inset is how far the pill left edge sits from the destination boundary.
-      // Mirror that same inset on the right for visual symmetry.
-      final double leftEdge =
-          (combined.left - horizontalPadding).clamp(0.0, fullRect.right);
+      // Keep hover content mode anchored to the icon region on the leading side.
+      final double leftEdge = effectiveIconRect.left.clamp(0.0, fullRect.right);
       final double rightEdge =
           (fullRect.right - leftEdge).clamp(leftEdge, fullRect.right);
       return Rect.fromLTRB(
@@ -852,7 +876,7 @@ Rect _destinationHighlightRect({
         rightEdge,
         (combined.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
       );
-    case NavigationDestinationFillMode.label:
+    case NavigationDestinationRegion.label:
       if (!hasVisibleText) {
         return expandAndClamp(
           effectiveIconRect,
@@ -885,7 +909,7 @@ Rect _destinationHighlightRect({
         right,
         bottom,
       );
-    case NavigationDestinationFillMode.full:
+    case NavigationDestinationRegion.full:
       return fullRect;
   }
 }
@@ -911,7 +935,7 @@ class _DestinationSelectionFill extends StatelessWidget {
   final Color color;
   final ShapeBorder shape;
   final Animation<double> animation;
-  final NavigationDestinationFillMode mode;
+  final NavigationDestinationRegion mode;
   final bool useMaterial3;
   final bool isCollapsed;
   final Offset indicatorOffset;
@@ -984,7 +1008,7 @@ class _DestinationSelectionFillPainter extends CustomPainter {
 
   final Color color;
   final ShapeBorder shape;
-  final NavigationDestinationFillMode mode;
+  final NavigationDestinationRegion mode;
   final bool useMaterial3;
   final bool isCollapsed;
   final Offset indicatorOffset;

@@ -106,7 +106,8 @@ class CustomNavigationRail extends StatefulWidget {
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
-    this.destinationFillMode,
+    this.destinationFillRegion,
+    this.destinationHoverRegion,
     this.destinationFillShape,
     this.leadingAtTop = true,
     this.trailingAtBottom = false,
@@ -126,10 +127,6 @@ class CustomNavigationRail extends StatefulWidget {
         assert(
           (minWidth == null || minExtendedWidth == null) ||
               minExtendedWidth >= minWidth,
-        ),
-        assert(
-          !extended ||
-              (labelType == null || labelType == NavigationRailLabelType.none),
         );
 
   /// Sets the color of the Container that holds all of the [CustomNavigationRail]'s
@@ -334,14 +331,20 @@ class CustomNavigationRail extends StatefulWidget {
   /// Controls where destination fill/highlight is painted.
   ///
   /// When null, this widget follows Flutter's default indicator path.
-  /// Passing [NavigationDestinationFillMode.icon] behaves the same as null.
+  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
   ///
-  /// Pass [NavigationDestinationFillMode.none] to explicitly disable custom
+  /// Pass [NavigationDestinationRegion.none] to explicitly disable custom
   /// fill/highlight behavior.
-  final NavigationDestinationFillMode? destinationFillMode;
+  final NavigationDestinationRegion? destinationFillRegion;
+
+  /// Controls where destination hover and pressed interaction effects are
+  /// painted.
+  ///
+  /// When null, this follows [destinationFillRegion].
+  final NavigationDestinationRegion? destinationHoverRegion;
 
   /// Optional shape used for destination fill/highlight when
-  /// [destinationFillMode] is configured.
+  /// [destinationFillRegion] is configured.
   ///
   /// If null, [indicatorShape] / theme indicator shape is used, then
   /// [StadiumBorder].
@@ -562,7 +565,8 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
               useIndicator: useIndicator,
               indicatorColor: indicatorColor,
               indicatorShape: indicatorShape,
-              destinationFillMode: widget.destinationFillMode,
+              destinationFillRegion: widget.destinationFillRegion,
+              destinationHoverRegion: widget.destinationHoverRegion,
               destinationFillShape: widget.destinationFillShape,
               onTap: () {
                 if (widget.onDestinationSelected != null) {

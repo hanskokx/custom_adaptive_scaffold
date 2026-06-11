@@ -23,9 +23,10 @@ enum NavigationDestinationAnimation {
   scale,
 }
 
-/// Controls where navigation destination selection fill and interaction effects
-/// are painted.
-enum NavigationDestinationFillMode {
+/// Controls which destination region is used for fill and hover interactions.
+///
+/// This enum is used by both `destinationFillRegion` and `destinationHoverRegion`.
+enum NavigationDestinationRegion {
   /// No fill or highlight is painted.
   none,
 

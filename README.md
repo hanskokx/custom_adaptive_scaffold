@@ -35,7 +35,8 @@ several places:
   - Extended layout controls (`leadingAtTop`, `trailingAtBottom`, `scrollable`,
     `mainAxisAlignment`).
   - Configurable rail destination fill/highlight via
-    `destinationFillMode` and `destinationFillShape`.
+    `destinationFillRegion`, `destinationHoverRegion`, and
+    `destinationFillShape`.
   - `AdaptiveScaffold` exposes the same fill options through
     `navigationTheme: AdaptiveScaffoldNavigationThemeData(...)`.
 - Theme extensions:
@@ -295,13 +296,13 @@ CustomNavigationDestination(
 `CustomNavigationDestination`, including a destination-level
 `destinationTransitionBuilder` for coordinated icon/label transitions.
 
-### Destination Fill Modes
+### Destination Fill And Hover Regions
 
 By default, `CustomNavigationRail` follows Flutter-style selection rendering,
 where the indicator sits behind the icon area.
 
 When you want custom destination fill/highlight scopes, choose a
-`destinationFillMode`:
+`destinationFillRegion`:
 
 - `none`
 - `icon`
@@ -314,7 +315,7 @@ Example using full-widget fill plus a custom shape:
 ```dart
 CustomNavigationRail(
   selectedIndex: selectedIndex,
-  destinationFillMode: NavigationDestinationFillMode.full,
+  destinationFillRegion: NavigationDestinationRegion.full,
   destinationFillShape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(12),
   ),
@@ -330,7 +331,7 @@ Color is resolved from theme indicator color (`NavigationRailThemeData.indicator
 AdaptiveScaffold.standardNavigationRail(
   selectedIndex: selectedIndex,
   destinations: railDestinations,
-  destinationFillMode: NavigationDestinationFillMode.full,
+  destinationFillRegion: NavigationDestinationRegion.full,
   destinationFillShape: RoundedRectangleBorder(
     borderRadius: BorderRadius.circular(12),
   ),
@@ -344,8 +345,22 @@ For `AdaptiveScaffold`, configure fill/highlight through
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-    destinationFillMode: NavigationDestinationFillMode.label,
+    destinationFillRegion: NavigationDestinationRegion.label,
     destinationFillShape: StadiumBorder(),
+  ),
+  body: (BuildContext context) => const Placeholder(),
+)
+```
+
+To control hover/pressed interaction region independently, use
+`destinationHoverRegion` (defaults to `destinationFillRegion` when omitted):
+
+```dart
+AdaptiveScaffold(
+  destinations: destinations,
+  navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+    destinationFillRegion: NavigationDestinationRegion.icon,
+    destinationHoverRegion: NavigationDestinationRegion.full,
   ),
   body: (BuildContext context) => const Placeholder(),
 )
@@ -358,8 +373,8 @@ Navigation behavior overrides are also configured through
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-    compactLabelType: NavigationLabelType.selected,
-    smallLabelBehavior: NavigationLabelBehavior.alwaysShow,
+    compactLabelBehavior: NavigationLabelBehavior.selected,
+    expandedLabelBehavior: NavigationLabelBehavior.all,
     transitionAnimation: NavigationDestinationAnimation.fadeSwap,
     transitionCurve: Curves.easeOutCubic,
     transitionDuration: Duration(milliseconds: 220),
@@ -372,13 +387,16 @@ Notes:
 
 - `transitionAnimation` is shared by both compact rail and small navigation
   bar destination transitions.
-- `NavigationLabelType` and `NavigationLabelBehavior` are convenience aliases
-  for rail and bar label behavior enums.
+- `compactLabelBehavior` configures compact rail labels directly, and maps to
+  the corresponding small navigation bar label behavior.
+- `expandedLabelBehavior` applies only to expanded rails (medium-large and up).
+  Defaults to `NavigationLabelBehavior.all` and supports
+  `none`, `selected`, and `all`.
 
-Migration step for existing apps (pre 4.0.0):
+Compatibility note:
 
 If your app previously depended on full selected-destination fill behavior,
-set `destinationFillMode: NavigationDestinationFillMode.full` on
+set `destinationFillRegion: NavigationDestinationRegion.full` on
 `CustomNavigationRail` (or on `AdaptiveScaffold.standardNavigationRail` when
 using the helper).
 

@@ -139,7 +139,7 @@ void main() {
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
-            destinationFillMode: NavigationDestinationFillMode.full,
+            destinationFillRegion: NavigationDestinationRegion.full,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),
@@ -183,7 +183,7 @@ void main() {
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
-            destinationFillMode: NavigationDestinationFillMode.icon,
+            destinationFillRegion: NavigationDestinationRegion.icon,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),
@@ -217,6 +217,197 @@ void main() {
     expect(rect.height, 32);
   });
 
+  testWidgets(
+      "rail fill none with content hover does not render icon indicator",
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            destinationFillRegion: NavigationDestinationRegion.none,
+            destinationHoverRegion: NavigationDestinationRegion.content,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(
+      find.byWidgetPredicate(
+        (Widget widget) =>
+            widget.runtimeType.toString() == "NavigationIndicator",
+      ),
+      findsNothing,
+    );
+  });
+
+  testWidgets(
+      "rail content hover ignores hidden selected-label area on unselected destinations",
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            labelType: NavigationRailLabelType.selected,
+            destinationFillRegion: NavigationDestinationRegion.label,
+            destinationHoverRegion: NavigationDestinationRegion.content,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final InkResponse selectedInk =
+        tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox selectedBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final Rect selectedRect = selectedInk.getRectCallback(selectedBox)!();
+
+    final InkResponse unselectedInk =
+        tester.widget<InkResponse>(inkResponses.at(1));
+    final RenderBox unselectedBox =
+        tester.renderObject<RenderBox>(inkResponses.at(1));
+    final Rect unselectedRect = unselectedInk.getRectCallback(unselectedBox)!();
+
+    expect(unselectedRect.height, lessThan(selectedRect.height));
+    expect(unselectedRect.height, lessThanOrEqualTo(40));
+  });
+
+  testWidgets(
+      "rail destinationHoverRegion overrides interaction rect independently",
+      (WidgetTester tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            destinationFillRegion: NavigationDestinationRegion.icon,
+            destinationHoverRegion: NavigationDestinationRegion.full,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect rect = rectCallback!();
+
+    expect(rect.left, 0);
+    expect(rect.top, 0);
+    expect(rect.width, firstBox.size.width);
+    expect(rect.height, firstBox.size.height);
+  });
+
+  testWidgets("rail content hover region left edge matches icon left edge",
+      (WidgetTester tester) async {
+    Future<Rect> firstHoverRectFor(
+      NavigationDestinationRegion hoverRegion,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true),
+          home: Scaffold(
+            body: CustomNavigationRail(
+              extended: true,
+              selectedIndex: 0,
+              labelType: NavigationRailLabelType.all,
+              destinationFillRegion: NavigationDestinationRegion.none,
+              destinationHoverRegion: hoverRegion,
+              destinations: const <NavigationRailDestination>[
+                NavigationRailDestination(
+                  icon: Icon(Icons.chat_bubble_outline),
+                  selectedIcon: Icon(Icons.chat_bubble),
+                  label: Text("Chats"),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search),
+                  label: Text("Search"),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Finder inkResponses = find.byWidgetPredicate(
+        (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      );
+      final InkResponse firstInk =
+          tester.widget<InkResponse>(inkResponses.first);
+      final RenderBox firstBox =
+          tester.renderObject<RenderBox>(inkResponses.first);
+      final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+      expect(rectCallback, isNotNull);
+      final Rect localRect = rectCallback!();
+      return localRect.shift(firstBox.localToGlobal(Offset.zero));
+    }
+
+    final Rect iconRegionRect = await firstHoverRectFor(
+      NavigationDestinationRegion.icon,
+    );
+    final Rect contentRegionRect = await firstHoverRectFor(
+      NavigationDestinationRegion.content,
+    );
+
+    expect(
+      (contentRegionRect.left - iconRegionRect.left).abs(),
+      lessThanOrEqualTo(1),
+    );
+  });
+
   testWidgets("bar icon fill mode keeps indicator-sized interaction rect", (
     WidgetTester tester,
   ) async {
@@ -226,7 +417,7 @@ void main() {
         home: Scaffold(
           bottomNavigationBar: CustomNavigationBar(
             selectedIndex: 0,
-            destinationFillMode: NavigationDestinationFillMode.icon,
+            destinationFillRegion: NavigationDestinationRegion.icon,
             destinations: const <Widget>[
               CustomNavigationDestination(
                 icon: Icon(Icons.home_outlined),
@@ -274,7 +465,7 @@ void main() {
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
-            destinationFillMode: NavigationDestinationFillMode.full,
+            destinationFillRegion: NavigationDestinationRegion.full,
             destinationFillShape: fillShape,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
@@ -311,7 +502,7 @@ void main() {
         home: Scaffold(
           bottomNavigationBar: CustomNavigationBar(
             selectedIndex: 0,
-            destinationFillMode: NavigationDestinationFillMode.label,
+            destinationFillRegion: NavigationDestinationRegion.label,
             destinations: const <Widget>[
               CustomNavigationDestination(
                 icon: Icon(Icons.home_outlined),
@@ -364,7 +555,7 @@ void main() {
           body: CustomNavigationRail(
             selectedIndex: 0,
             labelType: NavigationRailLabelType.all,
-            destinationFillMode: NavigationDestinationFillMode.label,
+            destinationFillRegion: NavigationDestinationRegion.label,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),
@@ -421,8 +612,8 @@ void main() {
           body: CustomNavigationRail(
             extended: true,
             selectedIndex: 0,
-            labelType: NavigationRailLabelType.none,
-            destinationFillMode: NavigationDestinationFillMode.label,
+            labelType: NavigationRailLabelType.all,
+            destinationFillRegion: NavigationDestinationRegion.label,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),
