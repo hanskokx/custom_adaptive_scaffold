@@ -171,7 +171,7 @@ class _RailDestinationState extends State<RailDestination>
     // snap back to compact immediately while the destination animation is still
     // reversing. Treating non-extended destinations as collapsed avoids a
     // temporary horizontal overflow in that transition frame.
-    final bool collapsed = !widget.extended || extendedAnimation.value < 0.25;
+    final bool collapsed = !widget.extended || extendedAnimation.value == 0;
 
     final TextDirection textDirection = Directionality.of(context);
     final bool material3 = theme.useMaterial3;

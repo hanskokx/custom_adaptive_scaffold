@@ -469,47 +469,46 @@ class AdaptiveScaffold extends StatefulWidget {
             tween: Tween<double>(end: width),
             duration: const Duration(milliseconds: 220),
             curve: Curves.easeInOutCubic,
-            builder:
-                (BuildContext context, double animatedWidth, Widget? child) {
+            builder: (BuildContext context, double animatedWidth, Widget? _) {
+              final bool effectiveExtended = extended && animatedWidth >= 80.0;
               return SizedBox(
                 width: animatedWidth,
                 height: MediaQuery.sizeOf(context).height,
-                child: child,
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minHeight: constraints.maxHeight),
+                        child: IntrinsicHeight(
+                          child: CustomNavigationRail(
+                            labelType: labelType,
+                            leading: leading,
+                            trailing: trailing,
+                            onDestinationSelected: onDestinationSelected,
+                            groupAlignment: groupAlignment,
+                            backgroundColor: backgroundColor,
+                            extended: effectiveExtended,
+                            selectedIndex: selectedIndex,
+                            selectedIconTheme: selectedIconTheme,
+                            unselectedIconTheme: unselectedIconTheme,
+                            selectedLabelTextStyle: selectedLabelTextStyle,
+                            unselectedLabelTextStyle: unSelectedLabelTextStyle,
+                            destinations: destinations,
+                            iconTransitionAnimation: iconTransitionAnimation,
+                            iconTransitionCurve: iconTransitionCurve,
+                            iconTransitionDuration: iconTransitionDuration,
+                            destinationFillRegion: destinationFillRegion,
+                            destinationHoverRegion: destinationHoverRegion,
+                            destinationFillShape: destinationFillShape,
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
               );
             },
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
-                    child: IntrinsicHeight(
-                      child: CustomNavigationRail(
-                        labelType: labelType,
-                        leading: leading,
-                        trailing: trailing,
-                        onDestinationSelected: onDestinationSelected,
-                        groupAlignment: groupAlignment,
-                        backgroundColor: backgroundColor,
-                        extended: extended,
-                        selectedIndex: selectedIndex,
-                        selectedIconTheme: selectedIconTheme,
-                        unselectedIconTheme: unselectedIconTheme,
-                        selectedLabelTextStyle: selectedLabelTextStyle,
-                        unselectedLabelTextStyle: unSelectedLabelTextStyle,
-                        destinations: destinations,
-                        iconTransitionAnimation: iconTransitionAnimation,
-                        iconTransitionCurve: iconTransitionCurve,
-                        iconTransitionDuration: iconTransitionDuration,
-                        destinationFillRegion: destinationFillRegion,
-                        destinationHoverRegion: destinationHoverRegion,
-                        destinationFillShape: destinationFillShape,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
           ),
         );
       },
