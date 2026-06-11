@@ -588,6 +588,56 @@ void main() {
     expect(rect.height, 32);
   });
 
+  testWidgets(
+      "bar content fill mode with hidden labels keeps padded icon interaction rect",
+      (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          bottomNavigationBar: CustomNavigationBar(
+            selectedIndex: 0,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+            destinationFillRegion: NavigationDestinationRegion.content,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: "Home",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: "Search",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) =>
+          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect rect = rectCallback!();
+
+    final Rect selectedIconRect = tester.getRect(find.byIcon(Icons.home).first);
+
+    expect(rect.width, greaterThan(selectedIconRect.width));
+    expect(rect.height, greaterThan(selectedIconRect.height));
+    expect(rect.height, greaterThanOrEqualTo(32));
+  });
+
   testWidgets("destinationFillShape is applied to interaction shape", (
     WidgetTester tester,
   ) async {

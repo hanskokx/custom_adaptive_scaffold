@@ -1489,15 +1489,21 @@ Rect _navigationBarDestinationHighlightRect({
     case NavigationDestinationRegion.icon:
       return effectiveIconRect;
     case NavigationDestinationRegion.content:
-      if (!shouldUseLabelBounds) {
-        return effectiveIconRect;
-      }
-      final Rect combined =
-          effectiveIconRect.expandToInclude(measuredLabelRect);
       const double contentExtraHorizontalPadding = 4.0;
       const double contentExtraVerticalPadding = 4.0;
       final double contentHorizontalPadding =
           horizontalPadding + contentExtraHorizontalPadding;
+      if (!shouldUseLabelBounds) {
+        final Rect iconContentRect =
+            effectiveIconRect.inflate(contentExtraVerticalPadding);
+        return expandAndClamp(
+          iconContentRect,
+          leftPadding: contentHorizontalPadding,
+          rightPadding: contentHorizontalPadding,
+        );
+      }
+      final Rect combined =
+          effectiveIconRect.expandToInclude(measuredLabelRect);
       final Rect contentRect = combined.inflate(contentExtraVerticalPadding);
       return expandAndClamp(
         contentRect,
