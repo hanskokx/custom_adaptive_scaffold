@@ -406,6 +406,16 @@ set `destinationFillRegion: NavigationDestinationRegion.full` on
 `CustomNavigationRail` (or on `AdaptiveScaffold.standardNavigationRail` when
 using the helper).
 
+Behavior notes:
+
+- `NavigationDestinationRegion.full` now expands to the destination lane more
+  consistently in rail layouts (including extended rails) while keeping icon
+  positioning stable.
+- `NavigationDestinationRegion.content` keeps a padded icon interaction/highlight
+  rect when labels are hidden.
+- `NavigationDestinationRegion.label` does not fall back to an icon-region pill
+  when labels are hidden; in hidden-label states there is no label-region pill.
+
 ### Scoped selection indicator
 
 By default the selection indicator fills the entire destination item.
