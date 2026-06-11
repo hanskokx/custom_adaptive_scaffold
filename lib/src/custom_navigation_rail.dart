@@ -7,7 +7,6 @@ import "dart:ui";
 import "package:flutter/material.dart";
 
 import "breakpoints.dart";
-import "compact_destination_layout.dart";
 import "custom_navigation_rail_theme.dart";
 import "destination_region_boundary.dart";
 import "navigation_destination_types.dart";

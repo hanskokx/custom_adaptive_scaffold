@@ -374,7 +374,7 @@ AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldNavigationThemeData(
     compactLabelType: NavigationRailLabelType.selected,
-    expandedLabelBehavior: NavigationRailLabelType.all,
+    expandedLabelType: NavigationRailLabelType.all,
     transitionAnimation: NavigationDestinationAnimation.fadeSwap,
     transitionCurve: Curves.easeOutCubic,
     transitionDuration: Duration(milliseconds: 220),
@@ -389,7 +389,7 @@ Notes:
   bar destination transitions.
 - `compactLabelType` configures compact rail labels directly, and maps to
   the corresponding small navigation bar label behavior.
-- `expandedLabelBehavior` applies only to expanded rails (medium-large and up).
+- `expandedLabelType` applies only to expanded rails (medium-large and up).
   Defaults to `NavigationRailLabelType.all` and supports
   `none`, `selected`, and `all`.
 

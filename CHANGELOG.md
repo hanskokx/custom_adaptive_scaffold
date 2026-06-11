@@ -15,10 +15,10 @@
 * **[FEAT] AdaptiveScaffold adds consolidated adaptive navigation overrides**
   * New `navigationTheme` accepts `AdaptiveScaffoldNavigationThemeData` for
     shared compact/small label behavior via `compactLabelType`, expanded
-    rail label behavior via `expandedLabelBehavior`, shared destination
+    rail label behavior via `expandedLabelType`, shared destination
     transition animation, compact rail transition curve/duration, and
     destination fill mode/shape.
-  * `expandedLabelBehavior` is scoped to extended rail layouts and defaults to
+  * `expandedLabelType` is scoped to extended rail layouts and defaults to
     `all`, while supporting `none`, `selected`, and `all`.
 * **[FEAT] Navigation destination fill/highlight is now configurable across
   custom bars, rails, and AdaptiveScaffold helpers**

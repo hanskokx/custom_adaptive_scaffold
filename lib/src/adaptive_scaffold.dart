@@ -53,7 +53,7 @@ NavigationDestinationLabelBehavior? _labelBehaviorFromType(
 class AdaptiveScaffoldNavigationThemeData {
   const AdaptiveScaffoldNavigationThemeData({
     this.compactLabelType,
-    this.expandedLabelBehavior,
+    this.expandedLabelType,
     this.transitionAnimation = NavigationDestinationAnimation.none,
     this.transitionCurve = Curves.easeInOut,
     this.transitionDuration,
@@ -82,7 +82,7 @@ class AdaptiveScaffoldNavigationThemeData {
   /// breakpoints.
   ///
   /// When null, defaults to [NavigationRailLabelType.all].
-  final NavigationRailLabelType? expandedLabelBehavior;
+  final NavigationRailLabelType? expandedLabelType;
 
   /// Icon transition preset used by small breakpoint navigation bar and
   /// compact (medium breakpoint) navigation rail destinations.
@@ -815,7 +815,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelBehavior ??
+              labelType: effectiveNavigationTheme.expandedLabelType ??
                   NavigationRailLabelType.all,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
@@ -847,7 +847,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelBehavior ??
+              labelType: effectiveNavigationTheme.expandedLabelType ??
                   NavigationRailLabelType.all,
               padding: widget.padding,
               destinationFillRegion:
@@ -878,7 +878,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelBehavior ??
+              labelType: effectiveNavigationTheme.expandedLabelType ??
                   NavigationRailLabelType.all,
               padding: widget.padding,
               destinationFillRegion:

@@ -986,7 +986,7 @@ void main() {
             child: AdaptiveScaffold(
               destinations: destinations,
               navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-                expandedLabelBehavior: NavigationRailLabelType.none,
+                expandedLabelType: NavigationRailLabelType.none,
               ),
             ),
           ),
@@ -1057,7 +1057,7 @@ void main() {
               selectedIndex: 0,
               destinations: destinations,
               navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-                expandedLabelBehavior: NavigationRailLabelType.selected,
+                expandedLabelType: NavigationRailLabelType.selected,
               ),
             ),
           ),
