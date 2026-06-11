@@ -864,10 +864,13 @@ void main() {
       (Widget widget) =>
           widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
     );
+    expect(inkResponses, findsNWidgets(2));
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
     final RenderBox firstBox =
         tester.renderObject<RenderBox>(inkResponses.first);
-    final Rect rect = firstInk.getRectCallback(firstBox)!();
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect rect = rectCallback!();
 
     expect(rect, Rect.zero);
   });
@@ -960,10 +963,13 @@ void main() {
     final Finder inkResponses = find.byWidgetPredicate(
       (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
     );
+    expect(inkResponses, findsNWidgets(2));
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
     final RenderBox firstBox =
         tester.renderObject<RenderBox>(inkResponses.first);
-    final Rect rect = firstInk.getRectCallback(firstBox)!();
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect rect = rectCallback!();
 
     expect(rect, Rect.zero);
   });

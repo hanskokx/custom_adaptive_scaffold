@@ -115,6 +115,10 @@ class AdaptiveScaffoldNavigationThemeData {
 
   /// Optional shape for hover/ink interaction.
   ///
+  /// Note: this is only applied when [ThemeData.useMaterial3] is true. In
+  /// Material 2, hover/ink interaction continues using the default border
+  /// radius behavior.
+  ///
   /// If null, falls back to [destinationFillShape].
   final ShapeBorder? destinationHoverShape;
 }

@@ -375,8 +375,11 @@ class CustomNavigationRail extends StatefulWidget {
   /// Optional shape used for hover/ink interaction when
   /// [destinationHoverRegion] is configured.
   ///
+  /// Note: this is only applied when [ThemeData.useMaterial3] is true. In
+  /// Material 2, hover/ink interaction continues using the default border
+  /// radius behavior.
+  ///
   /// If null, falls back to [destinationFillShape].
-
   final ShapeBorder? destinationHoverShape;
 
   /// Icon transition preset for destination icon swaps.
