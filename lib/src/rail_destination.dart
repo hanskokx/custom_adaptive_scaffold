@@ -410,7 +410,7 @@ class _RailDestinationState extends State<RailDestination>
           );
         } else {
           final bool showExpandedLabel = switch (labelType) {
-            NavigationRailLabelType.none => false,
+            NavigationRailLabelType.none => true,
             NavigationRailLabelType.selected => selected,
             NavigationRailLabelType.all => true,
           };

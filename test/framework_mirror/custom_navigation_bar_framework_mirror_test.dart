@@ -883,7 +883,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a000000)),
+          ..rect(color: const Color(0x0a6750a4)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.alwaysHide`.
@@ -899,7 +899,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a000000)),
+          ..rect(color: const Color(0x0a6750a4)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.onlyShowSelected`.
@@ -915,7 +915,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a000000)),
+          ..rect(color: const Color(0x0a6750a4)),
       );
 
       // Make sure ripple is shifted when selectedIndex changes.
@@ -930,7 +930,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a000000)),
+          ..rect(color: const Color(0x0a6750a4)),
       );
     },
     tags: <String>["divergence"],
@@ -974,7 +974,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a000000)),
+          ..rect(color: const Color(0x0a6750a4)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.alwaysHide`.
@@ -989,7 +989,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a000000)),
+          ..rect(color: const Color(0x0a6750a4)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.onlyShowSelected`.
@@ -1004,7 +1004,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a000000)),
+          ..rect(color: const Color(0x0a6750a4)),
       );
     },
     tags: <String>["divergence"],

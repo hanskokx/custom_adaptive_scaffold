@@ -961,7 +961,7 @@ void main() {
   );
 
   testWidgets(
-    "adaptive scaffold navigationTheme can override expanded rail labels",
+    "adaptive scaffold navigationTheme can set expanded rail label type",
     (WidgetTester tester) async {
       const List<NavigationDestination> destinations = <NavigationDestination>[
         CustomNavigationDestination(
@@ -996,9 +996,9 @@ void main() {
       final CustomNavigationRail expandedRail = tester
           .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
       expect(expandedRail.labelType, NavigationRailLabelType.none);
-
-      expect(find.text("Home"), findsNothing);
-      expect(find.text("Profile"), findsNothing);
+      // Extended rails always show labels, matching Flutter NavigationRail.
+      expect(find.text("Home"), findsOneWidget);
+      expect(find.text("Profile"), findsOneWidget);
     },
   );
 

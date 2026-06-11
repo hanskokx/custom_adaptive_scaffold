@@ -248,7 +248,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a000000)),
+          ..rect(color: const Color(0x0a6750a4)),
       );
     },
     tags: <String>["divergence"],
