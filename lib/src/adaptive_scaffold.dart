@@ -416,10 +416,12 @@ class AdaptiveScaffold extends StatefulWidget {
   static NavigationRailDestination toRailDestination(
     NavigationDestination destination,
   ) {
-    return NavigationRailDestination(
+    return CustomNavigationRailDestination(
       label: Text(destination.label),
       icon: destination.icon,
       selectedIcon: destination.selectedIcon,
+      tooltip: destination.tooltip,
+      disabled: !destination.enabled,
     );
   }
 

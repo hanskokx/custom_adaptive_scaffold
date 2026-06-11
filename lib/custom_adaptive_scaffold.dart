@@ -14,7 +14,7 @@ export "src/custom_navigation_bar.dart"
     show CustomNavigationBar, CustomNavigationDestination, NavigationIndicator;
 export "src/custom_navigation_bar_theme.dart";
 export "src/custom_navigation_rail.dart"
-    show RailDestination, CustomNavigationRail;
+    show RailDestination, CustomNavigationRail, CustomNavigationRailDestination;
 export "src/custom_navigation_rail_theme.dart";
 export "src/navigation_destination_types.dart";
 export "src/slot_layout.dart";

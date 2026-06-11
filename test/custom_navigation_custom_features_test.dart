@@ -1,4 +1,5 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
+import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 
@@ -128,6 +129,101 @@ void main() {
     );
 
     expect(find.byKey(transitionKey), findsNWidgets(2));
+  });
+
+  testWidgets("rail tooltips appear on long-press and secondary click", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            destinations: const <NavigationRailDestination>[
+              CustomNavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+                tooltip: "Go home",
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.settings_outlined),
+                selectedIcon: Icon(Icons.settings),
+                label: Text("Settings"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.longPress(find.byIcon(Icons.home));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip("Go home"), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 2));
+
+    final Offset secondaryClickTarget =
+        tester.getCenter(find.byIcon(Icons.settings_outlined));
+    final TestGesture mouse = await tester.createGesture(
+      kind: PointerDeviceKind.mouse,
+      buttons: kSecondaryMouseButton,
+    );
+    await mouse.down(secondaryClickTarget);
+    await mouse.up();
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip("Settings"), findsOneWidget);
+
+    final Tooltip railTooltip =
+        tester.widget<Tooltip>(find.byType(Tooltip).first);
+    expect(railTooltip.preferBelow, isFalse);
+    expect(railTooltip.verticalOffset, 12);
+  });
+
+  testWidgets("bar tooltips appear on long-press and secondary click", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          bottomNavigationBar: CustomNavigationBar(
+            selectedIndex: 0,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: "Home",
+                tooltip: "Go home",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.settings_outlined),
+                selectedIcon: Icon(Icons.settings),
+                label: "Settings",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    await tester.longPress(find.byIcon(Icons.home));
+    await tester.pumpAndSettle();
+    expect(find.byTooltip("Go home"), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 2));
+
+    final Offset secondaryClickTarget =
+        tester.getCenter(find.byIcon(Icons.settings_outlined));
+    final TestGesture mouse = await tester.createGesture(
+      kind: PointerDeviceKind.mouse,
+      buttons: kSecondaryMouseButton,
+    );
+    await mouse.down(secondaryClickTarget);
+    await mouse.up();
+    await tester.pumpAndSettle();
+
+    expect(find.byTooltip("Settings"), findsOneWidget);
   });
 
   testWidgets(

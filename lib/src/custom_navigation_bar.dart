@@ -843,7 +843,8 @@ class _NavigationDestinationBuilderState
     return _NavigationBarDestinationSemantics(
       enabled: widget.enabled,
       child: _NavigationBarDestinationTooltip(
-        message: widget.tooltip,
+        message: widget.tooltip?.isNotEmpty == true ? widget.tooltip : null,
+        fallbackMessage: widget.label,
         child: ClipRect(
           child: Stack(
             key: _destinationRegionKey,
@@ -1745,18 +1746,23 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
   /// falling back to the label text.
   const _NavigationBarDestinationTooltip({
     required this.message,
+    required this.fallbackMessage,
     required this.child,
   });
 
-  /// The text rendered in the tooltip, or null to show no tooltip.
+  /// The explicit text rendered in the tooltip.
   final String? message;
+
+  /// The fallback text used when [message] is null.
+  final String fallbackMessage;
 
   /// The widget that, when long-pressed, will show the tooltip.
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    if (message == null) return child;
+    final String resolvedMessage = message ?? fallbackMessage;
+    if (resolvedMessage.isEmpty) return child;
 
     final ThemeData theme = Theme.of(context);
     final NavigationBarThemeData navigationBarTheme = theme.navigationBarTheme;
@@ -1767,12 +1773,52 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
       tooltipVerticalOffset = navigationBarTheme.tooltipVerticalOffset ?? 42;
     }
 
-    return Tooltip(
-      message: message!,
+    return _NavigationBarTooltipGestureTarget(
+      message: resolvedMessage,
       verticalOffset: tooltipVerticalOffset,
+      child: child,
+    );
+  }
+}
+
+class _NavigationBarTooltipGestureTarget extends StatefulWidget {
+  const _NavigationBarTooltipGestureTarget({
+    required this.message,
+    required this.verticalOffset,
+    required this.child,
+  });
+
+  final String message;
+  final double verticalOffset;
+  final Widget child;
+
+  @override
+  State<_NavigationBarTooltipGestureTarget> createState() =>
+      _NavigationBarTooltipGestureTargetState();
+}
+
+class _NavigationBarTooltipGestureTargetState
+    extends State<_NavigationBarTooltipGestureTarget> {
+  final GlobalKey<TooltipState> _tooltipKey = GlobalKey<TooltipState>();
+
+  void _showTooltip() {
+    _tooltipKey.currentState?.ensureTooltipVisible();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Tooltip(
+      key: _tooltipKey,
+      message: widget.message,
+      verticalOffset: widget.verticalOffset,
       excludeFromSemantics: true,
       preferBelow: false,
-      child: child,
+      child: GestureDetector(
+        behavior: HitTestBehavior.translucent,
+        onLongPress: _showTooltip,
+        onSecondaryTapDown: (_) => _showTooltip(),
+        child: widget.child,
+      ),
     );
   }
 }
