@@ -35,8 +35,8 @@ several places:
   - Extended layout controls (`leadingAtTop`, `trailingAtBottom`, `scrollable`,
     `mainAxisAlignment`).
   - Configurable rail destination fill/highlight via
-    `destinationFillRegion`, `destinationHoverRegion`, and
-    `destinationFillShape`.
+    `destinationFillRegion`, `destinationHoverRegion`,
+    `destinationFillShape`, and `destinationHoverShape`.
   - `AdaptiveScaffold` exposes the same fill options through
     `navigationTheme: AdaptiveScaffoldNavigationThemeData(...)`.
 - Theme extensions:
@@ -353,7 +353,9 @@ AdaptiveScaffold(
 ```
 
 To control hover/pressed interaction region independently, use
-`destinationHoverRegion` (defaults to `destinationFillRegion` when omitted):
+`destinationHoverRegion` (defaults to `destinationFillRegion` when omitted).
+To control hover/pressed interaction shape independently, use
+`destinationHoverShape` (defaults to `destinationFillShape` when omitted):
 
 ```dart
 AdaptiveScaffold(
@@ -361,6 +363,10 @@ AdaptiveScaffold(
   navigationTheme: const AdaptiveScaffoldNavigationThemeData(
     destinationFillRegion: NavigationDestinationRegion.icon,
     destinationHoverRegion: NavigationDestinationRegion.full,
+    destinationFillShape: StadiumBorder(),
+    destinationHoverShape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
   ),
   body: (BuildContext context) => const Placeholder(),
 )
@@ -399,6 +405,16 @@ If your app previously depended on full selected-destination fill behavior,
 set `destinationFillRegion: NavigationDestinationRegion.full` on
 `CustomNavigationRail` (or on `AdaptiveScaffold.standardNavigationRail` when
 using the helper).
+
+Behavior notes:
+
+- `NavigationDestinationRegion.full` now expands to the destination lane more
+  consistently in rail layouts (including extended rails) while keeping icon
+  positioning stable.
+- `NavigationDestinationRegion.content` keeps a padded icon interaction/highlight
+  rect when labels are hidden.
+- `NavigationDestinationRegion.label` does not fall back to an icon-region pill
+  when labels are hidden; in hidden-label states there is no label-region pill.
 
 ### Scoped selection indicator
 

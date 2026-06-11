@@ -311,6 +311,107 @@ void main() {
     }
   });
 
+  testWidgets("rail full fill is edge-to-edge while icon position stays stable",
+      (WidgetTester tester) async {
+    Future<(Rect, double)> firstHoverRectAndIconCenterFor(
+      NavigationDestinationRegion fillRegion,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true).copyWith(
+            navigationRailTheme: const CustomNavigationRailThemeData(
+              margin: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 6),
+            ),
+          ),
+          home: Scaffold(
+            body: CustomNavigationRail(
+              selectedIndex: 0,
+              destinationFillRegion: fillRegion,
+              destinations: const <NavigationRailDestination>[
+                NavigationRailDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                  label: Text("Home"),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search),
+                  label: Text("Search"),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Finder inkResponses = find.byWidgetPredicate(
+        (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      );
+      expect(inkResponses, findsNWidgets(2));
+
+      final InkResponse firstInk =
+          tester.widget<InkResponse>(inkResponses.first);
+      final RenderBox firstBox =
+          tester.renderObject<RenderBox>(inkResponses.first);
+      final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+      expect(rectCallback, isNotNull);
+      final Rect localRect = rectCallback!();
+
+      final Rect iconRect = tester.getRect(find.byIcon(Icons.home).first);
+      return (localRect, iconRect.center.dx);
+    }
+
+    final (Rect iconModeRect, double iconModeCenterX) =
+        await firstHoverRectAndIconCenterFor(NavigationDestinationRegion.icon);
+    final (Rect fullModeRect, double fullModeCenterX) =
+        await firstHoverRectAndIconCenterFor(NavigationDestinationRegion.full);
+
+    expect(fullModeRect.left, 0);
+    expect(
+      fullModeRect.right - fullModeRect.left,
+      greaterThan(iconModeRect.width),
+    );
+    expect((fullModeCenterX - iconModeCenterX).abs(), lessThanOrEqualTo(1.0));
+  });
+
+  testWidgets("rail full fill in compact mode uses rail lane width", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            destinationFillRegion: NavigationDestinationRegion.full,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final RenderBox firstInkBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    expect(firstInkBox.size.width, greaterThanOrEqualTo(80));
+  });
+
   testWidgets("icon fill mode keeps indicator-sized interaction rect",
       (WidgetTester tester) async {
     await tester.pumpWidget(
@@ -588,6 +689,56 @@ void main() {
     expect(rect.height, 32);
   });
 
+  testWidgets(
+      "bar content fill mode with hidden labels keeps padded icon interaction rect",
+      (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          bottomNavigationBar: CustomNavigationBar(
+            selectedIndex: 0,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+            destinationFillRegion: NavigationDestinationRegion.content,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: "Home",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: "Search",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) =>
+          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect rect = rectCallback!();
+
+    final Rect selectedIconRect = tester.getRect(find.byIcon(Icons.home).first);
+
+    expect(rect.width, greaterThan(selectedIconRect.width));
+    expect(rect.height, greaterThan(selectedIconRect.height));
+    expect(rect.height, greaterThanOrEqualTo(32));
+  });
+
   testWidgets("destinationFillShape is applied to interaction shape", (
     WidgetTester tester,
   ) async {
@@ -681,6 +832,49 @@ void main() {
     );
   });
 
+  testWidgets("bar label fill mode with hidden labels paints no icon pill", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          bottomNavigationBar: CustomNavigationBar(
+            selectedIndex: 0,
+            labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
+            destinationFillRegion: NavigationDestinationRegion.label,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: "Home",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: "Search",
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) =>
+          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+    );
+    expect(inkResponses, findsNWidgets(2));
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect rect = rectCallback!();
+
+    expect(rect, Rect.zero);
+  });
+
   testWidgets("rail label fill mode uses label-only fixed-height pill", (
     WidgetTester tester,
   ) async {
@@ -736,6 +930,48 @@ void main() {
       (rect.center.dy - labelRect.center.dy).abs(),
       lessThan((rect.center.dy - iconRect.center.dy).abs()),
     );
+  });
+
+  testWidgets("rail label fill mode with hidden labels paints no icon pill", (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            labelType: NavigationRailLabelType.none,
+            destinationFillRegion: NavigationDestinationRegion.label,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+    );
+    expect(inkResponses, findsNWidgets(2));
+    final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
+    final RenderBox firstBox =
+        tester.renderObject<RenderBox>(inkResponses.first);
+    final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
+    expect(rectCallback, isNotNull);
+    final Rect rect = rectCallback!();
+
+    expect(rect, Rect.zero);
   });
 
   testWidgets("rail extended label mode avoids icon overlap", (

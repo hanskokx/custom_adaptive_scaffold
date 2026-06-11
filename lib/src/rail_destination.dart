@@ -24,6 +24,7 @@ class RailDestination extends StatefulWidget {
     this.destinationFillRegion,
     this.destinationHoverRegion,
     this.destinationFillShape,
+    this.destinationHoverShape,
     this.disabled = false,
     this.extended = true,
     this.padding,
@@ -54,6 +55,7 @@ class RailDestination extends StatefulWidget {
   final NavigationDestinationRegion? destinationFillRegion;
   final NavigationDestinationRegion? destinationHoverRegion;
   final ShapeBorder? destinationFillShape;
+  final ShapeBorder? destinationHoverShape;
   final bool disabled;
   final bool extended;
   final EdgeInsetsGeometry? padding;
@@ -226,14 +228,16 @@ class _RailDestinationState extends State<RailDestination>
     final double minWidth =
         widget.minWidth ?? navigationRailTheme.minWidth ?? defaults.minWidth!;
 
+    final NavigationDestinationRegion? destinationFillRegion =
+        widget.destinationFillRegion;
     final double minExtendedWidth = (widget.minExtendedWidth ??
             navigationRailTheme.minExtendedWidth ??
             defaults.minExtendedWidth!) -
-        paddingAndMarginWidth;
+        (destinationFillRegion == NavigationDestinationRegion.full
+            ? 0
+            : paddingAndMarginWidth);
 
     final bool selected = widget.selected ?? false;
-    final NavigationDestinationRegion? destinationFillRegion =
-        widget.destinationFillRegion;
     final NavigationDestinationRegion? destinationHoverRegion =
         widget.destinationHoverRegion ?? destinationFillRegion;
     final bool isDefaultFillPath = destinationFillRegion == null ||
@@ -249,6 +253,12 @@ class _RailDestinationState extends State<RailDestination>
     final bool shouldPaintSelectedFill = selected && isCustomFillMode;
     final bool shouldShowIconIndicator =
         (widget.useIndicator ?? false) && isDefaultFillPath;
+    final ShapeBorder effectiveIconIndicatorShape =
+        widget.destinationFillShape ??
+            indicatorShape ??
+            (destinationFillRegion == NavigationDestinationRegion.full
+                ? const RoundedRectangleBorder()
+                : const StadiumBorder());
     final Color? selectedFillColor = indicatorColor;
 
     final IconThemeData unselectedIconTheme =
@@ -410,7 +420,7 @@ class _RailDestinationState extends State<RailDestination>
                     child: _AddIndicator(
                       addIndicator: shouldShowIconIndicator,
                       indicatorColor: indicatorColor,
-                      indicatorShape: indicatorShape,
+                      indicatorShape: effectiveIconIndicatorShape,
                       isCircular: !material3,
                       indicatorAnimation: _destinationAnimation,
                       child: animatedThemedIcon,
@@ -542,7 +552,7 @@ class _RailDestinationState extends State<RailDestination>
                   _AddIndicator(
                     addIndicator: shouldShowIconIndicator,
                     indicatorColor: indicatorColor,
-                    indicatorShape: indicatorShape,
+                    indicatorShape: effectiveIconIndicatorShape,
                     isCircular: false,
                     indicatorAnimation: _destinationAnimation,
                     child: DestinationRegionBoundary(
@@ -613,7 +623,7 @@ class _RailDestinationState extends State<RailDestination>
                 _AddIndicator(
                   addIndicator: shouldShowIconIndicator,
                   indicatorColor: indicatorColor,
-                  indicatorShape: indicatorShape,
+                  indicatorShape: effectiveIconIndicatorShape,
                   isCircular: false,
                   indicatorAnimation: _destinationAnimation,
                   child: DestinationRegionBoundary(
@@ -643,7 +653,8 @@ class _RailDestinationState extends State<RailDestination>
             : const StadiumBorder();
     final ShapeBorder effectiveFillShape =
         widget.destinationFillShape ?? indicatorShape ?? defaultFillShape;
-    final ShapeBorder effectiveInkShape = effectiveFillShape;
+    final ShapeBorder effectiveInkShape =
+        widget.destinationHoverShape ?? effectiveFillShape;
     final bool hasVisibleText = !collapsed
         ? switch (labelType) {
             NavigationRailLabelType.none => false,
@@ -716,7 +727,22 @@ class _RailDestinationState extends State<RailDestination>
               iconRegionKey: _iconRegionKey,
               labelRegionKey: _labelRegionKey,
               fillPadding: destinationPadding,
-              child: content,
+              child:
+                  destinationFillRegion == NavigationDestinationRegion.full &&
+                          !collapsed
+                      ? SizedBox(
+                          width: double.infinity,
+                          child: Align(
+                            alignment: AlignmentDirectional.topCenter,
+                            child: Padding(
+                              padding: const EdgeInsetsDirectional.only(
+                                start: _horizontalDestinationSpacingM3,
+                              ),
+                              child: content,
+                            ),
+                          ),
+                        )
+                      : content,
             ),
             Semantics(
               label: widget.indexLabel,
@@ -918,10 +944,10 @@ Rect _destinationHighlightRect({
       );
     case NavigationDestinationRegion.label:
       if (!hasVisibleText) {
-        return iconRect;
+        return Rect.zero;
       }
       if (measuredLabelRect == null) {
-        return iconRect;
+        return Rect.zero;
       }
       final Rect labelBand = measuredLabelRect;
       final double leadingAnchor =

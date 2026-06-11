@@ -60,6 +60,7 @@ class AdaptiveScaffoldNavigationThemeData {
     this.destinationFillRegion,
     this.destinationHoverRegion,
     this.destinationFillShape,
+    this.destinationHoverShape,
   });
 
   /// Optional label behavior for compact rail and small navigation bar.
@@ -111,6 +112,15 @@ class AdaptiveScaffoldNavigationThemeData {
   ///
   /// If null, the resolved navigation rail indicator shape is used.
   final ShapeBorder? destinationFillShape;
+
+  /// Optional shape for hover/ink interaction.
+  ///
+  /// Note: this is only applied when [ThemeData.useMaterial3] is true. In
+  /// Material 2, hover/ink interaction continues using the default border
+  /// radius behavior.
+  ///
+  /// If null, falls back to [destinationFillShape].
+  final ShapeBorder? destinationHoverShape;
 }
 
 /// Implements the basic visual layout structure for
@@ -457,14 +467,30 @@ class AdaptiveScaffold extends StatefulWidget {
     NavigationDestinationRegion? destinationFillRegion,
     NavigationDestinationRegion? destinationHoverRegion,
     ShapeBorder? destinationFillShape,
+    ShapeBorder? destinationHoverShape,
   }) {
     if (extended && width == 72) {
       width = 192;
     }
     return Builder(
       builder: (BuildContext context) {
+        final TextDirection textDirection = Directionality.of(context);
+        final EdgeInsets resolvedOuterPadding =
+            (padding ?? const EdgeInsets.all(8.0)).resolve(textDirection);
+        final bool fullFillRail =
+            destinationFillRegion == NavigationDestinationRegion.full;
+        final EdgeInsetsGeometry effectiveOuterPadding = fullFillRail
+            ? EdgeInsets.only(
+                top: resolvedOuterPadding.top,
+                bottom: resolvedOuterPadding.bottom,
+              )
+            : resolvedOuterPadding;
+
+        final List<NavigationRailDestination> effectiveDestinations =
+            destinations;
+
         return Padding(
-          padding: padding ?? const EdgeInsets.all(8.0),
+          padding: effectiveOuterPadding,
           child: TweenAnimationBuilder<double>(
             tween: Tween<double>(end: width),
             duration: const Duration(milliseconds: 220),
@@ -494,13 +520,14 @@ class AdaptiveScaffold extends StatefulWidget {
                             unselectedIconTheme: unselectedIconTheme,
                             selectedLabelTextStyle: selectedLabelTextStyle,
                             unselectedLabelTextStyle: unSelectedLabelTextStyle,
-                            destinations: destinations,
+                            destinations: effectiveDestinations,
                             iconTransitionAnimation: iconTransitionAnimation,
                             iconTransitionCurve: iconTransitionCurve,
                             iconTransitionDuration: iconTransitionDuration,
                             destinationFillRegion: destinationFillRegion,
                             destinationHoverRegion: destinationHoverRegion,
                             destinationFillShape: destinationFillShape,
+                            destinationHoverShape: destinationHoverShape,
                           ),
                         ),
                       ),
@@ -528,6 +555,7 @@ class AdaptiveScaffold extends StatefulWidget {
     NavigationDestinationRegion? destinationFillRegion,
     NavigationDestinationRegion? destinationHoverRegion,
     ShapeBorder? destinationFillShape,
+    ShapeBorder? destinationHoverShape,
   }) {
     return Builder(
       builder: (BuildContext context) {
@@ -570,6 +598,7 @@ class AdaptiveScaffold extends StatefulWidget {
               destinationFillRegion: destinationFillRegion,
               destinationHoverRegion: destinationHoverRegion,
               destinationFillShape: destinationFillShape,
+              destinationHoverShape: destinationHoverShape,
             ),
           ),
         );
@@ -808,6 +837,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.destinationHoverRegion,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
+              destinationHoverShape:
+                  effectiveNavigationTheme.destinationHoverShape,
             ),
           ),
           widget.mediumLargeBreakpoint: SlotLayout.from(
@@ -835,6 +866,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.destinationHoverRegion,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
+              destinationHoverShape:
+                  effectiveNavigationTheme.destinationHoverShape,
             ),
           ),
           widget.largeBreakpoint: SlotLayout.from(
@@ -866,6 +899,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.destinationHoverRegion,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
+              destinationHoverShape:
+                  effectiveNavigationTheme.destinationHoverShape,
             ),
           ),
           widget.extraLargeBreakpoint: SlotLayout.from(
@@ -897,6 +932,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.destinationHoverRegion,
               destinationFillShape:
                   effectiveNavigationTheme.destinationFillShape,
+              destinationHoverShape:
+                  effectiveNavigationTheme.destinationHoverShape,
             ),
           ),
         },
@@ -920,6 +957,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                         effectiveNavigationTheme.destinationHoverRegion,
                     destinationFillShape:
                         effectiveNavigationTheme.destinationFillShape,
+                    destinationHoverShape:
+                        effectiveNavigationTheme.destinationHoverShape,
                   ),
                 ),
               },

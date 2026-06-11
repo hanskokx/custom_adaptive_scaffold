@@ -130,6 +130,7 @@ class CustomNavigationRail extends StatefulWidget {
     this.destinationFillRegion,
     this.destinationHoverRegion,
     this.destinationFillShape,
+    this.destinationHoverShape,
     this.leadingAtTop = true,
     this.trailingAtBottom = false,
     this.scrollable = false,
@@ -371,6 +372,16 @@ class CustomNavigationRail extends StatefulWidget {
   /// [StadiumBorder].
   final ShapeBorder? destinationFillShape;
 
+  /// Optional shape used for hover/ink interaction when
+  /// [destinationHoverRegion] is configured.
+  ///
+  /// Note: this is only applied when [ThemeData.useMaterial3] is true. In
+  /// Material 2, hover/ink interaction continues using the default border
+  /// radius behavior.
+  ///
+  /// If null, falls back to [destinationFillShape].
+  final ShapeBorder? destinationHoverShape;
+
   /// Icon transition preset for destination icon swaps.
   ///
   /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
@@ -546,12 +557,26 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
                     defaults.unselectedIconTheme!.opacity,
               );
 
-    final bool isRTLDirection = Directionality.of(context) == TextDirection.rtl;
+    final TextDirection textDirection = Directionality.of(context);
+    final bool isRTLDirection = textDirection == TextDirection.rtl;
     final bool isCustom = navigationRailTheme is CustomNavigationRailThemeData;
-    final EdgeInsetsGeometry? railDestinationMargin =
+    EdgeInsetsGeometry? railDestinationMargin =
         isCustom ? navigationRailTheme.margin : null;
     final EdgeInsetsGeometry? railDestinationPadding =
         isCustom ? navigationRailTheme.padding : null;
+    EdgeInsets? fullFillHorizontalMargin;
+
+    if (widget.destinationFillRegion == NavigationDestinationRegion.full &&
+        railDestinationMargin != null) {
+      final EdgeInsets resolvedMargin = railDestinationMargin.resolve(
+        textDirection,
+      );
+      fullFillHorizontalMargin = resolvedMargin;
+      railDestinationMargin = EdgeInsets.only(
+        top: resolvedMargin.top,
+        bottom: resolvedMargin.bottom,
+      );
+    }
 
     Widget mainGroup = Column(
       mainAxisSize: widget.mainAxisAlignment != null
@@ -565,6 +590,11 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
         ],
         for (int i = 0; i < widget.destinations.length; i += 1)
           Container(
+            width: widget.extended &&
+                    widget.destinationFillRegion ==
+                        NavigationDestinationRegion.full
+                ? double.infinity
+                : null,
             margin: railDestinationMargin,
             child: _NavigationRailDestinationTooltip(
               message: _tooltipMessageForDestination(widget.destinations[i]),
@@ -584,14 +614,32 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
                 labelTextStyle: widget.selectedIndex == i
                     ? selectedLabelTextStyle
                     : unselectedLabelTextStyle,
-                padding:
-                    railDestinationPadding ?? widget.destinations[i].padding,
+                padding: () {
+                  EdgeInsetsGeometry? effectivePadding =
+                      railDestinationPadding ?? widget.destinations[i].padding;
+
+                  if (fullFillHorizontalMargin != null) {
+                    final EdgeInsets resolvedPadding =
+                        (effectivePadding ?? EdgeInsets.zero).resolve(
+                      textDirection,
+                    );
+                    effectivePadding = EdgeInsets.fromLTRB(
+                      resolvedPadding.left + fullFillHorizontalMargin.left,
+                      resolvedPadding.top,
+                      resolvedPadding.right + fullFillHorizontalMargin.right,
+                      resolvedPadding.bottom,
+                    );
+                  }
+
+                  return effectivePadding;
+                }(),
                 useIndicator: useIndicator,
                 indicatorColor: indicatorColor,
                 indicatorShape: indicatorShape,
                 destinationFillRegion: widget.destinationFillRegion,
                 destinationHoverRegion: widget.destinationHoverRegion,
                 destinationFillShape: widget.destinationFillShape,
+                destinationHoverShape: widget.destinationHoverShape,
                 onTap: () {
                   if (widget.onDestinationSelected != null) {
                     widget.onDestinationSelected!(i);

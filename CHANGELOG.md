@@ -1,3 +1,34 @@
+## 4.0.2
+
+* **[FEAT] Destination hover shape is now configurable independently**
+  * Added `destinationHoverShape` alongside `destinationFillShape` on
+    `CustomNavigationBar`, `CustomNavigationRail`, `RailDestination`, and
+    `AdaptiveScaffoldNavigationThemeData` (applied via `AdaptiveScaffold.navigationTheme`).
+  * When set, `destinationHoverShape` controls the shape of the hover/ink
+    interaction independently from the selected-fill shape.
+  * When omitted, hover shape falls back to `destinationFillShape`, preserving
+    existing behavior.
+
+* **[FEAT] Full destination fill regions now render edge-to-edge with stable icon positioning**
+  * Improved `NavigationDestinationRegion.full` behavior for
+    `CustomNavigationRail`, `CustomNavigationBar`, and
+    `AdaptiveScaffold.standardNavigationRail` so the fill region can use the
+    full lane while keeping icon alignment stable.
+  * In extended rail layouts, destination containers now expand to lane width
+    while preserving expected icon/label composition.
+
+* **[FIX] Content fill mode now preserves padded icon interaction bounds when labels are hidden**
+  * In `NavigationDestinationRegion.content`, hidden-label destinations now
+    keep a padded icon interaction rect instead of collapsing to icon-only
+    bounds.
+
+* **[FIX] Label-only fill mode no longer falls back to icon pills when labels are hidden**
+  * In `NavigationDestinationRegion.label`, when labels are not visible,
+    interaction/highlight rects now resolve to no label-region highlight rather
+    than painting an icon-region fallback pill.
+
+* No breaking API changes in this release.
+
 ## 4.0.1
 
 * **[FEAT] Adaptive rail examples now support explicit expand/collapse flows**
