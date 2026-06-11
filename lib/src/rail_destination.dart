@@ -71,6 +71,7 @@ class _RailDestinationState extends State<RailDestination>
     with TickerProviderStateMixin {
   late CurvedAnimation _positionAnimation;
   late Animation<double> _destinationAnimation;
+  AnimationController? _ownedDestinationController;
   late AnimationController _extendedController;
   late CurvedAnimation _extendedAnimation;
   final GlobalKey _destinationRegionKey = GlobalKey();
@@ -90,20 +91,15 @@ class _RailDestinationState extends State<RailDestination>
     super.didUpdateWidget(oldWidget);
 
     if (widget.destinationAnimation != oldWidget.destinationAnimation) {
+      _detachDestinationAnimation();
+      _attachDestinationAnimation();
       _positionAnimation.dispose();
       _setPositionAnimation();
     }
   }
 
   void _initControllers() {
-    _destinationAnimation = widget.destinationAnimation ??
-        AnimationController(
-          duration: kThemeAnimationDuration,
-          vsync: this,
-        )
-      ..addListener(() {
-        setState(() {});
-      });
+    _attachDestinationAnimation();
 
     _extendedController = AnimationController(
       duration: kThemeAnimationDuration,
@@ -117,8 +113,36 @@ class _RailDestinationState extends State<RailDestination>
     );
 
     _extendedController.addListener(() {
-      setState(() {});
+      if (mounted) setState(() {});
     });
+  }
+
+  void _attachDestinationAnimation() {
+    if (widget.destinationAnimation != null) {
+      _destinationAnimation = widget.destinationAnimation!;
+      _ownedDestinationController = null;
+    } else {
+      final AnimationController controller = AnimationController(
+        duration: kThemeAnimationDuration,
+        vsync: this,
+      );
+      _ownedDestinationController = controller;
+      _destinationAnimation = controller;
+    }
+
+    _destinationAnimation.addListener(_onDestinationAnimationTick);
+  }
+
+  void _detachDestinationAnimation() {
+    _destinationAnimation.removeListener(_onDestinationAnimationTick);
+    _ownedDestinationController?.dispose();
+    _ownedDestinationController = null;
+  }
+
+  void _onDestinationAnimationTick() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   void _setPositionAnimation() {
@@ -131,6 +155,7 @@ class _RailDestinationState extends State<RailDestination>
 
   @override
   void dispose() {
+    _detachDestinationAnimation();
     _extendedAnimation.dispose();
     _extendedController.dispose();
     _positionAnimation.dispose();
@@ -167,7 +192,11 @@ class _RailDestinationState extends State<RailDestination>
     final Animation<double> extendedAnimation =
         widget.extendedTransitionAnimation ?? _extendedAnimation;
 
-    final bool collapsed = extendedAnimation.value == 0;
+    // When the rail is toggled from extended to collapsed, its outer width can
+    // snap back to compact immediately while the destination animation is still
+    // reversing. Treating non-extended destinations as collapsed avoids a
+    // temporary horizontal overflow in that transition frame.
+    final bool collapsed = !widget.extended || extendedAnimation.value == 0;
 
     final TextDirection textDirection = Directionality.of(context);
     final bool material3 = theme.useMaterial3;

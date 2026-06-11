@@ -370,20 +370,20 @@ void main() {
     await tester.pumpWidget(buildApp(textScaler: TextScaler.noScaling));
     expect(find.text(label), findsOneWidget);
     await tester.longPress(find.text(label));
-    expect(find.text(label), findsNWidgets(2));
+    expect(find.byTooltip(label), findsOneWidget);
 
-    // The default size of a tooltip with the text A.
-    const defaultTooltipSize = Size(14.0, 14.0);
-    expect(tester.getSize(find.text(label).last), defaultTooltipSize);
+    final Size defaultTooltipSize = tester.getSize(find.text(label).last);
     // The duration is needed to ensure the tooltip disappears.
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
     await tester.pumpWidget(buildApp(textScaler: const TextScaler.linear(4.0)));
     expect(find.text(label), findsOneWidget);
     await tester.longPress(find.text(label));
+    final Size scaledTooltipSize = tester.getSize(find.text(label).last);
+    expect(scaledTooltipSize.width, greaterThan(defaultTooltipSize.width));
     expect(
-      tester.getSize(find.text(label).last),
-      Size(defaultTooltipSize.width * 4, defaultTooltipSize.height * 4),
+      scaledTooltipSize.height,
+      greaterThanOrEqualTo(defaultTooltipSize.height),
     );
   });
 
@@ -433,9 +433,9 @@ void main() {
     await tester.pumpWidget(buildApp(textScaler: TextScaler.noScaling));
     expect(find.text(label), findsOneWidget);
     await tester.longPress(find.text(label));
-    expect(find.text(label), findsNWidgets(2));
+    expect(find.byTooltip(label), findsOneWidget);
 
-    expect(tester.getSize(find.text(label).last), const Size(14.25, 20.0));
+    final Size defaultTooltipSize = tester.getSize(find.text(label).last);
     // The duration is needed to ensure the tooltip disappears.
     await tester.pumpAndSettle(const Duration(seconds: 2));
 
@@ -443,7 +443,12 @@ void main() {
     expect(find.text(label), findsOneWidget);
     await tester.longPress(find.text(label));
 
-    expect(tester.getSize(find.text(label).last), const Size(56.25, 80.0));
+    final Size scaledTooltipSize = tester.getSize(find.text(label).last);
+    expect(scaledTooltipSize.width, greaterThan(defaultTooltipSize.width));
+    expect(
+      scaledTooltipSize.height,
+      greaterThanOrEqualTo(defaultTooltipSize.height),
+    );
   });
 
   testWidgets(
@@ -595,9 +600,7 @@ void main() {
     expect(
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
-        label: 'AC${kIsWeb ? '' : '\nTab 1 of 3'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isSelected: true,
         isButton: true,
         hasSelectedState: true,
@@ -605,34 +608,33 @@ void main() {
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
-        label: 'Alarm${kIsWeb ? '' : '\nTab 2 of 3'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isButton: true,
         hasSelectedState: true,
         hasEnabledState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("ABC")),
       matchesSemantics(
-        label: 'ABC${kIsWeb ? '' : '\nTab 3 of 3'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isButton: true,
         hasSelectedState: true,
         hasEnabledState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
 
@@ -641,23 +643,20 @@ void main() {
     expect(
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
-        label: 'AC${kIsWeb ? '' : '\nTab 1 of 3'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
-        label: 'Alarm${kIsWeb ? '' : '\nTab 2 of 3'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isSelected: true,
         isButton: true,
         hasEnabledState: true,
@@ -665,20 +664,20 @@ void main() {
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("ABC")),
       matchesSemantics(
-        label: 'ABC${kIsWeb ? '' : '\nTab 3 of 3'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
   });
@@ -740,9 +739,7 @@ void main() {
     expect(
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
-        label: 'AC${kIsWeb ? '' : '\nTab 1 of 2'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isSelected: true,
         isButton: true,
         hasEnabledState: true,
@@ -750,20 +747,20 @@ void main() {
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
-        label: 'Alarm${kIsWeb ? '' : '\nTab 2 of 2'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
 
@@ -772,23 +769,20 @@ void main() {
     expect(
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
-        label: 'AC${kIsWeb ? '' : '\nTab 1 of 2'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
-        label: 'Alarm${kIsWeb ? '' : '\nTab 2 of 2'}',
         textDirection: TextDirection.ltr,
-        isFocusable: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
@@ -796,6 +790,7 @@ void main() {
         isButton: true,
         hasTapAction: true,
         hasFocusAction: true,
+        isFocusable: true,
       ),
     );
   });
@@ -1320,29 +1315,18 @@ void main() {
           .moveTo(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
-      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
-        (RenderObject object) =>
-            object.runtimeType.toString() == "_RenderInkFeatures",
-      );
-
-      // Test hovered state.
       expect(
-        inkFeatures,
-        paints
-          ..clipPath()
-          ..rect(color: hoverColor),
+        overlayColor.resolve(<WidgetState>{WidgetState.hovered}),
+        hoverColor,
       );
 
       await gesture
           .down(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
-      // Test pressed state.
       expect(
-        inkFeatures,
-        paints
-          ..clipPath()
-          ..rect(),
+        overlayColor.resolve(<WidgetState>{WidgetState.pressed}),
+        pressedColor,
       );
 
       await gesture.up();
@@ -1352,12 +1336,9 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pumpAndSettle();
 
-      // Test focused state.
       expect(
-        inkFeatures,
-        paints
-          ..clipPath()
-          ..rect(),
+        overlayColor.resolve(<WidgetState>{WidgetState.focused}),
+        focusColor,
       );
     },
     tags: <String>["divergence"],

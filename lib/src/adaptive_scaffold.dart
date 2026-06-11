@@ -416,10 +416,12 @@ class AdaptiveScaffold extends StatefulWidget {
   static NavigationRailDestination toRailDestination(
     NavigationDestination destination,
   ) {
-    return NavigationRailDestination(
+    return CustomNavigationRailDestination(
       label: Text(destination.label),
       icon: destination.icon,
       selectedIcon: destination.selectedIcon,
+      tooltip: destination.tooltip,
+      disabled: !destination.enabled,
     );
   }
 
@@ -463,42 +465,50 @@ class AdaptiveScaffold extends StatefulWidget {
       builder: (BuildContext context) {
         return Padding(
           padding: padding ?? const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: width,
-            height: MediaQuery.sizeOf(context).height,
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
-                    child: IntrinsicHeight(
-                      child: CustomNavigationRail(
-                        labelType: labelType,
-                        leading: leading,
-                        trailing: trailing,
-                        onDestinationSelected: onDestinationSelected,
-                        groupAlignment: groupAlignment,
-                        backgroundColor: backgroundColor,
-                        extended: extended,
-                        selectedIndex: selectedIndex,
-                        selectedIconTheme: selectedIconTheme,
-                        unselectedIconTheme: unselectedIconTheme,
-                        selectedLabelTextStyle: selectedLabelTextStyle,
-                        unselectedLabelTextStyle: unSelectedLabelTextStyle,
-                        destinations: destinations,
-                        iconTransitionAnimation: iconTransitionAnimation,
-                        iconTransitionCurve: iconTransitionCurve,
-                        iconTransitionDuration: iconTransitionDuration,
-                        destinationFillRegion: destinationFillRegion,
-                        destinationHoverRegion: destinationHoverRegion,
-                        destinationFillShape: destinationFillShape,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(end: width),
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeInOutCubic,
+            builder: (BuildContext context, double animatedWidth, Widget? _) {
+              final bool effectiveExtended = extended && animatedWidth >= 80.0;
+              return SizedBox(
+                width: animatedWidth,
+                height: MediaQuery.sizeOf(context).height,
+                child: LayoutBuilder(
+                  builder: (BuildContext context, BoxConstraints constraints) {
+                    return SingleChildScrollView(
+                      child: ConstrainedBox(
+                        constraints:
+                            BoxConstraints(minHeight: constraints.maxHeight),
+                        child: IntrinsicHeight(
+                          child: CustomNavigationRail(
+                            labelType: labelType,
+                            leading: leading,
+                            trailing: trailing,
+                            onDestinationSelected: onDestinationSelected,
+                            groupAlignment: groupAlignment,
+                            backgroundColor: backgroundColor,
+                            extended: effectiveExtended,
+                            selectedIndex: selectedIndex,
+                            selectedIconTheme: selectedIconTheme,
+                            unselectedIconTheme: unselectedIconTheme,
+                            selectedLabelTextStyle: selectedLabelTextStyle,
+                            unselectedLabelTextStyle: unSelectedLabelTextStyle,
+                            destinations: destinations,
+                            iconTransitionAnimation: iconTransitionAnimation,
+                            iconTransitionCurve: iconTransitionCurve,
+                            iconTransitionDuration: iconTransitionDuration,
+                            destinationFillRegion: destinationFillRegion,
+                            destinationHoverRegion: destinationHoverRegion,
+                            destinationFillShape: destinationFillShape,
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                );
-              },
-            ),
+                    );
+                  },
+                ),
+              );
+            },
           ),
         );
       },

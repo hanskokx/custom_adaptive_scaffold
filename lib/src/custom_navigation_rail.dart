@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "dart:async";
 import "dart:ui";
 
 import "package:flutter/material.dart";
@@ -12,6 +13,25 @@ import "destination_region_boundary.dart";
 import "navigation_destination_types.dart";
 
 part "rail_destination.dart";
+
+/// A [NavigationRailDestination] with explicit tooltip text support.
+///
+/// When [tooltip] is null, the rail falls back to the text label when
+/// possible. When it is an empty string, the tooltip is suppressed.
+class CustomNavigationRailDestination extends NavigationRailDestination {
+  const CustomNavigationRailDestination({
+    required super.icon,
+    required super.label,
+    super.selectedIcon,
+    super.indicatorColor,
+    super.indicatorShape,
+    super.padding,
+    super.disabled = false,
+    this.tooltip,
+  });
+
+  final String? tooltip;
+}
 
 /// A Material Design widget that is meant to be displayed at the left or right of an
 /// app to navigate between a small number of views, typically between three and
@@ -546,44 +566,49 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
         for (int i = 0; i < widget.destinations.length; i += 1)
           Container(
             margin: railDestinationMargin,
-            child: RailDestination(
-              minWidth: minWidth,
-              minExtendedWidth: minExtendedWidth,
-              extendedTransitionAnimation: _extendedAnimation,
-              selected: widget.selectedIndex == i,
-              icon: widget.destinations[i].icon,
-              selectedIcon: widget.destinations[i].selectedIcon,
-              label: widget.destinations[i].label,
-              destinationAnimation: _destinationAnimations[i],
-              labelType: labelType,
-              iconTheme: widget.selectedIndex == i
-                  ? selectedIconTheme
-                  : effectiveUnselectedIconTheme,
-              labelTextStyle: widget.selectedIndex == i
-                  ? selectedLabelTextStyle
-                  : unselectedLabelTextStyle,
-              padding: railDestinationPadding ?? widget.destinations[i].padding,
-              useIndicator: useIndicator,
-              indicatorColor: indicatorColor,
-              indicatorShape: indicatorShape,
-              destinationFillRegion: widget.destinationFillRegion,
-              destinationHoverRegion: widget.destinationHoverRegion,
-              destinationFillShape: widget.destinationFillShape,
-              onTap: () {
-                if (widget.onDestinationSelected != null) {
-                  widget.onDestinationSelected!(i);
-                }
-              },
-              indexLabel: localizations.tabLabel(
-                tabIndex: i + 1,
-                tabCount: widget.destinations.length,
+            child: _NavigationRailDestinationTooltip(
+              message: _tooltipMessageForDestination(widget.destinations[i]),
+              child: RailDestination(
+                minWidth: minWidth,
+                minExtendedWidth: minExtendedWidth,
+                extendedTransitionAnimation: _extendedAnimation,
+                selected: widget.selectedIndex == i,
+                icon: widget.destinations[i].icon,
+                selectedIcon: widget.destinations[i].selectedIcon,
+                label: widget.destinations[i].label,
+                destinationAnimation: _destinationAnimations[i],
+                labelType: labelType,
+                iconTheme: widget.selectedIndex == i
+                    ? selectedIconTheme
+                    : effectiveUnselectedIconTheme,
+                labelTextStyle: widget.selectedIndex == i
+                    ? selectedLabelTextStyle
+                    : unselectedLabelTextStyle,
+                padding:
+                    railDestinationPadding ?? widget.destinations[i].padding,
+                useIndicator: useIndicator,
+                indicatorColor: indicatorColor,
+                indicatorShape: indicatorShape,
+                destinationFillRegion: widget.destinationFillRegion,
+                destinationHoverRegion: widget.destinationHoverRegion,
+                destinationFillShape: widget.destinationFillShape,
+                onTap: () {
+                  if (widget.onDestinationSelected != null) {
+                    widget.onDestinationSelected!(i);
+                  }
+                },
+                indexLabel: localizations.tabLabel(
+                  tabIndex: i + 1,
+                  tabCount: widget.destinations.length,
+                ),
+                disabled: widget.destinations[i].disabled,
+                extended: widget.extended,
+                iconTransitionAnimation: widget.iconTransitionAnimation,
+                iconTransitionCurve: widget.iconTransitionCurve,
+                iconTransitionDuration: widget.iconTransitionDuration,
+                destinationTransitionBuilder:
+                    widget.destinationTransitionBuilder,
               ),
-              disabled: widget.destinations[i].disabled,
-              extended: widget.extended,
-              iconTransitionAnimation: widget.iconTransitionAnimation,
-              iconTransitionCurve: widget.iconTransitionCurve,
-              iconTransitionDuration: widget.iconTransitionDuration,
-              destinationTransitionBuilder: widget.destinationTransitionBuilder,
             ),
           ),
         if (!widget.trailingAtBottom && widget.trailing != null)
@@ -673,10 +698,111 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     _initControllers();
   }
 
+  String? _tooltipMessageForDestination(
+    NavigationRailDestination destination,
+  ) {
+    if (destination is CustomNavigationRailDestination) {
+      final String? explicitTooltip = destination.tooltip;
+      if (explicitTooltip != null) {
+        return explicitTooltip.isEmpty ? null : explicitTooltip;
+      }
+    }
+
+    final Widget label = destination.label;
+    if (label is Text) {
+      final String? text = label.data ?? label.textSpan?.toPlainText();
+      if (text != null && text.isNotEmpty) {
+        return text;
+      }
+    }
+    return null;
+  }
+
   void _rebuild() {
     setState(() {
       // Rebuilding when any of the controllers tick, i.e. when the items are
       // animating.
     });
+  }
+}
+
+class _NavigationRailDestinationTooltip extends StatefulWidget {
+  const _NavigationRailDestinationTooltip({
+    required this.message,
+    required this.child,
+  });
+
+  final String? message;
+  final Widget child;
+
+  @override
+  State<_NavigationRailDestinationTooltip> createState() =>
+      _NavigationRailDestinationTooltipState();
+}
+
+class _NavigationRailDestinationTooltipState
+    extends State<_NavigationRailDestinationTooltip> {
+  static const Duration _manualTooltipShowDuration = Duration(seconds: 2);
+
+  final GlobalKey<TooltipState> _tooltipKey = GlobalKey<TooltipState>();
+  Timer? _hideTimer;
+  bool _tooltipVisible = false;
+
+  void _showTooltip() {
+    _hideTimer?.cancel();
+
+    if (!_tooltipVisible && mounted) {
+      setState(() {
+        _tooltipVisible = true;
+      });
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _tooltipKey.currentState?.ensureTooltipVisible();
+    });
+
+    _hideTimer = Timer(_manualTooltipShowDuration, () {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _tooltipVisible = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _hideTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.message == null || widget.message!.isEmpty) {
+      return widget.child;
+    }
+
+    return TooltipVisibility(
+      visible: _tooltipVisible,
+      child: Tooltip(
+        key: _tooltipKey,
+        message: widget.message!,
+        triggerMode: TooltipTriggerMode.manual,
+        verticalOffset: 12,
+        showDuration: _manualTooltipShowDuration,
+        excludeFromSemantics: true,
+        preferBelow: false,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onLongPress: _showTooltip,
+          onSecondaryTapDown: (_) => _showTooltip(),
+          child: widget.child,
+        ),
+      ),
+    );
   }
 }

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "dart:async";
 import "dart:ui" show SemanticsRole;
 
 import "package:flutter/foundation.dart" show kIsWeb;
@@ -843,7 +844,7 @@ class _NavigationDestinationBuilderState
     return _NavigationBarDestinationSemantics(
       enabled: widget.enabled,
       child: _NavigationBarDestinationTooltip(
-        message: widget.tooltip,
+        message: widget.tooltip?.isNotEmpty == true ? widget.tooltip : null,
         child: ClipRect(
           child: Stack(
             key: _destinationRegionKey,
@@ -1741,14 +1742,13 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
   ///
   /// When [message] is null no [Tooltip] is rendered and [child] is returned
   /// directly, so passing `tooltip: null` on a
-  /// [CustomNavigationDestination] truly suppresses the tooltip instead of
-  /// falling back to the label text.
+  /// [CustomNavigationDestination] truly suppresses the tooltip.
   const _NavigationBarDestinationTooltip({
     required this.message,
     required this.child,
   });
 
-  /// The text rendered in the tooltip, or null to show no tooltip.
+  /// The explicit text rendered in the tooltip.
   final String? message;
 
   /// The widget that, when long-pressed, will show the tooltip.
@@ -1756,7 +1756,7 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (message == null) return child;
+    if (message == null || message!.isEmpty) return child;
 
     final ThemeData theme = Theme.of(context);
     final NavigationBarThemeData navigationBarTheme = theme.navigationBarTheme;
@@ -1767,12 +1767,89 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
       tooltipVerticalOffset = navigationBarTheme.tooltipVerticalOffset ?? 42;
     }
 
-    return Tooltip(
+    return _NavigationBarTooltipGestureTarget(
       message: message!,
       verticalOffset: tooltipVerticalOffset,
-      excludeFromSemantics: true,
-      preferBelow: false,
       child: child,
+    );
+  }
+}
+
+class _NavigationBarTooltipGestureTarget extends StatefulWidget {
+  const _NavigationBarTooltipGestureTarget({
+    required this.message,
+    required this.verticalOffset,
+    required this.child,
+  });
+
+  final String message;
+  final double verticalOffset;
+  final Widget child;
+
+  @override
+  State<_NavigationBarTooltipGestureTarget> createState() =>
+      _NavigationBarTooltipGestureTargetState();
+}
+
+class _NavigationBarTooltipGestureTargetState
+    extends State<_NavigationBarTooltipGestureTarget> {
+  static const Duration _manualTooltipShowDuration = Duration(seconds: 2);
+
+  final GlobalKey<TooltipState> _tooltipKey = GlobalKey<TooltipState>();
+  Timer? _hideTimer;
+  bool _tooltipVisible = false;
+
+  void _showTooltip() {
+    _hideTimer?.cancel();
+
+    if (!_tooltipVisible && mounted) {
+      setState(() {
+        _tooltipVisible = true;
+      });
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _tooltipKey.currentState?.ensureTooltipVisible();
+    });
+
+    _hideTimer = Timer(_manualTooltipShowDuration, () {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _tooltipVisible = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _hideTimer?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return TooltipVisibility(
+      visible: _tooltipVisible,
+      child: Tooltip(
+        key: _tooltipKey,
+        message: widget.message,
+        triggerMode: TooltipTriggerMode.manual,
+        verticalOffset: widget.verticalOffset,
+        showDuration: _manualTooltipShowDuration,
+        excludeFromSemantics: true,
+        preferBelow: false,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onLongPress: _showTooltip,
+          onSecondaryTapDown: (_) => _showTooltip(),
+          child: widget.child,
+        ),
+      ),
     );
   }
 }

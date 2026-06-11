@@ -162,11 +162,21 @@ void main() {
       final WidgetBuilder? widgetBuilder = slotLayoutConfig.builder;
       final Widget Function(BuildContext) widgetFunction =
           (widgetBuilder ?? () => Container()) as Widget Function(BuildContext);
-      final SizedBox sizedBox =
-          (((widgetFunction(context) as Builder).builder(context) as Padding)
+      final Widget railContainer =
+          ((widgetFunction(context) as Builder).builder(context) as Padding)
                   .child ??
-              () => const SizedBox()) as SizedBox;
-      expect(sizedBox.width, 72);
+              const SizedBox();
+
+      if (railContainer is SizedBox) {
+        expect(railContainer.width, 72);
+      } else if (railContainer is TweenAnimationBuilder<double>) {
+        expect(railContainer.tween.end, 72);
+      } else {
+        fail(
+          "Expected rail container to be SizedBox or TweenAnimationBuilder<double>, "
+          "but found ${railContainer.runtimeType}",
+        );
+      }
     },
   );
 
