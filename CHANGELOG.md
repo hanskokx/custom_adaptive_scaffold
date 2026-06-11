@@ -4,19 +4,6 @@
 
 ## 4.0.0
 
-* **[BREAKING] AdaptiveScaffold navigation theme API was consolidated and
-  renamed**
-  * `compactNavigationRailLabelType` -> `compactLabelType`
-  * `smallNavigationBarLabelBehavior` -> `smallLabelBehavior`
-  * `smallNavigationBarDestinationTransitionAnimation` ->
-    `transitionAnimation`
-  * `compactNavigationRailDestinationTransitionCurve` -> `transitionCurve`
-  * `compactNavigationRailDestinationTransitionDuration` ->
-    `transitionDuration`
-  * `compactNavigationRailDestinationTransitionAnimation` was removed.
-  * Migration: replace the old field names in
-    `AdaptiveScaffoldNavigationThemeData`; use `transitionAnimation` for both
-    compact rail and small navigation bar destination transitions.
 * **[BREAKING] Compact rail fill/highlight now defaults to Flutter-style
   icon-scoped rendering**
   * `CustomNavigationRail`, `AdaptiveScaffold.standardNavigationRail`, and
@@ -25,25 +12,30 @@
   * Migration: if your app relied on the previous full selected-destination
     fill treatment, set
     `destinationFillMode: NavigationDestinationFillMode.full` explicitly.
-* **[BREAKING] Minimum SDK support was raised**
-  * Dart SDK: `^3.5.3`
-  * Flutter SDK: `>=3.29.0`
-* **[FEAT] AdaptiveScaffold navigation theming was expanded and normalized**
-  * `AdaptiveScaffoldNavigationThemeData` now centralizes adaptive navigation
-    overrides for compact rail labels, small navigation bar labels, shared
+* **[BREAKING] Custom navigation theme data now uses nullable layout and
+  tooltip fields**
+  * `CustomNavigationBarThemeData.margin`, `padding`, and
+    `tooltipVerticalOffset` are now nullable.
+  * `CustomNavigationRailThemeData.margin` and `padding` are now nullable.
+  * Migration: if you read these values directly, handle `null` and resolve
+    defaults from the active widget/theme instead of assuming zero/`42`.
+* **[FEAT] AdaptiveScaffold adds consolidated adaptive navigation overrides**
+  * New `navigationTheme` accepts `AdaptiveScaffoldNavigationThemeData` for
+    compact rail label behavior, small navigation bar label behavior, shared
     destination transition animation, compact rail transition curve/duration,
-    and rail destination fill mode/shape.
+    and destination fill mode/shape.
   * Added `NavigationLabelType` and `NavigationLabelBehavior` typedef aliases
     for the rail and bar label enums.
-* **[FEAT] Rail destination fill/highlight is now configurable**
-  * `CustomNavigationRail` adds `destinationFillMode` and
-    `destinationFillShape`.
+* **[FEAT] Navigation destination fill/highlight is now configurable across
+  custom bars, rails, and AdaptiveScaffold helpers**
+  * `CustomNavigationBar`, `CustomNavigationRail`,
+    `AdaptiveScaffold.standardBottomNavigationBar`, and
+    `AdaptiveScaffold.standardNavigationRail` support
+    `destinationFillMode` and `destinationFillShape`.
   * Supported fill modes are `none`, `icon`, `content`, `label`, and `full`.
-  * Fill/highlight color now resolves from
-    `NavigationRailThemeData.indicatorColor`.
-  * `AdaptiveScaffold.standardNavigationRail` forwards these options and
-    `AdaptiveScaffold` applies them through
-    `AdaptiveScaffoldNavigationThemeData`.
+  * Fill/highlight rendering now follows the resolved navigation indicator
+    color and shape, and `AdaptiveScaffold.navigationTheme` can apply these
+    settings across layouts.
 * **[FEAT] Navigation destination animation and composition APIs were added**
   * `CustomNavigationDestination` now supports:
     `hideLabel`, `transitionAnimation`, `transitionCurve`,
@@ -63,8 +55,6 @@
   * `navigation_destination_types.dart` is now exported, exposing
     `NavigationDestinationAnimation`, `NavigationDestinationFillMode`, and the
     new destination builder typedefs.
-* **[FEAT] Custom navigation bar theming adds tooltip positioning control**
-  * `CustomNavigationBarThemeData` now exposes `tooltipVerticalOffset`.
 * **[FIX] Tooltips are now truly opt-in on custom destinations**
   * `CustomNavigationDestination.tooltip` no longer falls back to the label
     text when `null`.
@@ -84,9 +74,9 @@
   * Adds broad framework-mirror regression coverage for custom navigation bar,
     rail, and theme behavior.
 * **[DOC] README migration and customization docs were rewritten**
-  * Documented the renamed adaptive navigation theme API, the new transition
-    and fill APIs, and the explicit migration step for apps that want to keep
-    the legacy full-fill rail appearance.
+  * Documented `AdaptiveScaffold.navigationTheme`, the new transition and fill
+    APIs, package-root exports, and the explicit migration step for apps that
+    want to keep the legacy full-fill rail appearance.
 
 ## 3.0.2
 
