@@ -2,9 +2,6 @@
 
 * **[BREAKING] Compact rail fill/highlight now defaults to Flutter-style
   icon-scoped rendering**
-  * `CustomNavigationRail`, `AdaptiveScaffold.standardNavigationRail`, and
-    `AdaptiveScaffoldNavigationThemeData` now default to
-    `NavigationDestinationFillMode.icon`.
   * Migration: if your app relied on the previous full selected-destination
     fill treatment, set
     `destinationFillMode: NavigationDestinationFillMode.full` explicitly.
