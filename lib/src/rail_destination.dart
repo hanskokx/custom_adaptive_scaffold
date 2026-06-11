@@ -801,9 +801,6 @@ Rect _destinationHighlightRect({
   if (isDefaultFillPath) {
     return iconRect;
   }
-  if (mode == NavigationDestinationRegion.full) {
-    return fullRect;
-  }
   final Rect? measuredIconRect = referenceBox != null && iconRegionKey != null
       ? _resolveRegionRect(iconRegionKey, referenceBox)
       : null;
@@ -918,7 +915,25 @@ Rect _destinationHighlightRect({
         bottom,
       );
     case NavigationDestinationRegion.full:
-      return fullRect;
+      if (!isCollapsed) {
+        return fullRect;
+      }
+      // For collapsed selected-label rails, keep full-width but avoid tall
+      // full-height hover/fill on unselected items where label is hidden.
+      // When no label region is measured (e.g. labelType.none), preserve
+      // legacy full-destination behavior.
+      if (measuredLabelRect == null) {
+        return fullRect;
+      }
+      final Rect combined = hasVisibleText
+          ? effectiveIconRect.expandToInclude(measuredLabelRect)
+          : effectiveIconRect;
+      return Rect.fromLTRB(
+        fullRect.left,
+        (combined.top - topPadding).clamp(0.0, fullRect.bottom),
+        fullRect.right,
+        (combined.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
+      );
   }
 }
 
