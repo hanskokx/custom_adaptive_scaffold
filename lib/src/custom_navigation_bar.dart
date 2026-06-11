@@ -832,7 +832,6 @@ class _NavigationDestinationBuilderState
         child: ClipRect(
           child: Stack(
             key: _destinationRegionKey,
-            fit: StackFit.expand,
             alignment: Alignment.center,
             children: <Widget>[
               if (shouldPaintSelectedFill && widget.color != null)
@@ -869,17 +868,6 @@ class _NavigationDestinationBuilderState
                 child: Stack(
                   alignment: Alignment.center,
                   children: <Widget>[
-                    // Full-item indicator: only shown when no scoped indicator is set.
-                    if (widget.iconIndicatorShape == null &&
-                        widget.labelIndicatorShape == null &&
-                        isDefaultFillPath)
-                      NavigationIndicator(
-                        animation: widget.animation,
-                        color: widget.color,
-                        shape: widget.shape,
-                        width: double.infinity,
-                        height: double.infinity,
-                      ),
                     _StatusTransitionWidgetBuilder(
                       animation: widget.animation,
                       builder: (context, child) {
@@ -893,6 +881,25 @@ class _NavigationDestinationBuilderState
 
                         Widget iconWidget = widget.buildIcon(context);
                         Widget labelWidget = widget.buildLabel(context);
+
+                        // Match Flutter default/icon behavior by anchoring the
+                        // indicator to the icon layer instead of centering it in
+                        // the full destination region.
+                        if (widget.iconIndicatorShape == null &&
+                            widget.labelIndicatorShape == null &&
+                            isDefaultFillPath) {
+                          iconWidget = Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              NavigationIndicator(
+                                animation: widget.animation,
+                                color: widget.color,
+                                shape: widget.shape,
+                              ),
+                              iconWidget,
+                            ],
+                          );
+                        }
 
                         if (widget.iconIndicatorShape != null) {
                           iconWidget = Stack(
