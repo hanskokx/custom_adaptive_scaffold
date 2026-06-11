@@ -1,7 +1,3 @@
-## Unreleased
-
-* No changes yet.
-
 ## 4.0.0
 
 * **[BREAKING] Compact rail fill/highlight now defaults to Flutter-style
