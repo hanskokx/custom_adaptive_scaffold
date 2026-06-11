@@ -100,10 +100,10 @@ class _RailDestinationState extends State<RailDestination>
         AnimationController(
           duration: kThemeAnimationDuration,
           vsync: this,
-        )
-      ..addListener(() {
-        setState(() {});
-      });
+        );
+    _destinationAnimation.addListener(() {
+      if (mounted) setState(() {});
+    });
 
     _extendedController = AnimationController(
       duration: kThemeAnimationDuration,
@@ -117,7 +117,7 @@ class _RailDestinationState extends State<RailDestination>
     );
 
     _extendedController.addListener(() {
-      setState(() {});
+      if (mounted) setState(() {});
     });
   }
 

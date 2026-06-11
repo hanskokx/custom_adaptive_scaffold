@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "dart:async";
 import "dart:ui" show SemanticsRole;
 
 import "package:flutter/foundation.dart" show kIsWeb;
@@ -1799,25 +1800,62 @@ class _NavigationBarTooltipGestureTarget extends StatefulWidget {
 
 class _NavigationBarTooltipGestureTargetState
     extends State<_NavigationBarTooltipGestureTarget> {
+  static const Duration _manualTooltipShowDuration = Duration(seconds: 2);
+
   final GlobalKey<TooltipState> _tooltipKey = GlobalKey<TooltipState>();
+  Timer? _hideTimer;
+  bool _tooltipVisible = false;
 
   void _showTooltip() {
-    _tooltipKey.currentState?.ensureTooltipVisible();
+    _hideTimer?.cancel();
+
+    if (!_tooltipVisible && mounted) {
+      setState(() {
+        _tooltipVisible = true;
+      });
+    }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
+      _tooltipKey.currentState?.ensureTooltipVisible();
+    });
+
+    _hideTimer = Timer(_manualTooltipShowDuration, () {
+      if (!mounted) {
+        return;
+      }
+      setState(() {
+        _tooltipVisible = false;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _hideTimer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Tooltip(
-      key: _tooltipKey,
-      message: widget.message,
-      verticalOffset: widget.verticalOffset,
-      excludeFromSemantics: true,
-      preferBelow: false,
-      child: GestureDetector(
-        behavior: HitTestBehavior.translucent,
-        onLongPress: _showTooltip,
-        onSecondaryTapDown: (_) => _showTooltip(),
-        child: widget.child,
+    return TooltipVisibility(
+      visible: _tooltipVisible,
+      child: Tooltip(
+        key: _tooltipKey,
+        message: widget.message,
+        triggerMode: TooltipTriggerMode.manual,
+        verticalOffset: widget.verticalOffset,
+        showDuration: _manualTooltipShowDuration,
+        excludeFromSemantics: true,
+        preferBelow: false,
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onLongPress: _showTooltip,
+          onSecondaryTapDown: (_) => _showTooltip(),
+          child: widget.child,
+        ),
       ),
     );
   }

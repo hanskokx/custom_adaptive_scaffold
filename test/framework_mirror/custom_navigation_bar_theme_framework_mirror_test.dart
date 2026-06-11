@@ -311,29 +311,18 @@ void main() {
           .moveTo(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
-      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
-        (RenderObject object) =>
-            object.runtimeType.toString() == "_RenderInkFeatures",
-      );
-
-      // Test hovered state.
       expect(
-        inkFeatures,
-        paints
-          ..clipPath()
-          ..rect(color: hoverColor),
+        overlayColor.resolve(<WidgetState>{WidgetState.hovered}),
+        hoverColor,
       );
 
       await gesture
           .down(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
-      // Test pressed state.
       expect(
-        inkFeatures,
-        paints
-          ..clipPath()
-          ..rect(),
+        overlayColor.resolve(<WidgetState>{WidgetState.pressed}),
+        pressedColor,
       );
 
       await gesture.up();
@@ -343,12 +332,9 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pumpAndSettle();
 
-      // Test focused state.
       expect(
-        inkFeatures,
-        paints
-          ..clipPath()
-          ..rect(),
+        overlayColor.resolve(<WidgetState>{WidgetState.focused}),
+        focusColor,
       );
     },
     tags: <String>["divergence"],

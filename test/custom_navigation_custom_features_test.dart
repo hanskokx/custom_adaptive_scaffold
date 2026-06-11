@@ -134,6 +134,8 @@ void main() {
   testWidgets("rail tooltips appear on long-press and secondary click", (
     WidgetTester tester,
   ) async {
+    const railFallbackTooltip = "rail_settings_tooltip";
+
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -149,13 +151,27 @@ void main() {
               NavigationRailDestination(
                 icon: Icon(Icons.settings_outlined),
                 selectedIcon: Icon(Icons.settings),
-                label: Text("Settings"),
+                label: Text(railFallbackTooltip),
               ),
             ],
           ),
         ),
       ),
     );
+
+    final TestGesture hoverMouse = await tester.createGesture(
+      kind: PointerDeviceKind.mouse,
+    );
+    await hoverMouse.addPointer(location: Offset.zero);
+    await hoverMouse.moveTo(
+      tester.getCenter(find.byIcon(Icons.settings_outlined)),
+    );
+    await tester.pumpAndSettle();
+
+    final TooltipVisibility railTooltipVisibility = tester
+        .widgetList<TooltipVisibility>(find.byType(TooltipVisibility))
+        .first;
+    expect(railTooltipVisibility.visible, isFalse);
 
     await tester.longPress(find.byIcon(Icons.home));
     await tester.pumpAndSettle();
@@ -173,10 +189,11 @@ void main() {
     await mouse.up();
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip("Settings"), findsOneWidget);
+    expect(find.byTooltip(railFallbackTooltip), findsOneWidget);
 
     final Tooltip railTooltip =
         tester.widget<Tooltip>(find.byType(Tooltip).first);
+    expect(railTooltip.triggerMode, TooltipTriggerMode.manual);
     expect(railTooltip.preferBelow, isFalse);
     expect(railTooltip.verticalOffset, 12);
   });
@@ -184,6 +201,8 @@ void main() {
   testWidgets("bar tooltips appear on long-press and secondary click", (
     WidgetTester tester,
   ) async {
+    const barFallbackTooltip = "bar_settings_tooltip";
+
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -199,13 +218,27 @@ void main() {
               CustomNavigationDestination(
                 icon: Icon(Icons.settings_outlined),
                 selectedIcon: Icon(Icons.settings),
-                label: "Settings",
+                label: barFallbackTooltip,
               ),
             ],
           ),
         ),
       ),
     );
+
+    final TestGesture hoverMouse = await tester.createGesture(
+      kind: PointerDeviceKind.mouse,
+    );
+    await hoverMouse.addPointer(location: Offset.zero);
+    await hoverMouse.moveTo(
+      tester.getCenter(find.byIcon(Icons.settings_outlined)),
+    );
+    await tester.pumpAndSettle();
+
+    final TooltipVisibility barTooltipVisibility = tester
+        .widgetList<TooltipVisibility>(find.byType(TooltipVisibility))
+        .first;
+    expect(barTooltipVisibility.visible, isFalse);
 
     await tester.longPress(find.byIcon(Icons.home));
     await tester.pumpAndSettle();
@@ -223,7 +256,13 @@ void main() {
     await mouse.up();
     await tester.pumpAndSettle();
 
-    expect(find.byTooltip("Settings"), findsOneWidget);
+    expect(find.byTooltip(barFallbackTooltip), findsOneWidget);
+
+    final Tooltip barTooltip = tester
+        .widgetList<Tooltip>(find.byType(Tooltip))
+        .where((Tooltip tooltip) => tooltip.message == barFallbackTooltip)
+        .first;
+    expect(barTooltip.triggerMode, TooltipTriggerMode.manual);
   });
 
   testWidgets(
