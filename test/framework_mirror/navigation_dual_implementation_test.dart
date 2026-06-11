@@ -26,7 +26,9 @@ Widget _buildNavigationBar({
       destinations: const <Widget>[
         NavigationDestination(icon: Icon(Icons.home_outlined), label: "Home"),
         NavigationDestination(
-            icon: Icon(Icons.search_outlined), label: "Search"),
+          icon: Icon(Icons.search_outlined),
+          label: "Search",
+        ),
       ],
       onDestinationSelected: onSelected,
     );
