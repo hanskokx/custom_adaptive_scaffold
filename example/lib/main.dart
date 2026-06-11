@@ -536,6 +536,7 @@ class _MediumComposeIcon extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 18),
           child: IconButton(
             onPressed: onMenuPressed,
+            tooltip: "Expand navigation rail",
             icon: const Icon(Icons.menu),
           ),
         ),
@@ -568,6 +569,7 @@ class _LargeComposeIcon extends StatelessWidget {
                 ),
                 IconButton(
                   onPressed: onCollapsePressed,
+                  tooltip: "Collapse navigation rail",
                   icon: const Icon(Icons.menu_open, size: 22),
                 ),
               ],

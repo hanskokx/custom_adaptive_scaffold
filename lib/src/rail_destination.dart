@@ -71,6 +71,7 @@ class _RailDestinationState extends State<RailDestination>
     with TickerProviderStateMixin {
   late CurvedAnimation _positionAnimation;
   late Animation<double> _destinationAnimation;
+  AnimationController? _ownedDestinationController;
   late AnimationController _extendedController;
   late CurvedAnimation _extendedAnimation;
   final GlobalKey _destinationRegionKey = GlobalKey();
@@ -90,20 +91,15 @@ class _RailDestinationState extends State<RailDestination>
     super.didUpdateWidget(oldWidget);
 
     if (widget.destinationAnimation != oldWidget.destinationAnimation) {
+      _detachDestinationAnimation();
+      _attachDestinationAnimation();
       _positionAnimation.dispose();
       _setPositionAnimation();
     }
   }
 
   void _initControllers() {
-    _destinationAnimation = widget.destinationAnimation ??
-        AnimationController(
-          duration: kThemeAnimationDuration,
-          vsync: this,
-        );
-    _destinationAnimation.addListener(() {
-      if (mounted) setState(() {});
-    });
+    _attachDestinationAnimation();
 
     _extendedController = AnimationController(
       duration: kThemeAnimationDuration,
@@ -121,6 +117,34 @@ class _RailDestinationState extends State<RailDestination>
     });
   }
 
+  void _attachDestinationAnimation() {
+    if (widget.destinationAnimation != null) {
+      _destinationAnimation = widget.destinationAnimation!;
+      _ownedDestinationController = null;
+    } else {
+      final AnimationController controller = AnimationController(
+        duration: kThemeAnimationDuration,
+        vsync: this,
+      );
+      _ownedDestinationController = controller;
+      _destinationAnimation = controller;
+    }
+
+    _destinationAnimation.addListener(_onDestinationAnimationTick);
+  }
+
+  void _detachDestinationAnimation() {
+    _destinationAnimation.removeListener(_onDestinationAnimationTick);
+    _ownedDestinationController?.dispose();
+    _ownedDestinationController = null;
+  }
+
+  void _onDestinationAnimationTick() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   void _setPositionAnimation() {
     _positionAnimation = CurvedAnimation(
       parent: ReverseAnimation(_destinationAnimation),
@@ -131,6 +155,7 @@ class _RailDestinationState extends State<RailDestination>
 
   @override
   void dispose() {
+    _detachDestinationAnimation();
     _extendedAnimation.dispose();
     _extendedController.dispose();
     _positionAnimation.dispose();
