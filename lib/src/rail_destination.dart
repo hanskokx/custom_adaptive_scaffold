@@ -879,12 +879,10 @@ Rect _destinationHighlightRect({
             );
       // Keep hover content mode anchored to the icon region on the leading side.
       final double leftEdge = effectiveIconRect.left.clamp(0.0, fullRect.right);
-      final double rightEdge =
-          (fullRect.right - leftEdge).clamp(leftEdge, fullRect.right);
       return Rect.fromLTRB(
         leftEdge,
         (combined.top - topPadding).clamp(0.0, fullRect.bottom),
-        rightEdge,
+        fullRect.right,
         (combined.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
       );
     case NavigationDestinationRegion.label:
