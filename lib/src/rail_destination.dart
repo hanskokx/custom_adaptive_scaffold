@@ -819,16 +819,8 @@ Rect _destinationHighlightRect({
   final double horizontalPadding = useFallbackHorizontalPadding
       ? _horizontalDestinationPadding
       : fillPadding.left;
-  final bool hasExplicitVerticalFillPadding =
-      fillPadding.top > 0 || fillPadding.bottom > 0;
-  final bool useFallbackVerticalPadding = !hasExplicitVerticalFillPadding &&
-      mode == NavigationDestinationRegion.content;
-  final double topPadding = useFallbackVerticalPadding
-      ? _verticalIconLabelSpacingM3
-      : fillPadding.top;
-  final double bottomPadding = useFallbackVerticalPadding
-      ? _verticalIconLabelSpacingM3
-      : fillPadding.bottom;
+  final double topPadding = fillPadding.top;
+  final double bottomPadding = fillPadding.bottom;
 
   Rect expandAndClamp(
     Rect rect, {
