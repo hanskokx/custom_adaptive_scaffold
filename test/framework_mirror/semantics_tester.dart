@@ -41,7 +41,7 @@ class TestSemantics {
   /// The [rect] field is required and has no default. Convenient values are
   /// available:
   ///
-  ///  * [TestSemantics.rootRect]: 2400x1600, the test screen's size in physical
+  ///  * [TestSemantics.rootRect]: 2400x1800, the test screen's size in physical
   ///    pixels, useful for the node with id zero.
   ///
   ///  * [TestSemantics.fullScreen] 800x600, the test screen's size in logical
@@ -248,7 +248,7 @@ class TestSemantics {
   ///
   /// Convenient values are available:
   ///
-  ///  * [TestSemantics.rootRect]: 2400x1600, the test screen's size in physical
+  ///  * [TestSemantics.rootRect]: 2400x1800, the test screen's size in physical
   ///    pixels, useful for the node with id zero.
   ///
   ///  * [TestSemantics.fullScreen] 800x600, the test screen's size in logical
@@ -532,10 +532,10 @@ class TestSemantics {
       );
     }
 
-    if (controlsNodes != controlsNodes &&
+    if (controlsNodes != null &&
         !setEquals(controlsNodes, node.controlsNodes)) {
       return fail(
-        "expected node id $id to controls nodes $controlsNodes but found controlling nodes ${node.controlsNodes}",
+        "expected node id $id to control nodes $controlsNodes but found controlling nodes ${node.controlsNodes}",
       );
     }
 

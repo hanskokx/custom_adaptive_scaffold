@@ -218,7 +218,7 @@ class CustomNavigationBar extends StatelessWidget {
   /// the [CustomNavigationDestination] is focused, hovered, or pressed.
   final WidgetStateProperty<Color?>? overlayColor;
 
-  //// The text style of the label.
+  /// The text style of the label.
   ///
   /// If null, [NavigationBarThemeData.labelTextStyle] is used.
   final WidgetStateProperty<TextStyle?>? labelTextStyle;
