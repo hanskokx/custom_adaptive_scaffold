@@ -2,13 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "dart:ui" show SemanticsRole;
+
+import "package:flutter/foundation.dart" show kIsWeb;
 import "package:flutter/material.dart";
 
+import "compact_destination_layout.dart";
 import "custom_navigation_bar_theme.dart";
+import "navigation_destination_types.dart";
 
 const double _kIndicatorHeight = 32;
 const double _kIndicatorWidth = 64;
 const double _kMaxLabelTextScaleFactor = 1.3;
+const double _horizontalDestinationPadding = 8.0;
 
 // Examples can assume:
 // late BuildContext context;
@@ -79,9 +85,7 @@ class CustomNavigationBar extends StatelessWidget {
   ///
   /// The value of [destinations] must be a list of two or more
   /// [CustomNavigationDestination] values.
-  // TODO(goderbauer): This class cannot be const constructed, https://github.com/dart-lang/linter/issues/3366.
-  // ignore: prefer_const_constructors_in_immutables
-  CustomNavigationBar({
+  const CustomNavigationBar({
     required this.destinations,
     super.key,
     this.animationDuration,
@@ -96,6 +100,12 @@ class CustomNavigationBar extends StatelessWidget {
     this.height,
     this.labelBehavior,
     this.overlayColor,
+    this.labelTextStyle,
+    this.labelPadding,
+    this.destinationFillRegion,
+    this.destinationHoverRegion,
+    this.destinationFillShape,
+    this.maintainBottomViewPadding = false,
   })  : assert(destinations.length >= 2),
         assert(0 <= selectedIndex && selectedIndex < destinations.length);
 
@@ -208,6 +218,40 @@ class CustomNavigationBar extends StatelessWidget {
   /// the [CustomNavigationDestination] is focused, hovered, or pressed.
   final WidgetStateProperty<Color?>? overlayColor;
 
+  /// The text style of the label.
+  ///
+  /// If null, [NavigationBarThemeData.labelTextStyle] is used.
+  final WidgetStateProperty<TextStyle?>? labelTextStyle;
+
+  /// The padding around the [NavigationDestination.label] widget.
+  ///
+  /// When [labelPadding] is null, [NavigationBarThemeData.labelPadding]
+  /// is used.
+  final EdgeInsetsGeometry? labelPadding;
+
+  /// Controls where destination selected fill/highlight is painted.
+  ///
+  /// When null, this widget follows Flutter's default indicator path.
+  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
+  ///
+  /// Pass [NavigationDestinationRegion.none] to explicitly disable custom
+  /// fill/highlight behavior.
+  final NavigationDestinationRegion? destinationFillRegion;
+
+  /// Controls where destination hover and pressed interaction effects are
+  /// painted.
+  ///
+  /// When null, this follows [destinationFillRegion].
+  final NavigationDestinationRegion? destinationHoverRegion;
+
+  /// Optional shape for destination fill/highlight.
+  ///
+  /// If null, the resolved navigation bar indicator shape is used.
+  final ShapeBorder? destinationFillShape;
+
+  /// Specifies whether [SafeArea] should maintain bottom view padding.
+  final bool maintainBottomViewPadding;
+
   VoidCallback _handleTap(int index) {
     return onDestinationSelected != null
         ? () => onDestinationSelected!(index)
@@ -242,34 +286,53 @@ class CustomNavigationBar extends StatelessWidget {
           navigationBarTheme.surfaceTintColor ??
           defaults.surfaceTintColor,
       child: SafeArea(
-        child: SizedBox(
-          height: effectiveHeight,
-          child: Row(
-            children: <Widget>[
-              for (int i = 0; i < destinations.length; i++)
-                Expanded(
-                  child: _SelectableAnimatedBuilder(
-                    duration:
-                        animationDuration ?? const Duration(milliseconds: 500),
-                    isSelected: i == selectedIndex,
-                    builder:
-                        (BuildContext context, Animation<double> animation) {
-                      return _NavigationDestinationInfo(
-                        index: i,
-                        selectedIndex: selectedIndex,
-                        totalNumberOfDestinations: destinations.length,
-                        selectedAnimation: animation,
-                        labelBehavior: effectiveLabelBehavior,
-                        indicatorColor: indicatorColor,
-                        indicatorShape: effectiveIndicatorShape,
-                        overlayColor: overlayColor,
-                        onTap: _handleTap(i),
-                        child: destinations[i],
-                      );
-                    },
+        maintainBottomViewPadding: maintainBottomViewPadding,
+        child: Semantics(
+          role: SemanticsRole.tabBar,
+          explicitChildNodes: true,
+          container: true,
+          child: SizedBox(
+            height: effectiveHeight,
+            child: Row(
+              children: <Widget>[
+                for (int i = 0; i < destinations.length; i++)
+                  Expanded(
+                    child: MergeSemantics(
+                      child: Semantics(
+                        role: SemanticsRole.tab,
+                        selected: i == selectedIndex,
+                        child: _SelectableAnimatedBuilder(
+                          duration: animationDuration ??
+                              const Duration(milliseconds: 500),
+                          isSelected: i == selectedIndex,
+                          builder: (
+                            BuildContext context,
+                            Animation<double> animation,
+                          ) {
+                            return _NavigationDestinationInfo(
+                              index: i,
+                              selectedIndex: selectedIndex,
+                              totalNumberOfDestinations: destinations.length,
+                              selectedAnimation: animation,
+                              labelBehavior: effectiveLabelBehavior,
+                              indicatorColor: indicatorColor,
+                              indicatorShape: effectiveIndicatorShape,
+                              overlayColor: overlayColor,
+                              labelTextStyle: labelTextStyle,
+                              labelPadding: labelPadding,
+                              destinationFillRegion: destinationFillRegion,
+                              destinationHoverRegion: destinationHoverRegion,
+                              destinationFillShape: destinationFillShape,
+                              onTap: _handleTap(i),
+                              child: destinations[i],
+                            );
+                          },
+                        ),
+                      ),
+                    ),
                   ),
-                ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -277,16 +340,17 @@ class CustomNavigationBar extends StatelessWidget {
   }
 }
 
-/// A Material 3 [NavigationBar] destination.
+/// A Material 3 destination for [CustomNavigationBar].
 ///
-/// Displays a label below an icon. Use with [NavigationBar.destinations].
+/// Displays a label below an icon. Use with
+/// [CustomNavigationBar.destinations].
 ///
 /// See also:
 ///
-///  * [NavigationBar], for an interactive code sample.
+///  * [CustomNavigationBar], for an interactive code sample.
 class CustomNavigationDestination extends NavigationDestination {
   /// Creates a navigation bar destination with an icon and a label, to be used
-  /// in the [NavigationBar.destinations].
+  /// in [CustomNavigationBar.destinations].
   const CustomNavigationDestination({
     required super.icon,
     required super.label,
@@ -294,7 +358,67 @@ class CustomNavigationDestination extends NavigationDestination {
     super.selectedIcon,
     super.tooltip,
     super.enabled = true,
+    this.hideLabel = false,
+    this.transitionAnimation = NavigationDestinationAnimation.none,
+    this.transitionCurve = Curves.easeInOut,
+    this.transitionDuration,
+    this.iconBuilder,
+    this.transitionBuilder,
+    this.iconIndicatorShape,
+    this.labelIndicatorShape,
   });
+
+  /// When true the label is not rendered, leaving only the icon visible.
+  ///
+  /// Coexists with [NavigationDestinationLabelBehavior]: setting
+  /// [hideLabel] to true on an individual destination suppresses its label
+  /// regardless of the bar-level label behavior.
+  final bool hideLabel;
+
+  /// Controls how the icon animates when this destination transitions between
+  /// selected and unselected states.
+  ///
+  /// Ignored when [iconBuilder] is non-null.
+  ///
+  /// Defaults to [NavigationDestinationAnimation.none].
+  final NavigationDestinationAnimation transitionAnimation;
+
+  /// The curve applied to the icon transition animation.
+  ///
+  /// Defaults to [Curves.easeInOut].
+  final Curve transitionCurve;
+
+  /// Duration of the icon transition animation.
+  ///
+  /// When null, the [CustomNavigationBar.animationDuration] is used.
+  final Duration? transitionDuration;
+
+  /// A fully custom icon builder that receives the selection [Animation] and
+  /// both the unselected and selected icon widgets (already themed).
+  ///
+  /// When set, [transitionAnimation] is ignored.
+  final NavigationDestinationIconBuilder? iconBuilder;
+
+  /// A custom transition builder with access to both icon and label state
+  /// widgets.
+  ///
+  /// When set, this takes precedence over [iconBuilder] and
+  /// [transitionAnimation].
+  final NavigationDestinationTransitionBuilder? transitionBuilder;
+
+  /// When non-null, the selection indicator is drawn around the icon only,
+  /// sized to the icon widget, instead of spanning the full destination.
+  ///
+  /// Setting either [iconIndicatorShape] or [labelIndicatorShape] suppresses
+  /// the default full-item indicator.
+  final ShapeBorder? iconIndicatorShape;
+
+  /// When non-null, the selection indicator is drawn around the label only,
+  /// sized to the label widget, instead of spanning the full destination.
+  ///
+  /// Setting either [iconIndicatorShape] or [labelIndicatorShape] suppresses
+  /// the default full-item indicator.
+  final ShapeBorder? labelIndicatorShape;
 
   @override
   Widget build(BuildContext context) {
@@ -312,6 +436,11 @@ class CustomNavigationDestination extends NavigationDestination {
         NavigationBarTheme.of(context);
     final NavigationBarThemeData defaults = _defaultsFor(context);
     final Animation<double> animation = info.selectedAnimation;
+    final WidgetStateProperty<TextStyle?>? labelTextStyleOverride =
+        info.labelTextStyle;
+    final EdgeInsetsGeometry effectiveLabelPadding = info.labelPadding ??
+        navigationBarTheme.labelPadding ??
+        defaults.labelPadding!;
 
     final Color indicatorColor = info.indicatorColor ??
         navigationBarTheme.indicatorColor ??
@@ -324,8 +453,8 @@ class CustomNavigationDestination extends NavigationDestination {
     late final EdgeInsetsGeometry padding;
 
     if (navigationBarTheme is CustomNavigationBarThemeData) {
-      margin = navigationBarTheme.margin;
-      padding = navigationBarTheme.padding;
+      margin = navigationBarTheme.margin ?? EdgeInsets.zero;
+      padding = navigationBarTheme.padding ?? EdgeInsets.zero;
     } else {
       margin = EdgeInsets.zero;
       padding = EdgeInsets.zero;
@@ -341,6 +470,8 @@ class CustomNavigationDestination extends NavigationDestination {
         color: indicatorColor,
         shape: indicatorShape,
         padding: padding,
+        iconIndicatorShape: iconIndicatorShape,
+        labelIndicatorShape: labelIndicatorShape,
         buildIcon: (BuildContext context) {
           final IconThemeData selectedIconTheme =
               navigationBarTheme.iconTheme?.resolve(selectedState) ??
@@ -361,19 +492,85 @@ class CustomNavigationDestination extends NavigationDestination {
             child: icon,
           );
 
-          return animation.isForwardOrCompleted
-              ? selectedIconWidget
-              : unselectedIconWidget;
+          if (transitionBuilder != null) {
+            return transitionBuilder!(
+              context,
+              animation,
+              animation.isForwardOrCompleted,
+              unselectedIconWidget,
+              selectedIconWidget,
+              const SizedBox.shrink(),
+              const SizedBox.shrink(),
+            );
+          }
+
+          if (iconBuilder != null) {
+            return iconBuilder!(
+              context,
+              animation,
+              animation.isForwardOrCompleted,
+              unselectedIconWidget,
+              selectedIconWidget,
+            );
+          }
+
+          final Duration effectiveDuration =
+              transitionDuration ?? const Duration(milliseconds: 200);
+
+          switch (transitionAnimation) {
+            case NavigationDestinationAnimation.none:
+              return animation.isForwardOrCompleted
+                  ? selectedIconWidget
+                  : unselectedIconWidget;
+            case NavigationDestinationAnimation.fadeSwap:
+              return AnimatedSwitcher(
+                duration: effectiveDuration,
+                switchInCurve: transitionCurve,
+                switchOutCurve: transitionCurve,
+                transitionBuilder: (Widget child, Animation<double> anim) =>
+                    FadeTransition(opacity: anim, child: child),
+                child: animation.isForwardOrCompleted
+                    ? KeyedSubtree(
+                        key: const ValueKey<String>("selected"),
+                        child: selectedIconWidget,
+                      )
+                    : KeyedSubtree(
+                        key: const ValueKey<String>("unselected"),
+                        child: unselectedIconWidget,
+                      ),
+              );
+            case NavigationDestinationAnimation.scale:
+              return AnimatedSwitcher(
+                duration: effectiveDuration,
+                switchInCurve: transitionCurve,
+                switchOutCurve: transitionCurve,
+                transitionBuilder: (Widget child, Animation<double> anim) =>
+                    ScaleTransition(scale: anim, child: child),
+                child: animation.isForwardOrCompleted
+                    ? KeyedSubtree(
+                        key: const ValueKey<String>("selected"),
+                        child: selectedIconWidget,
+                      )
+                    : KeyedSubtree(
+                        key: const ValueKey<String>("unselected"),
+                        child: unselectedIconWidget,
+                      ),
+              );
+          }
         },
         buildLabel: (BuildContext context) {
+          if (hideLabel) return const SizedBox.shrink();
           final TextStyle? effectiveSelectedLabelTextStyle =
-              navigationBarTheme.labelTextStyle?.resolve(selectedState) ??
+              labelTextStyleOverride?.resolve(selectedState) ??
+                  navigationBarTheme.labelTextStyle?.resolve(selectedState) ??
                   defaults.labelTextStyle!.resolve(selectedState);
           final TextStyle? effectiveUnselectedLabelTextStyle =
-              navigationBarTheme.labelTextStyle?.resolve(unselectedState) ??
+              labelTextStyleOverride?.resolve(unselectedState) ??
+                  navigationBarTheme.labelTextStyle?.resolve(unselectedState) ??
                   defaults.labelTextStyle!.resolve(unselectedState);
           final TextStyle? effectiveDisabledLabelTextStyle =
-              navigationBarTheme.labelTextStyle?.resolve(disabledState) ??
+              labelTextStyleOverride?.resolve(disabledState) ??
+                  navigationBarTheme.labelTextStyle?.resolve(disabledState) ??
                   defaults.labelTextStyle!.resolve(disabledState);
 
           final TextStyle? textStyle = (enabled
@@ -383,7 +580,7 @@ class CustomNavigationDestination extends NavigationDestination {
               : effectiveDisabledLabelTextStyle);
 
           return Padding(
-            padding: const EdgeInsets.only(top: 4),
+            padding: effectiveLabelPadding,
             child: MediaQuery.withClampedTextScaling(
               // Set maximum text scale factor to _kMaxLabelTextScaleFactor for the
               // label to keep the visual hierarchy the same even with larger font
@@ -394,6 +591,96 @@ class CustomNavigationDestination extends NavigationDestination {
             ),
           );
         },
+        buildContent: transitionBuilder == null
+            ? null
+            : (BuildContext context) {
+                const Set<WidgetState> selectedState = <WidgetState>{
+                  WidgetState.selected,
+                };
+                const Set<WidgetState> unselectedState = <WidgetState>{};
+                const Set<WidgetState> disabledState = <WidgetState>{
+                  WidgetState.disabled,
+                };
+
+                final IconThemeData selectedIconTheme =
+                    navigationBarTheme.iconTheme?.resolve(selectedState) ??
+                        defaults.iconTheme!.resolve(selectedState)!;
+                final IconThemeData unselectedIconTheme =
+                    navigationBarTheme.iconTheme?.resolve(unselectedState) ??
+                        defaults.iconTheme!.resolve(unselectedState)!;
+                final IconThemeData disabledIconTheme =
+                    navigationBarTheme.iconTheme?.resolve(disabledState) ??
+                        defaults.iconTheme!.resolve(disabledState)!;
+
+                final Widget selectedIconWidget = IconTheme.merge(
+                  data: enabled ? selectedIconTheme : disabledIconTheme,
+                  child: selectedIcon ?? icon,
+                );
+                final Widget unselectedIconWidget = IconTheme.merge(
+                  data: enabled ? unselectedIconTheme : disabledIconTheme,
+                  child: icon,
+                );
+
+                if (hideLabel) {
+                  return transitionBuilder!(
+                    context,
+                    animation,
+                    animation.isForwardOrCompleted,
+                    unselectedIconWidget,
+                    selectedIconWidget,
+                    const SizedBox.shrink(),
+                    const SizedBox.shrink(),
+                  );
+                }
+
+                final TextStyle? effectiveSelectedLabelTextStyle =
+                    labelTextStyleOverride?.resolve(selectedState) ??
+                        navigationBarTheme.labelTextStyle
+                            ?.resolve(selectedState) ??
+                        defaults.labelTextStyle!.resolve(selectedState);
+                final TextStyle? effectiveUnselectedLabelTextStyle =
+                    labelTextStyleOverride?.resolve(unselectedState) ??
+                        navigationBarTheme.labelTextStyle
+                            ?.resolve(unselectedState) ??
+                        defaults.labelTextStyle!.resolve(unselectedState);
+                final TextStyle? effectiveDisabledLabelTextStyle =
+                    labelTextStyleOverride?.resolve(disabledState) ??
+                        navigationBarTheme.labelTextStyle
+                            ?.resolve(disabledState) ??
+                        defaults.labelTextStyle!.resolve(disabledState);
+
+                final TextStyle? selectedTextStyle = enabled
+                    ? effectiveSelectedLabelTextStyle
+                    : effectiveDisabledLabelTextStyle;
+                final TextStyle? unselectedTextStyle = enabled
+                    ? effectiveUnselectedLabelTextStyle
+                    : effectiveDisabledLabelTextStyle;
+
+                final Widget selectedLabelWidget = Padding(
+                  padding: effectiveLabelPadding,
+                  child: MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: _kMaxLabelTextScaleFactor,
+                    child: Text(label, style: selectedTextStyle),
+                  ),
+                );
+                final Widget unselectedLabelWidget = Padding(
+                  padding: effectiveLabelPadding,
+                  child: MediaQuery.withClampedTextScaling(
+                    maxScaleFactor: _kMaxLabelTextScaleFactor,
+                    child: Text(label, style: unselectedTextStyle),
+                  ),
+                );
+
+                return transitionBuilder!(
+                  context,
+                  animation,
+                  animation.isForwardOrCompleted,
+                  unselectedIconWidget,
+                  selectedIconWidget,
+                  unselectedLabelWidget,
+                  selectedLabelWidget,
+                );
+              },
       ),
     );
   }
@@ -423,6 +710,9 @@ class _NavigationDestinationBuilder extends StatefulWidget {
     this.tooltip,
     this.enabled = true,
     this.padding = EdgeInsets.zero,
+    this.iconIndicatorShape,
+    this.labelIndicatorShape,
+    this.buildContent,
   });
 
   /// Builds the icon for a destination in a [NavigationBar].
@@ -471,6 +761,17 @@ class _NavigationDestinationBuilder extends StatefulWidget {
   final ShapeBorder? shape;
   final EdgeInsetsGeometry padding;
 
+  /// When non-null, a scoped selection indicator is drawn around the icon
+  /// widget only. Suppresses the default full-item indicator.
+  final ShapeBorder? iconIndicatorShape;
+
+  /// When non-null, a scoped selection indicator is drawn around the label
+  /// widget only. Suppresses the default full-item indicator.
+  final ShapeBorder? labelIndicatorShape;
+
+  /// Optional builder that replaces the default icon+label content pipeline.
+  final WidgetBuilder? buildContent;
+
   @override
   State<_NavigationDestinationBuilder> createState() =>
       _NavigationDestinationBuilderState();
@@ -478,7 +779,9 @@ class _NavigationDestinationBuilder extends StatefulWidget {
 
 class _NavigationDestinationBuilderState
     extends State<_NavigationDestinationBuilder> {
-  final GlobalKey itemKey = GlobalKey();
+  final GlobalKey _destinationRegionKey = GlobalKey();
+  final GlobalKey _iconRegionKey = GlobalKey();
+  final GlobalKey _labelRegionKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -486,58 +789,180 @@ class _NavigationDestinationBuilderState
         _NavigationDestinationInfo.of(context);
     final NavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
+    final ThemeData theme = Theme.of(context);
     final bool isSelected = widget.animation.isForwardOrCompleted;
+    final NavigationDestinationRegion? destinationFillRegion =
+        info.destinationFillRegion;
+    final NavigationDestinationRegion? destinationHoverRegion =
+        info.destinationHoverRegion ?? destinationFillRegion;
+    final bool isDefaultFillPath = destinationFillRegion == null ||
+        destinationFillRegion == NavigationDestinationRegion.icon;
+    final bool isNoneFillMode =
+        destinationFillRegion == NavigationDestinationRegion.none;
+    final bool isNoneHoverMode =
+        destinationHoverRegion == NavigationDestinationRegion.none;
+    final bool isCustomFillMode = !isDefaultFillPath && !isNoneFillMode;
+    final bool shouldPaintSelectedFill = isSelected &&
+        isCustomFillMode &&
+        widget.iconIndicatorShape == null &&
+        widget.labelIndicatorShape == null;
+    final ShapeBorder effectiveFillShape =
+        info.destinationFillShape ?? widget.shape ?? const StadiumBorder();
+    final TextDirection textDirection = Directionality.of(context);
+    final EdgeInsets fillPadding = widget.padding.resolve(textDirection);
+    final bool hasVisibleText = switch (info.labelBehavior) {
+      NavigationDestinationLabelBehavior.alwaysHide => false,
+      NavigationDestinationLabelBehavior.alwaysShow => true,
+      NavigationDestinationLabelBehavior.onlyShowSelected => isSelected,
+    };
+    final bool material3 = theme.useMaterial3;
+    final ColorScheme colors = theme.colorScheme;
+    final bool primaryColorAlphaModified =
+        (colors.primary.a * 255.0).round().clamp(0, 255) < 255;
+    final Color effectiveSplashColor = primaryColorAlphaModified
+        ? colors.primary
+        : colors.primary.withValues(alpha: 0.12);
+    final Color effectiveHoverColor = primaryColorAlphaModified
+        ? colors.primary
+        : colors.primary.withValues(alpha: 0.04);
 
     final WidgetStateProperty<Color?>? baseOverlayColor =
         info.overlayColor ?? navigationBarTheme.overlayColor;
-    final WidgetStateProperty<Color?>? effectiveOverlayColor = isSelected
-        ? WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-            if (states.contains(WidgetState.hovered) ||
-                states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed)) {
-              return Colors.transparent;
-            }
-            return baseOverlayColor?.resolve(states);
-          })
-        : baseOverlayColor;
+    final WidgetStateProperty<Color?>? effectiveOverlayColor =
+        isSelected && isCustomFillMode
+            ? WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                if (states.contains(WidgetState.hovered) ||
+                    states.contains(WidgetState.focused) ||
+                    states.contains(WidgetState.pressed)) {
+                  return Colors.transparent;
+                }
+                return baseOverlayColor?.resolve(states);
+              })
+            : baseOverlayColor;
 
     return _NavigationBarDestinationSemantics(
+      enabled: widget.enabled,
       child: _NavigationBarDestinationTooltip(
-        message: widget.tooltip ?? widget.label,
+        message: widget.tooltip,
         child: ClipRect(
-          child: InkWell(
-            customBorder: widget.shape,
-            overlayColor: effectiveOverlayColor,
-            onTap: widget.enabled ? info.onTap : null,
-            child: Stack(
-              alignment: Alignment.center,
-              children: <Widget>[
-                // This is the background color of the currently selected
-                // navigation bar item
-                NavigationIndicator(
-                  animation: widget.animation,
-                  color: widget.color,
-                  shape: widget.shape,
-                  width: double.infinity,
-                  height: double.infinity,
-                ),
-                _StatusTransitionWidgetBuilder(
-                  animation: widget.animation,
-                  builder: (context, child) => Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: _NavigationBarDestinationLayout(
-                          icon: widget.buildIcon(context),
-                          itemKey: itemKey,
-                          padding: widget.padding,
-                          label: widget.buildLabel(context),
-                        ),
-                      ),
-                    ],
+          child: Stack(
+            key: _destinationRegionKey,
+            alignment: Alignment.center,
+            children: <Widget>[
+              if (shouldPaintSelectedFill && widget.color != null)
+                Positioned.fill(
+                  child: IgnorePointer(
+                    child: _DestinationSelectionFill(
+                      color: widget.color!,
+                      shape: effectiveFillShape,
+                      animation: widget.animation,
+                      mode: destinationFillRegion,
+                      textDirection: textDirection,
+                      hasVisibleText: hasVisibleText,
+                      destinationRegionKey: _destinationRegionKey,
+                      iconRegionKey: _iconRegionKey,
+                      labelRegionKey: _labelRegionKey,
+                      fillPadding: fillPadding,
+                    ),
                   ),
                 ),
-              ],
-            ),
+              _NavigationBarIndicatorInkWell(
+                onTap: widget.enabled ? info.onTap : null,
+                overlayColor: effectiveOverlayColor,
+                customBorder: effectiveFillShape,
+                borderRadius: const BorderRadius.all(Radius.circular(16)),
+                splashColor: isNoneHoverMode ? null : effectiveSplashColor,
+                hoverColor: isNoneHoverMode ? null : effectiveHoverColor,
+                useMaterial3: material3,
+                destinationHoverRegion: destinationHoverRegion,
+                textDirection: textDirection,
+                hasVisibleText: hasVisibleText,
+                iconRegionKey: _iconRegionKey,
+                labelRegionKey: _labelRegionKey,
+                fillPadding: fillPadding,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: <Widget>[
+                    _StatusTransitionWidgetBuilder(
+                      animation: widget.animation,
+                      builder: (context, child) {
+                        if (widget.buildContent != null) {
+                          return Row(
+                            children: <Widget>[
+                              Expanded(child: widget.buildContent!(context)),
+                            ],
+                          );
+                        }
+
+                        Widget iconWidget = widget.buildIcon(context);
+                        Widget labelWidget = widget.buildLabel(context);
+
+                        // Match Flutter default/icon behavior by anchoring the
+                        // indicator to the icon layer instead of centering it in
+                        // the full destination region.
+                        if (widget.iconIndicatorShape == null &&
+                            widget.labelIndicatorShape == null &&
+                            isDefaultFillPath) {
+                          iconWidget = Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              NavigationIndicator(
+                                animation: widget.animation,
+                                color: widget.color,
+                                shape: widget.shape,
+                              ),
+                              iconWidget,
+                            ],
+                          );
+                        }
+
+                        if (widget.iconIndicatorShape != null) {
+                          iconWidget = Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              NavigationIndicator(
+                                animation: widget.animation,
+                                color: widget.color,
+                                shape: widget.iconIndicatorShape,
+                              ),
+                              iconWidget,
+                            ],
+                          );
+                        }
+
+                        if (widget.labelIndicatorShape != null) {
+                          labelWidget = Stack(
+                            alignment: Alignment.center,
+                            children: <Widget>[
+                              NavigationIndicator(
+                                animation: widget.animation,
+                                color: widget.color,
+                                shape: widget.labelIndicatorShape,
+                              ),
+                              labelWidget,
+                            ],
+                          );
+                        }
+
+                        return Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: _NavigationBarDestinationLayout(
+                                icon: iconWidget,
+                                iconKey: _iconRegionKey,
+                                labelKey: _labelRegionKey,
+                                padding: widget.padding,
+                                label: labelWidget,
+                              ),
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -545,8 +970,8 @@ class _NavigationDestinationBuilderState
   }
 }
 
-/// Inherited widget for passing data from the [NavigationBar] to the
-/// [NavigationBar.destinations] children widgets.
+/// Inherited widget for passing data from [CustomNavigationBar] to destination
+/// children widgets.
 ///
 /// Useful for building navigation destinations using:
 /// `_NavigationDestinationInfo.of(context)`.
@@ -562,6 +987,11 @@ class _NavigationDestinationInfo extends InheritedWidget {
     required this.indicatorColor,
     required this.indicatorShape,
     required this.overlayColor,
+    required this.labelTextStyle,
+    required this.labelPadding,
+    required this.destinationFillRegion,
+    required this.destinationHoverRegion,
+    required this.destinationFillShape,
     required this.onTap,
     required super.child,
   });
@@ -634,9 +1064,24 @@ class _NavigationDestinationInfo extends InheritedWidget {
   /// This is used by destinations to override the overlay color.
   final WidgetStateProperty<Color?>? overlayColor;
 
+  /// Optional label text style override for destination labels.
+  final WidgetStateProperty<TextStyle?>? labelTextStyle;
+
+  /// Optional label padding override for destination labels.
+  final EdgeInsetsGeometry? labelPadding;
+
+  /// Where destination selected fill/highlight is painted.
+  final NavigationDestinationRegion? destinationFillRegion;
+
+  /// Where destination hover/ink interaction effects are painted.
+  final NavigationDestinationRegion? destinationHoverRegion;
+
+  /// Optional override shape for destination fill/highlight.
+  final ShapeBorder? destinationFillShape;
+
   /// The callback that should be called when this destination is tapped.
   ///
-  /// This is computed by calling [NavigationBar.onDestinationSelected]
+  /// This is computed by calling [CustomNavigationBar.onDestinationSelected]
   /// with [index] passed in.
   final VoidCallback onTap;
 
@@ -653,7 +1098,7 @@ class _NavigationDestinationInfo extends InheritedWidget {
     assert(
       result != null,
       "Navigation destinations need a _NavigationDestinationInfo parent, "
-      "which is usually provided by NavigationBar.",
+      "which is usually provided by CustomNavigationBar.",
     );
     return result!;
   }
@@ -664,12 +1109,17 @@ class _NavigationDestinationInfo extends InheritedWidget {
         totalNumberOfDestinations != oldWidget.totalNumberOfDestinations ||
         selectedAnimation != oldWidget.selectedAnimation ||
         labelBehavior != oldWidget.labelBehavior ||
+        labelTextStyle != oldWidget.labelTextStyle ||
+        labelPadding != oldWidget.labelPadding ||
+        destinationFillRegion != oldWidget.destinationFillRegion ||
+        destinationHoverRegion != oldWidget.destinationHoverRegion ||
+        destinationFillShape != oldWidget.destinationFillShape ||
         onTap != oldWidget.onTap;
   }
 }
 
-/// Selection Indicator for the Material 3 [NavigationBar] and [NavigationRail]
-/// components.
+/// Selection indicator for Material 3 [CustomNavigationBar] and
+/// [CustomNavigationRail] components.
 ///
 /// When [animation] is 0, the indicator is not present. As [animation] grows
 /// from 0 to 1, the indicator scales in on the x axis.
@@ -763,7 +1213,7 @@ class NavigationIndicator extends StatelessWidget {
             builder: (BuildContext context, Animation<double> fadeAnimation) {
               return FadeTransition(
                 opacity: fadeAnimation,
-                child: Container(
+                child: Ink(
                   width: width,
                   height: height,
                   // This is the selected item background
@@ -793,7 +1243,8 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
   /// 3 [NavigationBar].
   const _NavigationBarDestinationLayout({
     required this.icon,
-    required this.itemKey,
+    required this.iconKey,
+    required this.labelKey,
     required this.label,
     this.padding = EdgeInsets.zero,
   });
@@ -803,10 +1254,11 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
   /// See [CustomNavigationDestination.icon].
   final Widget icon;
 
-  /// The global key for the icon of this destination.
-  ///
-  /// This is used to determine the position of the icon.
-  final GlobalKey itemKey;
+  /// The global key for the icon in this destination.
+  final GlobalKey iconKey;
+
+  /// The global key for the label in this destination.
+  final GlobalKey labelKey;
 
   /// The label widget that sits below the icon.
   ///
@@ -818,36 +1270,28 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
 
   final EdgeInsetsGeometry padding;
 
-  static final Key _labelKey = UniqueKey();
-
   @override
   Widget build(BuildContext context) {
     return _DestinationLayoutAnimationBuilder(
       builder: (BuildContext context, Animation<double> animation) {
+        final _NavigationDestinationInfo info =
+            _NavigationDestinationInfo.of(context);
+        // For onlyShowSelected, freeze the icon y-position so icons don't
+        // shift up/down as labels appear. The label still fades via the
+        // selection animation below.
+        final Animation<double> positionAnimation = info.labelBehavior ==
+                NavigationDestinationLabelBehavior.onlyShowSelected
+            ? kAlwaysDismissedAnimation
+            : animation;
         return RepaintBoundary(
-          key: itemKey,
-          child: Padding(
+          child: CompactDestinationLayout(
+            icon: icon,
+            iconKey: iconKey,
+            labelKey: labelKey,
+            label: label,
+            positionAnimation: positionAnimation,
+            labelOpacity: animation,
             padding: padding,
-            child: CustomMultiChildLayout(
-              delegate: _NavigationDestinationLayoutDelegate(
-                animation: animation,
-              ),
-              children: <Widget>[
-                LayoutId(
-                  id: _NavigationDestinationLayoutDelegate.iconId,
-                  child: icon,
-                ),
-                LayoutId(
-                  id: _NavigationDestinationLayoutDelegate.labelId,
-                  child: FadeTransition(
-                    key: _labelKey,
-                    alwaysIncludeSemantics: true,
-                    opacity: animation,
-                    child: label,
-                  ),
-                ),
-              ],
-            ),
           ),
         );
       },
@@ -895,10 +1339,349 @@ class _DestinationLayoutAnimationBuilder extends StatelessWidget {
   }
 }
 
-/// Semantics widget for a navigation bar destination.
+class _NavigationBarIndicatorInkWell extends InkResponse {
+  const _NavigationBarIndicatorInkWell({
+    required this.useMaterial3,
+    required this.destinationHoverRegion,
+    required this.textDirection,
+    required this.hasVisibleText,
+    required this.iconRegionKey,
+    required this.labelRegionKey,
+    required this.fillPadding,
+    super.child,
+    super.onTap,
+    super.overlayColor,
+    ShapeBorder? customBorder,
+    BorderRadius? borderRadius,
+    super.splashColor,
+    super.hoverColor,
+  }) : super(
+          containedInkWell: true,
+          highlightShape: BoxShape.rectangle,
+          borderRadius: useMaterial3 ? null : borderRadius,
+          customBorder: useMaterial3 ? customBorder : null,
+        );
+
+  final bool useMaterial3;
+  final NavigationDestinationRegion? destinationHoverRegion;
+  final TextDirection textDirection;
+  final bool hasVisibleText;
+  final GlobalKey iconRegionKey;
+  final GlobalKey labelRegionKey;
+  final EdgeInsets fillPadding;
+
+  @override
+  RectCallback? getRectCallback(RenderBox referenceBox) {
+    return () => _navigationBarDestinationHighlightRect(
+          size: referenceBox.size,
+          textDirection: textDirection,
+          mode: destinationHoverRegion,
+          hasVisibleText: hasVisibleText,
+          fillPadding: fillPadding,
+          referenceBox: referenceBox,
+          iconRegionKey: iconRegionKey,
+          labelRegionKey: labelRegionKey,
+        );
+  }
+}
+
+Rect _navigationBarDestinationHighlightRect({
+  required Size size,
+  required TextDirection textDirection,
+  required NavigationDestinationRegion? mode,
+  required bool hasVisibleText,
+  required EdgeInsets fillPadding,
+  RenderBox? referenceBox,
+  GlobalKey? iconRegionKey,
+  GlobalKey? labelRegionKey,
+}) {
+  final Rect fullRect = Offset.zero & size;
+
+  final Rect fallbackIconRect = Rect.fromLTWH(
+    (size.width - _kIndicatorWidth) / 2,
+    (size.height - _kIndicatorHeight) / 2,
+    _kIndicatorWidth,
+    _kIndicatorHeight,
+  );
+
+  final Rect? measuredIconRect = referenceBox != null && iconRegionKey != null
+      ? _resolveRegionRect(iconRegionKey, referenceBox)
+      : null;
+  final Rect? measuredLabelRect = referenceBox != null && labelRegionKey != null
+      ? _resolveRegionRect(labelRegionKey, referenceBox)
+      : null;
+  final Rect effectiveIconRect = measuredIconRect ?? fallbackIconRect;
+  final bool isDefaultFillPath =
+      mode == null || mode == NavigationDestinationRegion.icon;
+  if (isDefaultFillPath) {
+    return effectiveIconRect;
+  }
+  if (mode == NavigationDestinationRegion.full) {
+    return fullRect;
+  }
+  final bool hasLabelBounds = measuredLabelRect != null &&
+      measuredLabelRect.width > 0 &&
+      measuredLabelRect.height > 0;
+  final bool shouldUseLabelBounds = hasVisibleText && hasLabelBounds;
+
+  final bool hasExplicitHorizontalFillPadding =
+      fillPadding.left > 0 || fillPadding.right > 0;
+  final bool useFallbackHorizontalPadding = !hasExplicitHorizontalFillPadding &&
+      (mode == NavigationDestinationRegion.content ||
+          mode == NavigationDestinationRegion.label);
+  final double horizontalPadding = useFallbackHorizontalPadding
+      ? _horizontalDestinationPadding
+      : fillPadding.left;
+  final double topPadding = fillPadding.top;
+  final double bottomPadding = fillPadding.bottom;
+
+  Rect expandAndClamp(
+    Rect rect, {
+    double leftPadding = 0,
+    double rightPadding = 0,
+  }) {
+    double left = rect.left - leftPadding;
+    double right = rect.right + rightPadding;
+
+    if (left < fullRect.left) {
+      final double delta = fullRect.left - left;
+      left += delta;
+      right += delta;
+    }
+    if (right > fullRect.right) {
+      final double delta = right - fullRect.right;
+      left -= delta;
+      right -= delta;
+    }
+
+    left = left.clamp(fullRect.left, fullRect.right);
+    right = right.clamp(fullRect.left, fullRect.right);
+    if (right < left) {
+      right = left;
+    }
+
+    return Rect.fromLTRB(
+      left,
+      (rect.top - topPadding).clamp(0.0, fullRect.bottom),
+      right,
+      (rect.bottom + bottomPadding).clamp(0.0, fullRect.bottom),
+    );
+  }
+
+  switch (mode) {
+    case NavigationDestinationRegion.none:
+      return Rect.zero;
+    case NavigationDestinationRegion.icon:
+      return effectiveIconRect;
+    case NavigationDestinationRegion.content:
+      if (!shouldUseLabelBounds) {
+        return effectiveIconRect;
+      }
+      final Rect combined =
+          effectiveIconRect.expandToInclude(measuredLabelRect);
+      const double contentExtraHorizontalPadding = 4.0;
+      const double contentExtraVerticalPadding = 4.0;
+      final double contentHorizontalPadding =
+          horizontalPadding + contentExtraHorizontalPadding;
+      final Rect contentRect = combined.inflate(contentExtraVerticalPadding);
+      return expandAndClamp(
+        contentRect,
+        leftPadding: contentHorizontalPadding,
+        rightPadding: contentHorizontalPadding,
+      );
+    case NavigationDestinationRegion.label:
+      if (!shouldUseLabelBounds) {
+        return effectiveIconRect;
+      }
+      final Rect labelBand = measuredLabelRect;
+      double targetWidth = labelBand.width + (horizontalPadding * 2);
+      final double minimumWidth = _kIndicatorWidth + (horizontalPadding * 2);
+      if (targetWidth < minimumWidth) {
+        targetWidth = minimumWidth;
+      }
+
+      double left = labelBand.center.dx - (targetWidth / 2);
+      double right = labelBand.center.dx + (targetWidth / 2);
+
+      if (left < fullRect.left) {
+        final double delta = fullRect.left - left;
+        left += delta;
+        right += delta;
+      }
+      if (right > fullRect.right) {
+        final double delta = right - fullRect.right;
+        left -= delta;
+        right -= delta;
+      }
+
+      left = left.clamp(fullRect.left, fullRect.right);
+      right = right.clamp(fullRect.left, fullRect.right);
+      if (right < left) {
+        right = left;
+      }
+      final double desiredTop = labelBand.center.dy - (_kIndicatorHeight / 2);
+      double top = desiredTop;
+      top = top.clamp(
+        0.0,
+        (fullRect.bottom - _kIndicatorHeight).clamp(0.0, fullRect.bottom),
+      );
+      final double bottom =
+          (top + _kIndicatorHeight).clamp(0.0, fullRect.bottom);
+      return Rect.fromLTRB(
+        left,
+        top,
+        right,
+        bottom,
+      );
+    case NavigationDestinationRegion.full:
+      return fullRect;
+  }
+}
+
+class _DestinationSelectionFill extends StatelessWidget {
+  const _DestinationSelectionFill({
+    required this.color,
+    required this.shape,
+    required this.animation,
+    required this.mode,
+    required this.textDirection,
+    required this.hasVisibleText,
+    required this.destinationRegionKey,
+    required this.iconRegionKey,
+    required this.labelRegionKey,
+    required this.fillPadding,
+  });
+
+  final Color color;
+  final ShapeBorder shape;
+  final Animation<double> animation;
+  final NavigationDestinationRegion mode;
+  final TextDirection textDirection;
+  final bool hasVisibleText;
+  final GlobalKey destinationRegionKey;
+  final GlobalKey iconRegionKey;
+  final GlobalKey labelRegionKey;
+  final EdgeInsets fillPadding;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (BuildContext context, Widget? child) {
+        final double scale = animation.isDismissed
+            ? 0.0
+            : Tween<double>(begin: .4, end: 1.0).transform(
+                CurveTween(curve: Curves.easeInOutCubicEmphasized)
+                    .transform(animation.value),
+              );
+        return Opacity(
+          opacity: animation.value,
+          child: Transform(
+            alignment: Alignment.center,
+            transform: Matrix4.diagonal3Values(scale, 1.0, 1.0),
+            child: child,
+          ),
+        );
+      },
+      child: CustomPaint(
+        painter: _DestinationSelectionFillPainter(
+          color: color,
+          shape: shape,
+          mode: mode,
+          textDirection: textDirection,
+          hasVisibleText: hasVisibleText,
+          destinationRegionKey: destinationRegionKey,
+          iconRegionKey: iconRegionKey,
+          labelRegionKey: labelRegionKey,
+          fillPadding: fillPadding,
+        ),
+        child: const SizedBox.expand(),
+      ),
+    );
+  }
+}
+
+class _DestinationSelectionFillPainter extends CustomPainter {
+  const _DestinationSelectionFillPainter({
+    required this.color,
+    required this.shape,
+    required this.mode,
+    required this.textDirection,
+    required this.hasVisibleText,
+    required this.destinationRegionKey,
+    required this.iconRegionKey,
+    required this.labelRegionKey,
+    required this.fillPadding,
+  });
+
+  final Color color;
+  final ShapeBorder shape;
+  final NavigationDestinationRegion mode;
+  final TextDirection textDirection;
+  final bool hasVisibleText;
+  final GlobalKey destinationRegionKey;
+  final GlobalKey iconRegionKey;
+  final GlobalKey labelRegionKey;
+  final EdgeInsets fillPadding;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final RenderBox? destinationBox =
+        _resolveReferenceBox(destinationRegionKey);
+    final Rect rect = _navigationBarDestinationHighlightRect(
+      size: size,
+      textDirection: textDirection,
+      mode: mode,
+      hasVisibleText: hasVisibleText,
+      fillPadding: fillPadding,
+      referenceBox: destinationBox,
+      iconRegionKey: iconRegionKey,
+      labelRegionKey: labelRegionKey,
+    );
+    final Path path = shape.getOuterPath(rect, textDirection: textDirection);
+    canvas.drawPath(path, Paint()..color = color);
+  }
+
+  @override
+  bool shouldRepaint(_DestinationSelectionFillPainter oldDelegate) {
+    return color != oldDelegate.color ||
+        shape != oldDelegate.shape ||
+        mode != oldDelegate.mode ||
+        textDirection != oldDelegate.textDirection ||
+        hasVisibleText != oldDelegate.hasVisibleText ||
+        destinationRegionKey != oldDelegate.destinationRegionKey ||
+        iconRegionKey != oldDelegate.iconRegionKey ||
+        labelRegionKey != oldDelegate.labelRegionKey ||
+        fillPadding != oldDelegate.fillPadding;
+  }
+}
+
+RenderBox? _resolveReferenceBox(GlobalKey key) {
+  final BuildContext? context = key.currentContext;
+  if (context == null) return null;
+  final RenderObject? renderObject = context.findRenderObject();
+  if (renderObject is! RenderBox || !renderObject.attached) return null;
+  return renderObject;
+}
+
+Rect? _resolveRegionRect(GlobalKey key, RenderBox referenceBox) {
+  final BuildContext? context = key.currentContext;
+  if (context == null) return null;
+
+  final RenderObject? renderObject = context.findRenderObject();
+  if (renderObject is! RenderBox || !renderObject.attached) return null;
+
+  final Offset topLeft = renderObject.localToGlobal(
+    Offset.zero,
+    ancestor: referenceBox,
+  );
+  return topLeft & renderObject.size;
+}
+
+/// Semantics widget for a [CustomNavigationBar] destination.
 ///
 /// Requires a [_NavigationDestinationInfo] parent (normally provided by the
-/// [NavigationBar] by default).
+/// [CustomNavigationBar] by default).
 ///
 /// Provides localized semantic labels to the destination, for example, it will
 /// read "Home, Tab 1 of 3".
@@ -908,8 +1691,12 @@ class _NavigationBarDestinationSemantics extends StatelessWidget {
   /// Adds the appropriate semantics for navigation bar destinations to the
   /// [child].
   const _NavigationBarDestinationSemantics({
+    required this.enabled,
     required this.child,
   });
+
+  /// Whether this widget is enabled.
+  final bool enabled;
 
   /// The widget that should receive the destination semantics.
   final Widget child;
@@ -925,145 +1712,68 @@ class _NavigationBarDestinationSemantics extends StatelessWidget {
     return _StatusTransitionWidgetBuilder(
       animation: destinationInfo.selectedAnimation,
       builder: (BuildContext context, Widget? child) {
-        return Semantics(
-          selected: destinationInfo.selectedAnimation.isForwardOrCompleted,
-          container: true,
-          child: child,
-        );
+        return Semantics(enabled: enabled, button: true, child: child);
       },
-      child: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          child,
-          Semantics(
-            label: localizations.tabLabel(
-              tabIndex: destinationInfo.index + 1,
-              tabCount: destinationInfo.totalNumberOfDestinations,
+      child: kIsWeb
+          ? child
+          : Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                child,
+                Semantics(
+                  label: localizations.tabLabel(
+                    tabIndex: destinationInfo.index + 1,
+                    tabCount: destinationInfo.totalNumberOfDestinations,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }
 
-/// Tooltip widget for use in a [NavigationBar].
+/// Tooltip widget for use in a [CustomNavigationBar].
 ///
 /// It appears just above the navigation bar when one of the destinations is
 /// long pressed.
 class _NavigationBarDestinationTooltip extends StatelessWidget {
   /// Adds a tooltip to the [child] widget.
+  ///
+  /// When [message] is null no [Tooltip] is rendered and [child] is returned
+  /// directly, so passing `tooltip: null` on a
+  /// [CustomNavigationDestination] truly suppresses the tooltip instead of
+  /// falling back to the label text.
   const _NavigationBarDestinationTooltip({
     required this.message,
     required this.child,
   });
 
-  /// The text that is rendered in the tooltip when it appears.
-  final String message;
+  /// The text rendered in the tooltip, or null to show no tooltip.
+  final String? message;
 
-  /// The widget that, when pressed, will show a tooltip.
+  /// The widget that, when long-pressed, will show the tooltip.
   final Widget child;
 
   @override
   Widget build(BuildContext context) {
+    if (message == null) return child;
+
     final ThemeData theme = Theme.of(context);
     final NavigationBarThemeData navigationBarTheme = theme.navigationBarTheme;
 
     double tooltipVerticalOffset = 42;
 
     if (navigationBarTheme is CustomNavigationBarThemeData) {
-      tooltipVerticalOffset = navigationBarTheme.tooltipVerticalOffset;
+      tooltipVerticalOffset = navigationBarTheme.tooltipVerticalOffset ?? 42;
     }
 
     return Tooltip(
-      message: message,
+      message: message!,
       verticalOffset: tooltipVerticalOffset,
       excludeFromSemantics: true,
       preferBelow: false,
       child: child,
     );
-  }
-}
-
-/// Custom layout delegate for shifting navigation bar destinations.
-///
-/// This will lay out the icon + label according to the [animation].
-///
-/// When the [animation] is 0, the icon will be centered, and the label will be
-/// positioned directly below it.
-///
-/// When the [animation] is 1, the label will still be positioned directly below
-/// the icon, but the icon + label combination will be centered.
-///
-/// Used in a [CustomMultiChildLayout] widget in the
-/// [_NavigationDestinationBuilder].
-class _NavigationDestinationLayoutDelegate extends MultiChildLayoutDelegate {
-  _NavigationDestinationLayoutDelegate({required this.animation})
-      : super(relayout: animation);
-
-  /// The selection animation that indicates whether or not this destination is
-  /// selected.
-  ///
-  /// See [_NavigationDestinationInfo.selectedAnimation].
-  final Animation<double> animation;
-
-  /// ID for the icon widget child.
-  ///
-  /// This is used by the [LayoutId] when this delegate is used in a
-  /// [CustomMultiChildLayout].
-  ///
-  /// See [_NavigationDestinationBuilder].
-  static const int iconId = 1;
-
-  /// ID for the label widget child.
-  ///
-  /// This is used by the [LayoutId] when this delegate is used in a
-  /// [CustomMultiChildLayout].
-  ///
-  /// See [_NavigationDestinationBuilder].
-  static const int labelId = 2;
-
-  @override
-  void performLayout(Size size) {
-    double halfWidth(Size size) => size.width / 2;
-    double halfHeight(Size size) => size.height / 2;
-
-    final Size iconSize = layoutChild(iconId, BoxConstraints.loose(size));
-    final Size labelSize = layoutChild(labelId, BoxConstraints.loose(size));
-
-    final double yPositionOffset = Tween<double>(
-      // When unselected, the icon is centered vertically.
-      begin: halfHeight(iconSize),
-      // When selected, the icon and label are centered vertically.
-      end: halfHeight(iconSize) + halfHeight(labelSize),
-    ).transform(animation.value);
-    final double iconYPosition = halfHeight(size) - yPositionOffset;
-
-    // Position the icon.
-    positionChild(
-      iconId,
-      Offset(
-        // Center the icon horizontally.
-        halfWidth(size) - halfWidth(iconSize),
-        iconYPosition,
-      ),
-    );
-
-    // Position the label.
-    positionChild(
-      labelId,
-      Offset(
-        // Center the label horizontally.
-        halfWidth(size) - halfWidth(labelSize),
-        // Label always appears directly below the icon.
-        iconYPosition + iconSize.height,
-      ),
-    );
-  }
-
-  @override
-  bool shouldRelayout(_NavigationDestinationLayoutDelegate oldDelegate) {
-    return oldDelegate.animation != animation;
   }
 }
 
@@ -1354,6 +2064,9 @@ class _NavigationBarDefaultsM2 extends NavigationBarThemeData {
       WidgetStatePropertyAll<TextStyle?>(
         _theme.textTheme.labelSmall!.copyWith(color: _colors.onSurface),
       );
+
+  @override
+  EdgeInsetsGeometry? get labelPadding => const EdgeInsets.only(top: 4);
 }
 
 // BEGIN GENERATED TOKEN PROPERTIES - NavigationBar
@@ -1416,6 +2129,9 @@ class _NavigationBarDefaultsM3 extends CustomNavigationBarThemeData {
       );
     });
   }
+
+  @override
+  EdgeInsetsGeometry? get labelPadding => const EdgeInsets.only(top: 4);
 }
 
 // END GENERATED TOKEN PROPERTIES - NavigationBar

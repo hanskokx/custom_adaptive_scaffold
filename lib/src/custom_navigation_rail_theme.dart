@@ -51,8 +51,8 @@ class CustomNavigationRailThemeData
     this.indicatorShape,
     this.minWidth,
     this.minExtendedWidth,
-    this.margin = EdgeInsets.zero,
-    this.padding = EdgeInsets.zero,
+    this.margin,
+    this.padding,
   });
 
   /// Color to be used for the [NavigationRail]'s background.
@@ -117,11 +117,11 @@ class CustomNavigationRailThemeData
   @override
   final double? minExtendedWidth;
 
-  /// Applies a margin around navigation items. Defaults to [EdgeInsets.zero].
-  final EdgeInsetsGeometry margin;
+  /// Applies a margin around navigation items.
+  final EdgeInsetsGeometry? margin;
 
-  /// Applies padding around navigation item content. Defaults to [EdgeInsets.zero].
-  final EdgeInsetsGeometry padding;
+  /// Applies padding around navigation item content.
+  final EdgeInsetsGeometry? padding;
 
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
@@ -209,10 +209,8 @@ class CustomNavigationRailThemeData
       indicatorShape: ShapeBorder.lerp(a?.indicatorShape, b?.indicatorShape, t),
       minWidth: lerpDouble(a?.minWidth, b?.minWidth, t),
       minExtendedWidth: lerpDouble(a?.minExtendedWidth, b?.minExtendedWidth, t),
-      margin:
-          EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t) ?? EdgeInsets.zero,
-      padding:
-          EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t) ?? EdgeInsets.zero,
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
     );
   }
 
@@ -362,14 +360,14 @@ class CustomNavigationRailThemeData
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "margin",
         margin,
-        defaultValue: EdgeInsets.zero,
+        defaultValue: defaultData.margin,
       ),
     );
     properties.add(
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "padding",
         padding,
-        defaultValue: EdgeInsets.zero,
+        defaultValue: defaultData.padding,
       ),
     );
   }

@@ -1,6 +1,6 @@
 name: custom_adaptive_scaffold
 description: Widgets to easily build adaptive layouts, including navigation elements.
-version: 3.0.2
+version: 4.0.0
 issue_tracker: https://github.com/hanskokx/custom_adaptive_scaffold/issues
 repository: https://github.com/hanskokx/custom_adaptive_scaffold
 

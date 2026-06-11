@@ -4,13 +4,17 @@
 //
 // Forked, modified, and maintained by Hans Kokx beginning in 2024.
 
+export "package:flutter/material.dart" show NavigationRailLabelType;
+
 export "src/adaptive_layout.dart";
 export "src/adaptive_scaffold.dart";
 export "src/adaptive_scaffold_controller.dart";
 export "src/breakpoints.dart";
-export "src/custom_navigation_bar.dart" show CustomNavigationDestination;
+export "src/custom_navigation_bar.dart"
+    show CustomNavigationBar, CustomNavigationDestination, NavigationIndicator;
 export "src/custom_navigation_bar_theme.dart";
 export "src/custom_navigation_rail.dart"
     show RailDestination, CustomNavigationRail;
 export "src/custom_navigation_rail_theme.dart";
+export "src/navigation_destination_types.dart";
 export "src/slot_layout.dart";

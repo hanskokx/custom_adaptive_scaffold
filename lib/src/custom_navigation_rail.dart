@@ -4,8 +4,12 @@
 
 import "dart:ui";
 
-import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/material.dart";
+
+import "breakpoints.dart";
+import "custom_navigation_rail_theme.dart";
+import "destination_region_boundary.dart";
+import "navigation_destination_types.dart";
 
 part "rail_destination.dart";
 
@@ -103,8 +107,18 @@ class CustomNavigationRail extends StatefulWidget {
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
-  })  : assert(destinations.length >= 2),
-        assert(
+    this.destinationFillRegion,
+    this.destinationHoverRegion,
+    this.destinationFillShape,
+    this.leadingAtTop = true,
+    this.trailingAtBottom = false,
+    this.scrollable = false,
+    this.mainAxisAlignment,
+    this.iconTransitionAnimation = NavigationDestinationAnimation.none,
+    this.iconTransitionCurve = Curves.easeInOut,
+    this.iconTransitionDuration,
+    this.destinationTransitionBuilder,
+  })  : assert(
           selectedIndex == null ||
               (0 <= selectedIndex && selectedIndex < destinations.length),
         ),
@@ -114,10 +128,6 @@ class CustomNavigationRail extends StatefulWidget {
         assert(
           (minWidth == null || minExtendedWidth == null) ||
               minExtendedWidth >= minWidth,
-        ),
-        assert(
-          !extended ||
-              (labelType == null || labelType == NavigationRailLabelType.none),
         );
 
   /// Sets the color of the Container that holds all of the [CustomNavigationRail]'s
@@ -319,6 +329,68 @@ class CustomNavigationRail extends StatefulWidget {
   /// that is null, defaults to [StadiumBorder].
   final ShapeBorder? indicatorShape;
 
+  /// Controls where destination fill/highlight is painted.
+  ///
+  /// When null, this widget follows Flutter's default indicator path.
+  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
+  ///
+  /// Pass [NavigationDestinationRegion.none] to explicitly disable custom
+  /// fill/highlight behavior.
+  final NavigationDestinationRegion? destinationFillRegion;
+
+  /// Controls where destination hover and pressed interaction effects are
+  /// painted.
+  ///
+  /// When null, this follows [destinationFillRegion].
+  final NavigationDestinationRegion? destinationHoverRegion;
+
+  /// Optional shape used for destination fill/highlight when
+  /// [destinationFillRegion] is configured.
+  ///
+  /// If null, [indicatorShape] / theme indicator shape is used, then
+  /// [StadiumBorder].
+  final ShapeBorder? destinationFillShape;
+
+  /// Icon transition preset for destination icon swaps.
+  ///
+  /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
+  final NavigationDestinationAnimation iconTransitionAnimation;
+
+  /// Curve used by destination icon transitions.
+  final Curve iconTransitionCurve;
+
+  /// Optional duration used by destination icon transitions.
+  final Duration? iconTransitionDuration;
+
+  /// Optional builder that receives icon and label widgets for both states.
+  ///
+  /// When provided, it takes precedence over [iconTransitionAnimation]
+  /// for each destination, allowing coordinated icon+label animations.
+  final NavigationDestinationTransitionBuilder? destinationTransitionBuilder;
+
+  /// Pin the [leading] widget to the top.
+  ///
+  /// If `true`, [leading] stays above the main destination group.
+  /// If `false`, [leading] participates in the main destination group layout.
+  final bool leadingAtTop;
+
+  /// Pin the [trailing] widget to the bottom.
+  ///
+  /// If `true`, [trailing] stays below the main destination group.
+  /// If `false`, [trailing] participates in the main destination group layout.
+  final bool trailingAtBottom;
+
+  /// Whether the main destination group should be scrollable.
+  ///
+  /// This is useful when there is not enough vertical space to show all
+  /// destinations (and any non-pinned leading/trailing content).
+  final bool scrollable;
+
+  /// How destinations are placed along the vertical axis.
+  ///
+  /// When non-null, [groupAlignment] is ignored for main-group placement.
+  final MainAxisAlignment? mainAxisAlignment;
+
   /// Returns the animation that controls the [CustomNavigationRail.extended] state.
   ///
   /// This can be used to synchronize animations in the [leading] or [trailing]
@@ -395,7 +467,7 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
   @override
   Widget build(BuildContext context) {
     final NavigationRailThemeData navigationRailTheme =
-        NavigationRailTheme.of(context);
+        CustomNavigationRailTheme.of(context);
     final NavigationRailThemeData defaults = Theme.of(context).useMaterial3
         ? _NavigationRailDefaultsM3(context)
         : _NavigationRailDefaultsM2(context);
@@ -425,6 +497,11 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     final double groupAlignment = widget.groupAlignment ??
         navigationRailTheme.groupAlignment ??
         defaults.groupAlignment!;
+    final double minWidth =
+        widget.minWidth ?? navigationRailTheme.minWidth ?? defaults.minWidth!;
+    final double minExtendedWidth = widget.minExtendedWidth ??
+        navigationRailTheme.minExtendedWidth ??
+        defaults.minExtendedWidth!;
     final NavigationRailLabelType labelType = widget.labelType ??
         navigationRailTheme.labelType ??
         defaults.labelType!;
@@ -456,78 +533,98 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     final EdgeInsetsGeometry? railDestinationPadding =
         isCustom ? navigationRailTheme.padding : null;
 
-    return _ExtendedNavigationRailAnimation(
-      animation: _extendedAnimation,
-      child: Semantics(
-        explicitChildNodes: true,
-        child: Material(
-          elevation: elevation,
-          color: backgroundColor,
-          child: SafeArea(
-            right: isRTLDirection,
-            left: !isRTLDirection,
-            child: Column(
-              children: <Widget>[
-                _verticalSpacer,
-                if (widget.leading != null) ...<Widget>[
-                  widget.leading!,
+    Widget mainGroup = Column(
+      mainAxisSize: widget.mainAxisAlignment != null
+          ? MainAxisSize.max
+          : MainAxisSize.min,
+      mainAxisAlignment: widget.mainAxisAlignment ?? MainAxisAlignment.start,
+      children: <Widget>[
+        if (!widget.leadingAtTop && widget.leading != null) ...<Widget>[
+          widget.leading!,
+          _verticalSpacer,
+        ],
+        for (int i = 0; i < widget.destinations.length; i += 1)
+          Container(
+            margin: railDestinationMargin,
+            child: RailDestination(
+              minWidth: minWidth,
+              minExtendedWidth: minExtendedWidth,
+              extendedTransitionAnimation: _extendedAnimation,
+              selected: widget.selectedIndex == i,
+              icon: widget.destinations[i].icon,
+              selectedIcon: widget.destinations[i].selectedIcon,
+              label: widget.destinations[i].label,
+              destinationAnimation: _destinationAnimations[i],
+              labelType: labelType,
+              iconTheme: widget.selectedIndex == i
+                  ? selectedIconTheme
+                  : effectiveUnselectedIconTheme,
+              labelTextStyle: widget.selectedIndex == i
+                  ? selectedLabelTextStyle
+                  : unselectedLabelTextStyle,
+              padding: railDestinationPadding ?? widget.destinations[i].padding,
+              useIndicator: useIndicator,
+              indicatorColor: indicatorColor,
+              indicatorShape: indicatorShape,
+              destinationFillRegion: widget.destinationFillRegion,
+              destinationHoverRegion: widget.destinationHoverRegion,
+              destinationFillShape: widget.destinationFillShape,
+              onTap: () {
+                if (widget.onDestinationSelected != null) {
+                  widget.onDestinationSelected!(i);
+                }
+              },
+              indexLabel: localizations.tabLabel(
+                tabIndex: i + 1,
+                tabCount: widget.destinations.length,
+              ),
+              disabled: widget.destinations[i].disabled,
+              extended: widget.extended,
+              iconTransitionAnimation: widget.iconTransitionAnimation,
+              iconTransitionCurve: widget.iconTransitionCurve,
+              iconTransitionDuration: widget.iconTransitionDuration,
+              destinationTransitionBuilder: widget.destinationTransitionBuilder,
+            ),
+          ),
+        if (!widget.trailingAtBottom && widget.trailing != null)
+          widget.trailing!,
+      ],
+    );
+
+    if (widget.scrollable) {
+      mainGroup = SingleChildScrollView(child: mainGroup);
+    }
+
+    return Semantics(
+      container: true,
+      child: _ExtendedNavigationRailAnimation(
+        animation: _extendedAnimation,
+        child: Semantics(
+          explicitChildNodes: true,
+          child: Material(
+            elevation: elevation,
+            color: backgroundColor,
+            child: SafeArea(
+              right: isRTLDirection,
+              left: !isRTLDirection,
+              child: Column(
+                children: <Widget>[
                   _verticalSpacer,
-                ],
-                Expanded(
-                  child: Align(
-                    alignment: Alignment(0, groupAlignment),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        for (int i = 0; i < widget.destinations.length; i += 1)
-                          Container(
-                            margin: railDestinationMargin,
-                            child: RailDestination(
-                              minWidth: widget.minWidth,
-                              minExtendedWidth: widget.minExtendedWidth,
-                              extendedTransitionAnimation: _extendedAnimation,
-                              selected: widget.selectedIndex == i,
-                              icon: widget.selectedIndex == i
-                                  ? widget.destinations[i].selectedIcon
-                                  : widget.destinations[i].icon,
-                              label: widget.destinations[i].label,
-                              destinationAnimation: _destinationAnimations[i],
-                              labelType: labelType,
-                              iconTheme: widget.selectedIndex == i
-                                  ? selectedIconTheme
-                                  : effectiveUnselectedIconTheme,
-                              labelTextStyle: widget.selectedIndex == i
-                                  ? selectedLabelTextStyle
-                                  : unselectedLabelTextStyle,
-                              padding: railDestinationPadding ??
-                                  widget.destinations[i].padding ??
-                                  const EdgeInsets.symmetric(
-                                    horizontal: _horizontalDestinationPadding,
-                                  ),
-                              useIndicator: useIndicator,
-                              indicatorColor:
-                                  useIndicator ? indicatorColor : null,
-                              indicatorShape:
-                                  useIndicator ? indicatorShape : null,
-                              onTap: () {
-                                if (widget.onDestinationSelected != null) {
-                                  widget.onDestinationSelected!(i);
-                                }
-                              },
-                              indexLabel: localizations.tabLabel(
-                                tabIndex: i + 1,
-                                tabCount: widget.destinations.length,
-                              ),
-                              disabled: widget.destinations[i].disabled,
-                              extended: widget.extended,
-                            ),
-                          ),
-                        if (widget.trailing != null) widget.trailing!,
-                      ],
+                  if (widget.leadingAtTop &&
+                      widget.leading != null) ...<Widget>[
+                    widget.leading!,
+                    _verticalSpacer,
+                  ],
+                  Flexible(
+                    child: Align(
+                      alignment: Alignment(0, groupAlignment),
+                      child: mainGroup,
                     ),
                   ),
-                ),
-              ],
+                  if (widget.trailingAtBottom && widget.trailing != null)
+                    widget.trailing!,
+                ],
+              ),
             ),
           ),
         ),

@@ -1,3 +1,93 @@
+## 4.0.0
+
+* **[CHANGE] Compact rail fill/highlight now defaults to Flutter-style
+  icon-scoped rendering**
+  * If your app relied on the previous full selected-destination
+    fill treatment, set
+    `destinationFillRegion: NavigationDestinationRegion.full` explicitly.
+* **[CHANGE] Custom navigation theme data now uses nullable layout and
+  tooltip fields**
+  * `CustomNavigationBarThemeData.margin`, `padding`, and
+    `tooltipVerticalOffset` are now nullable.
+  * `CustomNavigationRailThemeData.margin` and `padding` are now nullable.
+  * Migration: if you read these values directly, handle `null` and resolve
+    defaults from the active widget/theme instead of assuming zero/`42`.
+* **[FEAT] AdaptiveScaffold adds consolidated adaptive navigation overrides**
+  * New `navigationTheme` accepts `AdaptiveScaffoldNavigationThemeData` for
+    shared compact/small label behavior via `compactLabelType`, expanded
+    rail label behavior via `expandedLabelType`, shared destination
+    transition animation, compact rail transition curve/duration, and
+    destination fill mode/shape.
+  * `expandedLabelType` is scoped to extended rail layouts and defaults to
+    `all`, while supporting `none`, `selected`, and `all`.
+* **[FEAT] Navigation destination fill/highlight is now configurable across
+  custom bars, rails, and AdaptiveScaffold helpers**
+  * `CustomNavigationBar`, `CustomNavigationRail`,
+    `AdaptiveScaffold.standardBottomNavigationBar`, and
+    `AdaptiveScaffold.standardNavigationRail` support
+    `destinationFillRegion` and `destinationFillShape`.
+  * Supported fill modes are `none`, `icon`, `content`, `label`, and `full`.
+  * Fill/highlight rendering now follows the resolved navigation indicator
+    color and shape, and `AdaptiveScaffold.navigationTheme` can apply these
+    settings across layouts.
+* **[FEAT] Destination hover region is now configurable independently**
+  * Added `destinationHoverRegion` alongside `destinationFillRegion` on
+    `CustomNavigationBar`, `CustomNavigationRail`,
+    `AdaptiveScaffold.standardBottomNavigationBar`,
+    `AdaptiveScaffold.standardNavigationRail`, and
+    `AdaptiveScaffoldNavigationThemeData`.
+  * Hover mode defaults to the fill mode when omitted, preserving existing
+    behavior.
+* **[CHANGE] Destination region naming was aligned for shared fill/hover usage**
+  * Renamed `destinationFillMode` to `destinationFillRegion`.
+  * Renamed `destinationHoverMode` to `destinationHoverRegion`.
+  * This rename is part of unreleased 4.0.0 work and is not treated as a
+    breaking release migration.
+  * Renamed `NavigationDestinationFillMode` to
+    `NavigationDestinationRegion`.
+  * Updated docs/examples to use the new enum name.
+* **[FEAT] Navigation destination animation and composition APIs were added**
+  * `CustomNavigationDestination` now supports:
+    `hideLabel`, `transitionAnimation`, `transitionCurve`,
+    `transitionDuration`, `iconBuilder`, `transitionBuilder`,
+    `iconIndicatorShape`, and `labelIndicatorShape`.
+  * `NavigationDestinationAnimation` adds built-in icon presets:
+    `none`, `fadeSwap`, and `scale`.
+  * Added public builder typedefs:
+    `NavigationDestinationIconBuilder` and
+    `NavigationDestinationTransitionBuilder`.
+  * `CustomNavigationRail` now supports `iconTransitionAnimation`,
+    `iconTransitionCurve`, `iconTransitionDuration`, and
+    `destinationTransitionBuilder`.
+* **[FEAT] Package root exports were expanded**
+  * `CustomNavigationBar` and `NavigationIndicator` are now exported from the
+    package root.
+  * `navigation_destination_types.dart` is now exported, exposing
+    `NavigationDestinationAnimation`, `NavigationDestinationRegion`, and the
+    new destination builder typedefs.
+* **[FIX] Tooltips are now truly opt-in on custom destinations**
+  * `CustomNavigationDestination.tooltip` no longer falls back to the label
+    text when `null`.
+* **[FIX] Rail fill/highlight behavior was refined across edge cases**
+  * Corrected the default indicator shape used for `full` fill mode.
+  * Refined hover/highlight behavior for `label` fill mode and RTL-aware
+    layout handling.
+  * Refined interaction rect sizing to match the configured region mode.
+* **[SYNC] Large Flutter framework parity update for custom navigation widgets**
+  * Restores role-based semantics on the custom navigation bar (`tabBar` /
+    `tab`).
+  * Aligns destination semantics behavior with upstream enabled/button/web
+    label handling.
+  * Aligns `NavigationIndicator` rendering with upstream `Ink` usage.
+  * Aligns default label padding and related presentation details with
+    upstream defaults.
+  * Adds broad framework-mirror regression coverage for custom navigation bar,
+    rail, and theme behavior.
+* **[DOC] README migration and customization docs were rewritten**
+  * Documented `AdaptiveScaffold.navigationTheme`, the new transition and fill
+    APIs, package-root exports, and the explicit migration step for apps that
+    want to keep the legacy full-fill rail appearance.
+
 ## 3.0.2
 
 * [FIX] `AdaptiveScaffold.standardBottomNavigationBar` now normalizes plain

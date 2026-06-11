@@ -10,9 +10,42 @@ guidelines.
 **Important**: This source code is derived from the original code found in
 `package:flutter_adaptive_scaffold` as well as the Flutter framework, itself.
 Modifications have been made to the original source code that provide some
-additional customizations, such as padding and margins. Furthermore, the
-indicator around navigation items has been expanded from covering only the icon
-to covering the entire menu item.
+additional customizations, such as padding and margins. The package keeps
+Flutter-parity defaults where possible and exposes opt-in customization points
+for behavior that intentionally diverges.
+
+## How This Package Differs From Flutter
+
+This package intentionally diverges from Flutter framework/adaptive defaults in
+several places:
+
+- Adaptive layout helpers:
+  - Adds `AdaptiveScaffoldController`, `AdaptiveScaffoldScope`, and
+    `AdaptiveBody` for explicit collapsed pane intent control.
+- Navigation bar destination customization:
+  - `CustomNavigationDestination.hideLabel` for per-destination label hiding.
+  - `transitionAnimation`, `transitionCurve`, `transitionDuration` for built-in
+    icon transition presets.
+  - `iconBuilder` for fully custom icon transitions.
+  - `transitionBuilder` for full-content icon+label transition composition.
+  - `iconIndicatorShape` and `labelIndicatorShape` for scoped indicator bubbles.
+- Navigation rail customization:
+  - Rail destination icon transitions (`iconTransitionAnimation`, curve,
+    duration) and destination-level `destinationTransitionBuilder`.
+  - Extended layout controls (`leadingAtTop`, `trailingAtBottom`, `scrollable`,
+    `mainAxisAlignment`).
+  - Configurable rail destination fill/highlight via
+    `destinationFillRegion`, `destinationHoverRegion`, and
+    `destinationFillShape`.
+  - `AdaptiveScaffold` exposes the same fill options through
+    `navigationTheme: AdaptiveScaffoldNavigationThemeData(...)`.
+- Theme extensions:
+  - `CustomNavigationBarThemeData`: `margin`, `padding`,
+    `tooltipVerticalOffset`.
+  - `CustomNavigationRailThemeData`: `margin`, `padding`.
+- Compatibility bridge behavior:
+  - Adaptive destination normalization allows using plain
+    `NavigationDestination` inputs in APIs that render custom destinations.
 
 To see examples of using these widgets to make a simple but common adaptive
 layout:
@@ -145,6 +178,276 @@ class _MailScreenState extends State<MailScreen> {
   3. Toggle intent with `showBody()` and `showSecondaryBody()` from UI events.
   4. Use `AdaptiveBody.of(context)?.viewIsCollapsed` in descendants when
      collapsed-specific behavior is needed.
+
+## CustomNavigationDestination
+
+`CustomNavigationDestination` extends `NavigationDestination` with additional
+capabilities for per-destination label control, animated icon transitions, and
+fine-grained selection indicator placement.
+
+### Per-destination label visibility
+
+Set `hideLabel: true` to suppress the label on a single destination without
+affecting the bar-level `NavigationDestinationLabelBehavior`:
+
+```dart
+const CustomNavigationDestination(
+  icon: Icon(Icons.search_outlined),
+  label: "Search",  // still used for semantics and tooltip
+  hideLabel: true,  // not rendered visually
+),
+```
+
+### Animated icon transitions
+
+Use the built-in presets for common animations:
+
+```dart
+const CustomNavigationDestination(
+  icon: Icon(Icons.home_outlined),
+  selectedIcon: Icon(Icons.home),
+  label: "Home",
+  transitionAnimation: NavigationDestinationAnimation.fadeSwap,
+  transitionCurve: Curves.easeInOut,
+  transitionDuration: Duration(milliseconds: 250),
+),
+```
+
+Available presets:
+
+- `NavigationDestinationAnimation.none` — instant swap (default)
+- `NavigationDestinationAnimation.fadeSwap` — cross-fade between icons
+- `NavigationDestinationAnimation.scale` — scale-in / scale-out
+
+For fully custom icon animation, use `iconBuilder`. It receives the raw
+`Animation<double>`, an `isSelecting` flag indicating the direction of the
+transition, and both pre-themed icon widgets:
+
+```dart
+CustomNavigationDestination(
+  icon: const Icon(Icons.inbox_outlined),
+  selectedIcon: const Icon(Icons.inbox),
+  label: "Inbox",
+  iconBuilder: (
+    BuildContext context,
+    Animation<double> animation,
+    bool isSelecting,
+    Widget unselectedIcon,
+    Widget selectedIcon,
+  ) {
+    // isSelecting is true when transitioning toward selected,
+    // false when transitioning toward deselected.
+    return AnimatedSwitcher(
+      duration: const Duration(milliseconds: 300),
+      transitionBuilder: (child, anim) => SlideTransition(
+        position: Tween<Offset>(
+          begin: isSelecting ? const Offset(0, 1) : const Offset(0, -1),
+          end: Offset.zero,
+        ).animate(anim),
+        child: child,
+      ),
+      child: animation.isForwardOrCompleted
+          ? KeyedSubtree(key: const ValueKey("sel"), child: selectedIcon)
+          : KeyedSubtree(key: const ValueKey("unsel"), child: unselectedIcon),
+    );
+  },
+),
+```
+
+### Full icon+label transition composition
+
+Use `transitionBuilder` when icon and label should transition together:
+
+```dart
+CustomNavigationDestination(
+  icon: const Icon(Icons.video_call_outlined),
+  selectedIcon: const Icon(Icons.video_call),
+  label: "Video",
+  transitionBuilder: (
+    BuildContext context,
+    Animation<double> animation,
+    bool isSelecting,
+    Widget unselectedIcon,
+    Widget selectedIcon,
+    Widget unselectedLabel,
+    Widget selectedLabel,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        FadeTransition(
+          opacity: animation,
+          child: animation.isForwardOrCompleted ? selectedIcon : unselectedIcon,
+        ),
+        const SizedBox(height: 4),
+        FadeTransition(
+          opacity: animation,
+          child: animation.isForwardOrCompleted ? selectedLabel : unselectedLabel,
+        ),
+      ],
+    );
+  },
+),
+```
+
+### Custom navigation rail transitions
+
+`CustomNavigationRail` supports destination transition controls similar to
+`CustomNavigationDestination`, including a destination-level
+`destinationTransitionBuilder` for coordinated icon/label transitions.
+
+### Destination Fill And Hover Regions
+
+By default, `CustomNavigationRail` follows Flutter-style selection rendering,
+where the indicator sits behind the icon area.
+
+When you want custom destination fill/highlight scopes, choose a
+`destinationFillRegion`:
+
+- `none`
+- `icon`
+- `content`
+- `label`
+- `full`
+
+Example using full-widget fill plus a custom shape:
+
+```dart
+CustomNavigationRail(
+  selectedIndex: selectedIndex,
+  destinationFillRegion: NavigationDestinationRegion.full,
+  destinationFillShape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
+  destinations: destinations,
+)
+```
+
+Color is resolved from theme indicator color (`NavigationRailThemeData.indicatorColor`).
+
+`AdaptiveScaffold.standardNavigationRail` exposes the same options:
+
+```dart
+AdaptiveScaffold.standardNavigationRail(
+  selectedIndex: selectedIndex,
+  destinations: railDestinations,
+  destinationFillRegion: NavigationDestinationRegion.full,
+  destinationFillShape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
+)
+```
+
+For `AdaptiveScaffold`, configure fill/highlight through
+`AdaptiveScaffoldNavigationThemeData`:
+
+```dart
+AdaptiveScaffold(
+  destinations: destinations,
+  navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+    destinationFillRegion: NavigationDestinationRegion.label,
+    destinationFillShape: StadiumBorder(),
+  ),
+  body: (BuildContext context) => const Placeholder(),
+)
+```
+
+To control hover/pressed interaction region independently, use
+`destinationHoverRegion` (defaults to `destinationFillRegion` when omitted):
+
+```dart
+AdaptiveScaffold(
+  destinations: destinations,
+  navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+    destinationFillRegion: NavigationDestinationRegion.icon,
+    destinationHoverRegion: NavigationDestinationRegion.full,
+  ),
+  body: (BuildContext context) => const Placeholder(),
+)
+```
+
+Navigation behavior overrides are also configured through
+`AdaptiveScaffoldNavigationThemeData`:
+
+```dart
+AdaptiveScaffold(
+  destinations: destinations,
+  navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+    compactLabelType: NavigationRailLabelType.selected,
+    expandedLabelType: NavigationRailLabelType.all,
+    transitionAnimation: NavigationDestinationAnimation.fadeSwap,
+    transitionCurve: Curves.easeOutCubic,
+    transitionDuration: Duration(milliseconds: 220),
+  ),
+  body: (BuildContext context) => const Placeholder(),
+)
+```
+
+Notes:
+
+- `transitionAnimation` is shared by both compact rail and small navigation
+  bar destination transitions.
+- `compactLabelType` configures compact rail labels directly, and maps to
+  the corresponding small navigation bar label behavior.
+- `expandedLabelType` applies only to expanded rails (medium-large and up).
+  Defaults to `NavigationRailLabelType.all` and supports
+  `none`, `selected`, and `all`.
+
+Compatibility note:
+
+If your app previously depended on full selected-destination fill behavior,
+set `destinationFillRegion: NavigationDestinationRegion.full` on
+`CustomNavigationRail` (or on `AdaptiveScaffold.standardNavigationRail` when
+using the helper).
+
+### Scoped selection indicator
+
+By default the selection indicator fills the entire destination item.
+Use `iconIndicatorShape` or `labelIndicatorShape` to scope it to just the icon
+or just the label. Setting either field suppresses the full-item indicator.
+
+```dart
+// Indicator around icon only:
+const CustomNavigationDestination(
+  icon: Icon(Icons.person_outline),
+  label: "Profile",
+  iconIndicatorShape: CircleBorder(),
+),
+
+// Indicator around label only:
+const CustomNavigationDestination(
+  icon: Icon(Icons.notifications_outlined),
+  label: "Alerts",
+  labelIndicatorShape: StadiumBorder(),
+),
+
+// Separate bubbles for icon and label:
+const CustomNavigationDestination(
+  icon: Icon(Icons.chat_outlined),
+  label: "Chat",
+  iconIndicatorShape: CircleBorder(),
+  labelIndicatorShape: StadiumBorder(),
+),
+```
+
+### Tooltip
+
+`tooltip` is `null` by default and truly suppresses the tooltip when omitted.
+Pass a non-null string to show a custom tooltip on long press:
+
+```dart
+const CustomNavigationDestination(
+  icon: Icon(Icons.settings_outlined),
+  label: "Settings",
+  tooltip: "App settings",  // shown on long press
+),
+
+const CustomNavigationDestination(
+  icon: Icon(Icons.search_outlined),
+  label: "Search",
+  // tooltip omitted → no tooltip shown
+),
+```
 
 ### Example Usage
 
