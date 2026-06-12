@@ -36,12 +36,12 @@ several places:
     `mainAxisAlignment`).
   - Configurable rail destination fill/highlight via
     `destinationFillRegion`, `destinationHoverRegion`,
-    and `shape`.
+    and `interactionShape`.
   - `AdaptiveScaffold` exposes the same fill options through
     `navigationTheme: AdaptiveScaffoldThemeData(...)` and
     `ThemeData.extensions`.
 - Theme extensions:
-  - `CustomNavigationBarThemeData`: `margin`, `padding`,
+  - `AdaptiveNavigationBarThemeData`: `margin`, `padding`,
     `tooltipVerticalOffset`.
   - `CustomNavigationRailThemeData`: `margin`, `padding`.
 - Compatibility bridge behavior:
@@ -313,16 +313,14 @@ When you want custom destination fill/highlight scopes, choose a
 - `label`
 - `full`
 
-Example using full-widget fill plus a custom shape:
+Example using full-widget fill plus an indicator shape:
 
 ```dart
 CustomNavigationRail(
   selectedIndex: selectedIndex,
   destinationFillRegion: NavigationDestinationRegion.full,
-  shape: WidgetStatePropertyAll<ShapeBorder?>(
-    RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
+  indicatorShape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
   ),
   destinations: destinations,
 )
@@ -337,10 +335,8 @@ AdaptiveScaffold.standardNavigationRail(
   selectedIndex: selectedIndex,
   destinations: railDestinations,
   destinationFillRegion: NavigationDestinationRegion.full,
-  shape: WidgetStatePropertyAll<ShapeBorder?>(
-    RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-    ),
+  indicatorShape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
   ),
 )
 ```
@@ -352,8 +348,10 @@ For `AdaptiveScaffold`, configure fill/highlight through
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldThemeData(
-    destinationFillRegion: NavigationDestinationRegion.label,
-    shape: WidgetStatePropertyAll<ShapeBorder?>(StadiumBorder()),
+    indicatorStyle: NavigationIndicatorThemeData(
+      destinationFillRegion: NavigationDestinationRegion.label,
+      interactionShape: WidgetStatePropertyAll<ShapeBorder?>(StadiumBorder()),
+    ),
   ),
   body: (BuildContext context) => const Placeholder(),
 )
@@ -361,17 +359,19 @@ AdaptiveScaffold(
 
 To control hover/pressed interaction region independently, use
 `destinationHoverRegion` (defaults to `destinationFillRegion` when omitted).
-Selected-fill and hover/pressed interactions both use `shape`:
+Selected-fill and hover/pressed interactions both use `interactionShape`:
 
 ```dart
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldThemeData(
-    destinationFillRegion: NavigationDestinationRegion.icon,
-    destinationHoverRegion: NavigationDestinationRegion.full,
-    shape: WidgetStatePropertyAll<ShapeBorder?>(
-      RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
+    indicatorStyle: NavigationIndicatorThemeData(
+      destinationFillRegion: NavigationDestinationRegion.icon,
+      destinationHoverRegion: NavigationDestinationRegion.full,
+      interactionShape: WidgetStatePropertyAll<ShapeBorder?>(
+        RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     ),
   ),
@@ -405,8 +405,11 @@ MaterialApp(
     extensions: const <ThemeExtension<dynamic>>[
       AdaptiveScaffoldThemeData(
         compactLabelType: NavigationRailLabelType.selected,
-        destinationFillRegion: NavigationDestinationRegion.content,
-        shape: WidgetStatePropertyAll<ShapeBorder?>(StadiumBorder()),
+        indicatorStyle: NavigationIndicatorThemeData(
+          destinationFillRegion: NavigationDestinationRegion.content,
+          interactionShape:
+              WidgetStatePropertyAll<ShapeBorder?>(StadiumBorder()),
+        ),
       ),
     ],
   ),
@@ -446,16 +449,18 @@ MaterialApp(
         transitionAnimation: NavigationDestinationAnimation.fadeSwap,
         transitionCurve: Curves.easeOutCubic,
         transitionDuration: Duration(milliseconds: 220),
-        destinationFillRegion: NavigationDestinationRegion.content,
-        destinationHoverRegion: NavigationDestinationRegion.full,
-        shape: WidgetStateProperty<ShapeBorder?>.fromMap(
-          <WidgetStatesConstraint, ShapeBorder?>{
-            WidgetState.selected: StadiumBorder(),
-            WidgetState.hovered: RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(12)),
-            ),
-            WidgetState.any: StadiumBorder(),
-          },
+        indicatorStyle: NavigationIndicatorThemeData(
+          destinationFillRegion: NavigationDestinationRegion.content,
+          destinationHoverRegion: NavigationDestinationRegion.full,
+          interactionShape: WidgetStateProperty<ShapeBorder?>.fromMap(
+            <WidgetStatesConstraint, ShapeBorder?>{
+              WidgetState.selected: StadiumBorder(),
+              WidgetState.hovered: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(12)),
+              ),
+              WidgetState.any: StadiumBorder(),
+            },
+          ),
         ),
       ),
     ],
@@ -469,6 +474,43 @@ In this setup:
 - `selected` controls the destination selected-fill shape.
 - `hovered` controls hover/pressed interaction shape.
 - `WidgetState.any` provides a default fallback shape.
+
+To style the small-breakpoint bar surface and destination presentation through
+the adaptive theme, use `navigationBarTheme`:
+
+```dart
+AdaptiveScaffold(
+  destinations: destinations,
+  navigationTheme: const AdaptiveScaffoldThemeData(
+    navigationBarTheme: AdaptiveNavigationBarThemeData(
+      height: 88,
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+      margin: EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      labelPadding: EdgeInsets.only(top: 6),
+      tooltipVerticalOffset: 56,
+    ),
+  ),
+  body: (BuildContext context) => const Placeholder(),
+)
+```
+
+You can also provide app-wide defaults via `ThemeData.extensions`:
+
+```dart
+MaterialApp(
+  theme: ThemeData(
+    extensions: const <ThemeExtension<dynamic>>[
+      AdaptiveScaffoldThemeData(
+        navigationBarTheme: AdaptiveNavigationBarThemeData(
+          height: 84,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        ),
+      ),
+    ],
+  ),
+)
+```
 
 Theme precedence is:
 

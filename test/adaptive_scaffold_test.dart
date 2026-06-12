@@ -1067,19 +1067,29 @@ void main() {
           theme: ThemeData(
             extensions: const <ThemeExtension<dynamic>>[
               AdaptiveScaffoldThemeData(
-                  shape: WidgetStatePropertyAll<ShapeBorder?>(extensionShape)),
+                indicatorStyle: NavigationIndicatorThemeData(
+                  interactionShape:
+                      WidgetStatePropertyAll<ShapeBorder?>(extensionShape),
+                ),
+              ),
             ],
           ),
           home: MediaQuery(
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffoldTheme(
               data: const AdaptiveScaffoldThemeData(
-                shape: WidgetStatePropertyAll<ShapeBorder?>(inheritedShape),
+                indicatorStyle: NavigationIndicatorThemeData(
+                  interactionShape:
+                      WidgetStatePropertyAll<ShapeBorder?>(inheritedShape),
+                ),
               ),
               child: AdaptiveScaffold(
                 destinations: destinations,
                 navigationTheme: const AdaptiveScaffoldThemeData(
-                  shape: WidgetStatePropertyAll<ShapeBorder?>(widgetShape),
+                  indicatorStyle: NavigationIndicatorThemeData(
+                    interactionShape:
+                        WidgetStatePropertyAll<ShapeBorder?>(widgetShape),
+                  ),
                 ),
               ),
             ),
@@ -1116,7 +1126,9 @@ void main() {
           theme: ThemeData(
             extensions: const <ThemeExtension<dynamic>>[
               AdaptiveScaffoldThemeData(
-                destinationFillRegion: NavigationDestinationRegion.icon,
+                indicatorStyle: NavigationIndicatorThemeData(
+                  destinationFillRegion: NavigationDestinationRegion.icon,
+                ),
               ),
             ],
           ),
@@ -1124,12 +1136,16 @@ void main() {
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffoldTheme(
               data: const AdaptiveScaffoldThemeData(
-                destinationFillRegion: NavigationDestinationRegion.label,
+                indicatorStyle: NavigationIndicatorThemeData(
+                  destinationFillRegion: NavigationDestinationRegion.label,
+                ),
               ),
               child: AdaptiveScaffold(
                 destinations: destinations,
                 navigationTheme: const AdaptiveScaffoldThemeData(
-                  destinationFillRegion: NavigationDestinationRegion.full,
+                  indicatorStyle: NavigationIndicatorThemeData(
+                    destinationFillRegion: NavigationDestinationRegion.full,
+                  ),
                 ),
               ),
             ),
@@ -1165,7 +1181,9 @@ void main() {
           theme: ThemeData(
             extensions: const <ThemeExtension<dynamic>>[
               AdaptiveScaffoldThemeData(
-                destinationHoverRegion: NavigationDestinationRegion.icon,
+                indicatorStyle: NavigationIndicatorThemeData(
+                  destinationHoverRegion: NavigationDestinationRegion.icon,
+                ),
               ),
             ],
           ),
@@ -1173,12 +1191,16 @@ void main() {
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffoldTheme(
               data: const AdaptiveScaffoldThemeData(
-                destinationHoverRegion: NavigationDestinationRegion.label,
+                indicatorStyle: NavigationIndicatorThemeData(
+                  destinationHoverRegion: NavigationDestinationRegion.label,
+                ),
               ),
               child: AdaptiveScaffold(
                 destinations: destinations,
                 navigationTheme: const AdaptiveScaffoldThemeData(
-                  destinationHoverRegion: NavigationDestinationRegion.full,
+                  indicatorStyle: NavigationIndicatorThemeData(
+                    destinationHoverRegion: NavigationDestinationRegion.full,
+                  ),
                 ),
               ),
             ),
@@ -1241,6 +1263,271 @@ void main() {
       final CustomNavigationRail compactRail = tester
           .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
       expect(compactRail.iconTransitionDuration, widgetDuration);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold applies bar theme precedence widget > inherited > extension",
+    (WidgetTester tester) async {
+      const double extensionHeight = 72;
+      const double inheritedHeight = 76;
+      const double widgetHeight = 84;
+      const NavigationDestinationLabelBehavior extensionLabelBehavior =
+          NavigationDestinationLabelBehavior.alwaysHide;
+      const NavigationDestinationLabelBehavior inheritedLabelBehavior =
+          NavigationDestinationLabelBehavior.onlyShowSelected;
+      const NavigationDestinationLabelBehavior widgetLabelBehavior =
+          NavigationDestinationLabelBehavior.alwaysShow;
+      const ShapeBorder extensionIndicatorShape = StadiumBorder();
+      const ShapeBorder inheritedIndicatorShape = CircleBorder();
+      const ShapeBorder widgetIndicatorShape = BeveledRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      );
+
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                  height: extensionHeight,
+                  labelBehavior: extensionLabelBehavior,
+                ),
+                indicatorStyle: NavigationIndicatorThemeData(
+                  shape: extensionIndicatorShape,
+                ),
+              ),
+            ],
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(500, 800)),
+            child: AdaptiveScaffoldTheme(
+              data: const AdaptiveScaffoldThemeData(
+                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                  height: inheritedHeight,
+                  labelBehavior: inheritedLabelBehavior,
+                ),
+                indicatorStyle: NavigationIndicatorThemeData(
+                  shape: inheritedIndicatorShape,
+                ),
+              ),
+              child: AdaptiveScaffold(
+                destinations: destinations,
+                navigationTheme: const AdaptiveScaffoldThemeData(
+                  navigationBarTheme: AdaptiveNavigationBarThemeData(
+                    height: widgetHeight,
+                    labelBehavior: widgetLabelBehavior,
+                  ),
+                  indicatorStyle: NavigationIndicatorThemeData(
+                    shape: widgetIndicatorShape,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final Finder barFinder = find.byType(CustomNavigationBar);
+      expect(barFinder, findsOneWidget);
+
+      final CustomNavigationBar bar = tester.widget<CustomNavigationBar>(
+        barFinder,
+      );
+      expect(bar.labelBehavior, widgetLabelBehavior);
+
+      final Finder navBarThemeFinder = find.ancestor(
+        of: barFinder,
+        matching: find.byType(NavigationBarTheme),
+      );
+      expect(navBarThemeFinder, findsWidgets);
+
+      final NavigationBarTheme navBarTheme = tester.widget<NavigationBarTheme>(
+        navBarThemeFinder.first,
+      );
+      expect(navBarTheme.data.height, widgetHeight);
+      expect(navBarTheme.data.labelBehavior, widgetLabelBehavior);
+      expect(navBarTheme.data.indicatorShape, widgetIndicatorShape);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold bar uses interactionShape over indicatorShape",
+    (WidgetTester tester) async {
+      const ShapeBorder interactionShape = CircleBorder();
+      const ShapeBorder indicatorShape = BeveledRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      );
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(500, 800)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+              navigationTheme: const AdaptiveScaffoldThemeData(
+                indicatorStyle: NavigationIndicatorThemeData(
+                  destinationFillRegion: NavigationDestinationRegion.full,
+                  interactionShape:
+                      WidgetStatePropertyAll<ShapeBorder?>(interactionShape),
+                  shape: indicatorShape,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Finder barFinder = find.byType(CustomNavigationBar);
+      expect(barFinder, findsOneWidget);
+      final Finder inkResponses = find.descendant(
+        of: barFinder,
+        matching: find.byWidgetPredicate(
+          (Widget widget) => widget is InkResponse,
+        ),
+      );
+      expect(inkResponses, findsWidgets);
+      final InkResponse firstInk = tester.widget<InkResponse>(
+        inkResponses.first,
+      );
+      expect(firstInk.customBorder, interactionShape);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold applies bar margin/padding precedence widget > inherited > extension",
+    (WidgetTester tester) async {
+      const EdgeInsets extensionMargin = EdgeInsets.symmetric(horizontal: 4);
+      const EdgeInsets inheritedMargin = EdgeInsets.symmetric(horizontal: 10);
+      const EdgeInsets widgetMargin = EdgeInsets.symmetric(horizontal: 16);
+      const EdgeInsets extensionPadding = EdgeInsets.symmetric(horizontal: 2);
+      const EdgeInsets inheritedPadding = EdgeInsets.symmetric(horizontal: 6);
+      const EdgeInsets widgetPadding = EdgeInsets.symmetric(horizontal: 12);
+
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                  margin: extensionMargin,
+                  padding: extensionPadding,
+                ),
+              ),
+            ],
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(500, 800)),
+            child: AdaptiveScaffoldTheme(
+              data: const AdaptiveScaffoldThemeData(
+                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                  margin: inheritedMargin,
+                  padding: inheritedPadding,
+                ),
+              ),
+              child: AdaptiveScaffold(
+                destinations: destinations,
+                navigationTheme: const AdaptiveScaffoldThemeData(
+                  navigationBarTheme: AdaptiveNavigationBarThemeData(
+                    margin: widgetMargin,
+                    padding: widgetPadding,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationBar bar = tester.widget<CustomNavigationBar>(
+        find.byType(CustomNavigationBar),
+      );
+      expect(bar.margin, widgetMargin);
+      expect(bar.padding, widgetPadding);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold bar falls back to indicatorShape when interactionShape is null",
+    (WidgetTester tester) async {
+      const ShapeBorder indicatorShape = BeveledRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      );
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(500, 800)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+              navigationTheme: const AdaptiveScaffoldThemeData(
+                indicatorStyle: NavigationIndicatorThemeData(
+                  destinationFillRegion: NavigationDestinationRegion.full,
+                  shape: indicatorShape,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Finder barFinder = find.byType(CustomNavigationBar);
+      expect(barFinder, findsOneWidget);
+      final Finder inkResponses = find.descendant(
+        of: barFinder,
+        matching: find.byWidgetPredicate(
+          (Widget widget) => widget is InkResponse,
+        ),
+      );
+      expect(inkResponses, findsWidgets);
+      final InkResponse firstInk = tester.widget<InkResponse>(
+        inkResponses.first,
+      );
+      expect(firstInk.customBorder, indicatorShape);
     },
   );
 

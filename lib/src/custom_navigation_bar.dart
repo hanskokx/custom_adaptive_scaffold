@@ -9,7 +9,6 @@ import "package:flutter/foundation.dart" show kIsWeb;
 import "package:flutter/material.dart";
 
 import "compact_destination_layout.dart";
-import "custom_navigation_bar_theme.dart";
 import "interaction_shape_resolver.dart";
 import "navigation_destination_types.dart";
 
@@ -105,6 +104,9 @@ class CustomNavigationBar extends StatelessWidget {
     this.overlayColor,
     this.labelTextStyle,
     this.labelPadding,
+    this.margin,
+    this.padding = EdgeInsets.zero,
+    this.tooltipVerticalOffset,
     this.destinationFillRegion,
     this.destinationHoverRegion,
     this.shape,
@@ -235,6 +237,15 @@ class CustomNavigationBar extends StatelessWidget {
   /// is used.
   final EdgeInsetsGeometry? labelPadding;
 
+  /// Applies a margin around navigation items.
+  final EdgeInsetsGeometry? margin;
+
+  /// Applies padding around navigation item content.
+  final EdgeInsetsGeometry padding;
+
+  /// Defines the vertical offset of tooltip popovers.
+  final double? tooltipVerticalOffset;
+
   /// Controls where destination selected fill/highlight is painted.
   ///
   /// When null, this widget follows Flutter's default indicator path.
@@ -331,6 +342,9 @@ class CustomNavigationBar extends StatelessWidget {
                               overlayColor: overlayColor,
                               labelTextStyle: labelTextStyle,
                               labelPadding: labelPadding,
+                              margin: margin,
+                              padding: padding,
+                              tooltipVerticalOffset: tooltipVerticalOffset,
                               destinationFillRegion: destinationFillRegion,
                               destinationHoverRegion: destinationHoverRegion,
                               shape: shape,
@@ -461,19 +475,8 @@ class CustomNavigationDestination extends NavigationDestination {
         navigationBarTheme.indicatorShape ??
         defaults.indicatorShape!;
 
-    late final EdgeInsetsGeometry margin;
-    late final EdgeInsetsGeometry padding;
-
-    if (navigationBarTheme is CustomNavigationBarThemeData) {
-      margin = navigationBarTheme.margin ?? EdgeInsets.zero;
-      padding = navigationBarTheme.padding ?? EdgeInsets.zero;
-    } else {
-      margin = EdgeInsets.zero;
-      padding = EdgeInsets.zero;
-    }
-
     return Container(
-      margin: margin,
+      margin: info.margin ?? EdgeInsets.zero,
       child: _NavigationDestinationBuilder(
         label: label,
         tooltip: tooltip,
@@ -481,7 +484,7 @@ class CustomNavigationDestination extends NavigationDestination {
         animation: animation,
         color: indicatorColor,
         shape: indicatorShape,
-        padding: padding,
+        padding: info.padding,
         iconIndicatorShape: iconIndicatorShape,
         labelIndicatorShape: labelIndicatorShape,
         buildIcon: (BuildContext context) {
@@ -1040,6 +1043,9 @@ class _NavigationDestinationInfo extends InheritedWidget {
     required this.overlayColor,
     required this.labelTextStyle,
     required this.labelPadding,
+    required this.margin,
+    required this.padding,
+    required this.tooltipVerticalOffset,
     required this.destinationFillRegion,
     required this.destinationHoverRegion,
     required this.shape,
@@ -1121,6 +1127,15 @@ class _NavigationDestinationInfo extends InheritedWidget {
   /// Optional label padding override for destination labels.
   final EdgeInsetsGeometry? labelPadding;
 
+  /// Optional margin override for the destination container.
+  final EdgeInsetsGeometry? margin;
+
+  /// Padding around destination item content.
+  final EdgeInsetsGeometry padding;
+
+  /// Tooltip offset override for this navigation bar.
+  final double? tooltipVerticalOffset;
+
   /// Where destination selected fill/highlight is painted.
   final NavigationDestinationRegion? destinationFillRegion;
 
@@ -1169,6 +1184,9 @@ class _NavigationDestinationInfo extends InheritedWidget {
         labelBehavior != oldWidget.labelBehavior ||
         labelTextStyle != oldWidget.labelTextStyle ||
         labelPadding != oldWidget.labelPadding ||
+        margin != oldWidget.margin ||
+        padding != oldWidget.padding ||
+        tooltipVerticalOffset != oldWidget.tooltipVerticalOffset ||
         destinationFillRegion != oldWidget.destinationFillRegion ||
         destinationHoverRegion != oldWidget.destinationHoverRegion ||
         shape != oldWidget.shape ||
@@ -1824,14 +1842,8 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
   Widget build(BuildContext context) {
     if (message == null || message!.isEmpty) return child;
 
-    final ThemeData theme = Theme.of(context);
-    final NavigationBarThemeData navigationBarTheme = theme.navigationBarTheme;
-
-    double tooltipVerticalOffset = 42;
-
-    if (navigationBarTheme is CustomNavigationBarThemeData) {
-      tooltipVerticalOffset = navigationBarTheme.tooltipVerticalOffset ?? 42;
-    }
+    final double tooltipVerticalOffset =
+        _NavigationDestinationInfo.of(context).tooltipVerticalOffset ?? 42;
 
     return _NavigationBarTooltipGestureTarget(
       message: message!,
@@ -2219,7 +2231,7 @@ class _NavigationBarDefaultsM2 extends NavigationBarThemeData {
 // Design token database by the script:
 //   dev/tools/gen_defaults/bin/gen_defaults.dart.
 
-class _NavigationBarDefaultsM3 extends CustomNavigationBarThemeData {
+class _NavigationBarDefaultsM3 extends NavigationBarThemeData {
   _NavigationBarDefaultsM3(this.context)
       : super(
           height: 80.0,

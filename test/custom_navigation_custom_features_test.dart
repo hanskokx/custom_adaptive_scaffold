@@ -102,33 +102,37 @@ void main() {
   });
 
   testWidgets(
-      "tooltipVerticalOffset is exposed through CustomNavigationBarTheme", (
+      "tooltipVerticalOffset is applied directly on CustomNavigationBar", (
     WidgetTester tester,
   ) async {
     const offset = 88.0;
-    double? resolvedOffset;
 
     await tester.pumpWidget(
       MaterialApp(
-        home: CustomNavigationBarTheme(
-          data: const CustomNavigationBarThemeData(
+        home: Scaffold(
+          bottomNavigationBar: CustomNavigationBar(
             tooltipVerticalOffset: offset,
-          ),
-          child: Builder(
-            builder: (BuildContext context) {
-              final NavigationBarThemeData theme =
-                  CustomNavigationBarTheme.of(context);
-              expect(theme, isA<CustomNavigationBarThemeData>());
-              resolvedOffset =
-                  (theme as CustomNavigationBarThemeData).tooltipVerticalOffset;
-              return const SizedBox.shrink();
-            },
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: "Home",
+                tooltip: "Home tooltip",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: "Search",
+                tooltip: "Search tooltip",
+              ),
+            ],
           ),
         ),
       ),
     );
 
-    expect(resolvedOffset, offset);
+    final Tooltip tooltip = tester.widget<Tooltip>(find.byType(Tooltip).first);
+    expect(tooltip.verticalOffset, offset);
   });
 
   testWidgets("destinationTransitionBuilder is used by CustomNavigationRail", (

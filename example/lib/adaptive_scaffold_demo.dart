@@ -34,20 +34,24 @@ class MyApp extends StatelessWidget {
           margin: EdgeInsets.symmetric(vertical: 4),
           padding: EdgeInsets.symmetric(horizontal: 6),
         ),
-        navigationBarTheme: const CustomNavigationBarThemeData(
-          tooltipVerticalOffset: 56,
-          margin: EdgeInsets.symmetric(horizontal: 4),
-          padding: EdgeInsets.symmetric(vertical: 2),
-          labelPadding: EdgeInsets.only(top: 6),
-        ),
         extensions: const <ThemeExtension<dynamic>>[
           AdaptiveScaffoldThemeData(
             compactLabelType: NavigationRailLabelType.selected,
             transitionAnimation: NavigationDestinationAnimation.fadeSwap,
             transitionCurve: Curves.easeOutCubic,
             transitionDuration: Duration(milliseconds: 220),
-            destinationFillRegion: NavigationDestinationRegion.content,
-            shape: WidgetStatePropertyAll<ShapeBorder?>(StadiumBorder()),
+            navigationBarTheme: AdaptiveNavigationBarThemeData(
+              tooltipVerticalOffset: 56,
+              margin: EdgeInsets.symmetric(horizontal: 4),
+              padding: EdgeInsets.symmetric(vertical: 2),
+              labelPadding: EdgeInsets.only(top: 6),
+            ),
+            indicatorStyle: NavigationIndicatorThemeData(
+              destinationFillRegion: NavigationDestinationRegion.content,
+              interactionShape: WidgetStatePropertyAll<ShapeBorder?>(
+                StadiumBorder(),
+              ),
+            ),
           ),
         ],
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(

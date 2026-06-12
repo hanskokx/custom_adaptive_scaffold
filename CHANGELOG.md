@@ -23,18 +23,17 @@
     * `CustomNavigationBar`
     * `CustomNavigationRail`
     * `RailDestination`
-  * Added/standardized a single `shape` property for destination interaction
-    geometry.
   * Selected fill and hover/pressed interaction now resolve from the same
     shape value.
-  * The functionality is now consolidated into `navigationTheme.shape`.
-  * Migration: remove the old parameters and set `navigationTheme.shape` via
-    `AdaptiveScaffoldThemeData`.
+  * The functionality is now consolidated into
+    `navigationTheme.indicatorStyle.interactionShape`.
+  * Migration: remove the old parameters and set
+    `navigationTheme.indicatorStyle` via `AdaptiveScaffoldThemeData`.
 
 Before:
 
 ```dart
-navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+navigationTheme: const (
   destinationFillShape: RoundedRectangleBorder(
     borderRadius: BorderRadius.all(Radius.circular(4)),
   ),
@@ -48,11 +47,20 @@ After:
 
 ```dart
 navigationTheme: const AdaptiveScaffoldThemeData(
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(4)),
+  indicatorStyle: NavigationIndicatorThemeData(
+    interactionShape: WidgetStatePropertyAll<ShapeBorder?>(StadiumBorder()),
   ),
 ),
 ```
+
+* **[FEAT] `AdaptiveScaffoldThemeData` now includes nested navigation theming**
+  * Added `navigationBarTheme: AdaptiveNavigationBarThemeData(...)` for
+    bar-only fields like `height`, `backgroundColor`, `elevation`,
+    `shadowColor`, `surfaceTintColor`, `labelTextStyle`, `iconTheme`,
+    `labelBehavior`, `overlayColor`, `margin`, `padding`,
+    `tooltipVerticalOffset`, and `labelPadding`.
+  * Added `indicatorStyle: NavigationIndicatorThemeData(...)` for indicator
+    and interaction styling.
 
 ## 4.0.0 - REDACTED
 
@@ -129,7 +137,7 @@ navigationTheme: const AdaptiveScaffoldThemeData(
     `destinationFillRegion: NavigationDestinationRegion.full` explicitly.
 * **[CHANGE] Custom navigation theme data now uses nullable layout and
   tooltip fields**
-  * `CustomNavigationBarThemeData.margin`, `padding`, and
+  * `AdaptiveNavigationBarThemeData.margin`, `padding`, and
     `tooltipVerticalOffset` are now nullable.
   * `CustomNavigationRailThemeData.margin` and `padding` are now nullable.
   * Migration: if you read these values directly, handle `null` and resolve

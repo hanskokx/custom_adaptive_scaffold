@@ -1381,6 +1381,104 @@ void main() {
     expect(_getLabelPadding(tester, "Settings"), labelPadding);
   });
 
+  testWidgets(
+    "[DIVERGENCE] CustomNavigationBar applies outer margin",
+    (WidgetTester tester) async {
+      const EdgeInsetsGeometry margin = EdgeInsets.symmetric(horizontal: 18);
+
+      await tester.pumpWidget(
+        _buildWidget(
+          CustomNavigationBar(
+            margin: margin,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home),
+                label: "Home",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.settings),
+                label: "Settings",
+              ),
+            ],
+            onDestinationSelected: (int i) {},
+          ),
+        ),
+      );
+
+      final Container destinationContainer = tester
+          .widgetList<Container>(find.byType(Container))
+          .firstWhere((Container widget) => widget.margin == margin);
+      expect(destinationContainer.margin, margin);
+    },
+    tags: <String>["divergence"],
+  );
+
+  testWidgets(
+    "[DIVERGENCE] CustomNavigationBar applies destination padding",
+    (WidgetTester tester) async {
+      const EdgeInsets padding = EdgeInsets.symmetric(horizontal: 20);
+
+      await tester.pumpWidget(
+        _buildWidget(
+          CustomNavigationBar(
+            padding: padding,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home),
+                label: "Home",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.settings),
+                label: "Settings",
+              ),
+            ],
+            onDestinationSelected: (int i) {},
+          ),
+        ),
+      );
+
+      final Padding destinationPadding = tester
+          .widgetList<Padding>(find.byType(Padding))
+          .firstWhere((Padding widget) => widget.padding == padding);
+      expect(destinationPadding.padding, padding);
+    },
+    tags: <String>["divergence"],
+  );
+
+  testWidgets(
+    "[DIVERGENCE] CustomNavigationBar tooltipVerticalOffset changes tooltip position",
+    (WidgetTester tester) async {
+      const double offset = 88;
+
+      await tester.pumpWidget(
+        _buildWidget(
+          CustomNavigationBar(
+            tooltipVerticalOffset: offset,
+            destinations: const <Widget>[
+              CustomNavigationDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: "Home",
+                tooltip: "Home tooltip",
+              ),
+              CustomNavigationDestination(
+                icon: Icon(Icons.settings_outlined),
+                selectedIcon: Icon(Icons.settings),
+                label: "Settings",
+                tooltip: "Settings tooltip",
+              ),
+            ],
+          ),
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.verticalOffset, offset);
+    },
+    tags: <String>["divergence"],
+  );
+
   group("Material 2", () {
     // These tests are only relevant for Material 2. Once Material 2
     // support is deprecated and the APIs are removed, these tests
