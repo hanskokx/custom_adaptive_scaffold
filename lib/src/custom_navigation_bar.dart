@@ -793,6 +793,18 @@ class _NavigationDestinationBuilderState
   static const Set<WidgetState> _selectedState = <WidgetState>{
     WidgetState.selected,
   };
+  static const Set<WidgetState> _selectedHoveredState = <WidgetState>{
+    WidgetState.selected,
+    WidgetState.hovered,
+  };
+  static const Set<WidgetState> _selectedPressedState = <WidgetState>{
+    WidgetState.selected,
+    WidgetState.pressed,
+  };
+  static const Set<WidgetState> _selectedFocusedState = <WidgetState>{
+    WidgetState.selected,
+    WidgetState.focused,
+  };
   static const Set<WidgetState> _hoveredState = <WidgetState>{
     WidgetState.hovered,
   };
@@ -831,11 +843,30 @@ class _NavigationDestinationBuilderState
         widget.labelIndicatorShape == null;
     final ShapeBorder? statefulSelectedShape =
         info.shape?.resolve(_selectedState);
-    final ShapeBorder? statefulHoverShape = info.shape?.resolve(_hoveredState);
+    final ShapeBorder? statefulSelectedHoverShape =
+      info.shape?.resolve(_selectedHoveredState);
+    final ShapeBorder? statefulSelectedPressedShape =
+      info.shape?.resolve(_selectedPressedState);
+    final ShapeBorder? statefulSelectedFocusedShape =
+      info.shape?.resolve(_selectedFocusedState);
+    final ShapeBorder? effectiveSelectedHoverShape =
+      statefulSelectedHoverShape == statefulSelectedShape
+        ? null
+        : statefulSelectedHoverShape;
+    final ShapeBorder? effectiveSelectedPressedShape =
+      statefulSelectedPressedShape == statefulSelectedShape
+        ? null
+        : statefulSelectedPressedShape;
+    final ShapeBorder? effectiveSelectedFocusedShape =
+      statefulSelectedFocusedShape == statefulSelectedShape
+        ? null
+        : statefulSelectedFocusedShape;
+    final ShapeBorder? statefulHoverShape =
+      effectiveSelectedHoverShape ?? info.shape?.resolve(_hoveredState);
     final ShapeBorder? statefulPressedShape =
-      info.shape?.resolve(_pressedState);
+      effectiveSelectedPressedShape ?? info.shape?.resolve(_pressedState);
     final ShapeBorder? statefulFocusedShape =
-      info.shape?.resolve(_focusedState);
+      effectiveSelectedFocusedShape ?? info.shape?.resolve(_focusedState);
     final ShapeBorder effectiveFillShape =
         statefulSelectedShape ?? widget.shape ?? const StadiumBorder();
     final ShapeBorder effectiveHoverShape = statefulHoverShape ??

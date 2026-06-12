@@ -1035,6 +1035,61 @@ void main() {
     );
   });
 
+  testWidgets(
+    "bar stateful shape honors selected+hovered combined constraint",
+    (WidgetTester tester) async {
+      const ShapeBorder combinedShape = CircleBorder();
+      const ShapeBorder hoveredShape = RoundedRectangleBorder();
+      const ShapeBorder selectedShape = StadiumBorder();
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true),
+          home: Scaffold(
+            bottomNavigationBar: CustomNavigationBar(
+              selectedIndex: 0,
+              destinationFillRegion: NavigationDestinationRegion.full,
+              shape: WidgetStateProperty<ShapeBorder?>.fromMap(
+                <WidgetStatesConstraint, ShapeBorder?>{
+                  WidgetState.selected & WidgetState.hovered: combinedShape,
+                  WidgetState.hovered: hoveredShape,
+                  WidgetState.selected: selectedShape,
+                },
+              ),
+              destinations: const <Widget>[
+                CustomNavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                  label: "Home",
+                ),
+                CustomNavigationDestination(
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Finder inkResponses = find.byWidgetPredicate(
+        (Widget widget) => widget is InkResponse,
+      );
+      expect(inkResponses, findsNWidgets(2));
+
+      final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
+        for (int i = 0; i < 2; i += 1)
+          tester.widget<InkResponse>(inkResponses.at(i)).customBorder,
+      ];
+
+      expect(
+        resolvedBorders,
+        everyElement(same(combinedShape)),
+      );
+    },
+  );
+
   testWidgets("bar stateful shape uses pressed state for interaction border", (
     WidgetTester tester,
   ) async {

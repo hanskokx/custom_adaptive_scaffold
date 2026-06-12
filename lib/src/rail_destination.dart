@@ -72,6 +72,18 @@ class _RailDestinationState extends State<RailDestination>
   static const Set<WidgetState> _selectedState = <WidgetState>{
     WidgetState.selected,
   };
+  static const Set<WidgetState> _selectedHoveredState = <WidgetState>{
+    WidgetState.selected,
+    WidgetState.hovered,
+  };
+  static const Set<WidgetState> _selectedPressedState = <WidgetState>{
+    WidgetState.selected,
+    WidgetState.pressed,
+  };
+  static const Set<WidgetState> _selectedFocusedState = <WidgetState>{
+    WidgetState.selected,
+    WidgetState.focused,
+  };
   static const Set<WidgetState> _hoveredState = <WidgetState>{
     WidgetState.hovered,
   };
@@ -265,11 +277,30 @@ class _RailDestinationState extends State<RailDestination>
         (widget.useIndicator ?? false) && isDefaultFillPath;
     final ShapeBorder? selectedStateShape =
         widget.shape?.resolve(_selectedState);
-    final ShapeBorder? hoverStateShape = widget.shape?.resolve(_hoveredState);
+    final ShapeBorder? selectedHoverStateShape =
+      widget.shape?.resolve(_selectedHoveredState);
+    final ShapeBorder? selectedPressedStateShape =
+      widget.shape?.resolve(_selectedPressedState);
+    final ShapeBorder? selectedFocusedStateShape =
+      widget.shape?.resolve(_selectedFocusedState);
+    final ShapeBorder? effectiveSelectedHoverShape =
+      selectedHoverStateShape == selectedStateShape
+        ? null
+        : selectedHoverStateShape;
+    final ShapeBorder? effectiveSelectedPressedShape =
+      selectedPressedStateShape == selectedStateShape
+        ? null
+        : selectedPressedStateShape;
+    final ShapeBorder? effectiveSelectedFocusedShape =
+      selectedFocusedStateShape == selectedStateShape
+        ? null
+        : selectedFocusedStateShape;
+    final ShapeBorder? hoverStateShape =
+      effectiveSelectedHoverShape ?? widget.shape?.resolve(_hoveredState);
     final ShapeBorder? pressedStateShape =
-      widget.shape?.resolve(_pressedState);
+      effectiveSelectedPressedShape ?? widget.shape?.resolve(_pressedState);
     final ShapeBorder? focusedStateShape =
-      widget.shape?.resolve(_focusedState);
+      effectiveSelectedFocusedShape ?? widget.shape?.resolve(_focusedState);
     final ShapeBorder effectiveIconIndicatorShape = selectedStateShape ??
         indicatorShape ??
         (destinationFillRegion == NavigationDestinationRegion.full
