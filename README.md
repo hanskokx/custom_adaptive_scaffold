@@ -28,7 +28,6 @@ several places:
     icon transition presets.
   - `iconBuilder` for fully custom icon transitions.
   - `transitionBuilder` for full-content icon+label transition composition.
-  - `iconIndicatorShape` and `labelIndicatorShape` for scoped indicator bubbles.
 - Navigation rail customization:
   - Rail destination icon transitions (`iconTransitionAnimation`, curve,
     duration) and destination-level `destinationTransitionBuilder`.
