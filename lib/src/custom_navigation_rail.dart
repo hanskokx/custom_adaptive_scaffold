@@ -364,11 +364,20 @@ class CustomNavigationRail extends StatefulWidget {
   /// When null, this follows [destinationFillRegion].
   final NavigationDestinationRegion? destinationHoverRegion;
 
-  /// Optional shape used for destination fill/highlight when
-  /// [destinationFillRegion] is configured.
+  /// Optional stateful shape for destination fill and interaction highlights.
   ///
-  /// If null, [indicatorShape] / theme indicator shape is used, then
-  /// [StadiumBorder].
+  /// Migration note: this single property replaces both the old selected-fill
+  /// shape (`destinationFillShape`) and interaction shape
+  /// (`destinationHoverShape`).
+  ///
+  /// Selected fill resolves with [WidgetState.selected]. Hover/pressed
+  /// interaction shape resolves with [WidgetState.hovered], then falls back to
+  /// the selected shape. You can also provide [WidgetState.any] as a broad
+  /// fallback in the state map.
+  ///
+  /// If unresolved for a given state, [indicatorShape] is used, then
+  /// [NavigationRailThemeData.indicatorShape], and then [StadiumBorder] as a
+  /// final fallback.
   final WidgetStateProperty<ShapeBorder?>? shape;
 
   /// Icon transition preset for destination icon swaps.
