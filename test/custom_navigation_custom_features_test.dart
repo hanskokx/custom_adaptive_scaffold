@@ -1,8 +1,6 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:custom_adaptive_scaffold/src/custom_navigation_bar.dart"
-    as custom_bar;
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart" hide NavigationIndicator;
 import "package:flutter_test/flutter_test.dart";
 
 void main() {
@@ -486,7 +484,7 @@ void main() {
 
     expect(
       find.byWidgetPredicate(
-        (Widget widget) => widget is custom_bar.NavigationIndicator,
+        (Widget widget) => widget is NavigationIndicator,
       ),
       findsNothing,
     );
