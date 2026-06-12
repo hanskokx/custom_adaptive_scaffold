@@ -245,9 +245,14 @@ class CustomNavigationBar extends StatelessWidget {
   /// When null, this follows [destinationFillRegion].
   final NavigationDestinationRegion? destinationHoverRegion;
 
-  /// Optional shape for destination fill/highlight.
+  /// Optional stateful shape for destination fill and interaction highlights.
   ///
-  /// If null, the resolved navigation bar indicator shape is used.
+  /// Selected fill resolves with [WidgetState.selected]. Hover/pressed
+  /// interaction shape resolves with [WidgetState.hovered], then falls back to
+  /// the selected shape.
+  ///
+  /// If unresolved for a given state, the resolved navigation bar indicator
+  /// shape is used, and then [StadiumBorder] as a final fallback.
   final WidgetStateProperty<ShapeBorder?>? shape;
 
   /// Specifies whether [SafeArea] should maintain bottom view padding.
@@ -1090,7 +1095,14 @@ class _NavigationDestinationInfo extends InheritedWidget {
   /// Where destination hover/ink interaction effects are painted.
   final NavigationDestinationRegion? destinationHoverRegion;
 
-  /// Optional override shape for destination interactions.
+  /// Optional stateful shape override for destination fill and interactions.
+  ///
+  /// Selected fill resolves with [WidgetState.selected]. Hover/pressed
+  /// interaction shape resolves with [WidgetState.hovered], then falls back to
+  /// the selected shape.
+  ///
+  /// If unresolved, [indicatorShape] is used, and then [StadiumBorder] as a
+  /// final fallback.
   final WidgetStateProperty<ShapeBorder?>? shape;
 
   /// The callback that should be called when this destination is tapped.
