@@ -705,10 +705,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         AdaptiveScaffoldThemeData(
       compactLabelType: widgetNavigationTheme?.compactLabelType ??
           inheritedNavigationTheme?.compactLabelType ??
-          extensionNavigationTheme?.compactLabelType,
+        extensionNavigationTheme?.compactLabelType ??
+        navRailTheme.labelType ??
+        NavigationRailLabelType.none,
       expandedLabelType: widgetNavigationTheme?.expandedLabelType ??
           inheritedNavigationTheme?.expandedLabelType ??
-          extensionNavigationTheme?.expandedLabelType,
+        extensionNavigationTheme?.expandedLabelType ??
+        NavigationRailLabelType.all,
       transitionAnimation: widgetNavigationTheme?.transitionAnimation ??
           inheritedNavigationTheme?.transitionAnimation ??
           extensionNavigationTheme?.transitionAnimation ??
