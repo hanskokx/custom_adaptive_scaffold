@@ -100,13 +100,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return AdaptiveScaffold(
       // An option to override the default transition duration.
       transitionDuration: Duration(milliseconds: _transitionDuration),
-      navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+      navigationTheme: const AdaptiveScaffoldThemeData(
         compactLabelType: NavigationRailLabelType.selected,
         transitionAnimation: NavigationDestinationAnimation.fadeSwap,
         transitionCurve: Curves.easeOutCubic,
         transitionDuration: Duration(milliseconds: 220),
         destinationFillRegion: NavigationDestinationRegion.content,
-        destinationFillShape: StadiumBorder(),
+        shape: StadiumBorder(),
       ),
       // An option to override the default breakpoints used for small, medium,
       // mediumLarge, large, and extraLarge.

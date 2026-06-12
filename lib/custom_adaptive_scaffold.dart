@@ -9,6 +9,7 @@ export "package:flutter/material.dart" show NavigationRailLabelType;
 export "src/adaptive_layout.dart";
 export "src/adaptive_scaffold.dart";
 export "src/adaptive_scaffold_controller.dart";
+export "src/adaptive_scaffold_theme.dart";
 export "src/breakpoints.dart";
 export "src/custom_navigation_bar.dart"
     show CustomNavigationBar, CustomNavigationDestination, NavigationIndicator;

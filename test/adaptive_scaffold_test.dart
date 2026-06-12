@@ -946,7 +946,7 @@ void main() {
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+              navigationTheme: const AdaptiveScaffoldThemeData(
                 compactLabelType: NavigationRailLabelType.none,
               ),
             ),
@@ -985,7 +985,7 @@ void main() {
             data: const MediaQueryData(size: Size(1300, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+              navigationTheme: const AdaptiveScaffoldThemeData(
                 expandedLabelType: NavigationRailLabelType.none,
               ),
             ),
@@ -1056,7 +1056,7 @@ void main() {
             child: AdaptiveScaffold(
               selectedIndex: 0,
               destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+              navigationTheme: const AdaptiveScaffoldThemeData(
                 expandedLabelType: NavigationRailLabelType.selected,
               ),
             ),
