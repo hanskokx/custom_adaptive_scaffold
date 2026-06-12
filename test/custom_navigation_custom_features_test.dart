@@ -1,4 +1,6 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
+import "package:custom_adaptive_scaffold/src/custom_navigation_bar.dart"
+    as custom_bar;
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
@@ -294,7 +296,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -346,7 +348,7 @@ void main() {
       );
 
       final Finder inkResponses = find.byWidgetPredicate(
-        (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+        (Widget widget) => widget is InkResponse,
       );
       expect(inkResponses, findsNWidgets(2));
 
@@ -403,7 +405,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -484,8 +486,7 @@ void main() {
 
     expect(
       find.byWidgetPredicate(
-        (Widget widget) =>
-            widget.runtimeType.toString() == "NavigationIndicator",
+        (Widget widget) => widget is custom_bar.NavigationIndicator,
       ),
       findsNothing,
     );
@@ -521,7 +522,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -570,7 +571,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -620,7 +621,7 @@ void main() {
       );
 
       final Finder inkResponses = find.byWidgetPredicate(
-        (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+        (Widget widget) => widget is InkResponse,
       );
       final InkResponse firstInk =
           tester.widget<InkResponse>(inkResponses.first);
@@ -673,8 +674,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) =>
-          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -720,8 +720,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) =>
-          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -935,8 +934,7 @@ void main() {
     );
   });
 
-  testWidgets(
-      "bar stateful shape uses selected state when hovered is absent", (
+  testWidgets("bar stateful shape uses selected state when hovered is absent", (
     WidgetTester tester,
   ) async {
     const ShapeBorder selectedShape = StadiumBorder();
@@ -971,8 +969,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) =>
-          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -1025,8 +1022,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) =>
-          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -1078,8 +1074,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) =>
-          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
 
@@ -1122,8 +1117,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) =>
-          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
     final RenderBox firstBox =
@@ -1175,8 +1169,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) =>
-          widget.runtimeType.toString() == "_NavigationBarIndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
@@ -1218,7 +1211,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
     final RenderBox firstBox =
@@ -1275,7 +1268,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     expect(inkResponses, findsNWidgets(2));
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
@@ -1318,7 +1311,7 @@ void main() {
     );
 
     final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget.runtimeType.toString() == "_IndicatorInkWell",
+      (Widget widget) => widget is InkResponse,
     );
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
     final RenderBox firstBox =
