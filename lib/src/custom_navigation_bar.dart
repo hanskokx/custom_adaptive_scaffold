@@ -796,6 +796,12 @@ class _NavigationDestinationBuilderState
   static const Set<WidgetState> _hoveredState = <WidgetState>{
     WidgetState.hovered,
   };
+  static const Set<WidgetState> _pressedState = <WidgetState>{
+    WidgetState.pressed,
+  };
+  static const Set<WidgetState> _focusedState = <WidgetState>{
+    WidgetState.focused,
+  };
   final GlobalKey _destinationRegionKey = GlobalKey();
   final GlobalKey _iconRegionKey = GlobalKey();
   final GlobalKey _labelRegionKey = GlobalKey();
@@ -826,9 +832,15 @@ class _NavigationDestinationBuilderState
     final ShapeBorder? statefulSelectedShape =
         info.shape?.resolve(_selectedState);
     final ShapeBorder? statefulHoverShape = info.shape?.resolve(_hoveredState);
+    final ShapeBorder? statefulPressedShape =
+      info.shape?.resolve(_pressedState);
+    final ShapeBorder? statefulFocusedShape =
+      info.shape?.resolve(_focusedState);
     final ShapeBorder effectiveFillShape =
         statefulSelectedShape ?? widget.shape ?? const StadiumBorder();
     final ShapeBorder effectiveHoverShape = statefulHoverShape ??
+      statefulPressedShape ??
+      statefulFocusedShape ??
         statefulSelectedShape ??
         widget.shape ??
         const StadiumBorder();
