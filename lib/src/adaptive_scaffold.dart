@@ -737,6 +737,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   Widget build(BuildContext context) {
     final NavigationRailThemeData navRailTheme =
         Theme.of(context).navigationRailTheme;
+    final NavigationBarThemeData navBarTheme =
+        Theme.of(context).navigationBarTheme;
     final AdaptiveScaffoldThemeData? extensionNavigationTheme =
         Theme.of(context).extension<AdaptiveScaffoldThemeData>();
     final AdaptiveScaffoldThemeData? inheritedNavigationTheme =
@@ -747,34 +749,43 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         AdaptiveNavigationBarThemeData(
       height: widgetNavigationTheme?.navigationBarTheme?.height ??
           inheritedNavigationTheme?.navigationBarTheme?.height ??
-          extensionNavigationTheme?.navigationBarTheme?.height,
+          extensionNavigationTheme?.navigationBarTheme?.height ??
+          navBarTheme.height,
       backgroundColor:
           widgetNavigationTheme?.navigationBarTheme?.backgroundColor ??
               inheritedNavigationTheme?.navigationBarTheme?.backgroundColor ??
-              extensionNavigationTheme?.navigationBarTheme?.backgroundColor,
+              extensionNavigationTheme?.navigationBarTheme?.backgroundColor ??
+              navBarTheme.backgroundColor,
       elevation: widgetNavigationTheme?.navigationBarTheme?.elevation ??
           inheritedNavigationTheme?.navigationBarTheme?.elevation ??
-          extensionNavigationTheme?.navigationBarTheme?.elevation,
+          extensionNavigationTheme?.navigationBarTheme?.elevation ??
+          navBarTheme.elevation,
       shadowColor: widgetNavigationTheme?.navigationBarTheme?.shadowColor ??
           inheritedNavigationTheme?.navigationBarTheme?.shadowColor ??
-          extensionNavigationTheme?.navigationBarTheme?.shadowColor,
+          extensionNavigationTheme?.navigationBarTheme?.shadowColor ??
+          navBarTheme.shadowColor,
       surfaceTintColor:
           widgetNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
               inheritedNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
-              extensionNavigationTheme?.navigationBarTheme?.surfaceTintColor,
+              extensionNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
+              navBarTheme.surfaceTintColor,
       labelTextStyle:
           widgetNavigationTheme?.navigationBarTheme?.labelTextStyle ??
               inheritedNavigationTheme?.navigationBarTheme?.labelTextStyle ??
-              extensionNavigationTheme?.navigationBarTheme?.labelTextStyle,
+              extensionNavigationTheme?.navigationBarTheme?.labelTextStyle ??
+              navBarTheme.labelTextStyle,
       iconTheme: widgetNavigationTheme?.navigationBarTheme?.iconTheme ??
           inheritedNavigationTheme?.navigationBarTheme?.iconTheme ??
-          extensionNavigationTheme?.navigationBarTheme?.iconTheme,
+          extensionNavigationTheme?.navigationBarTheme?.iconTheme ??
+          navBarTheme.iconTheme,
       labelBehavior: widgetNavigationTheme?.navigationBarTheme?.labelBehavior ??
           inheritedNavigationTheme?.navigationBarTheme?.labelBehavior ??
-          extensionNavigationTheme?.navigationBarTheme?.labelBehavior,
+          extensionNavigationTheme?.navigationBarTheme?.labelBehavior ??
+          navBarTheme.labelBehavior,
       overlayColor: widgetNavigationTheme?.navigationBarTheme?.overlayColor ??
           inheritedNavigationTheme?.navigationBarTheme?.overlayColor ??
-          extensionNavigationTheme?.navigationBarTheme?.overlayColor,
+          extensionNavigationTheme?.navigationBarTheme?.overlayColor ??
+          navBarTheme.overlayColor,
       margin: widgetNavigationTheme?.navigationBarTheme?.margin ??
           inheritedNavigationTheme?.navigationBarTheme?.margin ??
           extensionNavigationTheme?.navigationBarTheme?.margin,
@@ -787,7 +798,67 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           extensionNavigationTheme?.navigationBarTheme?.tooltipVerticalOffset,
       labelPadding: widgetNavigationTheme?.navigationBarTheme?.labelPadding ??
           inheritedNavigationTheme?.navigationBarTheme?.labelPadding ??
-          extensionNavigationTheme?.navigationBarTheme?.labelPadding,
+          extensionNavigationTheme?.navigationBarTheme?.labelPadding ??
+          navBarTheme.labelPadding,
+    );
+    final AdaptiveNavigationRailThemeData effectiveNavigationRailTheme =
+        AdaptiveNavigationRailThemeData(
+      backgroundColor:
+          widgetNavigationTheme?.navigationRailTheme?.backgroundColor ??
+              inheritedNavigationTheme?.navigationRailTheme?.backgroundColor ??
+              extensionNavigationTheme?.navigationRailTheme?.backgroundColor ??
+              navRailTheme.backgroundColor,
+      selectedIconTheme: widgetNavigationTheme
+              ?.navigationRailTheme?.selectedIconTheme ??
+          inheritedNavigationTheme?.navigationRailTheme?.selectedIconTheme ??
+          extensionNavigationTheme?.navigationRailTheme?.selectedIconTheme ??
+          navRailTheme.selectedIconTheme,
+      unselectedIconTheme: widgetNavigationTheme
+              ?.navigationRailTheme?.unselectedIconTheme ??
+          inheritedNavigationTheme?.navigationRailTheme?.unselectedIconTheme ??
+          extensionNavigationTheme?.navigationRailTheme?.unselectedIconTheme ??
+          navRailTheme.unselectedIconTheme,
+      selectedLabelTextStyle:
+          widgetNavigationTheme?.navigationRailTheme?.selectedLabelTextStyle ??
+              inheritedNavigationTheme
+                  ?.navigationRailTheme?.selectedLabelTextStyle ??
+              extensionNavigationTheme
+                  ?.navigationRailTheme?.selectedLabelTextStyle ??
+              navRailTheme.selectedLabelTextStyle,
+      unselectedLabelTextStyle: widgetNavigationTheme
+              ?.navigationRailTheme?.unselectedLabelTextStyle ??
+          inheritedNavigationTheme
+              ?.navigationRailTheme?.unselectedLabelTextStyle ??
+          extensionNavigationTheme
+              ?.navigationRailTheme?.unselectedLabelTextStyle ??
+          navRailTheme.unselectedLabelTextStyle,
+      compactLabelType:
+          widgetNavigationTheme?.navigationRailTheme?.compactLabelType ??
+              inheritedNavigationTheme?.navigationRailTheme?.compactLabelType ??
+              extensionNavigationTheme?.navigationRailTheme?.compactLabelType ??
+              widgetNavigationTheme?.compactLabelType ??
+              inheritedNavigationTheme?.compactLabelType ??
+              extensionNavigationTheme?.compactLabelType ??
+              navRailTheme.labelType ??
+              NavigationRailLabelType.none,
+      expandedLabelType: widgetNavigationTheme
+              ?.navigationRailTheme?.expandedLabelType ??
+          inheritedNavigationTheme?.navigationRailTheme?.expandedLabelType ??
+          extensionNavigationTheme?.navigationRailTheme?.expandedLabelType ??
+          widgetNavigationTheme?.expandedLabelType ??
+          inheritedNavigationTheme?.expandedLabelType ??
+          extensionNavigationTheme?.expandedLabelType ??
+          NavigationRailLabelType.all,
+      extendedNavigationRailWidth: widgetNavigationTheme
+              ?.navigationRailTheme?.extendedNavigationRailWidth ??
+          inheritedNavigationTheme
+              ?.navigationRailTheme?.extendedNavigationRailWidth ??
+          extensionNavigationTheme
+              ?.navigationRailTheme?.extendedNavigationRailWidth ??
+          widgetNavigationTheme?.extendedNavigationRailWidth ??
+          inheritedNavigationTheme?.extendedNavigationRailWidth ??
+          extensionNavigationTheme?.extendedNavigationRailWidth ??
+          widget.extendedNavigationRailWidth,
     );
     final NavigationIndicatorThemeData effectiveIndicatorStyle =
         NavigationIndicatorThemeData(
@@ -813,20 +884,11 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     );
     final AdaptiveScaffoldThemeData effectiveNavigationTheme =
         AdaptiveScaffoldThemeData(
-      compactLabelType: widgetNavigationTheme?.compactLabelType ??
-          inheritedNavigationTheme?.compactLabelType ??
-          extensionNavigationTheme?.compactLabelType ??
-          navRailTheme.labelType ??
-          NavigationRailLabelType.none,
-      expandedLabelType: widgetNavigationTheme?.expandedLabelType ??
-          inheritedNavigationTheme?.expandedLabelType ??
-          extensionNavigationTheme?.expandedLabelType ??
-          NavigationRailLabelType.all,
+      navigationRailTheme: effectiveNavigationRailTheme,
+      compactLabelType: effectiveNavigationRailTheme.compactLabelType,
+      expandedLabelType: effectiveNavigationRailTheme.expandedLabelType,
       extendedNavigationRailWidth:
-          widgetNavigationTheme?.extendedNavigationRailWidth ??
-              inheritedNavigationTheme?.extendedNavigationRailWidth ??
-              extensionNavigationTheme?.extendedNavigationRailWidth ??
-              widget.extendedNavigationRailWidth,
+          effectiveNavigationRailTheme.extendedNavigationRailWidth,
       transitionAnimation: widgetNavigationTheme?.transitionAnimation ??
           inheritedNavigationTheme?.transitionAnimation ??
           extensionNavigationTheme?.transitionAnimation ??
@@ -878,13 +940,18 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               selectedIndex: widget.selectedIndex,
               destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
-              backgroundColor: navRailTheme.backgroundColor,
-              selectedIconTheme: navRailTheme.selectedIconTheme,
-              unselectedIconTheme: navRailTheme.unselectedIconTheme,
-              selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
-              unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.compactLabelType ??
-                  navRailTheme.labelType,
+              backgroundColor:
+                  effectiveNavigationTheme.navigationRailTheme?.backgroundColor,
+              selectedIconTheme: effectiveNavigationTheme
+                  .navigationRailTheme?.selectedIconTheme,
+              unselectedIconTheme: effectiveNavigationTheme
+                  .navigationRailTheme?.unselectedIconTheme,
+              selectedLabelTextStyle: effectiveNavigationTheme
+                  .navigationRailTheme?.selectedLabelTextStyle,
+              unSelectedLabelTextStyle: effectiveNavigationTheme
+                  .navigationRailTheme?.unselectedLabelTextStyle,
+              labelType: effectiveNavigationTheme
+                  .navigationRailTheme?.compactLabelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
               iconTransitionAnimation:
@@ -904,7 +971,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           widget.mediumLargeBreakpoint: SlotLayout.from(
             key: const Key("primaryNavigation1"),
             builder: (_) => AdaptiveScaffold.standardNavigationRail(
-              width: effectiveNavigationTheme.extendedNavigationRailWidth ??
+              width: effectiveNavigationTheme
+                      .navigationRailTheme?.extendedNavigationRailWidth ??
                   widget.extendedNavigationRailWidth,
               extended: true,
               leading: widget.leadingExtendedNavRail,
@@ -912,15 +980,25 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               selectedIndex: widget.selectedIndex,
               destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
-              backgroundColor: navRailTheme.backgroundColor,
-              selectedIconTheme: navRailTheme.selectedIconTheme,
-              unselectedIconTheme: navRailTheme.unselectedIconTheme,
-              selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
-              unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelType ??
-                  NavigationRailLabelType.all,
+              backgroundColor:
+                  effectiveNavigationTheme.navigationRailTheme?.backgroundColor,
+              selectedIconTheme: effectiveNavigationTheme
+                  .navigationRailTheme?.selectedIconTheme,
+              unselectedIconTheme: effectiveNavigationTheme
+                  .navigationRailTheme?.unselectedIconTheme,
+              selectedLabelTextStyle: effectiveNavigationTheme
+                  .navigationRailTheme?.selectedLabelTextStyle,
+              unSelectedLabelTextStyle: effectiveNavigationTheme
+                  .navigationRailTheme?.unselectedLabelTextStyle,
+              labelType: effectiveNavigationTheme
+                  .navigationRailTheme?.expandedLabelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
+              iconTransitionAnimation:
+                  effectiveNavigationTheme.transitionAnimation,
+              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
+              iconTransitionDuration:
+                  effectiveNavigationTheme.transitionDuration,
               indicatorColor: effectiveNavigationTheme.indicatorStyle?.color,
               indicatorShape: effectiveNavigationTheme.indicatorStyle?.shape,
               destinationFillRegion: effectiveNavigationTheme
@@ -933,7 +1011,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           widget.largeBreakpoint: SlotLayout.from(
             key: const Key("primaryNavigation2"),
             builder: (_) => AdaptiveScaffold.standardNavigationRail(
-              width: effectiveNavigationTheme.extendedNavigationRailWidth ??
+              width: effectiveNavigationTheme
+                      .navigationRailTheme?.extendedNavigationRailWidth ??
                   widget.extendedNavigationRailWidth,
               extended: true,
               leading: widget.leadingExtendedNavRail,
@@ -946,14 +1025,24 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   )
                   .toList(),
               onDestinationSelected: widget.onSelectedIndexChange,
-              backgroundColor: navRailTheme.backgroundColor,
-              selectedIconTheme: navRailTheme.selectedIconTheme,
-              unselectedIconTheme: navRailTheme.unselectedIconTheme,
-              selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
-              unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelType ??
-                  NavigationRailLabelType.all,
+              backgroundColor:
+                  effectiveNavigationTheme.navigationRailTheme?.backgroundColor,
+              selectedIconTheme: effectiveNavigationTheme
+                  .navigationRailTheme?.selectedIconTheme,
+              unselectedIconTheme: effectiveNavigationTheme
+                  .navigationRailTheme?.unselectedIconTheme,
+              selectedLabelTextStyle: effectiveNavigationTheme
+                  .navigationRailTheme?.selectedLabelTextStyle,
+              unSelectedLabelTextStyle: effectiveNavigationTheme
+                  .navigationRailTheme?.unselectedLabelTextStyle,
+              labelType: effectiveNavigationTheme
+                  .navigationRailTheme?.expandedLabelType,
               padding: widget.padding,
+              iconTransitionAnimation:
+                  effectiveNavigationTheme.transitionAnimation,
+              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
+              iconTransitionDuration:
+                  effectiveNavigationTheme.transitionDuration,
               indicatorColor: effectiveNavigationTheme.indicatorStyle?.color,
               indicatorShape: effectiveNavigationTheme.indicatorStyle?.shape,
               destinationFillRegion: effectiveNavigationTheme
@@ -966,7 +1055,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           widget.extraLargeBreakpoint: SlotLayout.from(
             key: const Key("primaryNavigation3"),
             builder: (_) => AdaptiveScaffold.standardNavigationRail(
-              width: effectiveNavigationTheme.extendedNavigationRailWidth ??
+              width: effectiveNavigationTheme
+                      .navigationRailTheme?.extendedNavigationRailWidth ??
                   widget.extendedNavigationRailWidth,
               extended: true,
               leading: widget.leadingExtendedNavRail,
@@ -979,14 +1069,24 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   )
                   .toList(),
               onDestinationSelected: widget.onSelectedIndexChange,
-              backgroundColor: navRailTheme.backgroundColor,
-              selectedIconTheme: navRailTheme.selectedIconTheme,
-              unselectedIconTheme: navRailTheme.unselectedIconTheme,
-              selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
-              unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelType ??
-                  NavigationRailLabelType.all,
+              backgroundColor:
+                  effectiveNavigationTheme.navigationRailTheme?.backgroundColor,
+              selectedIconTheme: effectiveNavigationTheme
+                  .navigationRailTheme?.selectedIconTheme,
+              unselectedIconTheme: effectiveNavigationTheme
+                  .navigationRailTheme?.unselectedIconTheme,
+              selectedLabelTextStyle: effectiveNavigationTheme
+                  .navigationRailTheme?.selectedLabelTextStyle,
+              unSelectedLabelTextStyle: effectiveNavigationTheme
+                  .navigationRailTheme?.unselectedLabelTextStyle,
+              labelType: effectiveNavigationTheme
+                  .navigationRailTheme?.expandedLabelType,
               padding: widget.padding,
+              iconTransitionAnimation:
+                  effectiveNavigationTheme.transitionAnimation,
+              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
+              iconTransitionDuration:
+                  effectiveNavigationTheme.transitionDuration,
               indicatorColor: effectiveNavigationTheme.indicatorStyle?.color,
               indicatorShape: effectiveNavigationTheme.indicatorStyle?.shape,
               destinationFillRegion: effectiveNavigationTheme
@@ -1008,7 +1108,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                     currentIndex: widget.selectedIndex,
                     destinations: widget.destinations,
                     onDestinationSelected: widget.onSelectedIndexChange,
-                    labelBehavior: effectiveNavigationTheme.compactLabelType,
+                    labelBehavior: effectiveNavigationTheme
+                        .navigationRailTheme?.compactLabelType,
                     explicitLabelBehavior: effectiveNavigationTheme
                         .navigationBarTheme?.labelBehavior,
                     transitionAnimation:

@@ -36,7 +36,9 @@ class MyApp extends StatelessWidget {
         ),
         extensions: const <ThemeExtension<dynamic>>[
           AdaptiveScaffoldThemeData(
-            compactLabelType: NavigationRailLabelType.selected,
+            navigationRailTheme: AdaptiveNavigationRailThemeData(
+              compactLabelType: NavigationRailLabelType.selected,
+            ),
             transitionAnimation: NavigationDestinationAnimation.fadeSwap,
             transitionCurve: Curves.easeOutCubic,
             transitionDuration: Duration(milliseconds: 220),

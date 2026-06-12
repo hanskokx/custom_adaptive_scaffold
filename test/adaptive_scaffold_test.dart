@@ -1000,6 +1000,101 @@ void main() {
   );
 
   testWidgets(
+    "adaptive scaffold uses nested compact rail label type over top-level compatibility field",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const NavigationRailThemeData(
+              labelType: NavigationRailLabelType.none,
+            ),
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                navigationRailTheme: AdaptiveNavigationRailThemeData(
+                  compactLabelType: NavigationRailLabelType.all,
+                ),
+              ),
+            ],
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 600)),
+            child: AdaptiveScaffoldTheme(
+              data: const AdaptiveScaffoldThemeData(
+                navigationRailTheme: AdaptiveNavigationRailThemeData(
+                  compactLabelType: NavigationRailLabelType.selected,
+                ),
+              ),
+              child: AdaptiveScaffold(
+                destinations: destinations,
+                navigationTheme: const AdaptiveScaffoldThemeData(
+                  compactLabelType: NavigationRailLabelType.none,
+                  navigationRailTheme: AdaptiveNavigationRailThemeData(
+                    compactLabelType: NavigationRailLabelType.all,
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail compactRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(compactRail.labelType, NavigationRailLabelType.all);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold keeps 3.x compact label compatibility when nested rail theme is absent",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const NavigationRailThemeData(
+              labelType: NavigationRailLabelType.none,
+            ),
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 600)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+              navigationTheme: const AdaptiveScaffoldThemeData(
+                compactLabelType: NavigationRailLabelType.selected,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail compactRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(compactRail.labelType, NavigationRailLabelType.selected);
+    },
+  );
+
+  testWidgets(
     "adaptive scaffold applies theme precedence widget > inherited > extension",
     (WidgetTester tester) async {
       const List<NavigationDestination> destinations = <NavigationDestination>[
@@ -1477,6 +1572,112 @@ void main() {
       );
       expect(bar.margin, widgetMargin);
       expect(bar.padding, widgetPadding);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold falls back to ThemeData navigation bar theme fields",
+    (WidgetTester tester) async {
+      const double fallbackHeight = 86;
+      const Color fallbackBackground = Color(0xFF223344);
+      const NavigationDestinationLabelBehavior fallbackBehavior =
+          NavigationDestinationLabelBehavior.onlyShowSelected;
+      const EdgeInsets fallbackLabelPadding = EdgeInsets.only(top: 7);
+
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const NavigationBarThemeData(
+              height: fallbackHeight,
+              backgroundColor: fallbackBackground,
+              labelBehavior: fallbackBehavior,
+              labelPadding: fallbackLabelPadding,
+            ),
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(500, 800)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+            ),
+          ),
+        ),
+      );
+
+      final Finder barFinder = find.byType(CustomNavigationBar);
+      expect(barFinder, findsOneWidget);
+
+      final CustomNavigationBar bar =
+          tester.widget<CustomNavigationBar>(barFinder);
+      expect(bar.margin, anyOf(isNull, equals(EdgeInsets.zero)));
+      expect(bar.padding, anyOf(isNull, equals(EdgeInsets.zero)));
+
+      final Finder navBarThemeFinder = find.ancestor(
+        of: barFinder,
+        matching: find.byType(NavigationBarTheme),
+      );
+      expect(navBarThemeFinder, findsWidgets);
+
+      final NavigationBarTheme navBarTheme = tester.widget<NavigationBarTheme>(
+        navBarThemeFinder.first,
+      );
+      expect(navBarTheme.data.height, fallbackHeight);
+      expect(navBarTheme.data.backgroundColor, fallbackBackground);
+      expect(navBarTheme.data.labelBehavior, fallbackBehavior);
+      expect(navBarTheme.data.labelPadding, fallbackLabelPadding);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold falls back to ThemeData rail text styles",
+    (WidgetTester tester) async {
+      const TextStyle selectedStyle =
+          TextStyle(fontSize: 17, color: Colors.red);
+      const TextStyle unselectedStyle =
+          TextStyle(fontSize: 13, color: Colors.blue);
+
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const NavigationRailThemeData(
+              selectedLabelTextStyle: selectedStyle,
+              unselectedLabelTextStyle: unselectedStyle,
+            ),
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 600)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail compactRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(compactRail.selectedLabelTextStyle, selectedStyle);
+      expect(compactRail.unselectedLabelTextStyle, unselectedStyle);
     },
   );
 

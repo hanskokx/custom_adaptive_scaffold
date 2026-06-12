@@ -41,6 +41,8 @@ several places:
     `navigationTheme: AdaptiveScaffoldThemeData(...)` and
     `ThemeData.extensions`.
 - Theme extensions:
+  - `AdaptiveNavigationRailThemeData`: `backgroundColor`, icon/label styles,
+    compact/expanded label behavior, `extendedNavigationRailWidth`.
   - `AdaptiveNavigationBarThemeData`: `margin`, `padding`,
     `tooltipVerticalOffset`.
   - `CustomNavigationRailThemeData`: `margin`, `padding`.
@@ -386,9 +388,11 @@ Navigation behavior overrides are also configured through
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldThemeData(
-    compactLabelType: NavigationRailLabelType.selected,
-    expandedLabelType: NavigationRailLabelType.all,
-    extendedNavigationRailWidth: 224,
+    navigationRailTheme: AdaptiveNavigationRailThemeData(
+      compactLabelType: NavigationRailLabelType.selected,
+      expandedLabelType: NavigationRailLabelType.all,
+      extendedNavigationRailWidth: 224,
+    ),
     transitionAnimation: NavigationDestinationAnimation.fadeSwap,
     transitionCurve: Curves.easeOutCubic,
     transitionDuration: Duration(milliseconds: 220),
@@ -405,7 +409,9 @@ MaterialApp(
   theme: ThemeData(
     extensions: const <ThemeExtension<dynamic>>[
       AdaptiveScaffoldThemeData(
-        compactLabelType: NavigationRailLabelType.selected,
+        navigationRailTheme: AdaptiveNavigationRailThemeData(
+          compactLabelType: NavigationRailLabelType.selected,
+        ),
         indicatorStyle: NavigationIndicatorThemeData(
           destinationFillRegion: NavigationDestinationRegion.content,
           interactionShape:
@@ -430,7 +436,9 @@ MaterialApp(
   theme: ThemeData(
     extensions: const <ThemeExtension<dynamic>>[
       AdaptiveScaffoldThemeData(
-        compactLabelType: NavigationRailLabelType.selected,
+        navigationRailTheme: AdaptiveNavigationRailThemeData(
+          compactLabelType: NavigationRailLabelType.selected,
+        ),
       ),
     ],
   ),
@@ -445,9 +453,11 @@ MaterialApp(
     useMaterial3: true,
     extensions: const <ThemeExtension<dynamic>>[
       AdaptiveScaffoldThemeData(
-        compactLabelType: NavigationRailLabelType.selected,
-        expandedLabelType: NavigationRailLabelType.all,
-        extendedNavigationRailWidth: 224,
+        navigationRailTheme: AdaptiveNavigationRailThemeData(
+          compactLabelType: NavigationRailLabelType.selected,
+          expandedLabelType: NavigationRailLabelType.all,
+          extendedNavigationRailWidth: 224,
+        ),
         transitionAnimation: NavigationDestinationAnimation.fadeSwap,
         transitionCurve: Curves.easeOutCubic,
         transitionDuration: Duration(milliseconds: 220),
@@ -519,20 +529,28 @@ Theme precedence is:
 1. `AdaptiveScaffold.navigationTheme`
 2. nearest `AdaptiveScaffoldTheme`
 3. `ThemeData.extensions`
-4. defaults
+4. `ThemeData.navigationRailTheme` / `ThemeData.navigationBarTheme`
+5. defaults
 
 Notes:
 
 - `transitionAnimation` is shared by both compact rail and small navigation
   bar destination transitions.
-- `compactLabelType` configures compact rail labels directly, and maps to
-  the corresponding small navigation bar label behavior.
-- `expandedLabelType` applies only to expanded rails (medium-large and up).
-  Defaults to `NavigationRailLabelType.all` and supports
-  `none`, `selected`, and `all`.
-- `extendedNavigationRailWidth` controls extended-rail width across
-  medium-large and larger breakpoints. When omitted, `AdaptiveScaffold`
-  keeps its default width of `192`.
+- `navigationRailTheme.compactLabelType` configures compact rail labels
+  directly, and maps to the corresponding small navigation bar label behavior.
+- `navigationRailTheme.expandedLabelType` applies only to expanded rails
+  (medium-large and up). Defaults to `NavigationRailLabelType.all` and
+  supports `none`, `selected`, and `all`.
+- `navigationRailTheme.extendedNavigationRailWidth` controls extended-rail
+  width across medium-large and larger breakpoints. When omitted,
+  `AdaptiveScaffold` keeps its default width of `192`.
+
+3.x compatibility note:
+
+- Top-level `compactLabelType`, `expandedLabelType`, and
+  `extendedNavigationRailWidth` fields on `AdaptiveScaffoldThemeData` remain
+  available for migration from 3.x configurations, but are deprecated in favor
+  of `navigationRailTheme`.
 
 Compatibility note:
 

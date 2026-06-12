@@ -387,6 +387,193 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
   }
 }
 
+/// Navigation-rail-specific styling shared by adaptive medium+ breakpoints.
+@immutable
+class AdaptiveNavigationRailThemeData with Diagnosticable {
+  /// Creates navigation-rail styling for adaptive medium+ layouts.
+  const AdaptiveNavigationRailThemeData({
+    this.backgroundColor,
+    this.selectedIconTheme,
+    this.unselectedIconTheme,
+    this.selectedLabelTextStyle,
+    this.unselectedLabelTextStyle,
+    this.compactLabelType,
+    this.expandedLabelType,
+    this.extendedNavigationRailWidth,
+  });
+
+  /// Optional navigation rail background color.
+  final Color? backgroundColor;
+
+  /// Optional icon theme for selected rail destinations.
+  final IconThemeData? selectedIconTheme;
+
+  /// Optional icon theme for unselected rail destinations.
+  final IconThemeData? unselectedIconTheme;
+
+  /// Optional text style for selected rail labels.
+  final TextStyle? selectedLabelTextStyle;
+
+  /// Optional text style for unselected rail labels.
+  final TextStyle? unselectedLabelTextStyle;
+
+  /// Optional label behavior for compact rail breakpoints.
+  final NavigationRailLabelType? compactLabelType;
+
+  /// Optional label behavior for expanded rail breakpoints.
+  final NavigationRailLabelType? expandedLabelType;
+
+  /// Optional width for extended navigation rails.
+  final double? extendedNavigationRailWidth;
+
+  /// Creates a copy of this navigation rail theme with the given fields
+  /// replaced.
+  AdaptiveNavigationRailThemeData copyWith({
+    Color? backgroundColor,
+    IconThemeData? selectedIconTheme,
+    IconThemeData? unselectedIconTheme,
+    TextStyle? selectedLabelTextStyle,
+    TextStyle? unselectedLabelTextStyle,
+    NavigationRailLabelType? compactLabelType,
+    NavigationRailLabelType? expandedLabelType,
+    double? extendedNavigationRailWidth,
+  }) {
+    return AdaptiveNavigationRailThemeData(
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+      selectedIconTheme: selectedIconTheme ?? this.selectedIconTheme,
+      unselectedIconTheme: unselectedIconTheme ?? this.unselectedIconTheme,
+      selectedLabelTextStyle:
+          selectedLabelTextStyle ?? this.selectedLabelTextStyle,
+      unselectedLabelTextStyle:
+          unselectedLabelTextStyle ?? this.unselectedLabelTextStyle,
+      compactLabelType: compactLabelType ?? this.compactLabelType,
+      expandedLabelType: expandedLabelType ?? this.expandedLabelType,
+      extendedNavigationRailWidth:
+          extendedNavigationRailWidth ?? this.extendedNavigationRailWidth,
+    );
+  }
+
+  /// Linearly interpolates between two adaptive navigation rail themes.
+  static AdaptiveNavigationRailThemeData? lerp(
+    AdaptiveNavigationRailThemeData? a,
+    AdaptiveNavigationRailThemeData? b,
+    double t,
+  ) {
+    if (identical(a, b)) {
+      return a;
+    }
+    if (a == null && b == null) {
+      return null;
+    }
+    return AdaptiveNavigationRailThemeData(
+      backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
+      selectedIconTheme:
+          IconThemeData.lerp(a?.selectedIconTheme, b?.selectedIconTheme, t),
+      unselectedIconTheme: IconThemeData.lerp(
+        a?.unselectedIconTheme,
+        b?.unselectedIconTheme,
+        t,
+      ),
+      selectedLabelTextStyle: TextStyle.lerp(
+        a?.selectedLabelTextStyle,
+        b?.selectedLabelTextStyle,
+        t,
+      ),
+      unselectedLabelTextStyle: TextStyle.lerp(
+        a?.unselectedLabelTextStyle,
+        b?.unselectedLabelTextStyle,
+        t,
+      ),
+      compactLabelType: t < 0.5 ? a?.compactLabelType : b?.compactLabelType,
+      expandedLabelType: t < 0.5 ? a?.expandedLabelType : b?.expandedLabelType,
+      extendedNavigationRailWidth: lerpDouble(
+        a?.extendedNavigationRailWidth,
+        b?.extendedNavigationRailWidth,
+        t,
+      ),
+    );
+  }
+
+  @override
+  int get hashCode => Object.hashAll(<Object?>[
+        backgroundColor,
+        selectedIconTheme,
+        unselectedIconTheme,
+        selectedLabelTextStyle,
+        unselectedLabelTextStyle,
+        compactLabelType,
+        expandedLabelType,
+        extendedNavigationRailWidth,
+      ]);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    return other is AdaptiveNavigationRailThemeData &&
+        other.backgroundColor == backgroundColor &&
+        other.selectedIconTheme == selectedIconTheme &&
+        other.unselectedIconTheme == unselectedIconTheme &&
+        other.selectedLabelTextStyle == selectedLabelTextStyle &&
+        other.unselectedLabelTextStyle == unselectedLabelTextStyle &&
+        other.compactLabelType == compactLabelType &&
+        other.expandedLabelType == expandedLabelType &&
+        other.extendedNavigationRailWidth == extendedNavigationRailWidth;
+  }
+
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    super.debugFillProperties(properties);
+    properties.add(ColorProperty("backgroundColor", backgroundColor));
+    properties.add(
+      DiagnosticsProperty<IconThemeData?>(
+        "selectedIconTheme",
+        selectedIconTheme,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<IconThemeData?>(
+        "unselectedIconTheme",
+        unselectedIconTheme,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextStyle?>(
+        "selectedLabelTextStyle",
+        selectedLabelTextStyle,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TextStyle?>(
+        "unselectedLabelTextStyle",
+        unselectedLabelTextStyle,
+      ),
+    );
+    properties.add(
+      EnumProperty<NavigationRailLabelType>(
+        "compactLabelType",
+        compactLabelType,
+      ),
+    );
+    properties.add(
+      EnumProperty<NavigationRailLabelType>(
+        "expandedLabelType",
+        expandedLabelType,
+      ),
+    );
+    properties.add(
+      DoubleProperty(
+        "extendedNavigationRailWidth",
+        extendedNavigationRailWidth,
+      ),
+    );
+  }
+}
+
 /// Optional, adaptive-navigation-specific overrides for [AdaptiveScaffold].
 ///
 /// All fields are opt-in. When left null/default, [AdaptiveScaffold] keeps
@@ -415,7 +602,12 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   /// [NavigationDestinationLabelBehavior.alwaysShow].
   ///
   /// When null, rail and bar each use their theme defaults.
-  NavigationRailLabelType? get compactLabelType => _data?.compactLabelType;
+  @Deprecated(
+    "Use navigationRailTheme?.compactLabelType instead. "
+    "This getter will be removed after v4.1.0+1.",
+  )
+  NavigationRailLabelType? get compactLabelType =>
+      _data?.navigationRailTheme?.compactLabelType ?? _data?.compactLabelType;
 
   /// Optional label behavior for expanded navigation rail breakpoints.
   ///
@@ -423,14 +615,25 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   /// breakpoints.
   ///
   /// When null, defaults to [NavigationRailLabelType.all].
-  NavigationRailLabelType? get expandedLabelType => _data?.expandedLabelType;
+  @Deprecated(
+    "Use navigationRailTheme?.expandedLabelType instead. "
+    "This getter will be removed after v4.1.0+1.",
+  )
+  NavigationRailLabelType? get expandedLabelType =>
+      _data?.navigationRailTheme?.expandedLabelType ?? _data?.expandedLabelType;
 
   /// Optional width for extended navigation rails used on medium-large and up
   /// breakpoints.
   ///
   /// When null, [AdaptiveScaffold] uses its `extendedNavigationRailWidth`
   /// widget value (which defaults to `192`).
-  double? get extendedNavigationRailWidth => _data?.extendedNavigationRailWidth;
+  @Deprecated(
+    "Use navigationRailTheme?.extendedNavigationRailWidth instead. "
+    "This getter will be removed after v4.1.0+1.",
+  )
+  double? get extendedNavigationRailWidth =>
+      _data?.navigationRailTheme?.extendedNavigationRailWidth ??
+      _data?.extendedNavigationRailWidth;
 
   /// Icon transition preset used by small breakpoint navigation bar and
   /// compact (medium breakpoint) navigation rail destinations.
@@ -454,6 +657,10 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   /// Navigation-bar-specific styling shared by adaptive small-breakpoint bars.
   AdaptiveNavigationBarThemeData? get navigationBarTheme =>
       _data?.navigationBarTheme;
+
+  /// Navigation-rail-specific styling shared by adaptive medium+ breakpoints.
+  AdaptiveNavigationRailThemeData? get navigationRailTheme =>
+      _data?.navigationRailTheme;
 
   /// Resolved theme data, falling back to defaults when no data is provided.
   AdaptiveScaffoldThemeData get data =>
@@ -519,8 +726,21 @@ class AdaptiveScaffoldThemeData
     extends ThemeExtension<AdaptiveScaffoldThemeData> with Diagnosticable {
   /// Creates optional overrides for adaptive navigation behavior and styling.
   const AdaptiveScaffoldThemeData({
+    this.navigationRailTheme,
+    @Deprecated(
+      "Use navigationRailTheme.compactLabelType instead. "
+      "This field will be removed after v4.1.0+1.",
+    )
     this.compactLabelType,
+    @Deprecated(
+      "Use navigationRailTheme.expandedLabelType instead. "
+      "This field will be removed after v4.1.0+1.",
+    )
     this.expandedLabelType,
+    @Deprecated(
+      "Use navigationRailTheme.extendedNavigationRailWidth instead. "
+      "This field will be removed after v4.1.0+1.",
+    )
     this.extendedNavigationRailWidth,
     this.transitionAnimation = NavigationDestinationAnimation.none,
     this.transitionCurve = Curves.easeInOut,
@@ -528,6 +748,9 @@ class AdaptiveScaffoldThemeData
     this.indicatorStyle,
     this.navigationBarTheme,
   });
+
+  /// Navigation-rail-specific styling shared by adaptive medium+ breakpoints.
+  final AdaptiveNavigationRailThemeData? navigationRailTheme;
 
   /// Optional label behavior for compact rail and small navigation bar.
   ///
@@ -541,6 +764,10 @@ class AdaptiveScaffoldThemeData
   /// [NavigationDestinationLabelBehavior.alwaysShow].
   ///
   /// When null, rail and bar each use their theme defaults.
+  @Deprecated(
+    "Use navigationRailTheme?.compactLabelType instead. "
+    "This field will be removed after v4.1.0+1.",
+  )
   final NavigationRailLabelType? compactLabelType;
 
   /// Optional label behavior for expanded navigation rail breakpoints.
@@ -549,6 +776,10 @@ class AdaptiveScaffoldThemeData
   /// breakpoints.
   ///
   /// When null, defaults to [NavigationRailLabelType.all].
+  @Deprecated(
+    "Use navigationRailTheme?.expandedLabelType instead. "
+    "This field will be removed after v4.1.0+1.",
+  )
   final NavigationRailLabelType? expandedLabelType;
 
   /// Optional width for extended navigation rails used on medium-large and up
@@ -556,6 +787,10 @@ class AdaptiveScaffoldThemeData
   ///
   /// When null, [AdaptiveScaffold] uses its `extendedNavigationRailWidth`
   /// widget value (which defaults to `192`).
+  @Deprecated(
+    "Use navigationRailTheme?.extendedNavigationRailWidth instead. "
+    "This field will be removed after v4.1.0+1.",
+  )
   final double? extendedNavigationRailWidth;
 
   /// Icon transition preset used by small breakpoint navigation bar and
@@ -580,8 +815,21 @@ class AdaptiveScaffoldThemeData
   /// new values.
   @override
   AdaptiveScaffoldThemeData copyWith({
+    AdaptiveNavigationRailThemeData? navigationRailTheme,
+    @Deprecated(
+      "Use navigationRailTheme?.compactLabelType instead. "
+      "This parameter will be removed after v4.1.0+1.",
+    )
     NavigationRailLabelType? compactLabelType,
+    @Deprecated(
+      "Use navigationRailTheme?.expandedLabelType instead. "
+      "This parameter will be removed after v4.1.0+1.",
+    )
     NavigationRailLabelType? expandedLabelType,
+    @Deprecated(
+      "Use navigationRailTheme?.extendedNavigationRailWidth instead. "
+      "This parameter will be removed after v4.1.0+1.",
+    )
     double? extendedNavigationRailWidth,
     NavigationDestinationAnimation? transitionAnimation,
     Curve? transitionCurve,
@@ -590,6 +838,7 @@ class AdaptiveScaffoldThemeData
     AdaptiveNavigationBarThemeData? navigationBarTheme,
   }) {
     return AdaptiveScaffoldThemeData(
+      navigationRailTheme: navigationRailTheme ?? this.navigationRailTheme,
       compactLabelType: compactLabelType ?? this.compactLabelType,
       expandedLabelType: expandedLabelType ?? this.expandedLabelType,
       extendedNavigationRailWidth:
@@ -612,6 +861,11 @@ class AdaptiveScaffoldThemeData
     }
 
     return AdaptiveScaffoldThemeData(
+      navigationRailTheme: AdaptiveNavigationRailThemeData.lerp(
+        a.navigationRailTheme,
+        b.navigationRailTheme,
+        t,
+      ),
       compactLabelType: t < 0.5 ? a.compactLabelType : b.compactLabelType,
       expandedLabelType: t < 0.5 ? a.expandedLabelType : b.expandedLabelType,
       extendedNavigationRailWidth: lerpDouble(
@@ -652,6 +906,7 @@ class AdaptiveScaffoldThemeData
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
+        navigationRailTheme,
         compactLabelType,
         expandedLabelType,
         extendedNavigationRailWidth,
@@ -671,6 +926,7 @@ class AdaptiveScaffoldThemeData
       return false;
     }
     return other is AdaptiveScaffoldThemeData &&
+        other.navigationRailTheme == navigationRailTheme &&
         other.compactLabelType == compactLabelType &&
         other.expandedLabelType == expandedLabelType &&
         other.extendedNavigationRailWidth == extendedNavigationRailWidth &&
@@ -684,6 +940,12 @@ class AdaptiveScaffoldThemeData
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
+    properties.add(
+      DiagnosticsProperty<AdaptiveNavigationRailThemeData?>(
+        "navigationRailTheme",
+        navigationRailTheme,
+      ),
+    );
     properties.add(
       EnumProperty<NavigationRailLabelType>(
         "compactLabelType",

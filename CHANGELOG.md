@@ -1,23 +1,5 @@
 ## 4.1.0+1
 
-* **[FEAT] `AdaptiveScaffoldThemeData` is now a `ThemeExtension`**
-  * You can configure adaptive navigation defaults directly through
-    `ThemeData.extensions`.
-  * `AdaptiveScaffold` now resolves navigation theme values with this
-    precedence:
-    1. `AdaptiveScaffold.navigationTheme`
-    2. nearest `AdaptiveScaffoldTheme`
-    3. `ThemeData.extensions`
-    4. defaults
-
-* **[DOC] Updated migration guidance and examples**
-  * Updated README and example app to use `AdaptiveScaffoldThemeData` and the
-    new `ThemeData.extensions` integration path.
-
-* **[CHANGE] `AdaptiveScaffoldNavigationThemeData` renamed in docs to `AdaptiveScaffoldThemeData`**
-  * A deprecated alias typedef (`AdaptiveScaffoldNavigationThemeData`) still
-    exists for compatibility.
-
 * **[BREAKING] `destinationFillShape` and `destinationHoverShape` removed**
   * `destinationFillShape` and `destinationHoverShape` were removed from:
     * `AdaptiveScaffoldThemeData`
@@ -55,24 +37,6 @@ navigationTheme: const AdaptiveScaffoldThemeData(
 ),
 ```
 
-* **[FEAT] `AdaptiveScaffoldThemeData` now includes nested navigation theming**
-  * Added `navigationBarTheme: AdaptiveNavigationBarThemeData(...)` for
-    bar-only fields like `height`, `backgroundColor`, `elevation`,
-    `shadowColor`, `surfaceTintColor`, `labelTextStyle`, `iconTheme`,
-    `labelBehavior`, `overlayColor`, `margin`, `padding`,
-    `tooltipVerticalOffset`, and `labelPadding`.
-  * Added `indicatorStyle: NavigationIndicatorThemeData(...)` for indicator
-    and interaction styling.
-
-* **[FEAT] `AdaptiveScaffoldThemeData` now supports themed extended rail width**
-  * Added `extendedNavigationRailWidth` to configure extended rail width via
-    `AdaptiveScaffold.navigationTheme`, `AdaptiveScaffoldTheme`, or
-    `ThemeData.extensions`.
-  * GoRouter shell/demo usage now resolves this value from theme configuration
-    instead of a shell-specific width constructor parameter.
-  * When omitted, `AdaptiveScaffold` keeps the default extended rail width of
-    `192`.
-
 * **[BREAKING] Removed `CustomNavigationBarTheme` and `CustomNavigationBarThemeData` API surface**
   * Migrate bar styling to
     `AdaptiveScaffoldThemeData(navigationBarTheme: AdaptiveNavigationBarThemeData(...))`.
@@ -109,7 +73,61 @@ AdaptiveScaffold(
 )
 ```
 
-## 4.0.0 - REDACTED
+* **[FEAT] `AdaptiveScaffoldThemeData` is now a `ThemeExtension`**
+  * You can configure adaptive navigation defaults directly through
+    `ThemeData.extensions`.
+  * `AdaptiveScaffold` resolves adaptive navigation values with this
+    precedence:
+    1. `AdaptiveScaffold.navigationTheme`
+    2. nearest `AdaptiveScaffoldTheme`
+    3. `ThemeData.extensions`
+    4. defaults
+
+* **[FEAT] `AdaptiveScaffoldThemeData` now includes nested navigation theming**
+  * Added `navigationBarTheme: AdaptiveNavigationBarThemeData(...)` for
+    bar-only fields like `height`, `backgroundColor`, `elevation`,
+    `shadowColor`, `surfaceTintColor`, `labelTextStyle`, `iconTheme`,
+    `labelBehavior`, `overlayColor`, `margin`, `padding`,
+    `tooltipVerticalOffset`, and `labelPadding`.
+  * Added `indicatorStyle: NavigationIndicatorThemeData(...)` for indicator
+    and interaction styling.
+
+* **[FEAT] `AdaptiveScaffoldThemeData` now includes `navigationRailTheme`**
+  * Added `navigationRailTheme: AdaptiveNavigationRailThemeData(...)` for
+    rail-specific styling fields:
+    `backgroundColor`, `selectedIconTheme`, `unselectedIconTheme`,
+    `selectedLabelTextStyle`, `unselectedLabelTextStyle`,
+    `compactLabelType`, `expandedLabelType`, and
+    `extendedNavigationRailWidth`.
+  * Rail style resolution now uses the same adaptive precedence, with
+    `ThemeData.navigationRailTheme` as the next fallback where applicable.
+  * Top-level `compactLabelType`, `expandedLabelType`, and
+    `extendedNavigationRailWidth` on `AdaptiveScaffoldThemeData` are now
+    deprecated. Migrate to
+    `AdaptiveScaffoldThemeData(navigationRailTheme: ...)`.
+
+* **[FEAT] `AdaptiveScaffoldThemeData` now supports themed extended rail width**
+  * Added `extendedNavigationRailWidth` to configure extended rail width via
+    `AdaptiveScaffold.navigationTheme`, `AdaptiveScaffoldTheme`, or
+    `ThemeData.extensions`.
+  * GoRouter shell/demo usage now resolves this value from theme configuration
+    instead of a shell-specific width constructor parameter.
+  * When omitted, `AdaptiveScaffold` keeps the default extended rail width of
+    `192`.
+
+* **[CHANGE] `navigationBarTheme` now explicitly falls back to `ThemeData.navigationBarTheme`**
+  * `AdaptiveScaffold` applies the same fallback strategy for bar fields
+    that have direct `NavigationBarThemeData` equivalents.
+
+* **[CHANGE] `AdaptiveScaffoldNavigationThemeData` renamed in docs to `AdaptiveScaffoldThemeData`**
+  * A deprecated alias typedef (`AdaptiveScaffoldNavigationThemeData`) still
+    exists for compatibility.
+
+* **[DOC] Updated migration guidance and examples**
+  * Updated README and example app to use `AdaptiveScaffoldThemeData` and the
+    `ThemeData.extensions` integration path.
+
+## 4.1.0 - REDACTED
 
 * This version was redacted due to an incorrect attempt at specifying a theme object.
 
