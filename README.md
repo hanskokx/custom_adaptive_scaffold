@@ -41,10 +41,12 @@ several places:
     `navigationTheme: AdaptiveScaffoldThemeData(...)` and
     `ThemeData.extensions`.
 - Theme extensions:
-  - `AdaptiveNavigationRailThemeData`: `backgroundColor`, icon/label styles,
-    compact/expanded label behavior, `extendedNavigationRailWidth`.
-  - `AdaptiveNavigationBarThemeData`: `margin`, `padding`,
-    `tooltipVerticalOffset`.
+  - `AdaptiveNavigationRailThemeData`: `backgroundColor`, `elevation`,
+    `shadowColor`, `surfaceTintColor`, `border`, `margin`, `padding`,
+    icon/label styles, compact/expanded label behavior,
+    `extendedNavigationRailWidth`, and rail-local `indicatorStyle`.
+  - `AdaptiveNavigationBarThemeData`: `border`, `margin`, `padding`,
+    `tooltipVerticalOffset`, and bar-local `indicatorStyle`.
   - `CustomNavigationRailThemeData`: `margin`, `padding`.
 - Compatibility bridge behavior:
   - Adaptive destination normalization allows using plain
@@ -494,13 +496,27 @@ the adaptive theme, use `navigationBarTheme`:
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldThemeData(
+    navigationRailTheme: AdaptiveNavigationRailThemeData(
+      border: BorderSide(color: Color(0xFFCCCDD3)),
+      indicatorStyle: NavigationIndicatorThemeData(
+        destinationFillRegion: NavigationDestinationRegion.content,
+      ),
+    ),
     navigationBarTheme: AdaptiveNavigationBarThemeData(
       height: 88,
       labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+      border: BorderSide(color: Color(0xFFCCCDD3)),
       margin: EdgeInsets.symmetric(horizontal: 12),
       padding: EdgeInsets.symmetric(horizontal: 8),
       labelPadding: EdgeInsets.only(top: 6),
       tooltipVerticalOffset: 56,
+      indicatorStyle: NavigationIndicatorThemeData(
+        destinationFillRegion: NavigationDestinationRegion.full,
+      ),
+    ),
+    indicatorStyle: NavigationIndicatorThemeData(
+      interactionShape:
+          WidgetStatePropertyAll<ShapeBorder?>(StadiumBorder()),
     ),
   ),
   body: (BuildContext context) => const Placeholder(),
@@ -544,6 +560,9 @@ Notes:
 - `navigationRailTheme.extendedNavigationRailWidth` controls extended-rail
   width across medium-large and larger breakpoints. When omitted,
   `AdaptiveScaffold` keeps its default width of `192`.
+- Local `indicatorStyle` on `navigationBarTheme` and `navigationRailTheme`
+  takes precedence over top-level `AdaptiveScaffoldThemeData.indicatorStyle`
+  for that component.
 
 3.x compatibility note:
 

@@ -158,6 +158,8 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
     this.elevation,
     this.shadowColor,
     this.surfaceTintColor,
+    this.border,
+    this.indicatorStyle,
     this.labelTextStyle,
     this.iconTheme,
     this.labelBehavior,
@@ -182,6 +184,15 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
 
   /// Optional surface tint color used by the navigation bar.
   final Color? surfaceTintColor;
+
+  /// Optional border around the outer navigation bar surface.
+  final BorderSide? border;
+
+  /// Optional indicator-style override scoped to the navigation bar.
+  ///
+  /// This takes precedence over top-level [AdaptiveScaffoldThemeData.indicatorStyle]
+  /// when resolving bar destination interaction and selected-fill behavior.
+  final NavigationIndicatorThemeData? indicatorStyle;
 
   /// Optional stateful text style for destination labels.
   final WidgetStateProperty<TextStyle?>? labelTextStyle;
@@ -214,6 +225,8 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
     double? elevation,
     Color? shadowColor,
     Color? surfaceTintColor,
+    BorderSide? border,
+    NavigationIndicatorThemeData? indicatorStyle,
     WidgetStateProperty<TextStyle?>? labelTextStyle,
     WidgetStateProperty<IconThemeData?>? iconTheme,
     NavigationDestinationLabelBehavior? labelBehavior,
@@ -229,6 +242,8 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
       elevation: elevation ?? this.elevation,
       shadowColor: shadowColor ?? this.shadowColor,
       surfaceTintColor: surfaceTintColor ?? this.surfaceTintColor,
+      border: border ?? this.border,
+      indicatorStyle: indicatorStyle ?? this.indicatorStyle,
       labelTextStyle: labelTextStyle ?? this.labelTextStyle,
       iconTheme: iconTheme ?? this.iconTheme,
       labelBehavior: labelBehavior ?? this.labelBehavior,
@@ -259,6 +274,18 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
       elevation: lerpDouble(a?.elevation, b?.elevation, t),
       shadowColor: Color.lerp(a?.shadowColor, b?.shadowColor, t),
       surfaceTintColor: Color.lerp(a?.surfaceTintColor, b?.surfaceTintColor, t),
+      border: a?.border == null && b?.border == null
+          ? null
+          : BorderSide.lerp(
+              a?.border ?? BorderSide.none,
+              b?.border ?? BorderSide.none,
+              t,
+            ),
+      indicatorStyle: NavigationIndicatorThemeData.lerp(
+        a?.indicatorStyle,
+        b?.indicatorStyle,
+        t,
+      ),
       labelTextStyle: WidgetStateProperty.lerp<TextStyle?>(
         a?.labelTextStyle,
         b?.labelTextStyle,
@@ -294,6 +321,8 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
         elevation,
         shadowColor,
         surfaceTintColor,
+        border,
+        indicatorStyle,
         labelTextStyle,
         iconTheme,
         labelBehavior,
@@ -318,6 +347,8 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
         other.elevation == elevation &&
         other.shadowColor == shadowColor &&
         other.surfaceTintColor == surfaceTintColor &&
+        other.border == border &&
+        other.indicatorStyle == indicatorStyle &&
         other.labelTextStyle == labelTextStyle &&
         other.iconTheme == iconTheme &&
         other.labelBehavior == labelBehavior &&
@@ -336,6 +367,18 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
     properties.add(DoubleProperty("elevation", elevation));
     properties.add(ColorProperty("shadowColor", shadowColor));
     properties.add(ColorProperty("surfaceTintColor", surfaceTintColor));
+    properties.add(
+      DiagnosticsProperty<BorderSide?>(
+        "border",
+        border,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<NavigationIndicatorThemeData?>(
+        "indicatorStyle",
+        indicatorStyle,
+      ),
+    );
     properties.add(
       DiagnosticsProperty<WidgetStateProperty<TextStyle?>>(
         "labelTextStyle",
@@ -393,6 +436,13 @@ class AdaptiveNavigationRailThemeData with Diagnosticable {
   /// Creates navigation-rail styling for adaptive medium+ layouts.
   const AdaptiveNavigationRailThemeData({
     this.backgroundColor,
+    this.elevation,
+    this.shadowColor,
+    this.surfaceTintColor,
+    this.border,
+    this.margin,
+    this.padding,
+    this.indicatorStyle,
     this.selectedIconTheme,
     this.unselectedIconTheme,
     this.selectedLabelTextStyle,
@@ -404,6 +454,30 @@ class AdaptiveNavigationRailThemeData with Diagnosticable {
 
   /// Optional navigation rail background color.
   final Color? backgroundColor;
+
+  /// Optional navigation rail elevation.
+  final double? elevation;
+
+  /// Optional shadow color used by the navigation rail.
+  final Color? shadowColor;
+
+  /// Optional surface tint color used by the navigation rail.
+  final Color? surfaceTintColor;
+
+  /// Optional border around the outer navigation rail surface.
+  final BorderSide? border;
+
+  /// Optional outer margin around rail destinations.
+  final EdgeInsetsGeometry? margin;
+
+  /// Optional inner padding for rail destinations.
+  final EdgeInsetsGeometry? padding;
+
+  /// Optional indicator-style override scoped to the navigation rail.
+  ///
+  /// This takes precedence over top-level [AdaptiveScaffoldThemeData.indicatorStyle]
+  /// when resolving rail destination interaction and selected-fill behavior.
+  final NavigationIndicatorThemeData? indicatorStyle;
 
   /// Optional icon theme for selected rail destinations.
   final IconThemeData? selectedIconTheme;
@@ -430,6 +504,13 @@ class AdaptiveNavigationRailThemeData with Diagnosticable {
   /// replaced.
   AdaptiveNavigationRailThemeData copyWith({
     Color? backgroundColor,
+    double? elevation,
+    Color? shadowColor,
+    Color? surfaceTintColor,
+    BorderSide? border,
+    EdgeInsetsGeometry? margin,
+    EdgeInsetsGeometry? padding,
+    NavigationIndicatorThemeData? indicatorStyle,
     IconThemeData? selectedIconTheme,
     IconThemeData? unselectedIconTheme,
     TextStyle? selectedLabelTextStyle,
@@ -440,6 +521,13 @@ class AdaptiveNavigationRailThemeData with Diagnosticable {
   }) {
     return AdaptiveNavigationRailThemeData(
       backgroundColor: backgroundColor ?? this.backgroundColor,
+      elevation: elevation ?? this.elevation,
+      shadowColor: shadowColor ?? this.shadowColor,
+      surfaceTintColor: surfaceTintColor ?? this.surfaceTintColor,
+      border: border ?? this.border,
+      margin: margin ?? this.margin,
+      padding: padding ?? this.padding,
+      indicatorStyle: indicatorStyle ?? this.indicatorStyle,
       selectedIconTheme: selectedIconTheme ?? this.selectedIconTheme,
       unselectedIconTheme: unselectedIconTheme ?? this.unselectedIconTheme,
       selectedLabelTextStyle:
@@ -467,6 +555,23 @@ class AdaptiveNavigationRailThemeData with Diagnosticable {
     }
     return AdaptiveNavigationRailThemeData(
       backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
+      elevation: lerpDouble(a?.elevation, b?.elevation, t),
+      shadowColor: Color.lerp(a?.shadowColor, b?.shadowColor, t),
+      surfaceTintColor: Color.lerp(a?.surfaceTintColor, b?.surfaceTintColor, t),
+      border: a?.border == null && b?.border == null
+          ? null
+          : BorderSide.lerp(
+              a?.border ?? BorderSide.none,
+              b?.border ?? BorderSide.none,
+              t,
+            ),
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+      indicatorStyle: NavigationIndicatorThemeData.lerp(
+        a?.indicatorStyle,
+        b?.indicatorStyle,
+        t,
+      ),
       selectedIconTheme:
           IconThemeData.lerp(a?.selectedIconTheme, b?.selectedIconTheme, t),
       unselectedIconTheme: IconThemeData.lerp(
@@ -497,6 +602,13 @@ class AdaptiveNavigationRailThemeData with Diagnosticable {
   @override
   int get hashCode => Object.hashAll(<Object?>[
         backgroundColor,
+        elevation,
+        shadowColor,
+        surfaceTintColor,
+        border,
+        margin,
+        padding,
+        indicatorStyle,
         selectedIconTheme,
         unselectedIconTheme,
         selectedLabelTextStyle,
@@ -516,6 +628,13 @@ class AdaptiveNavigationRailThemeData with Diagnosticable {
     }
     return other is AdaptiveNavigationRailThemeData &&
         other.backgroundColor == backgroundColor &&
+        other.elevation == elevation &&
+        other.shadowColor == shadowColor &&
+        other.surfaceTintColor == surfaceTintColor &&
+        other.border == border &&
+        other.margin == margin &&
+        other.padding == padding &&
+        other.indicatorStyle == indicatorStyle &&
         other.selectedIconTheme == selectedIconTheme &&
         other.unselectedIconTheme == unselectedIconTheme &&
         other.selectedLabelTextStyle == selectedLabelTextStyle &&
@@ -529,6 +648,33 @@ class AdaptiveNavigationRailThemeData with Diagnosticable {
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(ColorProperty("backgroundColor", backgroundColor));
+    properties.add(DoubleProperty("elevation", elevation));
+    properties.add(ColorProperty("shadowColor", shadowColor));
+    properties.add(ColorProperty("surfaceTintColor", surfaceTintColor));
+    properties.add(
+      DiagnosticsProperty<BorderSide?>(
+        "border",
+        border,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<EdgeInsetsGeometry?>(
+        "margin",
+        margin,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<EdgeInsetsGeometry?>(
+        "padding",
+        padding,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<NavigationIndicatorThemeData?>(
+        "indicatorStyle",
+        indicatorStyle,
+      ),
+    );
     properties.add(
       DiagnosticsProperty<IconThemeData?>(
         "selectedIconTheme",

@@ -106,6 +106,7 @@ class CustomNavigationBar extends StatelessWidget {
     this.labelPadding,
     this.margin,
     this.padding = EdgeInsets.zero,
+    this.border,
     this.tooltipVerticalOffset,
     this.destinationFillRegion,
     this.destinationHoverRegion,
@@ -243,6 +244,9 @@ class CustomNavigationBar extends StatelessWidget {
   /// Applies padding around navigation item content.
   final EdgeInsetsGeometry padding;
 
+  /// Optional border around the outer navigation bar surface.
+  final BorderSide? border;
+
   /// Defines the vertical offset of tooltip popovers.
   final double? tooltipVerticalOffset;
 
@@ -307,6 +311,11 @@ class CustomNavigationBar extends StatelessWidget {
       surfaceTintColor: surfaceTintColor ??
           navigationBarTheme.surfaceTintColor ??
           defaults.surfaceTintColor,
+      shape: border == null
+          ? null
+          : Border.fromBorderSide(
+              border!,
+            ),
       child: SafeArea(
         maintainBottomViewPadding: maintainBottomViewPadding,
         child: Semantics(

@@ -373,6 +373,10 @@ class AdaptiveScaffold extends StatefulWidget {
     int? selectedIndex,
     bool extended = false,
     Color? backgroundColor,
+    double? elevation,
+    Color? shadowColor,
+    Color? surfaceTintColor,
+    BorderSide? border,
     Widget? leading,
     Widget? trailing,
     void Function(int)? onDestinationSelected,
@@ -383,6 +387,8 @@ class AdaptiveScaffold extends StatefulWidget {
     TextStyle? unSelectedLabelTextStyle,
     NavigationRailLabelType? labelType = NavigationRailLabelType.none,
     EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? destinationMargin,
+    EdgeInsetsGeometry? destinationPadding,
     NavigationDestinationAnimation iconTransitionAnimation =
         NavigationDestinationAnimation.none,
     Curve iconTransitionCurve = Curves.easeInOut,
@@ -438,6 +444,12 @@ class AdaptiveScaffold extends StatefulWidget {
                             onDestinationSelected: onDestinationSelected,
                             groupAlignment: groupAlignment,
                             backgroundColor: backgroundColor,
+                            elevation: elevation,
+                            shadowColor: shadowColor,
+                            surfaceTintColor: surfaceTintColor,
+                            border: border,
+                            margin: destinationMargin,
+                            padding: destinationPadding,
                             extended: effectiveExtended,
                             selectedIndex: selectedIndex,
                             selectedIconTheme: selectedIconTheme,
@@ -492,6 +504,7 @@ class AdaptiveScaffold extends StatefulWidget {
     WidgetStateProperty<Color?>? overlayColor,
     EdgeInsetsGeometry? margin,
     EdgeInsetsGeometry? padding,
+    BorderSide? border,
     double? tooltipVerticalOffset,
     EdgeInsetsGeometry? labelPadding,
     NavigationDestinationRegion? destinationFillRegion,
@@ -556,6 +569,7 @@ class AdaptiveScaffold extends StatefulWidget {
                   _labelBehaviorFromType(labelBehavior),
               margin: margin,
               padding: padding ?? EdgeInsets.zero,
+              border: border,
               tooltipVerticalOffset: tooltipVerticalOffset,
               destinationFillRegion: destinationFillRegion,
               destinationHoverRegion: destinationHoverRegion,
@@ -769,6 +783,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               inheritedNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
               extensionNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
               navBarTheme.surfaceTintColor,
+      border: widgetNavigationTheme?.navigationBarTheme?.border ??
+          inheritedNavigationTheme?.navigationBarTheme?.border ??
+          extensionNavigationTheme?.navigationBarTheme?.border,
+      indicatorStyle:
+          widgetNavigationTheme?.navigationBarTheme?.indicatorStyle ??
+              inheritedNavigationTheme?.navigationBarTheme?.indicatorStyle ??
+              extensionNavigationTheme?.navigationBarTheme?.indicatorStyle,
       labelTextStyle:
           widgetNavigationTheme?.navigationBarTheme?.labelTextStyle ??
               inheritedNavigationTheme?.navigationBarTheme?.labelTextStyle ??
@@ -808,6 +829,30 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               inheritedNavigationTheme?.navigationRailTheme?.backgroundColor ??
               extensionNavigationTheme?.navigationRailTheme?.backgroundColor ??
               navRailTheme.backgroundColor,
+      elevation: widgetNavigationTheme?.navigationRailTheme?.elevation ??
+          inheritedNavigationTheme?.navigationRailTheme?.elevation ??
+          extensionNavigationTheme?.navigationRailTheme?.elevation ??
+          navRailTheme.elevation,
+      shadowColor: widgetNavigationTheme?.navigationRailTheme?.shadowColor ??
+          inheritedNavigationTheme?.navigationRailTheme?.shadowColor ??
+          extensionNavigationTheme?.navigationRailTheme?.shadowColor,
+      surfaceTintColor:
+          widgetNavigationTheme?.navigationRailTheme?.surfaceTintColor ??
+              inheritedNavigationTheme?.navigationRailTheme?.surfaceTintColor ??
+              extensionNavigationTheme?.navigationRailTheme?.surfaceTintColor,
+      border: widgetNavigationTheme?.navigationRailTheme?.border ??
+          inheritedNavigationTheme?.navigationRailTheme?.border ??
+          extensionNavigationTheme?.navigationRailTheme?.border,
+      margin: widgetNavigationTheme?.navigationRailTheme?.margin ??
+          inheritedNavigationTheme?.navigationRailTheme?.margin ??
+          extensionNavigationTheme?.navigationRailTheme?.margin,
+      padding: widgetNavigationTheme?.navigationRailTheme?.padding ??
+          inheritedNavigationTheme?.navigationRailTheme?.padding ??
+          extensionNavigationTheme?.navigationRailTheme?.padding,
+      indicatorStyle:
+          widgetNavigationTheme?.navigationRailTheme?.indicatorStyle ??
+              inheritedNavigationTheme?.navigationRailTheme?.indicatorStyle ??
+              extensionNavigationTheme?.navigationRailTheme?.indicatorStyle,
       selectedIconTheme: widgetNavigationTheme
               ?.navigationRailTheme?.selectedIconTheme ??
           inheritedNavigationTheme?.navigationRailTheme?.selectedIconTheme ??
@@ -860,7 +905,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           extensionNavigationTheme?.extendedNavigationRailWidth ??
           widget.extendedNavigationRailWidth,
     );
-    final NavigationIndicatorThemeData effectiveIndicatorStyle =
+    final NavigationIndicatorThemeData effectiveSharedIndicatorStyle =
         NavigationIndicatorThemeData(
       destinationFillRegion:
           widgetNavigationTheme?.indicatorStyle?.destinationFillRegion ??
@@ -882,6 +927,38 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           inheritedNavigationTheme?.indicatorStyle?.color ??
           extensionNavigationTheme?.indicatorStyle?.color,
     );
+    final NavigationIndicatorThemeData effectiveRailIndicatorStyle =
+        NavigationIndicatorThemeData(
+      destinationFillRegion:
+          effectiveNavigationRailTheme.indicatorStyle?.destinationFillRegion ??
+              effectiveSharedIndicatorStyle.destinationFillRegion,
+      destinationHoverRegion:
+          effectiveNavigationRailTheme.indicatorStyle?.destinationHoverRegion ??
+              effectiveSharedIndicatorStyle.destinationHoverRegion,
+      interactionShape:
+          effectiveNavigationRailTheme.indicatorStyle?.interactionShape ??
+              effectiveSharedIndicatorStyle.interactionShape,
+      shape: effectiveNavigationRailTheme.indicatorStyle?.shape ??
+          effectiveSharedIndicatorStyle.shape,
+      color: effectiveNavigationRailTheme.indicatorStyle?.color ??
+          effectiveSharedIndicatorStyle.color,
+    );
+    final NavigationIndicatorThemeData effectiveBarIndicatorStyle =
+        NavigationIndicatorThemeData(
+      destinationFillRegion:
+          effectiveNavigationBarTheme.indicatorStyle?.destinationFillRegion ??
+              effectiveSharedIndicatorStyle.destinationFillRegion,
+      destinationHoverRegion:
+          effectiveNavigationBarTheme.indicatorStyle?.destinationHoverRegion ??
+              effectiveSharedIndicatorStyle.destinationHoverRegion,
+      interactionShape:
+          effectiveNavigationBarTheme.indicatorStyle?.interactionShape ??
+              effectiveSharedIndicatorStyle.interactionShape,
+      shape: effectiveNavigationBarTheme.indicatorStyle?.shape ??
+          effectiveSharedIndicatorStyle.shape,
+      color: effectiveNavigationBarTheme.indicatorStyle?.color ??
+          effectiveSharedIndicatorStyle.color,
+    );
     final AdaptiveScaffoldThemeData effectiveNavigationTheme =
         AdaptiveScaffoldThemeData(
       navigationRailTheme: effectiveNavigationRailTheme,
@@ -900,7 +977,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
       transitionDuration: widgetNavigationTheme?.transitionDuration ??
           inheritedNavigationTheme?.transitionDuration ??
           extensionNavigationTheme?.transitionDuration,
-      indicatorStyle: effectiveIndicatorStyle,
+      indicatorStyle: effectiveSharedIndicatorStyle,
       navigationBarTheme: effectiveNavigationBarTheme,
     );
 
@@ -942,6 +1019,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor:
                   effectiveNavigationTheme.navigationRailTheme?.backgroundColor,
+              elevation:
+                  effectiveNavigationTheme.navigationRailTheme?.elevation,
+              shadowColor:
+                  effectiveNavigationTheme.navigationRailTheme?.shadowColor,
+              surfaceTintColor: effectiveNavigationTheme
+                  .navigationRailTheme?.surfaceTintColor,
+              border: effectiveNavigationTheme.navigationRailTheme?.border,
               selectedIconTheme: effectiveNavigationTheme
                   .navigationRailTheme?.selectedIconTheme,
               unselectedIconTheme: effectiveNavigationTheme
@@ -954,18 +1038,22 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   .navigationRailTheme?.compactLabelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
+              destinationMargin:
+                  effectiveNavigationTheme.navigationRailTheme?.margin,
+              destinationPadding:
+                  effectiveNavigationTheme.navigationRailTheme?.padding,
               iconTransitionAnimation:
                   effectiveNavigationTheme.transitionAnimation,
               iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
               iconTransitionDuration:
                   effectiveNavigationTheme.transitionDuration,
-              indicatorColor: effectiveNavigationTheme.indicatorStyle?.color,
-              indicatorShape: effectiveNavigationTheme.indicatorStyle?.shape,
-              destinationFillRegion: effectiveNavigationTheme
-                  .indicatorStyle?.destinationFillRegion,
-              destinationHoverRegion: effectiveNavigationTheme
-                  .indicatorStyle?.destinationHoverRegion,
-              shape: effectiveNavigationTheme.indicatorStyle?.interactionShape,
+              indicatorColor: effectiveRailIndicatorStyle.color,
+              indicatorShape: effectiveRailIndicatorStyle.shape,
+              destinationFillRegion:
+                  effectiveRailIndicatorStyle.destinationFillRegion,
+              destinationHoverRegion:
+                  effectiveRailIndicatorStyle.destinationHoverRegion,
+              shape: effectiveRailIndicatorStyle.interactionShape,
             ),
           ),
           widget.mediumLargeBreakpoint: SlotLayout.from(
@@ -982,6 +1070,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor:
                   effectiveNavigationTheme.navigationRailTheme?.backgroundColor,
+              elevation:
+                  effectiveNavigationTheme.navigationRailTheme?.elevation,
+              shadowColor:
+                  effectiveNavigationTheme.navigationRailTheme?.shadowColor,
+              surfaceTintColor: effectiveNavigationTheme
+                  .navigationRailTheme?.surfaceTintColor,
+              border: effectiveNavigationTheme.navigationRailTheme?.border,
               selectedIconTheme: effectiveNavigationTheme
                   .navigationRailTheme?.selectedIconTheme,
               unselectedIconTheme: effectiveNavigationTheme
@@ -994,18 +1089,22 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   .navigationRailTheme?.expandedLabelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
+              destinationMargin:
+                  effectiveNavigationTheme.navigationRailTheme?.margin,
+              destinationPadding:
+                  effectiveNavigationTheme.navigationRailTheme?.padding,
               iconTransitionAnimation:
                   effectiveNavigationTheme.transitionAnimation,
               iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
               iconTransitionDuration:
                   effectiveNavigationTheme.transitionDuration,
-              indicatorColor: effectiveNavigationTheme.indicatorStyle?.color,
-              indicatorShape: effectiveNavigationTheme.indicatorStyle?.shape,
-              destinationFillRegion: effectiveNavigationTheme
-                  .indicatorStyle?.destinationFillRegion,
-              destinationHoverRegion: effectiveNavigationTheme
-                  .indicatorStyle?.destinationHoverRegion,
-              shape: effectiveNavigationTheme.indicatorStyle?.interactionShape,
+              indicatorColor: effectiveRailIndicatorStyle.color,
+              indicatorShape: effectiveRailIndicatorStyle.shape,
+              destinationFillRegion:
+                  effectiveRailIndicatorStyle.destinationFillRegion,
+              destinationHoverRegion:
+                  effectiveRailIndicatorStyle.destinationHoverRegion,
+              shape: effectiveRailIndicatorStyle.interactionShape,
             ),
           ),
           widget.largeBreakpoint: SlotLayout.from(
@@ -1027,6 +1126,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor:
                   effectiveNavigationTheme.navigationRailTheme?.backgroundColor,
+              elevation:
+                  effectiveNavigationTheme.navigationRailTheme?.elevation,
+              shadowColor:
+                  effectiveNavigationTheme.navigationRailTheme?.shadowColor,
+              surfaceTintColor: effectiveNavigationTheme
+                  .navigationRailTheme?.surfaceTintColor,
+              border: effectiveNavigationTheme.navigationRailTheme?.border,
               selectedIconTheme: effectiveNavigationTheme
                   .navigationRailTheme?.selectedIconTheme,
               unselectedIconTheme: effectiveNavigationTheme
@@ -1038,18 +1144,22 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               labelType: effectiveNavigationTheme
                   .navigationRailTheme?.expandedLabelType,
               padding: widget.padding,
+              destinationMargin:
+                  effectiveNavigationTheme.navigationRailTheme?.margin,
+              destinationPadding:
+                  effectiveNavigationTheme.navigationRailTheme?.padding,
               iconTransitionAnimation:
                   effectiveNavigationTheme.transitionAnimation,
               iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
               iconTransitionDuration:
                   effectiveNavigationTheme.transitionDuration,
-              indicatorColor: effectiveNavigationTheme.indicatorStyle?.color,
-              indicatorShape: effectiveNavigationTheme.indicatorStyle?.shape,
-              destinationFillRegion: effectiveNavigationTheme
-                  .indicatorStyle?.destinationFillRegion,
-              destinationHoverRegion: effectiveNavigationTheme
-                  .indicatorStyle?.destinationHoverRegion,
-              shape: effectiveNavigationTheme.indicatorStyle?.interactionShape,
+              indicatorColor: effectiveRailIndicatorStyle.color,
+              indicatorShape: effectiveRailIndicatorStyle.shape,
+              destinationFillRegion:
+                  effectiveRailIndicatorStyle.destinationFillRegion,
+              destinationHoverRegion:
+                  effectiveRailIndicatorStyle.destinationHoverRegion,
+              shape: effectiveRailIndicatorStyle.interactionShape,
             ),
           ),
           widget.extraLargeBreakpoint: SlotLayout.from(
@@ -1071,6 +1181,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor:
                   effectiveNavigationTheme.navigationRailTheme?.backgroundColor,
+              elevation:
+                  effectiveNavigationTheme.navigationRailTheme?.elevation,
+              shadowColor:
+                  effectiveNavigationTheme.navigationRailTheme?.shadowColor,
+              surfaceTintColor: effectiveNavigationTheme
+                  .navigationRailTheme?.surfaceTintColor,
+              border: effectiveNavigationTheme.navigationRailTheme?.border,
               selectedIconTheme: effectiveNavigationTheme
                   .navigationRailTheme?.selectedIconTheme,
               unselectedIconTheme: effectiveNavigationTheme
@@ -1082,18 +1199,22 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               labelType: effectiveNavigationTheme
                   .navigationRailTheme?.expandedLabelType,
               padding: widget.padding,
+              destinationMargin:
+                  effectiveNavigationTheme.navigationRailTheme?.margin,
+              destinationPadding:
+                  effectiveNavigationTheme.navigationRailTheme?.padding,
               iconTransitionAnimation:
                   effectiveNavigationTheme.transitionAnimation,
               iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
               iconTransitionDuration:
                   effectiveNavigationTheme.transitionDuration,
-              indicatorColor: effectiveNavigationTheme.indicatorStyle?.color,
-              indicatorShape: effectiveNavigationTheme.indicatorStyle?.shape,
-              destinationFillRegion: effectiveNavigationTheme
-                  .indicatorStyle?.destinationFillRegion,
-              destinationHoverRegion: effectiveNavigationTheme
-                  .indicatorStyle?.destinationHoverRegion,
-              shape: effectiveNavigationTheme.indicatorStyle?.interactionShape,
+              indicatorColor: effectiveRailIndicatorStyle.color,
+              indicatorShape: effectiveRailIndicatorStyle.shape,
+              destinationFillRegion:
+                  effectiveRailIndicatorStyle.destinationFillRegion,
+              destinationHoverRegion:
+                  effectiveRailIndicatorStyle.destinationHoverRegion,
+              shape: effectiveRailIndicatorStyle.interactionShape,
             ),
           ),
         },
@@ -1126,10 +1247,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                         .navigationBarTheme?.shadowColor,
                     surfaceTintColor: effectiveNavigationTheme
                         .navigationBarTheme?.surfaceTintColor,
-                    indicatorColor:
-                        effectiveNavigationTheme.indicatorStyle?.color,
-                    indicatorShape:
-                        effectiveNavigationTheme.indicatorStyle?.shape,
+                    indicatorColor: effectiveBarIndicatorStyle.color,
+                    indicatorShape: effectiveBarIndicatorStyle.shape,
                     labelTextStyle: effectiveNavigationTheme
                         .navigationBarTheme?.labelTextStyle,
                     iconTheme:
@@ -1139,16 +1258,17 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                     margin: effectiveNavigationTheme.navigationBarTheme?.margin,
                     padding:
                         effectiveNavigationTheme.navigationBarTheme?.padding,
+                    border: effectiveNavigationTheme.navigationBarTheme?.border,
                     tooltipVerticalOffset: effectiveNavigationTheme
                         .navigationBarTheme?.tooltipVerticalOffset,
                     labelPadding: effectiveNavigationTheme
                         .navigationBarTheme?.labelPadding,
-                    destinationFillRegion: effectiveNavigationTheme
-                        .indicatorStyle?.destinationFillRegion,
-                    destinationHoverRegion: effectiveNavigationTheme
-                        .indicatorStyle?.destinationHoverRegion,
-                    interactionShape: effectiveNavigationTheme
-                        .indicatorStyle?.interactionShape,
+                    destinationFillRegion:
+                        effectiveBarIndicatorStyle.destinationFillRegion,
+                    destinationHoverRegion:
+                        effectiveBarIndicatorStyle.destinationHoverRegion,
+                    interactionShape:
+                        effectiveBarIndicatorStyle.interactionShape,
                   ),
                 ),
               },

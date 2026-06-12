@@ -38,6 +38,13 @@ class MyApp extends StatelessWidget {
           AdaptiveScaffoldThemeData(
             navigationRailTheme: AdaptiveNavigationRailThemeData(
               compactLabelType: NavigationRailLabelType.selected,
+              elevation: 2,
+              margin: EdgeInsets.symmetric(vertical: 4),
+              padding: EdgeInsets.symmetric(horizontal: 6),
+              border: BorderSide(color: Color(0xFFCCCDD3)),
+              indicatorStyle: NavigationIndicatorThemeData(
+                destinationFillRegion: NavigationDestinationRegion.content,
+              ),
             ),
             transitionAnimation: NavigationDestinationAnimation.fadeSwap,
             transitionCurve: Curves.easeOutCubic,
@@ -47,9 +54,12 @@ class MyApp extends StatelessWidget {
               margin: EdgeInsets.symmetric(horizontal: 4),
               padding: EdgeInsets.symmetric(vertical: 2),
               labelPadding: EdgeInsets.only(top: 6),
+              border: BorderSide(color: Color(0xFFCCCDD3)),
+              indicatorStyle: NavigationIndicatorThemeData(
+                destinationFillRegion: NavigationDestinationRegion.content,
+              ),
             ),
             indicatorStyle: NavigationIndicatorThemeData(
-              destinationFillRegion: NavigationDestinationRegion.content,
               interactionShape: WidgetStatePropertyAll<ShapeBorder?>(
                 StadiumBorder(),
               ),

@@ -87,18 +87,25 @@ AdaptiveScaffold(
   * Added `navigationBarTheme: AdaptiveNavigationBarThemeData(...)` for
     bar-only fields like `height`, `backgroundColor`, `elevation`,
     `shadowColor`, `surfaceTintColor`, `labelTextStyle`, `iconTheme`,
-    `labelBehavior`, `overlayColor`, `margin`, `padding`,
+    `labelBehavior`, `overlayColor`, `border`, `margin`, `padding`,
     `tooltipVerticalOffset`, and `labelPadding`.
+  * Added optional local
+    `navigationBarTheme.indicatorStyle: NavigationIndicatorThemeData(...)`
+    to override top-level indicator behavior for bar-only layouts.
   * Added `indicatorStyle: NavigationIndicatorThemeData(...)` for indicator
     and interaction styling.
 
 * **[FEAT] `AdaptiveScaffoldThemeData` now includes `navigationRailTheme`**
   * Added `navigationRailTheme: AdaptiveNavigationRailThemeData(...)` for
     rail-specific styling fields:
-    `backgroundColor`, `selectedIconTheme`, `unselectedIconTheme`,
-    `selectedLabelTextStyle`, `unselectedLabelTextStyle`,
-    `compactLabelType`, `expandedLabelType`, and
+    `backgroundColor`, `elevation`, `shadowColor`, `surfaceTintColor`,
+    `border`, `margin`, `padding`, `selectedIconTheme`,
+    `unselectedIconTheme`, `selectedLabelTextStyle`,
+    `unselectedLabelTextStyle`, `compactLabelType`, `expandedLabelType`, and
     `extendedNavigationRailWidth`.
+  * Added optional local
+    `navigationRailTheme.indicatorStyle: NavigationIndicatorThemeData(...)`
+    to override top-level indicator behavior for rail-only layouts.
   * Rail style resolution now uses the same adaptive precedence, with
     `ThemeData.navigationRailTheme` as the next fallback where applicable.
   * Top-level `compactLabelType`, `expandedLabelType`, and

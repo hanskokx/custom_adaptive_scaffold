@@ -117,6 +117,11 @@ class CustomNavigationRail extends StatefulWidget {
     this.trailing,
     this.onDestinationSelected,
     this.elevation,
+    this.shadowColor,
+    this.surfaceTintColor,
+    this.border,
+    this.margin,
+    this.padding,
     this.groupAlignment,
     this.labelType,
     this.unselectedLabelTextStyle,
@@ -221,6 +226,21 @@ class CustomNavigationRail extends StatefulWidget {
   ///
   /// The default value is 0.
   final double? elevation;
+
+  /// The color used for the rail's drop shadow.
+  final Color? shadowColor;
+
+  /// The color used as an overlay on the rail surface to indicate elevation.
+  final Color? surfaceTintColor;
+
+  /// Optional border around the outer rail surface.
+  final BorderSide? border;
+
+  /// Optional margin around each destination.
+  final EdgeInsetsGeometry? margin;
+
+  /// Optional padding applied to each destination.
+  final EdgeInsetsGeometry? padding;
 
   /// The vertical alignment for the group of [destinations] within the rail.
   ///
@@ -510,6 +530,8 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     final double elevation = widget.elevation ??
         navigationRailTheme.elevation ??
         defaults.elevation!;
+    final Color? shadowColor = widget.shadowColor;
+    final Color? surfaceTintColor = widget.surfaceTintColor;
 
     final TextStyle unselectedLabelTextStyle =
         widget.unselectedLabelTextStyle ??
@@ -560,9 +582,9 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     final bool isRTLDirection = textDirection == TextDirection.rtl;
     final bool isCustom = navigationRailTheme is CustomNavigationRailThemeData;
     EdgeInsetsGeometry? railDestinationMargin =
-        isCustom ? navigationRailTheme.margin : null;
+        widget.margin ?? (isCustom ? navigationRailTheme.margin : null);
     final EdgeInsetsGeometry? railDestinationPadding =
-        isCustom ? navigationRailTheme.padding : null;
+        widget.padding ?? (isCustom ? navigationRailTheme.padding : null);
     EdgeInsets? fullFillHorizontalMargin;
 
     if (widget.destinationFillRegion == NavigationDestinationRegion.full &&
@@ -675,6 +697,13 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
           child: Material(
             elevation: elevation,
             color: backgroundColor,
+            shadowColor: shadowColor,
+            surfaceTintColor: surfaceTintColor,
+            shape: widget.border == null
+                ? null
+                : Border.fromBorderSide(
+                    widget.border!,
+                  ),
             child: SafeArea(
               right: isRTLDirection,
               left: !isRTLDirection,
