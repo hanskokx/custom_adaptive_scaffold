@@ -49,7 +49,8 @@ class CustomNavigationRailDestination extends NavigationRailDestination {
 /// The appearance of all of the [CustomNavigationRail]s within an app can be
 /// specified with [NavigationRailTheme]. The default values for null theme
 /// properties are based on the [Theme]'s [ThemeData.textTheme],
-/// [ThemeData.iconTheme], and [ThemeData.colorScheme].
+/// [ThemeData.iconTheme], [ThemeData.colorScheme], and
+/// [ThemeData.appBarTheme.shape].
 ///
 /// Adaptive layouts can build different instances of the [Scaffold] in order to
 /// have a navigation rail for more horizontal layouts and a bottom navigation

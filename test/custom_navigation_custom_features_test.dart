@@ -739,7 +739,7 @@ void main() {
     expect(rect.height, greaterThanOrEqualTo(32));
   });
 
-  testWidgets("destinationFillShape is applied to interaction shape", (
+  testWidgets("ThemeData.appBarTheme.shape is applied to interaction shape", (
     WidgetTester tester,
   ) async {
     final ShapeBorder fillShape = RoundedRectangleBorder(

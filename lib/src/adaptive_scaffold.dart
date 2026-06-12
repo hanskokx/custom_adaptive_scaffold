@@ -99,11 +99,15 @@ class AdaptiveScaffoldNavigationThemeData {
   ///
   /// When null, uses Flutter's default indicator path.
   /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
+  ///
+  /// To control fill shape, use `ThemeData.appBarTheme.shape`.
   final NavigationDestinationRegion? destinationFillRegion;
 
   /// Controls where destination hover/ink effects are painted.
   ///
   /// When null, this follows [destinationFillRegion].
+  ///
+  /// To control hover shape, use `ThemeData.appBarTheme.shape`.
   final NavigationDestinationRegion? destinationHoverRegion;
 }
 

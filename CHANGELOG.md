@@ -1,13 +1,15 @@
 ## 4.1.0
 
 * **[BREAKING] `destinationFillShape` and `destinationHoverShape` removed**
-  * `destinationFillShape` and `destinationHoverShape` were removed from
-    `AdaptiveScaffoldNavigationThemeData`.
-  * The functionality was merged and now available via the `appBarTheme.shape`
-    property.
-  * For migrating existing code, remove `destinationFillShape` and
-    `destinationHoverShape` from `AdaptiveScaffoldNavigationThemeData` and
-    replace them with `appBarTheme.shape` in `AppBarTheme`.
+  * `destinationFillShape` and `destinationHoverShape` were removed from:
+    * `AdaptiveScaffoldNavigationThemeData`
+    * `AdaptiveScaffold` (navigation helpers / navigationTheme)
+    * `CustomNavigationBar`
+    * `CustomNavigationRail`
+    * `RailDestination`
+  * The functionality is now consolidated into `ThemeData.appBarTheme.shape`.
+  * Migration: remove the old parameters and set `appBarTheme.shape` via
+    `AppBarTheme`.
 
 Before:
 ```dart
