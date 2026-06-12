@@ -3,16 +3,39 @@
 # (Custom) Adaptive Scaffold
 
 `AdaptiveScaffold` reacts to input from users, devices and screen elements and
-renders your Flutter application according to the
-[Material 3](https://m3.material.io/foundations/adaptive-design/overview)
-guidelines.
+renders your Flutter application according to the [Material 3](https://m3.material.io/foundations/adaptive-design/overview) guidelines.
 
-**Important**: This source code is derived from the original code found in
-`package:flutter_adaptive_scaffold` as well as the Flutter framework, itself.
-Modifications have been made to the original source code that provide some
+**Important**: This source code is derived from the original code found in `package:flutter_adaptive_scaffold` as well as the Flutter framework, itself. Modifications have been made to the original source code that provide some
 additional customizations, such as padding and margins. The package keeps
 Flutter-parity defaults where possible and exposes opt-in customization points
 for behavior that intentionally diverges.
+
+## Table Of Contents
+
+- [How This Package Differs From Flutter](#how-this-package-differs-from-flutter)
+- [AdaptiveScaffold](#adaptivescaffold)
+  - [Panel Primary/Secondary Behavior](#panel-primarysecondary-behavior)
+  - [AdaptiveBody Context](#adaptivebody-context)
+  - [Primary/Secondary API Summary](#primarysecondary-api-summary)
+  - [Primary/Secondary Example](#primarysecondary-example)
+  - [Migration Notes](#migration-notes)
+- [CustomNavigationDestination](#customnavigationdestination)
+  - [Per-destination label visibility](#per-destination-label-visibility)
+  - [Animated icon transitions](#animated-icon-transitions)
+  - [Full icon+label transition composition](#full-iconlabel-transition-composition)
+  - [Custom navigation rail transitions](#custom-navigation-rail-transitions)
+  - [Destination Fill And Hover Regions](#destination-fill-and-hover-regions)
+  - [Add Adaptive Theme Via Theme Extensions](#add-adaptive-theme-via-theme-extensions)
+  - [Styling Reference](#styling-reference)
+  - [Scoped selection indicator](#scoped-selection-indicator)
+  - [Tooltip](#tooltip)
+  - [Example Usage](#example-usage)
+- [The Background Widget Suite](#the-background-widget-suite)
+  - [Breakpoint](#breakpoint)
+  - [AdaptiveLayout](#adaptivelayout)
+  - [SlotLayout](#slotlayout)
+  - [SlotLayout.from](#slotlayoutfrom)
+  - [Example Usage](#example-usage-1)
 
 ## How This Package Differs From Flutter
 
@@ -544,6 +567,26 @@ MaterialApp(
   ),
 )
 ```
+
+### Styling Reference
+
+Use this table to map each styled part of the library to the theme object that
+controls it.
+
+| Library part                            | Theme entry point                                                                   | Common fields                                                                                                                   | Notes                                                                                                                    |
+| --------------------------------------- | ----------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| Shared adaptive destination interaction | `AdaptiveScaffoldThemeData.indicatorStyle`                                          | `color`, `shape`, `interactionShape`, `destinationFillRegion`, `destinationHoverRegion`                                         | Applies to both bar and rail unless a component-local `indicatorStyle` overrides it.                                     |
+| Small-breakpoint navigation bar surface | `AdaptiveScaffoldThemeData.navigationBarTheme` or `CustomNavigationBarTheme.data`   | `height`, `backgroundColor`, `elevation`, `shadowColor`, `surfaceTintColor`, `border`, `margin`, `padding`                      | Shared fields align with Flutter `NavigationBarThemeData`; `border`, `margin`, and `padding` are package-only additions. |
+| Navigation bar selected indicator       | `CustomNavigationBarThemeData`                                                      | `indicatorColor`, `indicatorShape`, `indicatorStyle`                                                                            | Use `indicatorStyle` when you also need custom fill-region or interaction-shape behavior.                                |
+| Navigation bar icons and labels         | `CustomNavigationBarThemeData`                                                      | `iconTheme`, `labelTextStyle`, `labelBehavior`, `labelPadding`, `overlayColor`                                                  | These mirror the framework bar theme fields and flow through `ThemeData.navigationBarTheme` fallback.                    |
+| Navigation bar tooltips                 | `CustomNavigationBarThemeData`                                                      | `tooltipVerticalOffset`                                                                                                         | Package-only field for adjusting tooltip position on `CustomNavigationBar`.                                              |
+| Medium and large rail surface           | `AdaptiveScaffoldThemeData.navigationRailTheme` or `CustomNavigationRailTheme.data` | `backgroundColor`, `elevation`, `shadowColor`, `surfaceTintColor`, `border`, `margin`, `padding`                                | Shared rail fields align with Flutter `NavigationRailThemeData`; `border`, `margin`, and `padding` stay additive.        |
+| Rail selected indicator                 | `CustomNavigationRailThemeData`                                                     | `indicatorColor`, `indicatorShape`, `indicatorStyle`, `useIndicator`                                                            | Use local `indicatorStyle` to override the shared adaptive indicator only for rail layouts.                              |
+| Rail icons and labels                   | `CustomNavigationRailThemeData`                                                     | `selectedIconTheme`, `unselectedIconTheme`, `selectedLabelTextStyle`, `unselectedLabelTextStyle`, `labelType`, `groupAlignment` | Works for direct `CustomNavigationRail` usage and adaptive rail breakpoints.                                             |
+| Adaptive compact rail label behavior    | `CustomNavigationRailThemeData`                                                     | `compactLabelType`                                                                                                              | Controls the compact rail used at the medium breakpoint in `AdaptiveScaffold`.                                           |
+| Adaptive expanded rail behavior         | `CustomNavigationRailThemeData`                                                     | `expandedLabelType`, `extendedNavigationRailWidth`                                                                              | Applies to extended rails at medium-large and above in `AdaptiveScaffold`.                                               |
+| App-wide adaptive defaults              | `ThemeData.extensions` with `AdaptiveScaffoldThemeData`                             | Any `AdaptiveScaffoldThemeData`, `CustomNavigationBarThemeData`, or `CustomNavigationRailThemeData` field                       | Best for package-wide defaults that should participate in adaptive precedence.                                           |
+| Direct widget-scoped package theming    | `CustomNavigationBarTheme` / `CustomNavigationRailTheme`                            | `data: CustomNavigationBarThemeData(...)` / `CustomNavigationRailThemeData(...)`                                                | Useful when styling only a local subtree while still coexisting with Flutter's framework theme wrappers.                 |
 
 For widget-level namespaced theming that still cooperates with Flutter's own
 `NavigationBarTheme`, you can also wrap package widgets directly:
