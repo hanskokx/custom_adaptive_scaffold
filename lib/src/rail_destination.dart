@@ -276,7 +276,7 @@ class _RailDestinationState extends State<RailDestination>
     final bool shouldShowIconIndicator =
         (widget.useIndicator ?? false) && isDefaultFillPath;
     final ShapeBorder? selectedStateShape =
-      widget.shape?.resolve(selectedShapeStates);
+        widget.shape?.resolve(selectedShapeStates);
     final ShapeBorder effectiveIconIndicatorShape = selectedStateShape ??
         indicatorShape ??
         (destinationFillRegion == NavigationDestinationRegion.full
@@ -676,14 +676,13 @@ class _RailDestinationState extends State<RailDestination>
             : const StadiumBorder();
     final ShapeBorder effectiveFillShape =
         selectedStateShape ?? indicatorShape ?? defaultFillShape;
-    final ShapeBorder effectiveInkShape =
-      resolveInteractionShape(
-            shape: widget.shape,
-            isSelected: selected,
-            isHovered: _isHovered,
-            isPressed: _isPressed,
-            isFocused: _isFocused,
-          ) ??
+    final ShapeBorder effectiveInkShape = resolveInteractionShape(
+          shape: widget.shape,
+          isSelected: selected,
+          isHovered: _isHovered,
+          isPressed: _isPressed,
+          isFocused: _isFocused,
+        ) ??
         selectedStateShape ??
         indicatorShape ??
         defaultFillShape;

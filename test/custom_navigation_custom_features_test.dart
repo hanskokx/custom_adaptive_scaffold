@@ -393,12 +393,11 @@ void main() {
         ),
       );
 
-        final Finder firstInkResponse = inkResponseForIcon(Icons.home);
-        expect(firstInkResponse, findsOneWidget);
+      final Finder firstInkResponse = inkResponseForIcon(Icons.home);
+      expect(firstInkResponse, findsOneWidget);
 
-        final InkResponse firstInk =
-          tester.widget<InkResponse>(firstInkResponse);
-        final RenderBox firstBox =
+      final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+      final RenderBox firstBox =
           tester.renderObject<RenderBox>(firstInkResponse);
       final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
       expect(rectCallback, isNotNull);
@@ -485,10 +484,8 @@ void main() {
     final Finder firstInkResponse = inkResponseForIcon(Icons.home);
     expect(firstInkResponse, findsOneWidget);
 
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect rect = rectCallback!();
@@ -564,20 +561,20 @@ void main() {
 
     final Finder selectedInkResponse = inkResponseForIcon(Icons.home);
     final Finder unselectedInkResponse =
-      inkResponseForIcon(Icons.search_outlined);
+        inkResponseForIcon(Icons.search_outlined);
     expect(selectedInkResponse, findsOneWidget);
     expect(unselectedInkResponse, findsOneWidget);
 
     final InkResponse selectedInk =
-      tester.widget<InkResponse>(selectedInkResponse);
+        tester.widget<InkResponse>(selectedInkResponse);
     final RenderBox selectedBox =
-      tester.renderObject<RenderBox>(selectedInkResponse);
+        tester.renderObject<RenderBox>(selectedInkResponse);
     final Rect selectedRect = selectedInk.getRectCallback(selectedBox)!();
 
     final InkResponse unselectedInk =
-      tester.widget<InkResponse>(unselectedInkResponse);
+        tester.widget<InkResponse>(unselectedInkResponse);
     final RenderBox unselectedBox =
-      tester.renderObject<RenderBox>(unselectedInkResponse);
+        tester.renderObject<RenderBox>(unselectedInkResponse);
     final Rect unselectedRect = unselectedInk.getRectCallback(unselectedBox)!();
 
     expect(unselectedRect.height, lessThan(selectedRect.height));
@@ -615,10 +612,8 @@ void main() {
     final Finder firstInkResponse = inkResponseForIcon(Icons.home);
     expect(firstInkResponse, findsOneWidget);
 
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect rect = rectCallback!();
@@ -661,12 +656,11 @@ void main() {
         ),
       );
 
-        final Finder firstInkResponse = inkResponseForIcon(Icons.chat_bubble);
-        expect(firstInkResponse, findsOneWidget);
+      final Finder firstInkResponse = inkResponseForIcon(Icons.chat_bubble);
+      expect(firstInkResponse, findsOneWidget);
 
-        final InkResponse firstInk =
-          tester.widget<InkResponse>(firstInkResponse);
-        final RenderBox firstBox =
+      final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+      final RenderBox firstBox =
           tester.renderObject<RenderBox>(firstInkResponse);
       final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
       expect(rectCallback, isNotNull);
@@ -717,10 +711,8 @@ void main() {
     final Finder firstInkResponse = inkResponseForIcon(Icons.home);
     expect(firstInkResponse, findsOneWidget);
 
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect rect = rectCallback!();
@@ -762,10 +754,8 @@ void main() {
     final Finder firstInkResponse = inkResponseForIcon(Icons.home);
     expect(firstInkResponse, findsOneWidget);
 
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect rect = rectCallback!();
@@ -812,8 +802,7 @@ void main() {
     final Finder firstInkResponse = inkResponseForIcon(Icons.home);
     expect(firstInkResponse, findsOneWidget);
 
-    final InkResponse firstInk =
-        tester.widget<InkResponse>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
     expect(firstInk.customBorder, same(fillShape));
   });
 
@@ -1216,10 +1205,8 @@ void main() {
     final Finder firstInkResponse = inkResponseForText("Home");
     expect(firstInkResponse, findsOneWidget);
 
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect localRect = rectCallback!();
@@ -1268,10 +1255,8 @@ void main() {
 
     final Finder firstInkResponse = inkResponseForIcon(Icons.home);
     expect(firstInkResponse, findsOneWidget);
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect rect = rectCallback!();
@@ -1309,10 +1294,8 @@ void main() {
 
     final Finder firstInkResponse = inkResponseForText("Home");
     expect(firstInkResponse, findsOneWidget);
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect localRect = rectCallback!();
@@ -1366,10 +1349,8 @@ void main() {
 
     final Finder firstInkResponse = inkResponseForIcon(Icons.home);
     expect(firstInkResponse, findsOneWidget);
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect rect = rectCallback!();
@@ -1408,10 +1389,8 @@ void main() {
 
     final Finder firstInkResponse = inkResponseForText("Feed");
     expect(firstInkResponse, findsOneWidget);
-    final InkResponse firstInk =
-      tester.widget<InkResponse>(firstInkResponse);
-    final RenderBox firstBox =
-      tester.renderObject<RenderBox>(firstInkResponse);
+    final InkResponse firstInk = tester.widget<InkResponse>(firstInkResponse);
+    final RenderBox firstBox = tester.renderObject<RenderBox>(firstInkResponse);
     final RectCallback? rectCallback = firstInk.getRectCallback(firstBox);
     expect(rectCallback, isNotNull);
     final Rect localRect = rectCallback!();

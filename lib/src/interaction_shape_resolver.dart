@@ -51,10 +51,8 @@ ShapeBorder? resolveInteractionShape({
 
   final Set<String> seen = <String>{};
   for (final Set<WidgetState> candidate in candidates) {
-    final List<String> signature = candidate
-        .map((WidgetState state) => state.name)
-        .toList()
-      ..sort();
+    final List<String> signature =
+        candidate.map((WidgetState state) => state.name).toList()..sort();
     final String key = signature.join(",");
     if (!seen.add(key)) continue;
 

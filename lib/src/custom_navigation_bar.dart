@@ -843,11 +843,10 @@ class _NavigationDestinationBuilderState
         widget.iconIndicatorShape == null &&
         widget.labelIndicatorShape == null;
     final ShapeBorder? statefulSelectedShape =
-      info.shape?.resolve(selectedShapeStates);
+        info.shape?.resolve(selectedShapeStates);
     final ShapeBorder effectiveFillShape =
         statefulSelectedShape ?? widget.shape ?? const StadiumBorder();
-    final ShapeBorder effectiveHoverShape =
-      resolveInteractionShape(
+    final ShapeBorder effectiveHoverShape = resolveInteractionShape(
           shape: info.shape,
           isSelected: isSelected,
           isHovered: _isHovered,

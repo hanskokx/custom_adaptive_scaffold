@@ -1051,8 +1051,7 @@ void main() {
       const ShapeBorder extensionShape = StadiumBorder();
       const ShapeBorder inheritedShape = CircleBorder();
       const ShapeBorder widgetShape = RoundedRectangleBorder();
-      const List<NavigationDestination> destinations =
-          <NavigationDestination>[
+      const List<NavigationDestination> destinations = <NavigationDestination>[
         CustomNavigationDestination(
           icon: Icon(Icons.home),
           label: "Home",
@@ -1067,7 +1066,8 @@ void main() {
         MaterialApp(
           theme: ThemeData(
             extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(shape: WidgetStatePropertyAll<ShapeBorder?>(extensionShape)),
+              AdaptiveScaffoldThemeData(
+                  shape: WidgetStatePropertyAll<ShapeBorder?>(extensionShape)),
             ],
           ),
           home: MediaQuery(
@@ -1100,8 +1100,7 @@ void main() {
   testWidgets(
     "adaptive scaffold applies destinationFillRegion precedence widget > inherited > extension",
     (WidgetTester tester) async {
-      const List<NavigationDestination> destinations =
-          <NavigationDestination>[
+      const List<NavigationDestination> destinations = <NavigationDestination>[
         CustomNavigationDestination(
           icon: Icon(Icons.home),
           label: "Home",
@@ -1150,8 +1149,7 @@ void main() {
   testWidgets(
     "adaptive scaffold applies destinationHoverRegion precedence widget > inherited > extension",
     (WidgetTester tester) async {
-      const List<NavigationDestination> destinations =
-          <NavigationDestination>[
+      const List<NavigationDestination> destinations = <NavigationDestination>[
         CustomNavigationDestination(
           icon: Icon(Icons.home),
           label: "Home",
@@ -1203,8 +1201,7 @@ void main() {
       const Duration extensionDuration = Duration(milliseconds: 100);
       const Duration inheritedDuration = Duration(milliseconds: 200);
       const Duration widgetDuration = Duration(milliseconds: 300);
-      const List<NavigationDestination> destinations =
-          <NavigationDestination>[
+      const List<NavigationDestination> destinations = <NavigationDestination>[
         CustomNavigationDestination(
           icon: Icon(Icons.home),
           label: "Home",
