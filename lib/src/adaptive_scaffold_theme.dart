@@ -7,24 +7,6 @@ import "custom_navigation_rail_theme.dart";
 import "navigation_destination_types.dart";
 import "navigation_indicator_theme.dart";
 
-@Deprecated(
-  "Use AdaptiveScaffoldThemeData instead. "
-  "This feature was deprecated after v4.1.0",
-)
-typedef AdaptiveScaffoldNavigationThemeData = AdaptiveScaffoldThemeData;
-
-@Deprecated(
-  "Use CustomNavigationBarThemeData instead. "
-  "This type will be removed after v4.1.0+1.",
-)
-typedef AdaptiveNavigationBarThemeData = CustomNavigationBarThemeData;
-
-@Deprecated(
-  "Use CustomNavigationRailThemeData instead. "
-  "This type will be removed after v4.1.0+1.",
-)
-typedef AdaptiveNavigationRailThemeData = CustomNavigationRailThemeData;
-
 /// Navigation-bar-specific styling shared by adaptive small-breakpoint bars.
 @immutable
 class CustomNavigationBarThemeData

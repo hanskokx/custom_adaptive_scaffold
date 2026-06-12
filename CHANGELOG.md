@@ -114,9 +114,7 @@ AdaptiveScaffold(
     to override top-level indicator behavior for rail-only layouts.
   * Rail style resolution now uses the same adaptive precedence, with
     `ThemeData.navigationRailTheme` as the next fallback where applicable.
-  * Top-level `compactLabelType`, `expandedLabelType`, and
-    `extendedNavigationRailWidth` on `AdaptiveScaffoldThemeData` are now
-    deprecated. Migrate to
+  * Configure compact and expanded rail behavior directly on
     `AdaptiveScaffoldThemeData(navigationRailTheme: ...)`.
 
 * **[FEAT] `AdaptiveScaffoldThemeData` now supports themed extended rail width**
@@ -139,10 +137,6 @@ AdaptiveScaffold(
     from `NavigationRailThemeData`.
   * Added compatibility tests to verify package widgets work alongside
     Flutter's original `NavigationBar` and `NavigationRail` widgets.
-
-* **[CHANGE] `AdaptiveScaffoldNavigationThemeData` renamed in docs to `AdaptiveScaffoldThemeData`**
-  * A deprecated alias typedef (`AdaptiveScaffoldNavigationThemeData`) still
-    exists for compatibility.
 
 * **[DOC] Updated migration guidance and examples**
   * Updated README and example app to use `AdaptiveScaffoldThemeData` and the
