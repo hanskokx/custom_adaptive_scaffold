@@ -883,6 +883,59 @@ void main() {
     );
   });
 
+  testWidgets("stateful shape uses pressed state for interaction border", (
+    WidgetTester tester,
+  ) async {
+    const ShapeBorder pressedShape = CircleBorder();
+    const ShapeBorder selectedShape = StadiumBorder();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            destinationFillRegion: NavigationDestinationRegion.full,
+            shape: const WidgetStateProperty<ShapeBorder?>.fromMap(
+              <WidgetStatesConstraint, ShapeBorder?>{
+                WidgetState.pressed: pressedShape,
+                WidgetState.selected: selectedShape,
+                WidgetState.any: selectedShape,
+              },
+            ),
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget is InkResponse,
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
+      for (int i = 0; i < 2; i += 1)
+        tester.widget<InkResponse>(inkResponses.at(i)).customBorder,
+    ];
+
+    expect(
+      resolvedBorders,
+      everyElement(same(pressedShape)),
+    );
+  });
+
   testWidgets(
       "bar stateful shape uses selected state when hovered is absent", (
     WidgetTester tester,

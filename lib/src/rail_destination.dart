@@ -75,6 +75,12 @@ class _RailDestinationState extends State<RailDestination>
   static const Set<WidgetState> _hoveredState = <WidgetState>{
     WidgetState.hovered,
   };
+  static const Set<WidgetState> _pressedState = <WidgetState>{
+    WidgetState.pressed,
+  };
+  static const Set<WidgetState> _focusedState = <WidgetState>{
+    WidgetState.focused,
+  };
   late CurvedAnimation _positionAnimation;
   late Animation<double> _destinationAnimation;
   AnimationController? _ownedDestinationController;
@@ -260,6 +266,10 @@ class _RailDestinationState extends State<RailDestination>
     final ShapeBorder? selectedStateShape =
         widget.shape?.resolve(_selectedState);
     final ShapeBorder? hoverStateShape = widget.shape?.resolve(_hoveredState);
+    final ShapeBorder? pressedStateShape =
+      widget.shape?.resolve(_pressedState);
+    final ShapeBorder? focusedStateShape =
+      widget.shape?.resolve(_focusedState);
     final ShapeBorder effectiveIconIndicatorShape = selectedStateShape ??
         indicatorShape ??
         (destinationFillRegion == NavigationDestinationRegion.full
@@ -660,6 +670,8 @@ class _RailDestinationState extends State<RailDestination>
     final ShapeBorder effectiveFillShape =
         selectedStateShape ?? indicatorShape ?? defaultFillShape;
     final ShapeBorder effectiveInkShape = hoverStateShape ??
+      pressedStateShape ??
+      focusedStateShape ??
         selectedStateShape ??
         indicatorShape ??
         defaultFillShape;
