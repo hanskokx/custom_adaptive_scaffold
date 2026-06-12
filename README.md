@@ -317,8 +317,10 @@ Example using full-widget fill plus a custom shape:
 CustomNavigationRail(
   selectedIndex: selectedIndex,
   destinationFillRegion: NavigationDestinationRegion.full,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(12),
+  shape: WidgetStatePropertyAll<ShapeBorder?>(
+    RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
   ),
   destinations: destinations,
 )
@@ -333,8 +335,10 @@ AdaptiveScaffold.standardNavigationRail(
   selectedIndex: selectedIndex,
   destinations: railDestinations,
   destinationFillRegion: NavigationDestinationRegion.full,
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.circular(12),
+  shape: WidgetStatePropertyAll<ShapeBorder?>(
+    RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
   ),
 )
 ```
@@ -363,8 +367,10 @@ AdaptiveScaffold(
   navigationTheme: const AdaptiveScaffoldThemeData(
     destinationFillRegion: NavigationDestinationRegion.icon,
     destinationHoverRegion: NavigationDestinationRegion.full,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
+    shape: WidgetStatePropertyAll<ShapeBorder?>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
     ),
   ),
   body: (BuildContext context) => const Placeholder(),
