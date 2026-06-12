@@ -370,10 +370,10 @@ class CustomNavigationRail extends StatefulWidget {
   /// shape (`destinationFillShape`) and interaction shape
   /// (`destinationHoverShape`).
   ///
-  /// Selected fill resolves with [WidgetState.selected]. Hover/pressed
-  /// interaction shape resolves with [WidgetState.hovered], then falls back to
-  /// the selected shape. You can also provide [WidgetState.any] as a broad
-  /// fallback in the state map.
+  /// Selected fill resolves with [WidgetState.selected]. Interaction shape
+  /// resolves with [WidgetState.hovered], then [WidgetState.pressed], then
+  /// [WidgetState.focused], and then falls back to the selected shape. You can
+  /// also provide [WidgetState.any] as a broad fallback in the state map.
   ///
   /// If unresolved for a given state, [indicatorShape] is used, then
   /// [NavigationRailThemeData.indicatorShape], and then [StadiumBorder] as a

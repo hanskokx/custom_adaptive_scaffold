@@ -251,9 +251,9 @@ class CustomNavigationBar extends StatelessWidget {
 
   /// Optional stateful shape for destination fill and interaction highlights.
   ///
-  /// Selected fill resolves with [WidgetState.selected]. Hover/pressed
-  /// interaction shape resolves with [WidgetState.hovered], then falls back to
-  /// the selected shape.
+  /// Selected fill resolves with [WidgetState.selected]. Interaction shape
+  /// resolves with [WidgetState.hovered], then [WidgetState.pressed], then
+  /// [WidgetState.focused], and then falls back to the selected shape.
   ///
   /// If unresolved for a given state, the resolved navigation bar indicator
   /// shape is used, and then [StadiumBorder] as a final fallback.
@@ -1114,9 +1114,9 @@ class _NavigationDestinationInfo extends InheritedWidget {
 
   /// Optional stateful shape override for destination fill and interactions.
   ///
-  /// Selected fill resolves with [WidgetState.selected]. Hover/pressed
-  /// interaction shape resolves with [WidgetState.hovered], then falls back to
-  /// the selected shape.
+  /// Selected fill resolves with [WidgetState.selected]. Interaction shape
+  /// resolves with [WidgetState.hovered], then [WidgetState.pressed], then
+  /// [WidgetState.focused], and then falls back to the selected shape.
   ///
   /// If unresolved, [indicatorShape] is used, and then [StadiumBorder] as a
   /// final fallback.
