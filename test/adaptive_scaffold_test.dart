@@ -1046,6 +1046,108 @@ void main() {
   );
 
   testWidgets(
+    "adaptive scaffold applies shape precedence widget > inherited > extension",
+    (WidgetTester tester) async {
+      const ShapeBorder extensionShape = StadiumBorder();
+      const ShapeBorder inheritedShape = CircleBorder();
+      const ShapeBorder widgetShape = RoundedRectangleBorder();
+      const List<NavigationDestination> destinations =
+          <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(shape: WidgetStatePropertyAll<ShapeBorder?>(extensionShape)),
+            ],
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 600)),
+            child: AdaptiveScaffoldTheme(
+              data: const AdaptiveScaffoldThemeData(
+                shape: WidgetStatePropertyAll<ShapeBorder?>(inheritedShape),
+              ),
+              child: AdaptiveScaffold(
+                destinations: destinations,
+                navigationTheme: const AdaptiveScaffoldThemeData(
+                  shape: WidgetStatePropertyAll<ShapeBorder?>(widgetShape),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail compactRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(compactRail.shape, isA<WidgetStateProperty<ShapeBorder?>>());
+      expect(
+        compactRail.shape?.resolve(const <WidgetState>{WidgetState.selected}),
+        same(widgetShape),
+      );
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold applies destinationFillRegion precedence widget > inherited > extension",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations =
+          <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                destinationFillRegion: NavigationDestinationRegion.icon,
+              ),
+            ],
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 600)),
+            child: AdaptiveScaffoldTheme(
+              data: const AdaptiveScaffoldThemeData(
+                destinationFillRegion: NavigationDestinationRegion.label,
+              ),
+              child: AdaptiveScaffold(
+                destinations: destinations,
+                navigationTheme: const AdaptiveScaffoldThemeData(
+                  destinationFillRegion: NavigationDestinationRegion.full,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail compactRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(
+        compactRail.destinationFillRegion,
+        NavigationDestinationRegion.full,
+      );
+    },
+  );
+
+  testWidgets(
     "adaptive scaffold navigationTheme can set expanded rail label type",
     (WidgetTester tester) async {
       const List<NavigationDestination> destinations = <NavigationDestination>[
