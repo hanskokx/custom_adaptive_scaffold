@@ -5,7 +5,7 @@ import "../custom_adaptive_scaffold.dart";
 
 @Deprecated(
   "Use AdaptiveScaffoldTheme instead. "
-  "This feature was deprecated after v4.0.0",
+  "This feature was deprecated after v4.1.0",
 )
 typedef AdaptiveScaffoldNavigationThemeData = AdaptiveScaffoldThemeData;
 
@@ -206,7 +206,7 @@ class AdaptiveScaffoldThemeData
     this.shape,
   });
 
-  /// Overrides the defalt value of [NavigationRail.labelType] for the compact rail and small navigation.
+  /// Overrides the default value of [NavigationRail.labelType] for the compact rail and small navigation.
   final NavigationRailLabelType? compactLabelType;
 
   /// Overrides the default label type of the expanded rail used on medium-large and up breakpoints.
