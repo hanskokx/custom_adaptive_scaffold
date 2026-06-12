@@ -182,9 +182,11 @@ class _MailScreenState extends State<MailScreen> {
 
 ## CustomNavigationDestination
 
-`CustomNavigationDestination` extends `NavigationDestination` with additional
-capabilities for per-destination label control, animated icon transitions, and
-fine-grained selection indicator placement.
+Use `NavigationDestination` by default for standard Material behavior.
+`CustomNavigationDestination` is an advanced option that extends
+`NavigationDestination` with additional capabilities for per-destination label
+control, animated icon transitions, and fine-grained selection indicator
+placement.
 
 ### Per-destination label visibility
 
@@ -586,28 +588,28 @@ Widget build(BuildContext context) {
         _selectedTab = index;
       });
     },
-    destinations: const <CustomNavigationDestination>[
-      CustomNavigationDestination(
+    destinations: const <NavigationDestination>[
+      NavigationDestination(
         icon: Icon(Icons.inbox_outlined),
         selectedIcon: Icon(Icons.inbox),
         label: 'Inbox',
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         icon: Icon(Icons.article_outlined),
         selectedIcon: Icon(Icons.article),
         label: 'Articles',
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         icon: Icon(Icons.chat_outlined),
         selectedIcon: Icon(Icons.chat),
         label: 'Chat',
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         icon: Icon(Icons.video_call_outlined),
         selectedIcon: Icon(Icons.video_call),
         label: 'Video',
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         icon: Icon(Icons.home_outlined),
         selectedIcon: Icon(Icons.home),
         label: 'Inbox',

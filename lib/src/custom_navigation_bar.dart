@@ -38,8 +38,9 @@ const double _horizontalDestinationPadding = 8.0;
 /// [DefaultTextStyle]s or [IconTheme]s but rather controlled by parameters or
 /// the [NavigationBarThemeData].
 ///
-/// This widget holds a collection of destinations (usually
-/// [CustomNavigationDestination]s).
+/// This widget holds a collection of destinations (typically
+/// [NavigationDestination]s; use [CustomNavigationDestination] for advanced
+/// destination customization).
 ///
 /// {@tool dartpad}
 /// This example shows a [CustomNavigationBar] as it is used within a [Scaffold]
@@ -84,8 +85,8 @@ const double _horizontalDestinationPadding = 8.0;
 class CustomNavigationBar extends StatelessWidget {
   /// Creates a Material 3 Navigation Bar component.
   ///
-  /// The value of [destinations] must be a list of two or more
-  /// [CustomNavigationDestination] values.
+  /// The value of [destinations] must be a list of two or more destination
+  /// widgets, usually [NavigationDestination] values.
   const CustomNavigationBar({
     required this.destinations,
     super.key,
@@ -120,8 +121,11 @@ class CustomNavigationBar extends StatelessWidget {
   /// [selectedIndex] goes from unselected to selected.
   final int selectedIndex;
 
-  /// The list of destinations (usually [CustomNavigationDestination]s) in this
-  /// [CustomNavigationBar].
+  /// The list of destinations in this [CustomNavigationBar].
+  ///
+  /// Most apps should use [NavigationDestination]. Use
+  /// [CustomNavigationDestination] only when advanced per-destination
+  /// customization is needed.
   ///
   /// When [selectedIndex] is updated, the destination from this list at
   /// [selectedIndex] will animate from 0 (unselected) to 1.0 (selected). When
@@ -346,17 +350,18 @@ class CustomNavigationBar extends StatelessWidget {
   }
 }
 
-/// A Material 3 destination for [CustomNavigationBar].
+/// An advanced Material 3 destination for [CustomNavigationBar].
 ///
-/// Displays a label below an icon. Use with
-/// [CustomNavigationBar.destinations].
+/// Displays a label below an icon. Use [NavigationDestination] by default,
+/// and use this class with [CustomNavigationBar.destinations] when you need
+/// advanced per-destination customization.
 ///
 /// See also:
 ///
 ///  * [CustomNavigationBar], for an interactive code sample.
 class CustomNavigationDestination extends NavigationDestination {
-  /// Creates a navigation bar destination with an icon and a label, to be used
-  /// in [CustomNavigationBar.destinations].
+  /// Creates an advanced navigation bar destination with an icon and a label,
+  /// to be used in [CustomNavigationBar.destinations].
   const CustomNavigationDestination({
     required super.icon,
     required super.label,
