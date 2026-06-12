@@ -793,30 +793,91 @@ class _NavigationDestinationBuilderState
   static const Set<WidgetState> _selectedState = <WidgetState>{
     WidgetState.selected,
   };
-  static const Set<WidgetState> _selectedHoveredState = <WidgetState>{
-    WidgetState.selected,
-    WidgetState.hovered,
-  };
-  static const Set<WidgetState> _selectedPressedState = <WidgetState>{
-    WidgetState.selected,
-    WidgetState.pressed,
-  };
-  static const Set<WidgetState> _selectedFocusedState = <WidgetState>{
-    WidgetState.selected,
-    WidgetState.focused,
-  };
-  static const Set<WidgetState> _hoveredState = <WidgetState>{
-    WidgetState.hovered,
-  };
-  static const Set<WidgetState> _pressedState = <WidgetState>{
-    WidgetState.pressed,
-  };
-  static const Set<WidgetState> _focusedState = <WidgetState>{
-    WidgetState.focused,
-  };
   final GlobalKey _destinationRegionKey = GlobalKey();
   final GlobalKey _iconRegionKey = GlobalKey();
   final GlobalKey _labelRegionKey = GlobalKey();
+  bool _isHovered = false;
+  bool _isPressed = false;
+  bool _isFocused = false;
+
+  void _setHovered(bool value) {
+    if (_isHovered == value || !mounted) return;
+    setState(() {
+      _isHovered = value;
+    });
+  }
+
+  void _setPressed(bool value) {
+    if (_isPressed == value || !mounted) return;
+    setState(() {
+      _isPressed = value;
+    });
+  }
+
+  void _setFocused(bool value) {
+    if (_isFocused == value || !mounted) return;
+    setState(() {
+      _isFocused = value;
+    });
+  }
+
+  ShapeBorder? _resolveInteractionShape(
+    WidgetStateProperty<ShapeBorder?>? shape,
+    bool isSelected,
+  ) {
+    if (shape == null) return null;
+
+    final List<Set<WidgetState>> candidates = <Set<WidgetState>>[];
+    final Set<WidgetState> activeStates = <WidgetState>{
+      if (isSelected) WidgetState.selected,
+      if (_isHovered) WidgetState.hovered,
+      if (_isPressed) WidgetState.pressed,
+      if (_isFocused) WidgetState.focused,
+    };
+
+    if (activeStates.isNotEmpty) {
+      candidates.add(activeStates);
+    }
+    if (_isHovered) {
+      candidates.add(<WidgetState>{
+        if (isSelected) WidgetState.selected,
+        WidgetState.hovered,
+      });
+      candidates.add(<WidgetState>{WidgetState.hovered});
+    }
+    if (_isPressed) {
+      candidates.add(<WidgetState>{
+        if (isSelected) WidgetState.selected,
+        WidgetState.pressed,
+      });
+      candidates.add(<WidgetState>{WidgetState.pressed});
+    }
+    if (_isFocused) {
+      candidates.add(<WidgetState>{
+        if (isSelected) WidgetState.selected,
+        WidgetState.focused,
+      });
+      candidates.add(<WidgetState>{WidgetState.focused});
+    }
+    if (isSelected) {
+      candidates.add(_selectedState);
+    }
+
+    final Set<String> seen = <String>{};
+    for (final Set<WidgetState> candidate in candidates) {
+      final List<String> signature = candidate
+          .map((WidgetState state) => state.name)
+          .toList()
+        ..sort();
+      final String key = signature.join(",");
+      if (!seen.add(key)) continue;
+
+      final ShapeBorder? resolved = shape.resolve(candidate);
+      if (resolved != null) return resolved;
+    }
+
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -843,35 +904,10 @@ class _NavigationDestinationBuilderState
         widget.labelIndicatorShape == null;
     final ShapeBorder? statefulSelectedShape =
         info.shape?.resolve(_selectedState);
-    final ShapeBorder? statefulSelectedHoverShape =
-      info.shape?.resolve(_selectedHoveredState);
-    final ShapeBorder? statefulSelectedPressedShape =
-      info.shape?.resolve(_selectedPressedState);
-    final ShapeBorder? statefulSelectedFocusedShape =
-      info.shape?.resolve(_selectedFocusedState);
-    final ShapeBorder? effectiveSelectedHoverShape =
-      statefulSelectedHoverShape == statefulSelectedShape
-        ? null
-        : statefulSelectedHoverShape;
-    final ShapeBorder? effectiveSelectedPressedShape =
-      statefulSelectedPressedShape == statefulSelectedShape
-        ? null
-        : statefulSelectedPressedShape;
-    final ShapeBorder? effectiveSelectedFocusedShape =
-      statefulSelectedFocusedShape == statefulSelectedShape
-        ? null
-        : statefulSelectedFocusedShape;
-    final ShapeBorder? statefulHoverShape =
-      effectiveSelectedHoverShape ?? info.shape?.resolve(_hoveredState);
-    final ShapeBorder? statefulPressedShape =
-      effectiveSelectedPressedShape ?? info.shape?.resolve(_pressedState);
-    final ShapeBorder? statefulFocusedShape =
-      effectiveSelectedFocusedShape ?? info.shape?.resolve(_focusedState);
     final ShapeBorder effectiveFillShape =
         statefulSelectedShape ?? widget.shape ?? const StadiumBorder();
-    final ShapeBorder effectiveHoverShape = statefulHoverShape ??
-      statefulPressedShape ??
-      statefulFocusedShape ??
+    final ShapeBorder effectiveHoverShape =
+        _resolveInteractionShape(info.shape, isSelected) ??
         statefulSelectedShape ??
         widget.shape ??
         const StadiumBorder();
@@ -935,6 +971,9 @@ class _NavigationDestinationBuilderState
                 ),
               _NavigationBarIndicatorInkWell(
                 onTap: widget.enabled ? info.onTap : null,
+                onHover: _setHovered,
+                onHighlightChanged: _setPressed,
+                onFocusChange: _setFocused,
                 overlayColor: effectiveOverlayColor,
                 customBorder: effectiveHoverShape,
                 borderRadius: const BorderRadius.all(Radius.circular(16)),
@@ -1424,6 +1463,9 @@ class _NavigationBarIndicatorInkWell extends InkResponse {
     required this.fillPadding,
     super.child,
     super.onTap,
+    super.onHover,
+    super.onHighlightChanged,
+    super.onFocusChange,
     super.overlayColor,
     ShapeBorder? customBorder,
     BorderRadius? borderRadius,

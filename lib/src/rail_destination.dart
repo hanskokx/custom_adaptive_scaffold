@@ -72,27 +72,6 @@ class _RailDestinationState extends State<RailDestination>
   static const Set<WidgetState> _selectedState = <WidgetState>{
     WidgetState.selected,
   };
-  static const Set<WidgetState> _selectedHoveredState = <WidgetState>{
-    WidgetState.selected,
-    WidgetState.hovered,
-  };
-  static const Set<WidgetState> _selectedPressedState = <WidgetState>{
-    WidgetState.selected,
-    WidgetState.pressed,
-  };
-  static const Set<WidgetState> _selectedFocusedState = <WidgetState>{
-    WidgetState.selected,
-    WidgetState.focused,
-  };
-  static const Set<WidgetState> _hoveredState = <WidgetState>{
-    WidgetState.hovered,
-  };
-  static const Set<WidgetState> _pressedState = <WidgetState>{
-    WidgetState.pressed,
-  };
-  static const Set<WidgetState> _focusedState = <WidgetState>{
-    WidgetState.focused,
-  };
   late CurvedAnimation _positionAnimation;
   late Animation<double> _destinationAnimation;
   AnimationController? _ownedDestinationController;
@@ -101,6 +80,9 @@ class _RailDestinationState extends State<RailDestination>
   final GlobalKey _destinationRegionKey = GlobalKey();
   final GlobalKey _iconRegionKey = GlobalKey();
   final GlobalKey _labelRegionKey = GlobalKey();
+  bool _isHovered = false;
+  bool _isPressed = false;
+  bool _isFocused = false;
 
   @override
   void initState() {
@@ -196,6 +178,85 @@ class _RailDestinationState extends State<RailDestination>
   bool mediumIsActive(BuildContext context) =>
       const Breakpoint.medium().isActive(context);
 
+  void _setHovered(bool value) {
+    if (_isHovered == value || !mounted) return;
+    setState(() {
+      _isHovered = value;
+    });
+  }
+
+  void _setPressed(bool value) {
+    if (_isPressed == value || !mounted) return;
+    setState(() {
+      _isPressed = value;
+    });
+  }
+
+  void _setFocused(bool value) {
+    if (_isFocused == value || !mounted) return;
+    setState(() {
+      _isFocused = value;
+    });
+  }
+
+  ShapeBorder? _resolveInteractionShape(
+    WidgetStateProperty<ShapeBorder?>? shape,
+    bool isSelected,
+  ) {
+    if (shape == null) return null;
+
+    final List<Set<WidgetState>> candidates = <Set<WidgetState>>[];
+    final Set<WidgetState> activeStates = <WidgetState>{
+      if (isSelected) WidgetState.selected,
+      if (_isHovered) WidgetState.hovered,
+      if (_isPressed) WidgetState.pressed,
+      if (_isFocused) WidgetState.focused,
+    };
+
+    if (activeStates.isNotEmpty) {
+      candidates.add(activeStates);
+    }
+    if (_isHovered) {
+      candidates.add(<WidgetState>{
+        if (isSelected) WidgetState.selected,
+        WidgetState.hovered,
+      });
+      candidates.add(<WidgetState>{WidgetState.hovered});
+    }
+    if (_isPressed) {
+      candidates.add(<WidgetState>{
+        if (isSelected) WidgetState.selected,
+        WidgetState.pressed,
+      });
+      candidates.add(<WidgetState>{WidgetState.pressed});
+    }
+    if (_isFocused) {
+      candidates.add(<WidgetState>{
+        if (isSelected) WidgetState.selected,
+        WidgetState.focused,
+      });
+      candidates.add(<WidgetState>{WidgetState.focused});
+    }
+    if (isSelected) {
+      candidates.add(_selectedState);
+    }
+
+    final Set<String> seen = <String>{};
+    for (final Set<WidgetState> candidate in candidates) {
+      final List<String> signature = candidate
+          .map((WidgetState state) => state.name)
+          .toList()
+        ..sort();
+      final String key = signature.join(",");
+      if (!seen.add(key)) continue;
+
+      final ShapeBorder? resolved = shape.resolve(candidate);
+      if (resolved != null) return resolved;
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -277,30 +338,6 @@ class _RailDestinationState extends State<RailDestination>
         (widget.useIndicator ?? false) && isDefaultFillPath;
     final ShapeBorder? selectedStateShape =
         widget.shape?.resolve(_selectedState);
-    final ShapeBorder? selectedHoverStateShape =
-      widget.shape?.resolve(_selectedHoveredState);
-    final ShapeBorder? selectedPressedStateShape =
-      widget.shape?.resolve(_selectedPressedState);
-    final ShapeBorder? selectedFocusedStateShape =
-      widget.shape?.resolve(_selectedFocusedState);
-    final ShapeBorder? effectiveSelectedHoverShape =
-      selectedHoverStateShape == selectedStateShape
-        ? null
-        : selectedHoverStateShape;
-    final ShapeBorder? effectiveSelectedPressedShape =
-      selectedPressedStateShape == selectedStateShape
-        ? null
-        : selectedPressedStateShape;
-    final ShapeBorder? effectiveSelectedFocusedShape =
-      selectedFocusedStateShape == selectedStateShape
-        ? null
-        : selectedFocusedStateShape;
-    final ShapeBorder? hoverStateShape =
-      effectiveSelectedHoverShape ?? widget.shape?.resolve(_hoveredState);
-    final ShapeBorder? pressedStateShape =
-      effectiveSelectedPressedShape ?? widget.shape?.resolve(_pressedState);
-    final ShapeBorder? focusedStateShape =
-      effectiveSelectedFocusedShape ?? widget.shape?.resolve(_focusedState);
     final ShapeBorder effectiveIconIndicatorShape = selectedStateShape ??
         indicatorShape ??
         (destinationFillRegion == NavigationDestinationRegion.full
@@ -700,9 +737,8 @@ class _RailDestinationState extends State<RailDestination>
             : const StadiumBorder();
     final ShapeBorder effectiveFillShape =
         selectedStateShape ?? indicatorShape ?? defaultFillShape;
-    final ShapeBorder effectiveInkShape = hoverStateShape ??
-      pressedStateShape ??
-      focusedStateShape ??
+    final ShapeBorder effectiveInkShape =
+      _resolveInteractionShape(widget.shape, selected) ??
         selectedStateShape ??
         indicatorShape ??
         defaultFillShape;
@@ -762,6 +798,9 @@ class _RailDestinationState extends State<RailDestination>
             /// [CustomNavigationDestination] in a [NavigationRail].
             _IndicatorInkWell(
               onTap: widget.disabled ? null : widget.onTap,
+              onHover: _setHovered,
+              onHighlightChanged: _setPressed,
+              onFocusChange: _setFocused,
               borderRadius: BorderRadius.all(
                 Radius.circular(minWidth / 2.0),
               ),
@@ -819,6 +858,9 @@ class _IndicatorInkWell extends InkResponse {
     required this.fillPadding,
     super.child,
     super.onTap,
+    super.onHover,
+    super.onHighlightChanged,
+    super.onFocusChange,
     ShapeBorder? customBorder,
     BorderRadius? borderRadius,
     super.splashColor,

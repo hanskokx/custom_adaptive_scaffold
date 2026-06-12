@@ -21,6 +21,32 @@ void main() {
     return inkResponseForDescendant(find.text(text));
   }
 
+  Future<void> hoverIcons(WidgetTester tester, List<IconData> icons) async {
+    final TestGesture mouse = await tester.createGesture(
+      kind: PointerDeviceKind.mouse,
+    );
+    await mouse.addPointer(location: Offset.zero);
+    addTearDown(mouse.removePointer);
+
+    for (final IconData icon in icons) {
+      await mouse.moveTo(tester.getCenter(find.byIcon(icon)));
+      await tester.pump();
+    }
+  }
+
+  Future<void> hoverIcon(WidgetTester tester, IconData icon) async {
+    await hoverIcons(tester, <IconData>[icon]);
+  }
+
+  Future<void> pressIcon(WidgetTester tester, IconData icon) async {
+    final TestGesture gesture = await tester.createGesture();
+    addTearDown(() async {
+      await gesture.up();
+    });
+    await gesture.down(tester.getCenter(find.byIcon(icon)));
+    await tester.pump(kPressTimeout);
+  }
+
   testWidgets("transitionBuilder takes precedence over iconBuilder", (
     WidgetTester tester,
   ) async {
@@ -882,19 +908,19 @@ void main() {
       ),
     );
 
-    const List<IconData> icons = <IconData>[
-      Icons.home,
-      Icons.search_outlined,
-    ];
+    await hoverIcon(tester, Icons.search_outlined);
 
     final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
-      for (final IconData icon in icons)
+      for (final IconData icon in <IconData>[
+        Icons.home,
+        Icons.search_outlined,
+      ])
         tester.widget<InkResponse>(inkResponseForIcon(icon)).customBorder,
     ];
 
     expect(
       resolvedBorders,
-      everyElement(same(hoveredShape)),
+      <ShapeBorder?>[selectedShape, hoveredShape],
     );
   });
 
@@ -934,19 +960,19 @@ void main() {
       ),
     );
 
-    const List<IconData> icons = <IconData>[
-      Icons.home,
-      Icons.search_outlined,
-    ];
+    await pressIcon(tester, Icons.search_outlined);
 
     final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
-      for (final IconData icon in icons)
+      for (final IconData icon in <IconData>[
+        Icons.home,
+        Icons.search_outlined,
+      ])
         tester.widget<InkResponse>(inkResponseForIcon(icon)).customBorder,
     ];
 
     expect(
       resolvedBorders,
-      everyElement(same(pressedShape)),
+      <ShapeBorder?>[selectedShape, pressedShape],
     );
   });
 
@@ -1037,19 +1063,19 @@ void main() {
       ),
     );
 
-    final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget is InkResponse,
-    );
-    expect(inkResponses, findsNWidgets(2));
+    await hoverIcon(tester, Icons.search_outlined);
 
     final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
-      for (int i = 0; i < 2; i += 1)
-        tester.widget<InkResponse>(inkResponses.at(i)).customBorder,
+      for (final IconData icon in <IconData>[
+        Icons.home,
+        Icons.search_outlined,
+      ])
+        tester.widget<InkResponse>(inkResponseForIcon(icon)).customBorder,
     ];
 
     expect(
       resolvedBorders,
-      everyElement(same(hoveredShape)),
+      <ShapeBorder?>[selectedShape, hoveredShape],
     );
   });
 
@@ -1091,19 +1117,19 @@ void main() {
         ),
       );
 
-      const List<IconData> icons = <IconData>[
-        Icons.home,
-        Icons.search_outlined,
-      ];
+      await hoverIcon(tester, Icons.home);
 
       final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
-        for (final IconData icon in icons)
+        for (final IconData icon in <IconData>[
+          Icons.home,
+          Icons.search_outlined,
+        ])
           tester.widget<InkResponse>(inkResponseForIcon(icon)).customBorder,
       ];
 
       expect(
         resolvedBorders,
-        everyElement(same(combinedShape)),
+        <ShapeBorder?>[combinedShape, selectedShape],
       );
     },
   );
@@ -1144,19 +1170,19 @@ void main() {
       ),
     );
 
-    const List<IconData> icons = <IconData>[
-      Icons.home,
-      Icons.search_outlined,
-    ];
+    await pressIcon(tester, Icons.search_outlined);
 
     final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
-      for (final IconData icon in icons)
+      for (final IconData icon in <IconData>[
+        Icons.home,
+        Icons.search_outlined,
+      ])
         tester.widget<InkResponse>(inkResponseForIcon(icon)).customBorder,
     ];
 
     expect(
       resolvedBorders,
-      everyElement(same(pressedShape)),
+      <ShapeBorder?>[selectedShape, pressedShape],
     );
   });
 
