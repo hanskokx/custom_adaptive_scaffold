@@ -157,23 +157,6 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
     }
 
     return AdaptiveScaffoldTheme(
-      compactLabelType: t < 0.5 ? a?.compactLabelType : b?.compactLabelType,
-      expandedLabelType: t < 0.5 ? a?.expandedLabelType : b?.expandedLabelType,
-      transitionAnimation:
-          t < 0.5 ? a?.transitionAnimation : b?.transitionAnimation,
-      transitionCurve: t < 0.5 ? a?.transitionCurve : b?.transitionCurve,
-      transitionDuration:
-          t < 0.5 ? a?.transitionDuration : b?.transitionDuration,
-      destinationFillRegion:
-          t < 0.5 ? a?.destinationFillRegion : b?.destinationFillRegion,
-      destinationHoverRegion:
-          t < 0.5 ? a?.destinationHoverRegion : b?.destinationHoverRegion,
-      shape: WidgetStateProperty.lerp<ShapeBorder?>(
-        a?.shape,
-        b?.shape,
-        t,
-        ShapeBorder.lerp,
-      ),
       data: AdaptiveScaffoldThemeData._lerpThemeData(
         a?.data ?? const AdaptiveScaffoldThemeData(),
         b?.data ?? const AdaptiveScaffoldThemeData(),
