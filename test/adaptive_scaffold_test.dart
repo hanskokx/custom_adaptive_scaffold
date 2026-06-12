@@ -1148,6 +1148,106 @@ void main() {
   );
 
   testWidgets(
+    "adaptive scaffold applies destinationHoverRegion precedence widget > inherited > extension",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations =
+          <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                destinationHoverRegion: NavigationDestinationRegion.icon,
+              ),
+            ],
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 600)),
+            child: AdaptiveScaffoldTheme(
+              data: const AdaptiveScaffoldThemeData(
+                destinationHoverRegion: NavigationDestinationRegion.label,
+              ),
+              child: AdaptiveScaffold(
+                destinations: destinations,
+                navigationTheme: const AdaptiveScaffoldThemeData(
+                  destinationHoverRegion: NavigationDestinationRegion.full,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail compactRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(
+        compactRail.destinationHoverRegion,
+        NavigationDestinationRegion.full,
+      );
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold applies transitionDuration precedence widget > inherited > extension",
+    (WidgetTester tester) async {
+      const Duration extensionDuration = Duration(milliseconds: 100);
+      const Duration inheritedDuration = Duration(milliseconds: 200);
+      const Duration widgetDuration = Duration(milliseconds: 300);
+      const List<NavigationDestination> destinations =
+          <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                transitionDuration: extensionDuration,
+              ),
+            ],
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 600)),
+            child: AdaptiveScaffoldTheme(
+              data: const AdaptiveScaffoldThemeData(
+                transitionDuration: inheritedDuration,
+              ),
+              child: AdaptiveScaffold(
+                destinations: destinations,
+                navigationTheme: const AdaptiveScaffoldThemeData(
+                  transitionDuration: widgetDuration,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final CustomNavigationRail compactRail = tester
+          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      expect(compactRail.iconTransitionDuration, widgetDuration);
+    },
+  );
+
+  testWidgets(
     "adaptive scaffold navigationTheme can set expanded rail label type",
     (WidgetTester tester) async {
       const List<NavigationDestination> destinations = <NavigationDestination>[
