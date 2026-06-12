@@ -38,7 +38,7 @@ const double _horizontalDestinationPadding = 8.0;
 /// [DefaultTextStyle]s or [IconTheme]s but rather controlled by parameters or
 /// the [NavigationBarThemeData].
 ///
-/// The shape of the navigation bar indicators are controlled by
+/// The shape of the navigation bar indicators is controlled by
 /// [ThemeData.appBarTheme.shape].
 ///
 /// This widget holds a collection of destinations (usually
