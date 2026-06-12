@@ -69,9 +69,6 @@ class RailDestination extends StatefulWidget {
 
 class _RailDestinationState extends State<RailDestination>
     with TickerProviderStateMixin {
-  static const Set<WidgetState> _selectedState = <WidgetState>{
-    WidgetState.selected,
-  };
   late CurvedAnimation _positionAnimation;
   late Animation<double> _destinationAnimation;
   AnimationController? _ownedDestinationController;
@@ -199,64 +196,6 @@ class _RailDestinationState extends State<RailDestination>
     });
   }
 
-  ShapeBorder? _resolveInteractionShape(
-    WidgetStateProperty<ShapeBorder?>? shape,
-    bool isSelected,
-  ) {
-    if (shape == null) return null;
-
-    final List<Set<WidgetState>> candidates = <Set<WidgetState>>[];
-    final Set<WidgetState> activeStates = <WidgetState>{
-      if (isSelected) WidgetState.selected,
-      if (_isHovered) WidgetState.hovered,
-      if (_isPressed) WidgetState.pressed,
-      if (_isFocused) WidgetState.focused,
-    };
-
-    if (activeStates.isNotEmpty) {
-      candidates.add(activeStates);
-    }
-    if (_isHovered) {
-      candidates.add(<WidgetState>{
-        if (isSelected) WidgetState.selected,
-        WidgetState.hovered,
-      });
-      candidates.add(<WidgetState>{WidgetState.hovered});
-    }
-    if (_isPressed) {
-      candidates.add(<WidgetState>{
-        if (isSelected) WidgetState.selected,
-        WidgetState.pressed,
-      });
-      candidates.add(<WidgetState>{WidgetState.pressed});
-    }
-    if (_isFocused) {
-      candidates.add(<WidgetState>{
-        if (isSelected) WidgetState.selected,
-        WidgetState.focused,
-      });
-      candidates.add(<WidgetState>{WidgetState.focused});
-    }
-    if (isSelected) {
-      candidates.add(_selectedState);
-    }
-
-    final Set<String> seen = <String>{};
-    for (final Set<WidgetState> candidate in candidates) {
-      final List<String> signature = candidate
-          .map((WidgetState state) => state.name)
-          .toList()
-        ..sort();
-      final String key = signature.join(",");
-      if (!seen.add(key)) continue;
-
-      final ShapeBorder? resolved = shape.resolve(candidate);
-      if (resolved != null) return resolved;
-    }
-
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
@@ -337,7 +276,7 @@ class _RailDestinationState extends State<RailDestination>
     final bool shouldShowIconIndicator =
         (widget.useIndicator ?? false) && isDefaultFillPath;
     final ShapeBorder? selectedStateShape =
-        widget.shape?.resolve(_selectedState);
+      widget.shape?.resolve(selectedShapeStates);
     final ShapeBorder effectiveIconIndicatorShape = selectedStateShape ??
         indicatorShape ??
         (destinationFillRegion == NavigationDestinationRegion.full
@@ -738,7 +677,13 @@ class _RailDestinationState extends State<RailDestination>
     final ShapeBorder effectiveFillShape =
         selectedStateShape ?? indicatorShape ?? defaultFillShape;
     final ShapeBorder effectiveInkShape =
-      _resolveInteractionShape(widget.shape, selected) ??
+      resolveInteractionShape(
+            shape: widget.shape,
+            isSelected: selected,
+            isHovered: _isHovered,
+            isPressed: _isPressed,
+            isFocused: _isFocused,
+          ) ??
         selectedStateShape ??
         indicatorShape ??
         defaultFillShape;

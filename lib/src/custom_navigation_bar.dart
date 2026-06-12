@@ -10,6 +10,7 @@ import "package:flutter/material.dart";
 
 import "compact_destination_layout.dart";
 import "custom_navigation_bar_theme.dart";
+import "interaction_shape_resolver.dart";
 import "navigation_destination_types.dart";
 
 const double _kIndicatorHeight = 32;
@@ -790,9 +791,6 @@ class _NavigationDestinationBuilder extends StatefulWidget {
 
 class _NavigationDestinationBuilderState
     extends State<_NavigationDestinationBuilder> {
-  static const Set<WidgetState> _selectedState = <WidgetState>{
-    WidgetState.selected,
-  };
   final GlobalKey _destinationRegionKey = GlobalKey();
   final GlobalKey _iconRegionKey = GlobalKey();
   final GlobalKey _labelRegionKey = GlobalKey();
@@ -821,64 +819,6 @@ class _NavigationDestinationBuilderState
     });
   }
 
-  ShapeBorder? _resolveInteractionShape(
-    WidgetStateProperty<ShapeBorder?>? shape,
-    bool isSelected,
-  ) {
-    if (shape == null) return null;
-
-    final List<Set<WidgetState>> candidates = <Set<WidgetState>>[];
-    final Set<WidgetState> activeStates = <WidgetState>{
-      if (isSelected) WidgetState.selected,
-      if (_isHovered) WidgetState.hovered,
-      if (_isPressed) WidgetState.pressed,
-      if (_isFocused) WidgetState.focused,
-    };
-
-    if (activeStates.isNotEmpty) {
-      candidates.add(activeStates);
-    }
-    if (_isHovered) {
-      candidates.add(<WidgetState>{
-        if (isSelected) WidgetState.selected,
-        WidgetState.hovered,
-      });
-      candidates.add(<WidgetState>{WidgetState.hovered});
-    }
-    if (_isPressed) {
-      candidates.add(<WidgetState>{
-        if (isSelected) WidgetState.selected,
-        WidgetState.pressed,
-      });
-      candidates.add(<WidgetState>{WidgetState.pressed});
-    }
-    if (_isFocused) {
-      candidates.add(<WidgetState>{
-        if (isSelected) WidgetState.selected,
-        WidgetState.focused,
-      });
-      candidates.add(<WidgetState>{WidgetState.focused});
-    }
-    if (isSelected) {
-      candidates.add(_selectedState);
-    }
-
-    final Set<String> seen = <String>{};
-    for (final Set<WidgetState> candidate in candidates) {
-      final List<String> signature = candidate
-          .map((WidgetState state) => state.name)
-          .toList()
-        ..sort();
-      final String key = signature.join(",");
-      if (!seen.add(key)) continue;
-
-      final ShapeBorder? resolved = shape.resolve(candidate);
-      if (resolved != null) return resolved;
-    }
-
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     final _NavigationDestinationInfo info =
@@ -903,11 +843,17 @@ class _NavigationDestinationBuilderState
         widget.iconIndicatorShape == null &&
         widget.labelIndicatorShape == null;
     final ShapeBorder? statefulSelectedShape =
-        info.shape?.resolve(_selectedState);
+      info.shape?.resolve(selectedShapeStates);
     final ShapeBorder effectiveFillShape =
         statefulSelectedShape ?? widget.shape ?? const StadiumBorder();
     final ShapeBorder effectiveHoverShape =
-        _resolveInteractionShape(info.shape, isSelected) ??
+      resolveInteractionShape(
+          shape: info.shape,
+          isSelected: isSelected,
+          isHovered: _isHovered,
+          isPressed: _isPressed,
+          isFocused: _isFocused,
+        ) ??
         statefulSelectedShape ??
         widget.shape ??
         const StadiumBorder();
