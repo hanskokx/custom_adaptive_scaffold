@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/material.dart";
 
 import "go_router_demo/app_router.dart";
@@ -27,6 +28,11 @@ class MyApp extends StatelessWidget {
           primary: Colors.blue,
         ),
         useMaterial3: true,
+        extensions: const <ThemeExtension<dynamic>>[
+          AdaptiveScaffoldThemeData(
+            extendedNavigationRailWidth: 224,
+          ),
+        ],
       ),
     );
   }

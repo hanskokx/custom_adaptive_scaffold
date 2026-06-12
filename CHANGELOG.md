@@ -14,7 +14,9 @@
   * Updated README and example app to use `AdaptiveScaffoldThemeData` and the
     new `ThemeData.extensions` integration path.
 
-* **[CHANGE] `AdaptiveScaffoldNavigationThemeData` has been renamed to `AdaptiveScaffoldThemeData`**
+* **[CHANGE] `AdaptiveScaffoldNavigationThemeData` renamed in docs to `AdaptiveScaffoldThemeData`**
+  * A deprecated alias typedef (`AdaptiveScaffoldNavigationThemeData`) still
+    exists for compatibility.
 
 * **[BREAKING] `destinationFillShape` and `destinationHoverShape` removed**
   * `destinationFillShape` and `destinationHoverShape` were removed from:
@@ -33,7 +35,7 @@
 Before:
 
 ```dart
-navigationTheme: const (
+navigationTheme: const AdaptiveScaffoldThemeData(
   destinationFillShape: RoundedRectangleBorder(
     borderRadius: BorderRadius.all(Radius.circular(4)),
   ),
@@ -61,6 +63,51 @@ navigationTheme: const AdaptiveScaffoldThemeData(
     `tooltipVerticalOffset`, and `labelPadding`.
   * Added `indicatorStyle: NavigationIndicatorThemeData(...)` for indicator
     and interaction styling.
+
+* **[FEAT] `AdaptiveScaffoldThemeData` now supports themed extended rail width**
+  * Added `extendedNavigationRailWidth` to configure extended rail width via
+    `AdaptiveScaffold.navigationTheme`, `AdaptiveScaffoldTheme`, or
+    `ThemeData.extensions`.
+  * GoRouter shell/demo usage now resolves this value from theme configuration
+    instead of a shell-specific width constructor parameter.
+  * When omitted, `AdaptiveScaffold` keeps the default extended rail width of
+    `192`.
+
+* **[BREAKING] Removed `CustomNavigationBarTheme` and `CustomNavigationBarThemeData` API surface**
+  * Migrate bar styling to
+    `AdaptiveScaffoldThemeData(navigationBarTheme: AdaptiveNavigationBarThemeData(...))`.
+  * Migrate indicator/interaction styling to
+    `AdaptiveScaffoldThemeData(indicatorStyle: NavigationIndicatorThemeData(...))`.
+
+Before:
+
+```dart
+CustomNavigationBarTheme(
+  data: const CustomNavigationBarThemeData(
+    margin: EdgeInsets.symmetric(horizontal: 12),
+    padding: EdgeInsets.symmetric(horizontal: 8),
+    tooltipVerticalOffset: 56,
+  ),
+  child: AdaptiveScaffold(
+    destinations: destinations,
+  ),
+)
+```
+
+After:
+
+```dart
+AdaptiveScaffold(
+  destinations: destinations,
+  navigationTheme: const AdaptiveScaffoldThemeData(
+    navigationBarTheme: AdaptiveNavigationBarThemeData(
+      margin: EdgeInsets.symmetric(horizontal: 12),
+      padding: EdgeInsets.symmetric(horizontal: 8),
+      tooltipVerticalOffset: 56,
+    ),
+  ),
+)
+```
 
 ## 4.0.0 - REDACTED
 

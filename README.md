@@ -388,6 +388,7 @@ AdaptiveScaffold(
   navigationTheme: const AdaptiveScaffoldThemeData(
     compactLabelType: NavigationRailLabelType.selected,
     expandedLabelType: NavigationRailLabelType.all,
+    extendedNavigationRailWidth: 224,
     transitionAnimation: NavigationDestinationAnimation.fadeSwap,
     transitionCurve: Curves.easeOutCubic,
     transitionDuration: Duration(milliseconds: 220),
@@ -446,6 +447,7 @@ MaterialApp(
       AdaptiveScaffoldThemeData(
         compactLabelType: NavigationRailLabelType.selected,
         expandedLabelType: NavigationRailLabelType.all,
+        extendedNavigationRailWidth: 224,
         transitionAnimation: NavigationDestinationAnimation.fadeSwap,
         transitionCurve: Curves.easeOutCubic,
         transitionDuration: Duration(milliseconds: 220),
@@ -528,6 +530,9 @@ Notes:
 - `expandedLabelType` applies only to expanded rails (medium-large and up).
   Defaults to `NavigationRailLabelType.all` and supports
   `none`, `selected`, and `all`.
+- `extendedNavigationRailWidth` controls extended-rail width across
+  medium-large and larger breakpoints. When omitted, `AdaptiveScaffold`
+  keeps its default width of `192`.
 
 Compatibility note:
 

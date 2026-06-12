@@ -11,7 +11,10 @@ import "pages/pages.dart";
 /// The [ScaffoldShell] is a [StatelessWidget] that uses the [AdaptiveScaffold]
 /// to create a shell for the application.
 class ScaffoldShell extends StatelessWidget {
-  /// Create a new instance of [AppScaffoldShell]
+  /// Creates a new instance of [ScaffoldShell].
+  ///
+  /// Extended rail width is resolved through [AdaptiveScaffoldThemeData]
+  /// (`extendedNavigationRailWidth`) instead of a shell-specific parameter.
   const ScaffoldShell({
     required this.navigationShell,
     super.key,

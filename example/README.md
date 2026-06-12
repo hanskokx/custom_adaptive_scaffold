@@ -10,3 +10,7 @@ You can run the following commands in the example directory to see the appropria
 `flutter run lib/adaptive_scaffold_demo.dart` to see a simple usage of AdaptiveScaffold.
 
 `flutter run lib/go_router_demo.dart` to see usage of AdaptiveScaffold with GoRouter and some advanced scenarios like auth handling and branches.
+
+The GoRouter demo resolves extended rail width from
+`AdaptiveScaffoldThemeData.extendedNavigationRailWidth` (via
+`ThemeData.extensions`) rather than from a shell constructor parameter.

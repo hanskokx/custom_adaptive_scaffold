@@ -1644,6 +1644,94 @@ void main() {
   );
 
   testWidgets(
+    "adaptive scaffold navigationTheme can set extended rail width",
+    (WidgetTester tester) async {
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+      const double themedExtendedWidth = 248;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(1300, 600)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+              navigationTheme: const AdaptiveScaffoldThemeData(
+                extendedNavigationRailWidth: themedExtendedWidth,
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Finder expandedRailFinder = find.byType(CustomNavigationRail);
+      expect(expandedRailFinder, findsOneWidget);
+      final Size expandedRailSize = tester.getSize(expandedRailFinder);
+      expect(expandedRailSize.width, themedExtendedWidth);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold applies extended rail width precedence widget > inherited > extension",
+    (WidgetTester tester) async {
+      const double extensionWidth = 220;
+      const double inheritedWidth = 236;
+      const double widgetWidth = 264;
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                extendedNavigationRailWidth: extensionWidth,
+              ),
+            ],
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(1300, 600)),
+            child: AdaptiveScaffoldTheme(
+              data: const AdaptiveScaffoldThemeData(
+                extendedNavigationRailWidth: inheritedWidth,
+              ),
+              child: AdaptiveScaffold(
+                destinations: destinations,
+                navigationTheme: const AdaptiveScaffoldThemeData(
+                  extendedNavigationRailWidth: widgetWidth,
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Finder expandedRailFinder = find.byType(CustomNavigationRail);
+      expect(expandedRailFinder, findsOneWidget);
+      final Size expandedRailSize = tester.getSize(expandedRailFinder);
+      expect(expandedRailSize.width, widgetWidth);
+    },
+  );
+
+  testWidgets(
     "adaptive scaffold controller preserves legacy small layout until intent is explicit",
     (WidgetTester tester) async {
       final AdaptiveScaffoldController controller =

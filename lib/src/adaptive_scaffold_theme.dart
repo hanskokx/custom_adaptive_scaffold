@@ -425,6 +425,13 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   /// When null, defaults to [NavigationRailLabelType.all].
   NavigationRailLabelType? get expandedLabelType => _data?.expandedLabelType;
 
+  /// Optional width for extended navigation rails used on medium-large and up
+  /// breakpoints.
+  ///
+  /// When null, [AdaptiveScaffold] uses its `extendedNavigationRailWidth`
+  /// widget value (which defaults to `192`).
+  double? get extendedNavigationRailWidth => _data?.extendedNavigationRailWidth;
+
   /// Icon transition preset used by small breakpoint navigation bar and
   /// compact (medium breakpoint) navigation rail destinations.
   ///
@@ -506,15 +513,15 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   }
 }
 
-@immutable
-
 /// Optional, adaptive-navigation-specific data used by [AdaptiveScaffoldTheme].
+@immutable
 class AdaptiveScaffoldThemeData
     extends ThemeExtension<AdaptiveScaffoldThemeData> with Diagnosticable {
   /// Creates optional overrides for adaptive navigation behavior and styling.
   const AdaptiveScaffoldThemeData({
     this.compactLabelType,
     this.expandedLabelType,
+    this.extendedNavigationRailWidth,
     this.transitionAnimation = NavigationDestinationAnimation.none,
     this.transitionCurve = Curves.easeInOut,
     this.transitionDuration,
@@ -544,6 +551,13 @@ class AdaptiveScaffoldThemeData
   /// When null, defaults to [NavigationRailLabelType.all].
   final NavigationRailLabelType? expandedLabelType;
 
+  /// Optional width for extended navigation rails used on medium-large and up
+  /// breakpoints.
+  ///
+  /// When null, [AdaptiveScaffold] uses its `extendedNavigationRailWidth`
+  /// widget value (which defaults to `192`).
+  final double? extendedNavigationRailWidth;
+
   /// Icon transition preset used by small breakpoint navigation bar and
   /// compact (medium breakpoint) navigation rail destinations.
   ///
@@ -568,6 +582,7 @@ class AdaptiveScaffoldThemeData
   AdaptiveScaffoldThemeData copyWith({
     NavigationRailLabelType? compactLabelType,
     NavigationRailLabelType? expandedLabelType,
+    double? extendedNavigationRailWidth,
     NavigationDestinationAnimation? transitionAnimation,
     Curve? transitionCurve,
     Duration? transitionDuration,
@@ -577,6 +592,8 @@ class AdaptiveScaffoldThemeData
     return AdaptiveScaffoldThemeData(
       compactLabelType: compactLabelType ?? this.compactLabelType,
       expandedLabelType: expandedLabelType ?? this.expandedLabelType,
+      extendedNavigationRailWidth:
+          extendedNavigationRailWidth ?? this.extendedNavigationRailWidth,
       transitionAnimation: transitionAnimation ?? this.transitionAnimation,
       transitionCurve: transitionCurve ?? this.transitionCurve,
       transitionDuration: transitionDuration ?? this.transitionDuration,
@@ -597,6 +614,11 @@ class AdaptiveScaffoldThemeData
     return AdaptiveScaffoldThemeData(
       compactLabelType: t < 0.5 ? a.compactLabelType : b.compactLabelType,
       expandedLabelType: t < 0.5 ? a.expandedLabelType : b.expandedLabelType,
+      extendedNavigationRailWidth: lerpDouble(
+        a.extendedNavigationRailWidth,
+        b.extendedNavigationRailWidth,
+        t,
+      ),
       transitionAnimation:
           t < 0.5 ? a.transitionAnimation : b.transitionAnimation,
       transitionCurve: t < 0.5 ? a.transitionCurve : b.transitionCurve,
@@ -632,6 +654,7 @@ class AdaptiveScaffoldThemeData
   int get hashCode => Object.hashAll(<Object?>[
         compactLabelType,
         expandedLabelType,
+        extendedNavigationRailWidth,
         transitionAnimation,
         transitionCurve,
         transitionDuration,
@@ -650,6 +673,7 @@ class AdaptiveScaffoldThemeData
     return other is AdaptiveScaffoldThemeData &&
         other.compactLabelType == compactLabelType &&
         other.expandedLabelType == expandedLabelType &&
+        other.extendedNavigationRailWidth == extendedNavigationRailWidth &&
         other.transitionAnimation == transitionAnimation &&
         other.transitionCurve == transitionCurve &&
         other.transitionDuration == transitionDuration &&
@@ -670,6 +694,12 @@ class AdaptiveScaffoldThemeData
       EnumProperty<NavigationRailLabelType>(
         "expandedLabelType",
         expandedLabelType,
+      ),
+    );
+    properties.add(
+      DoubleProperty(
+        "extendedNavigationRailWidth",
+        extendedNavigationRailWidth,
       ),
     );
     properties.add(

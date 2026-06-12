@@ -822,6 +822,11 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           inheritedNavigationTheme?.expandedLabelType ??
           extensionNavigationTheme?.expandedLabelType ??
           NavigationRailLabelType.all,
+      extendedNavigationRailWidth:
+          widgetNavigationTheme?.extendedNavigationRailWidth ??
+              inheritedNavigationTheme?.extendedNavigationRailWidth ??
+              extensionNavigationTheme?.extendedNavigationRailWidth ??
+              widget.extendedNavigationRailWidth,
       transitionAnimation: widgetNavigationTheme?.transitionAnimation ??
           inheritedNavigationTheme?.transitionAnimation ??
           extensionNavigationTheme?.transitionAnimation ??
@@ -899,7 +904,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           widget.mediumLargeBreakpoint: SlotLayout.from(
             key: const Key("primaryNavigation1"),
             builder: (_) => AdaptiveScaffold.standardNavigationRail(
-              width: widget.extendedNavigationRailWidth,
+              width: effectiveNavigationTheme.extendedNavigationRailWidth ??
+                  widget.extendedNavigationRailWidth,
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
@@ -927,7 +933,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           widget.largeBreakpoint: SlotLayout.from(
             key: const Key("primaryNavigation2"),
             builder: (_) => AdaptiveScaffold.standardNavigationRail(
-              width: widget.extendedNavigationRailWidth,
+              width: effectiveNavigationTheme.extendedNavigationRailWidth ??
+                  widget.extendedNavigationRailWidth,
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
@@ -959,7 +966,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           widget.extraLargeBreakpoint: SlotLayout.from(
             key: const Key("primaryNavigation3"),
             builder: (_) => AdaptiveScaffold.standardNavigationRail(
-              width: widget.extendedNavigationRailWidth,
+              width: effectiveNavigationTheme.extendedNavigationRailWidth ??
+                  widget.extendedNavigationRailWidth,
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
