@@ -759,8 +759,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         AdaptiveScaffoldTheme.maybeOf(context);
     final AdaptiveScaffoldThemeData? widgetNavigationTheme =
         widget.navigationTheme;
-    final AdaptiveNavigationBarThemeData effectiveNavigationBarTheme =
-        AdaptiveNavigationBarThemeData(
+    final CustomNavigationBarThemeData effectiveNavigationBarTheme =
+        CustomNavigationBarThemeData(
       height: widgetNavigationTheme?.navigationBarTheme?.height ??
           inheritedNavigationTheme?.navigationBarTheme?.height ??
           extensionNavigationTheme?.navigationBarTheme?.height ??
@@ -783,6 +783,16 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               inheritedNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
               extensionNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
               navBarTheme.surfaceTintColor,
+      indicatorColor:
+          widgetNavigationTheme?.navigationBarTheme?.indicatorColor ??
+              inheritedNavigationTheme?.navigationBarTheme?.indicatorColor ??
+              extensionNavigationTheme?.navigationBarTheme?.indicatorColor ??
+              navBarTheme.indicatorColor,
+      indicatorShape:
+          widgetNavigationTheme?.navigationBarTheme?.indicatorShape ??
+              inheritedNavigationTheme?.navigationBarTheme?.indicatorShape ??
+              extensionNavigationTheme?.navigationBarTheme?.indicatorShape ??
+              navBarTheme.indicatorShape,
       border: widgetNavigationTheme?.navigationBarTheme?.border ??
           inheritedNavigationTheme?.navigationBarTheme?.border ??
           extensionNavigationTheme?.navigationBarTheme?.border,
@@ -822,8 +832,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
           extensionNavigationTheme?.navigationBarTheme?.labelPadding ??
           navBarTheme.labelPadding,
     );
-    final AdaptiveNavigationRailThemeData effectiveNavigationRailTheme =
-        AdaptiveNavigationRailThemeData(
+    final CustomNavigationRailThemeData effectiveNavigationRailTheme =
+        CustomNavigationRailThemeData(
       backgroundColor:
           widgetNavigationTheme?.navigationRailTheme?.backgroundColor ??
               inheritedNavigationTheme?.navigationRailTheme?.backgroundColor ??
@@ -945,18 +955,18 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     );
     final NavigationIndicatorThemeData effectiveBarIndicatorStyle =
         NavigationIndicatorThemeData(
-      destinationFillRegion:
-          effectiveNavigationBarTheme.indicatorStyle?.destinationFillRegion ??
-              effectiveSharedIndicatorStyle.destinationFillRegion,
-      destinationHoverRegion:
-          effectiveNavigationBarTheme.indicatorStyle?.destinationHoverRegion ??
-              effectiveSharedIndicatorStyle.destinationHoverRegion,
-      interactionShape:
-          effectiveNavigationBarTheme.indicatorStyle?.interactionShape ??
-              effectiveSharedIndicatorStyle.interactionShape,
-      shape: effectiveNavigationBarTheme.indicatorStyle?.shape ??
+      destinationFillRegion: effectiveNavigationBarTheme
+              .resolvedIndicatorStyle?.destinationFillRegion ??
+          effectiveSharedIndicatorStyle.destinationFillRegion,
+      destinationHoverRegion: effectiveNavigationBarTheme
+              .resolvedIndicatorStyle?.destinationHoverRegion ??
+          effectiveSharedIndicatorStyle.destinationHoverRegion,
+      interactionShape: effectiveNavigationBarTheme
+              .resolvedIndicatorStyle?.interactionShape ??
+          effectiveSharedIndicatorStyle.interactionShape,
+      shape: effectiveNavigationBarTheme.resolvedIndicatorStyle?.shape ??
           effectiveSharedIndicatorStyle.shape,
-      color: effectiveNavigationBarTheme.indicatorStyle?.color ??
+      color: effectiveNavigationBarTheme.resolvedIndicatorStyle?.color ??
           effectiveSharedIndicatorStyle.color,
     );
     final AdaptiveScaffoldThemeData effectiveNavigationTheme =

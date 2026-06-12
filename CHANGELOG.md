@@ -37,11 +37,15 @@ navigationTheme: const AdaptiveScaffoldThemeData(
 ),
 ```
 
-* **[BREAKING] Removed `CustomNavigationBarTheme` and `CustomNavigationBarThemeData` API surface**
-  * Migrate bar styling to
-    `AdaptiveScaffoldThemeData(navigationBarTheme: AdaptiveNavigationBarThemeData(...))`.
-  * Migrate indicator/interaction styling to
-    `AdaptiveScaffoldThemeData(indicatorStyle: NavigationIndicatorThemeData(...))`.
+* **[CHANGE] Navigation theming now follows a framework-first compatibility model**
+  * `CustomNavigationBarThemeData` and `CustomNavigationRailThemeData`
+    align shared fields with Flutter's `NavigationBarThemeData` and
+    `NavigationRailThemeData` while keeping package-only fields additive.
+  * `AdaptiveScaffoldThemeData(navigationBarTheme: ...)` remains the primary
+    adaptive entry point for bar styling.
+  * `CustomNavigationBarTheme` is available again as an additive, namespaced
+    wrapper for direct widget theming alongside Flutter's own
+    `NavigationBarTheme`.
 
 Before:
 
@@ -64,7 +68,7 @@ After:
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldThemeData(
-    navigationBarTheme: AdaptiveNavigationBarThemeData(
+    navigationBarTheme: CustomNavigationBarThemeData(
       margin: EdgeInsets.symmetric(horizontal: 12),
       padding: EdgeInsets.symmetric(horizontal: 8),
       tooltipVerticalOffset: 56,
@@ -81,14 +85,16 @@ AdaptiveScaffold(
     1. `AdaptiveScaffold.navigationTheme`
     2. nearest `AdaptiveScaffoldTheme`
     3. `ThemeData.extensions`
-    4. defaults
+    4. `ThemeData.navigationRailTheme` / `ThemeData.navigationBarTheme`
+    5. defaults
 
 * **[FEAT] `AdaptiveScaffoldThemeData` now includes nested navigation theming**
-  * Added `navigationBarTheme: AdaptiveNavigationBarThemeData(...)` for
+  * Added `navigationBarTheme: CustomNavigationBarThemeData(...)` for
     bar-only fields like `height`, `backgroundColor`, `elevation`,
-    `shadowColor`, `surfaceTintColor`, `labelTextStyle`, `iconTheme`,
-    `labelBehavior`, `overlayColor`, `border`, `margin`, `padding`,
-    `tooltipVerticalOffset`, and `labelPadding`.
+    `shadowColor`, `surfaceTintColor`, `indicatorColor`, `indicatorShape`,
+    `labelTextStyle`, `iconTheme`, `labelBehavior`, `overlayColor`,
+    `border`, `margin`, `padding`, `tooltipVerticalOffset`, and
+    `labelPadding`.
   * Added optional local
     `navigationBarTheme.indicatorStyle: NavigationIndicatorThemeData(...)`
     to override top-level indicator behavior for bar-only layouts.
@@ -96,7 +102,7 @@ AdaptiveScaffold(
     and interaction styling.
 
 * **[FEAT] `AdaptiveScaffoldThemeData` now includes `navigationRailTheme`**
-  * Added `navigationRailTheme: AdaptiveNavigationRailThemeData(...)` for
+  * Added `navigationRailTheme: CustomNavigationRailThemeData(...)` for
     rail-specific styling fields:
     `backgroundColor`, `elevation`, `shadowColor`, `surfaceTintColor`,
     `border`, `margin`, `padding`, `selectedIconTheme`,
@@ -125,6 +131,14 @@ AdaptiveScaffold(
 * **[CHANGE] `navigationBarTheme` now explicitly falls back to `ThemeData.navigationBarTheme`**
   * `AdaptiveScaffold` applies the same fallback strategy for bar fields
     that have direct `NavigationBarThemeData` equivalents.
+
+* **[FEAT] Added framework interop helpers and coexistence coverage for custom navigation themes**
+  * `CustomNavigationBarThemeData` now supports shared-field conversion to and
+    from `NavigationBarThemeData`.
+  * `CustomNavigationRailThemeData` now supports shared-field conversion to and
+    from `NavigationRailThemeData`.
+  * Added compatibility tests to verify package widgets work alongside
+    Flutter's original `NavigationBar` and `NavigationRail` widgets.
 
 * **[CHANGE] `AdaptiveScaffoldNavigationThemeData` renamed in docs to `AdaptiveScaffoldThemeData`**
   * A deprecated alias typedef (`AdaptiveScaffoldNavigationThemeData`) still
@@ -209,7 +223,7 @@ AdaptiveScaffold(
     `destinationFillRegion: NavigationDestinationRegion.full` explicitly.
 * **[CHANGE] Custom navigation theme data now uses nullable layout and
   tooltip fields**
-  * `AdaptiveNavigationBarThemeData.margin`, `padding`, and
+  * `CustomNavigationBarThemeData.margin`, `padding`, and
     `tooltipVerticalOffset` are now nullable.
   * `CustomNavigationRailThemeData.margin` and `padding` are now nullable.
   * Migration: if you read these values directly, handle `null` and resolve

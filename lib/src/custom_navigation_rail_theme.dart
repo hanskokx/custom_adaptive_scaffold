@@ -8,6 +8,8 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:flutter/rendering.dart";
 
+import "navigation_indicator_theme.dart";
+
 // Examples can assume:
 // late BuildContext context;
 
@@ -40,17 +42,24 @@ class CustomNavigationRailThemeData
   const CustomNavigationRailThemeData({
     this.backgroundColor,
     this.elevation,
+    this.shadowColor,
+    this.surfaceTintColor,
+    this.border,
     this.unselectedLabelTextStyle,
     this.selectedLabelTextStyle,
     this.unselectedIconTheme,
     this.selectedIconTheme,
     this.groupAlignment,
     this.labelType,
+    this.compactLabelType,
+    this.expandedLabelType,
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
+    this.indicatorStyle,
     this.minWidth,
     this.minExtendedWidth,
+    this.extendedNavigationRailWidth,
     this.margin,
     this.padding,
   });
@@ -62,6 +71,15 @@ class CustomNavigationRailThemeData
   /// The z-coordinate to be used for the [NavigationRail]'s elevation.
   @override
   final double? elevation;
+
+  /// The color used for the rail's drop shadow.
+  final Color? shadowColor;
+
+  /// The color used as an overlay on the rail surface to indicate elevation.
+  final Color? surfaceTintColor;
+
+  /// Optional border around the outer rail surface.
+  final BorderSide? border;
 
   /// The style to merge with the default text style for
   /// [NavigationRailDestination] labels, when the destination is not selected.
@@ -93,6 +111,12 @@ class CustomNavigationRailThemeData
   @override
   final NavigationRailLabelType? labelType;
 
+  /// Optional label behavior for compact rail breakpoints in AdaptiveScaffold.
+  final NavigationRailLabelType? compactLabelType;
+
+  /// Optional label behavior for expanded rail breakpoints in AdaptiveScaffold.
+  final NavigationRailLabelType? expandedLabelType;
+
   /// Whether or not the selected [NavigationRailDestination] should include a
   /// [NavigationIndicator].
   @override
@@ -107,6 +131,9 @@ class CustomNavigationRailThemeData
   @override
   final ShapeBorder? indicatorShape;
 
+  /// Optional indicator-style override scoped to the navigation rail.
+  final NavigationIndicatorThemeData? indicatorStyle;
+
   /// Overrides the default value of [NavigationRail]'s minimum width when it
   /// is not extended.
   @override
@@ -117,11 +144,55 @@ class CustomNavigationRailThemeData
   @override
   final double? minExtendedWidth;
 
+  /// Optional width for extended navigation rails used by AdaptiveScaffold.
+  final double? extendedNavigationRailWidth;
+
   /// Applies a margin around navigation items.
   final EdgeInsetsGeometry? margin;
 
   /// Applies padding around navigation item content.
   final EdgeInsetsGeometry? padding;
+
+  /// Converts this custom rail theme data into framework
+  /// [NavigationRailThemeData].
+  NavigationRailThemeData toNavigationRailThemeData() {
+    return NavigationRailThemeData(
+      backgroundColor: backgroundColor,
+      elevation: elevation,
+      unselectedLabelTextStyle: unselectedLabelTextStyle,
+      selectedLabelTextStyle: selectedLabelTextStyle,
+      unselectedIconTheme: unselectedIconTheme,
+      selectedIconTheme: selectedIconTheme,
+      groupAlignment: groupAlignment,
+      labelType: labelType,
+      useIndicator: useIndicator,
+      indicatorColor: indicatorStyle?.color ?? indicatorColor,
+      indicatorShape: indicatorStyle?.shape ?? indicatorShape,
+      minWidth: minWidth,
+      minExtendedWidth: minExtendedWidth,
+    );
+  }
+
+  /// Creates custom rail theme data from framework [NavigationRailThemeData].
+  factory CustomNavigationRailThemeData.fromNavigationRailThemeData(
+    NavigationRailThemeData data,
+  ) {
+    return CustomNavigationRailThemeData(
+      backgroundColor: data.backgroundColor,
+      elevation: data.elevation,
+      unselectedLabelTextStyle: data.unselectedLabelTextStyle,
+      selectedLabelTextStyle: data.selectedLabelTextStyle,
+      unselectedIconTheme: data.unselectedIconTheme,
+      selectedIconTheme: data.selectedIconTheme,
+      groupAlignment: data.groupAlignment,
+      labelType: data.labelType,
+      useIndicator: data.useIndicator,
+      indicatorColor: data.indicatorColor,
+      indicatorShape: data.indicatorShape,
+      minWidth: data.minWidth,
+      minExtendedWidth: data.minExtendedWidth,
+    );
+  }
 
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
@@ -129,23 +200,33 @@ class CustomNavigationRailThemeData
   CustomNavigationRailThemeData copyWith({
     Color? backgroundColor,
     double? elevation,
+    Color? shadowColor,
+    Color? surfaceTintColor,
+    BorderSide? border,
     TextStyle? unselectedLabelTextStyle,
     TextStyle? selectedLabelTextStyle,
     IconThemeData? unselectedIconTheme,
     IconThemeData? selectedIconTheme,
     double? groupAlignment,
     NavigationRailLabelType? labelType,
+    NavigationRailLabelType? compactLabelType,
+    NavigationRailLabelType? expandedLabelType,
     bool? useIndicator,
     Color? indicatorColor,
     ShapeBorder? indicatorShape,
+    NavigationIndicatorThemeData? indicatorStyle,
     double? minWidth,
     double? minExtendedWidth,
+    double? extendedNavigationRailWidth,
     EdgeInsetsGeometry? margin,
     EdgeInsetsGeometry? padding,
   }) {
     return CustomNavigationRailThemeData(
       backgroundColor: backgroundColor ?? this.backgroundColor,
       elevation: elevation ?? this.elevation,
+      shadowColor: shadowColor ?? this.shadowColor,
+      surfaceTintColor: surfaceTintColor ?? this.surfaceTintColor,
+      border: border ?? this.border,
       unselectedLabelTextStyle:
           unselectedLabelTextStyle ?? this.unselectedLabelTextStyle,
       selectedLabelTextStyle:
@@ -154,11 +235,16 @@ class CustomNavigationRailThemeData
       selectedIconTheme: selectedIconTheme ?? this.selectedIconTheme,
       groupAlignment: groupAlignment ?? this.groupAlignment,
       labelType: labelType ?? this.labelType,
+      compactLabelType: compactLabelType ?? this.compactLabelType,
+      expandedLabelType: expandedLabelType ?? this.expandedLabelType,
       useIndicator: useIndicator ?? this.useIndicator,
       indicatorColor: indicatorColor ?? this.indicatorColor,
       indicatorShape: indicatorShape ?? this.indicatorShape,
+      indicatorStyle: indicatorStyle ?? this.indicatorStyle,
       minWidth: minWidth ?? this.minWidth,
       minExtendedWidth: minExtendedWidth ?? this.minExtendedWidth,
+      extendedNavigationRailWidth:
+          extendedNavigationRailWidth ?? this.extendedNavigationRailWidth,
       margin: margin ?? this.margin,
       padding: padding ?? this.padding,
     );
@@ -180,6 +266,15 @@ class CustomNavigationRailThemeData
     return CustomNavigationRailThemeData(
       backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
       elevation: lerpDouble(a?.elevation, b?.elevation, t),
+      shadowColor: Color.lerp(a?.shadowColor, b?.shadowColor, t),
+      surfaceTintColor: Color.lerp(a?.surfaceTintColor, b?.surfaceTintColor, t),
+      border: a?.border == null && b?.border == null
+          ? null
+          : BorderSide.lerp(
+              a?.border ?? BorderSide.none,
+              b?.border ?? BorderSide.none,
+              t,
+            ),
       unselectedLabelTextStyle: TextStyle.lerp(
         a?.unselectedLabelTextStyle,
         b?.unselectedLabelTextStyle,
@@ -204,34 +299,53 @@ class CustomNavigationRailThemeData
           : IconThemeData.lerp(a?.selectedIconTheme, b?.selectedIconTheme, t),
       groupAlignment: lerpDouble(a?.groupAlignment, b?.groupAlignment, t),
       labelType: t < 0.5 ? a?.labelType : b?.labelType,
+      compactLabelType: t < 0.5 ? a?.compactLabelType : b?.compactLabelType,
+      expandedLabelType: t < 0.5 ? a?.expandedLabelType : b?.expandedLabelType,
       useIndicator: t < 0.5 ? a?.useIndicator : b?.useIndicator,
       indicatorColor: Color.lerp(a?.indicatorColor, b?.indicatorColor, t),
       indicatorShape: ShapeBorder.lerp(a?.indicatorShape, b?.indicatorShape, t),
+      indicatorStyle: NavigationIndicatorThemeData.lerp(
+        a?.indicatorStyle,
+        b?.indicatorStyle,
+        t,
+      ),
       minWidth: lerpDouble(a?.minWidth, b?.minWidth, t),
       minExtendedWidth: lerpDouble(a?.minExtendedWidth, b?.minExtendedWidth, t),
+      extendedNavigationRailWidth: lerpDouble(
+        a?.extendedNavigationRailWidth,
+        b?.extendedNavigationRailWidth,
+        t,
+      ),
       margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
       padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
     );
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll(<Object?>[
         backgroundColor,
         elevation,
+        shadowColor,
+        surfaceTintColor,
+        border,
         unselectedLabelTextStyle,
         selectedLabelTextStyle,
         unselectedIconTheme,
         selectedIconTheme,
         groupAlignment,
         labelType,
+        compactLabelType,
+        expandedLabelType,
         useIndicator,
         indicatorColor,
         indicatorShape,
+        indicatorStyle,
         minWidth,
         minExtendedWidth,
+        extendedNavigationRailWidth,
         margin,
         padding,
-      );
+      ]);
 
   @override
   bool operator ==(Object other) {
@@ -244,17 +358,24 @@ class CustomNavigationRailThemeData
     return other is CustomNavigationRailThemeData &&
         other.backgroundColor == backgroundColor &&
         other.elevation == elevation &&
+        other.shadowColor == shadowColor &&
+        other.surfaceTintColor == surfaceTintColor &&
+        other.border == border &&
         other.unselectedLabelTextStyle == unselectedLabelTextStyle &&
         other.selectedLabelTextStyle == selectedLabelTextStyle &&
         other.unselectedIconTheme == unselectedIconTheme &&
         other.selectedIconTheme == selectedIconTheme &&
         other.groupAlignment == groupAlignment &&
         other.labelType == labelType &&
+        other.compactLabelType == compactLabelType &&
+        other.expandedLabelType == expandedLabelType &&
         other.useIndicator == useIndicator &&
         other.indicatorColor == indicatorColor &&
         other.indicatorShape == indicatorShape &&
+        other.indicatorStyle == indicatorStyle &&
         other.minWidth == minWidth &&
         other.minExtendedWidth == minExtendedWidth &&
+        other.extendedNavigationRailWidth == extendedNavigationRailWidth &&
         other.margin == margin &&
         other.padding == padding;
   }
@@ -277,6 +398,27 @@ class CustomNavigationRailThemeData
         "elevation",
         elevation,
         defaultValue: defaultData.elevation,
+      ),
+    );
+    properties.add(
+      ColorProperty(
+        "shadowColor",
+        shadowColor,
+        defaultValue: defaultData.shadowColor,
+      ),
+    );
+    properties.add(
+      ColorProperty(
+        "surfaceTintColor",
+        surfaceTintColor,
+        defaultValue: defaultData.surfaceTintColor,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<BorderSide?>(
+        "border",
+        border,
+        defaultValue: defaultData.border,
       ),
     );
     properties.add(
@@ -322,6 +464,20 @@ class CustomNavigationRailThemeData
       ),
     );
     properties.add(
+      DiagnosticsProperty<NavigationRailLabelType?>(
+        "compactLabelType",
+        compactLabelType,
+        defaultValue: defaultData.compactLabelType,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<NavigationRailLabelType?>(
+        "expandedLabelType",
+        expandedLabelType,
+        defaultValue: defaultData.expandedLabelType,
+      ),
+    );
+    properties.add(
       DiagnosticsProperty<bool>(
         "useIndicator",
         useIndicator,
@@ -343,6 +499,13 @@ class CustomNavigationRailThemeData
       ),
     );
     properties.add(
+      DiagnosticsProperty<NavigationIndicatorThemeData?>(
+        "indicatorStyle",
+        indicatorStyle,
+        defaultValue: defaultData.indicatorStyle,
+      ),
+    );
+    properties.add(
       DoubleProperty(
         "minWidth",
         minWidth,
@@ -354,6 +517,13 @@ class CustomNavigationRailThemeData
         "minExtendedWidth",
         minExtendedWidth,
         defaultValue: defaultData.minExtendedWidth,
+      ),
+    );
+    properties.add(
+      DoubleProperty(
+        "extendedNavigationRailWidth",
+        extendedNavigationRailWidth,
+        defaultValue: defaultData.extendedNavigationRailWidth,
       ),
     );
     properties.add(

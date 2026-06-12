@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         extensions: const <ThemeExtension<dynamic>>[
           AdaptiveScaffoldThemeData(
-            navigationRailTheme: AdaptiveNavigationRailThemeData(
+            navigationRailTheme: CustomNavigationRailThemeData(
               extendedNavigationRailWidth: 224,
             ),
           ),

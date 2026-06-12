@@ -41,16 +41,21 @@ several places:
     `navigationTheme: AdaptiveScaffoldThemeData(...)` and
     `ThemeData.extensions`.
 - Theme extensions:
-  - `AdaptiveNavigationRailThemeData`: `backgroundColor`, `elevation`,
+  - `CustomNavigationRailThemeData`: `backgroundColor`, `elevation`,
     `shadowColor`, `surfaceTintColor`, `border`, `margin`, `padding`,
     icon/label styles, compact/expanded label behavior,
     `extendedNavigationRailWidth`, and rail-local `indicatorStyle`.
-  - `AdaptiveNavigationBarThemeData`: `border`, `margin`, `padding`,
+  - `CustomNavigationBarThemeData`: framework-compatible bar fields like
+    `height`, `backgroundColor`, `elevation`, `shadowColor`,
+    `surfaceTintColor`, `indicatorColor`, `indicatorShape`,
+    `labelTextStyle`, `iconTheme`, `labelBehavior`, `overlayColor`, and
+    `labelPadding`, plus package-only `border`, `margin`, `padding`,
     `tooltipVerticalOffset`, and bar-local `indicatorStyle`.
-  - `CustomNavigationRailThemeData`: `margin`, `padding`.
 - Compatibility bridge behavior:
   - Adaptive destination normalization allows using plain
     `NavigationDestination` inputs in APIs that render custom destinations.
+  - `CustomNavigationBarTheme` and `CustomNavigationRailTheme` can be used as
+    namespaced wrappers alongside Flutter's framework themes.
 
 To see examples of using these widgets to make a simple but common adaptive
 layout:
@@ -390,7 +395,7 @@ Navigation behavior overrides are also configured through
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldThemeData(
-    navigationRailTheme: AdaptiveNavigationRailThemeData(
+    navigationRailTheme: CustomNavigationRailThemeData(
       compactLabelType: NavigationRailLabelType.selected,
       expandedLabelType: NavigationRailLabelType.all,
       extendedNavigationRailWidth: 224,
@@ -411,7 +416,7 @@ MaterialApp(
   theme: ThemeData(
     extensions: const <ThemeExtension<dynamic>>[
       AdaptiveScaffoldThemeData(
-        navigationRailTheme: AdaptiveNavigationRailThemeData(
+        navigationRailTheme: CustomNavigationRailThemeData(
           compactLabelType: NavigationRailLabelType.selected,
         ),
         indicatorStyle: NavigationIndicatorThemeData(
@@ -438,7 +443,7 @@ MaterialApp(
   theme: ThemeData(
     extensions: const <ThemeExtension<dynamic>>[
       AdaptiveScaffoldThemeData(
-        navigationRailTheme: AdaptiveNavigationRailThemeData(
+        navigationRailTheme: CustomNavigationRailThemeData(
           compactLabelType: NavigationRailLabelType.selected,
         ),
       ),
@@ -455,7 +460,7 @@ MaterialApp(
     useMaterial3: true,
     extensions: const <ThemeExtension<dynamic>>[
       AdaptiveScaffoldThemeData(
-        navigationRailTheme: AdaptiveNavigationRailThemeData(
+        navigationRailTheme: CustomNavigationRailThemeData(
           compactLabelType: NavigationRailLabelType.selected,
           expandedLabelType: NavigationRailLabelType.all,
           extendedNavigationRailWidth: 224,
@@ -496,13 +501,13 @@ the adaptive theme, use `navigationBarTheme`:
 AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldThemeData(
-    navigationRailTheme: AdaptiveNavigationRailThemeData(
+    navigationRailTheme: CustomNavigationRailThemeData(
       border: BorderSide(color: Color(0xFFCCCDD3)),
       indicatorStyle: NavigationIndicatorThemeData(
         destinationFillRegion: NavigationDestinationRegion.content,
       ),
     ),
-    navigationBarTheme: AdaptiveNavigationBarThemeData(
+    navigationBarTheme: CustomNavigationBarThemeData(
       height: 88,
       labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
       border: BorderSide(color: Color(0xFFCCCDD3)),
@@ -530,7 +535,7 @@ MaterialApp(
   theme: ThemeData(
     extensions: const <ThemeExtension<dynamic>>[
       AdaptiveScaffoldThemeData(
-        navigationBarTheme: AdaptiveNavigationBarThemeData(
+        navigationBarTheme: CustomNavigationBarThemeData(
           height: 84,
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         ),
@@ -538,6 +543,57 @@ MaterialApp(
     ],
   ),
 )
+```
+
+For widget-level namespaced theming that still cooperates with Flutter's own
+`NavigationBarTheme`, you can also wrap package widgets directly:
+
+```dart
+MaterialApp(
+  theme: ThemeData(
+    navigationBarTheme: const NavigationBarThemeData(
+      backgroundColor: Color(0xFFF1F3F4),
+    ),
+  ),
+  home: CustomNavigationBarTheme(
+    data: const CustomNavigationBarThemeData(
+      margin: EdgeInsets.symmetric(horizontal: 12),
+      tooltipVerticalOffset: 56,
+    ),
+    child: Scaffold(
+      bottomNavigationBar: CustomNavigationBar(
+        selectedIndex: 0,
+        destinations: const <Widget>[
+          CustomNavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            label: "Home",
+          ),
+          CustomNavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            label: "Settings",
+          ),
+        ],
+        onDestinationSelected: (_) {},
+      ),
+    ),
+  ),
+)
+```
+
+When both Flutter and package theme APIs are imported in the same file,
+prefer import aliases for clarity:
+
+```dart
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart" as cas;
+import "package:flutter/material.dart" as m3;
+
+final cas.CustomNavigationBarThemeData customBar =
+    const cas.CustomNavigationBarThemeData(
+  margin: EdgeInsets.symmetric(horizontal: 12),
+);
+
+final m3.NavigationBarThemeData frameworkBar =
+    customBar.toNavigationBarThemeData();
 ```
 
 Theme precedence is:
@@ -563,6 +619,12 @@ Notes:
 - Local `indicatorStyle` on `navigationBarTheme` and `navigationRailTheme`
   takes precedence over top-level `AdaptiveScaffoldThemeData.indicatorStyle`
   for that component.
+- `CustomNavigationBarThemeData` and `CustomNavigationRailThemeData` are
+  framework-first theme objects: shared fields align with Flutter's
+  `NavigationBarThemeData` and `NavigationRailThemeData`, and package-only
+  fields stay additive.
+- Both custom theme data classes expose conversion helpers for shared-field
+  interop with Flutter themes.
 
 3.x compatibility note:
 

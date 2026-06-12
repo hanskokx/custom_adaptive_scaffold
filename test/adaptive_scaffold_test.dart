@@ -1021,7 +1021,7 @@ void main() {
             ),
             extensions: const <ThemeExtension<dynamic>>[
               AdaptiveScaffoldThemeData(
-                navigationRailTheme: AdaptiveNavigationRailThemeData(
+                navigationRailTheme: CustomNavigationRailThemeData(
                   compactLabelType: NavigationRailLabelType.all,
                 ),
               ),
@@ -1031,7 +1031,7 @@ void main() {
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffoldTheme(
               data: const AdaptiveScaffoldThemeData(
-                navigationRailTheme: AdaptiveNavigationRailThemeData(
+                navigationRailTheme: CustomNavigationRailThemeData(
                   compactLabelType: NavigationRailLabelType.selected,
                 ),
               ),
@@ -1039,7 +1039,7 @@ void main() {
                 destinations: destinations,
                 navigationTheme: const AdaptiveScaffoldThemeData(
                   compactLabelType: NavigationRailLabelType.none,
-                  navigationRailTheme: AdaptiveNavigationRailThemeData(
+                  navigationRailTheme: CustomNavigationRailThemeData(
                     compactLabelType: NavigationRailLabelType.all,
                   ),
                 ),
@@ -1395,7 +1395,7 @@ void main() {
           theme: ThemeData(
             extensions: const <ThemeExtension<dynamic>>[
               AdaptiveScaffoldThemeData(
-                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                navigationBarTheme: CustomNavigationBarThemeData(
                   height: extensionHeight,
                   labelBehavior: extensionLabelBehavior,
                 ),
@@ -1409,7 +1409,7 @@ void main() {
             data: const MediaQueryData(size: Size(500, 800)),
             child: AdaptiveScaffoldTheme(
               data: const AdaptiveScaffoldThemeData(
-                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                navigationBarTheme: CustomNavigationBarThemeData(
                   height: inheritedHeight,
                   labelBehavior: inheritedLabelBehavior,
                 ),
@@ -1420,7 +1420,7 @@ void main() {
               child: AdaptiveScaffold(
                 destinations: destinations,
                 navigationTheme: const AdaptiveScaffoldThemeData(
-                  navigationBarTheme: AdaptiveNavigationBarThemeData(
+                  navigationBarTheme: CustomNavigationBarThemeData(
                     height: widgetHeight,
                     labelBehavior: widgetLabelBehavior,
                   ),
@@ -1486,7 +1486,7 @@ void main() {
                   interactionShape:
                       WidgetStatePropertyAll<ShapeBorder?>(sharedShape),
                 ),
-                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                navigationBarTheme: CustomNavigationBarThemeData(
                   indicatorStyle: NavigationIndicatorThemeData(
                     interactionShape:
                         WidgetStatePropertyAll<ShapeBorder?>(localShape),
@@ -1541,7 +1541,7 @@ void main() {
                   interactionShape:
                       WidgetStatePropertyAll<ShapeBorder?>(sharedShape),
                 ),
-                navigationRailTheme: AdaptiveNavigationRailThemeData(
+                navigationRailTheme: CustomNavigationRailThemeData(
                   indicatorStyle: NavigationIndicatorThemeData(
                     interactionShape:
                         WidgetStatePropertyAll<ShapeBorder?>(localShape),
@@ -1604,7 +1604,7 @@ void main() {
           theme: ThemeData(
             extensions: const <ThemeExtension<dynamic>>[
               AdaptiveScaffoldThemeData(
-                navigationRailTheme: AdaptiveNavigationRailThemeData(
+                navigationRailTheme: CustomNavigationRailThemeData(
                   elevation: extensionElevation,
                   shadowColor: extensionShadow,
                   surfaceTintColor: extensionTint,
@@ -1619,7 +1619,7 @@ void main() {
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffoldTheme(
               data: const AdaptiveScaffoldThemeData(
-                navigationRailTheme: AdaptiveNavigationRailThemeData(
+                navigationRailTheme: CustomNavigationRailThemeData(
                   elevation: inheritedElevation,
                   shadowColor: inheritedShadow,
                   surfaceTintColor: inheritedTint,
@@ -1631,7 +1631,7 @@ void main() {
               child: AdaptiveScaffold(
                 destinations: destinations,
                 navigationTheme: const AdaptiveScaffoldThemeData(
-                  navigationRailTheme: AdaptiveNavigationRailThemeData(
+                  navigationRailTheme: CustomNavigationRailThemeData(
                     elevation: widgetElevation,
                     shadowColor: widgetShadow,
                     surfaceTintColor: widgetTint,
@@ -1682,7 +1682,7 @@ void main() {
           theme: ThemeData(
             extensions: const <ThemeExtension<dynamic>>[
               AdaptiveScaffoldThemeData(
-                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                navigationBarTheme: CustomNavigationBarThemeData(
                   border: extensionBorder,
                 ),
               ),
@@ -1692,14 +1692,14 @@ void main() {
             data: const MediaQueryData(size: Size(500, 800)),
             child: AdaptiveScaffoldTheme(
               data: const AdaptiveScaffoldThemeData(
-                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                navigationBarTheme: CustomNavigationBarThemeData(
                   border: inheritedBorder,
                 ),
               ),
               child: AdaptiveScaffold(
                 destinations: destinations,
                 navigationTheme: const AdaptiveScaffoldThemeData(
-                  navigationBarTheme: AdaptiveNavigationBarThemeData(
+                  navigationBarTheme: CustomNavigationBarThemeData(
                     border: widgetBorder,
                   ),
                 ),
@@ -1796,7 +1796,7 @@ void main() {
           theme: ThemeData(
             extensions: const <ThemeExtension<dynamic>>[
               AdaptiveScaffoldThemeData(
-                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                navigationBarTheme: CustomNavigationBarThemeData(
                   margin: extensionMargin,
                   padding: extensionPadding,
                 ),
@@ -1807,7 +1807,7 @@ void main() {
             data: const MediaQueryData(size: Size(500, 800)),
             child: AdaptiveScaffoldTheme(
               data: const AdaptiveScaffoldThemeData(
-                navigationBarTheme: AdaptiveNavigationBarThemeData(
+                navigationBarTheme: CustomNavigationBarThemeData(
                   margin: inheritedMargin,
                   padding: inheritedPadding,
                 ),
@@ -1815,7 +1815,7 @@ void main() {
               child: AdaptiveScaffold(
                 destinations: destinations,
                 navigationTheme: const AdaptiveScaffoldThemeData(
-                  navigationBarTheme: AdaptiveNavigationBarThemeData(
+                  navigationBarTheme: CustomNavigationBarThemeData(
                     margin: widgetMargin,
                     padding: widgetPadding,
                   ),
@@ -1937,6 +1937,54 @@ void main() {
           .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
       expect(compactRail.selectedLabelTextStyle, selectedStyle);
       expect(compactRail.unselectedLabelTextStyle, unselectedStyle);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold falls back to ThemeData bar indicatorColor and shape",
+    (WidgetTester tester) async {
+      const Color fallbackIndicatorColor = Color(0xFFAB47BC);
+      const ShapeBorder fallbackIndicatorShape = StadiumBorder();
+
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        CustomNavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        CustomNavigationDestination(
+          icon: Icon(Icons.account_circle),
+          label: "Profile",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const NavigationBarThemeData(
+              indicatorColor: fallbackIndicatorColor,
+              indicatorShape: fallbackIndicatorShape,
+            ),
+          ),
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(500, 800)),
+            child: AdaptiveScaffold(
+              destinations: destinations,
+            ),
+          ),
+        ),
+      );
+
+      final NavigationBarTheme navBarTheme = tester.widget<NavigationBarTheme>(
+        find
+            .ancestor(
+              of: find.byType(CustomNavigationBar),
+              matching: find.byType(NavigationBarTheme),
+            )
+            .first,
+      );
+
+      expect(navBarTheme.data.indicatorColor, fallbackIndicatorColor);
+      expect(navBarTheme.data.indicatorShape, fallbackIndicatorShape);
     },
   );
 

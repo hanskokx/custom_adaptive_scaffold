@@ -513,4 +513,153 @@ void main() {
       expect(extendedWidth, greaterThan(compactWidth));
     });
   }
+
+  testWidgets(
+    "framework and package NavigationBar coexist under one NavigationBarTheme",
+    (WidgetTester tester) async {
+      const Color themedColor = Color(0xFF00897B);
+      const double themedElevation = 6;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const NavigationBarThemeData(
+              backgroundColor: themedColor,
+              elevation: themedElevation,
+            ),
+          ),
+          home: Scaffold(
+            body: Column(
+              children: <Widget>[
+                Expanded(
+                  child: _buildNavigationBar(
+                    impl: _WidgetImpl.framework,
+                    selectedIndex: 0,
+                    onSelected: (_) {},
+                  ),
+                ),
+                Expanded(
+                  child: _buildNavigationBar(
+                    impl: _WidgetImpl.package,
+                    selectedIndex: 0,
+                    onSelected: (_) {},
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Finder frameworkMaterial = find.descendant(
+        of: _barFinder(_WidgetImpl.framework),
+        matching: find.byType(Material),
+      );
+      final Finder packageMaterial = find.descendant(
+        of: _barFinder(_WidgetImpl.package),
+        matching: find.byType(Material),
+      );
+
+      expect(
+        tester.widget<Material>(frameworkMaterial.first).color,
+        themedColor,
+      );
+      expect(
+        tester.widget<Material>(frameworkMaterial.first).elevation,
+        themedElevation,
+      );
+      expect(tester.widget<Material>(packageMaterial.first).color, themedColor);
+      expect(
+        tester.widget<Material>(packageMaterial.first).elevation,
+        themedElevation,
+      );
+    },
+  );
+
+  testWidgets(
+    "framework and package NavigationRail coexist under one NavigationRailTheme",
+    (WidgetTester tester) async {
+      const TextStyle selectedStyle = TextStyle(
+        fontSize: 19,
+        fontWeight: FontWeight.w700,
+      );
+      const TextStyle unselectedStyle = TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w400,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const NavigationRailThemeData(
+              selectedLabelTextStyle: selectedStyle,
+              unselectedLabelTextStyle: unselectedStyle,
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: <Widget>[
+                Expanded(
+                  child: _buildNavigationRail(
+                    impl: _WidgetImpl.framework,
+                    selectedIndex: 0,
+                    onSelected: (_) {},
+                  ),
+                ),
+                Expanded(
+                  child: _buildNavigationRail(
+                    impl: _WidgetImpl.package,
+                    selectedIndex: 0,
+                    onSelected: (_) {},
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final TextStyle frameworkSelected = tester
+          .renderObject<RenderParagraph>(
+            find.descendant(
+              of: _railFinder(_WidgetImpl.framework),
+              matching: find.text("Home"),
+            ),
+          )
+          .text
+          .style!;
+      final TextStyle packageSelected = tester
+          .renderObject<RenderParagraph>(
+            find.descendant(
+              of: _railFinder(_WidgetImpl.package),
+              matching: find.text("Home"),
+            ),
+          )
+          .text
+          .style!;
+      final TextStyle frameworkUnselected = tester
+          .renderObject<RenderParagraph>(
+            find.descendant(
+              of: _railFinder(_WidgetImpl.framework),
+              matching: find.text("Search"),
+            ),
+          )
+          .text
+          .style!;
+      final TextStyle packageUnselected = tester
+          .renderObject<RenderParagraph>(
+            find.descendant(
+              of: _railFinder(_WidgetImpl.package),
+              matching: find.text("Search"),
+            ),
+          )
+          .text
+          .style!;
+
+      expect(frameworkSelected.fontSize, selectedStyle.fontSize);
+      expect(packageSelected.fontSize, selectedStyle.fontSize);
+      expect(frameworkUnselected.fontSize, unselectedStyle.fontSize);
+      expect(packageUnselected.fontSize, unselectedStyle.fontSize);
+    },
+  );
 }

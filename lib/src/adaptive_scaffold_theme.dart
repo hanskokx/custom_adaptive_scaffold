@@ -3,7 +3,9 @@ import "dart:ui" show lerpDouble;
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 
+import "custom_navigation_rail_theme.dart";
 import "navigation_destination_types.dart";
+import "navigation_indicator_theme.dart";
 
 @Deprecated(
   "Use AdaptiveScaffoldThemeData instead. "
@@ -11,153 +13,32 @@ import "navigation_destination_types.dart";
 )
 typedef AdaptiveScaffoldNavigationThemeData = AdaptiveScaffoldThemeData;
 
-/// Indicator-specific styling shared by adaptive navigation destinations.
-@immutable
-class NavigationIndicatorThemeData with Diagnosticable {
-  /// Creates indicator styling shared by adaptive navigation destinations.
-  const NavigationIndicatorThemeData({
-    this.destinationFillRegion,
-    this.destinationHoverRegion,
-    this.interactionShape,
-    this.color,
-    this.shape,
-  });
+@Deprecated(
+  "Use CustomNavigationBarThemeData instead. "
+  "This type will be removed after v4.1.0+1.",
+)
+typedef AdaptiveNavigationBarThemeData = CustomNavigationBarThemeData;
 
-  /// Controls where destination selected fill/highlight is painted.
-  ///
-  /// When null, uses Flutter's default indicator path.
-  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
-  final NavigationDestinationRegion? destinationFillRegion;
-
-  /// Controls where destination hover/ink effects are painted.
-  ///
-  /// When null, this follows [destinationFillRegion].
-  final NavigationDestinationRegion? destinationHoverRegion;
-
-  /// Optional shape for destination navigation elements.
-  ///
-  /// If null, the resolved navigation rail indicator shape is used.
-  final WidgetStateProperty<ShapeBorder?>? interactionShape;
-
-  /// Optional color used for selected destination indicators.
-  final Color? color;
-
-  /// Optional shape used for selected destination indicators.
-  final ShapeBorder? shape;
-
-  /// Creates a copy of this indicator theme with the given fields replaced.
-  NavigationIndicatorThemeData copyWith({
-    NavigationDestinationRegion? destinationFillRegion,
-    NavigationDestinationRegion? destinationHoverRegion,
-    WidgetStateProperty<ShapeBorder?>? interactionShape,
-    Color? color,
-    ShapeBorder? shape,
-  }) {
-    return NavigationIndicatorThemeData(
-      destinationFillRegion:
-          destinationFillRegion ?? this.destinationFillRegion,
-      destinationHoverRegion:
-          destinationHoverRegion ?? this.destinationHoverRegion,
-      interactionShape: interactionShape ?? this.interactionShape,
-      color: color ?? this.color,
-      shape: shape ?? this.shape,
-    );
-  }
-
-  /// Linearly interpolates between two indicator themes.
-  static NavigationIndicatorThemeData? lerp(
-    NavigationIndicatorThemeData? a,
-    NavigationIndicatorThemeData? b,
-    double t,
-  ) {
-    if (identical(a, b)) {
-      return a;
-    }
-    if (a == null && b == null) {
-      return null;
-    }
-    return NavigationIndicatorThemeData(
-      destinationFillRegion:
-          t < 0.5 ? a?.destinationFillRegion : b?.destinationFillRegion,
-      destinationHoverRegion:
-          t < 0.5 ? a?.destinationHoverRegion : b?.destinationHoverRegion,
-      interactionShape: WidgetStateProperty.lerp<ShapeBorder?>(
-        a?.interactionShape,
-        b?.interactionShape,
-        t,
-        ShapeBorder.lerp,
-      ),
-      color: Color.lerp(a?.color, b?.color, t),
-      shape: ShapeBorder.lerp(a?.shape, b?.shape, t),
-    );
-  }
-
-  @override
-  int get hashCode => Object.hash(
-        destinationFillRegion,
-        destinationHoverRegion,
-        interactionShape,
-        color,
-        shape,
-      );
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other.runtimeType != runtimeType) {
-      return false;
-    }
-    return other is NavigationIndicatorThemeData &&
-        other.destinationFillRegion == destinationFillRegion &&
-        other.destinationHoverRegion == destinationHoverRegion &&
-        other.interactionShape == interactionShape &&
-        other.color == color &&
-        other.shape == shape;
-  }
-
-  @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(
-      EnumProperty<NavigationDestinationRegion>(
-        "destinationFillRegion",
-        destinationFillRegion,
-      ),
-    );
-    properties.add(
-      EnumProperty<NavigationDestinationRegion>(
-        "destinationHoverRegion",
-        destinationHoverRegion,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<WidgetStateProperty<ShapeBorder?>>(
-        "interactionShape",
-        interactionShape,
-      ),
-    );
-    properties.add(ColorProperty("color", color));
-    properties.add(
-      DiagnosticsProperty<ShapeBorder?>(
-        "shape",
-        shape,
-      ),
-    );
-  }
-}
+@Deprecated(
+  "Use CustomNavigationRailThemeData instead. "
+  "This type will be removed after v4.1.0+1.",
+)
+typedef AdaptiveNavigationRailThemeData = CustomNavigationRailThemeData;
 
 /// Navigation-bar-specific styling shared by adaptive small-breakpoint bars.
 @immutable
-class AdaptiveNavigationBarThemeData with Diagnosticable {
+class CustomNavigationBarThemeData
+    with Diagnosticable
+    implements NavigationBarThemeData {
   /// Creates navigation-bar styling for adaptive small-breakpoint layouts.
-  const AdaptiveNavigationBarThemeData({
+  const CustomNavigationBarThemeData({
     this.height,
     this.backgroundColor,
     this.elevation,
     this.shadowColor,
     this.surfaceTintColor,
+    this.indicatorColor,
+    this.indicatorShape,
     this.border,
     this.indicatorStyle,
     this.labelTextStyle,
@@ -171,19 +52,36 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
   });
 
   /// Optional navigation bar height.
+  @override
   final double? height;
 
   /// Optional navigation bar background color.
+  @override
   final Color? backgroundColor;
 
   /// Optional navigation bar elevation.
+  @override
   final double? elevation;
 
   /// Optional shadow color used by the navigation bar.
+  @override
   final Color? shadowColor;
 
   /// Optional surface tint color used by the navigation bar.
+  @override
   final Color? surfaceTintColor;
+
+  /// Optional selected-destination indicator color.
+  ///
+  /// When [indicatorStyle] provides a color, it takes precedence.
+  @override
+  final Color? indicatorColor;
+
+  /// Optional selected-destination indicator shape.
+  ///
+  /// When [indicatorStyle] provides a shape, it takes precedence.
+  @override
+  final ShapeBorder? indicatorShape;
 
   /// Optional border around the outer navigation bar surface.
   final BorderSide? border;
@@ -195,15 +93,19 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
   final NavigationIndicatorThemeData? indicatorStyle;
 
   /// Optional stateful text style for destination labels.
+  @override
   final WidgetStateProperty<TextStyle?>? labelTextStyle;
 
   /// Optional stateful icon theme for destination icons.
+  @override
   final WidgetStateProperty<IconThemeData?>? iconTheme;
 
   /// Optional label visibility behavior for destinations.
+  @override
   final NavigationDestinationLabelBehavior? labelBehavior;
 
   /// Optional stateful overlay color for destination interaction states.
+  @override
   final WidgetStateProperty<Color?>? overlayColor;
 
   /// Optional outer margin around the custom navigation bar.
@@ -216,15 +118,74 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
   final double? tooltipVerticalOffset;
 
   /// Optional padding around destination labels.
+  @override
   final EdgeInsetsGeometry? labelPadding;
 
+  /// Resolved indicator style for bar rendering.
+  ///
+  /// The additive [indicatorStyle] fields override framework-equivalent
+  /// indicator fields when both are provided.
+  NavigationIndicatorThemeData? get resolvedIndicatorStyle {
+    if (indicatorStyle != null) {
+      return indicatorStyle;
+    }
+    if (indicatorColor == null && indicatorShape == null) {
+      return null;
+    }
+    return NavigationIndicatorThemeData(
+      color: indicatorColor,
+      shape: indicatorShape,
+    );
+  }
+
+  /// Converts this custom theme data into framework [NavigationBarThemeData].
+  NavigationBarThemeData toNavigationBarThemeData() {
+    return NavigationBarThemeData(
+      height: height,
+      backgroundColor: backgroundColor,
+      elevation: elevation,
+      shadowColor: shadowColor,
+      surfaceTintColor: surfaceTintColor,
+      indicatorColor: resolvedIndicatorStyle?.color ?? indicatorColor,
+      indicatorShape: resolvedIndicatorStyle?.shape ?? indicatorShape,
+      labelTextStyle: labelTextStyle,
+      iconTheme: iconTheme,
+      labelBehavior: labelBehavior,
+      overlayColor: overlayColor,
+      labelPadding: labelPadding,
+    );
+  }
+
+  /// Creates custom bar theme data from framework [NavigationBarThemeData].
+  factory CustomNavigationBarThemeData.fromNavigationBarThemeData(
+    NavigationBarThemeData data,
+  ) {
+    return CustomNavigationBarThemeData(
+      height: data.height,
+      backgroundColor: data.backgroundColor,
+      elevation: data.elevation,
+      shadowColor: data.shadowColor,
+      surfaceTintColor: data.surfaceTintColor,
+      indicatorColor: data.indicatorColor,
+      indicatorShape: data.indicatorShape,
+      labelTextStyle: data.labelTextStyle,
+      iconTheme: data.iconTheme,
+      labelBehavior: data.labelBehavior,
+      overlayColor: data.overlayColor,
+      labelPadding: data.labelPadding,
+    );
+  }
+
   /// Creates a copy of this navigation bar theme with the given fields replaced.
-  AdaptiveNavigationBarThemeData copyWith({
+  @override
+  CustomNavigationBarThemeData copyWith({
     double? height,
     Color? backgroundColor,
     double? elevation,
     Color? shadowColor,
     Color? surfaceTintColor,
+    Color? indicatorColor,
+    ShapeBorder? indicatorShape,
     BorderSide? border,
     NavigationIndicatorThemeData? indicatorStyle,
     WidgetStateProperty<TextStyle?>? labelTextStyle,
@@ -236,12 +197,14 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
     double? tooltipVerticalOffset,
     EdgeInsetsGeometry? labelPadding,
   }) {
-    return AdaptiveNavigationBarThemeData(
+    return CustomNavigationBarThemeData(
       height: height ?? this.height,
       backgroundColor: backgroundColor ?? this.backgroundColor,
       elevation: elevation ?? this.elevation,
       shadowColor: shadowColor ?? this.shadowColor,
       surfaceTintColor: surfaceTintColor ?? this.surfaceTintColor,
+      indicatorColor: indicatorColor ?? this.indicatorColor,
+      indicatorShape: indicatorShape ?? this.indicatorShape,
       border: border ?? this.border,
       indicatorStyle: indicatorStyle ?? this.indicatorStyle,
       labelTextStyle: labelTextStyle ?? this.labelTextStyle,
@@ -257,9 +220,9 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
   }
 
   /// Linearly interpolates between two adaptive navigation bar themes.
-  static AdaptiveNavigationBarThemeData? lerp(
-    AdaptiveNavigationBarThemeData? a,
-    AdaptiveNavigationBarThemeData? b,
+  static CustomNavigationBarThemeData? lerp(
+    CustomNavigationBarThemeData? a,
+    CustomNavigationBarThemeData? b,
     double t,
   ) {
     if (identical(a, b)) {
@@ -268,12 +231,14 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
     if (a == null && b == null) {
       return null;
     }
-    return AdaptiveNavigationBarThemeData(
+    return CustomNavigationBarThemeData(
       height: lerpDouble(a?.height, b?.height, t),
       backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
       elevation: lerpDouble(a?.elevation, b?.elevation, t),
       shadowColor: Color.lerp(a?.shadowColor, b?.shadowColor, t),
       surfaceTintColor: Color.lerp(a?.surfaceTintColor, b?.surfaceTintColor, t),
+      indicatorColor: Color.lerp(a?.indicatorColor, b?.indicatorColor, t),
+      indicatorShape: ShapeBorder.lerp(a?.indicatorShape, b?.indicatorShape, t),
       border: a?.border == null && b?.border == null
           ? null
           : BorderSide.lerp(
@@ -321,6 +286,8 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
         elevation,
         shadowColor,
         surfaceTintColor,
+        indicatorColor,
+        indicatorShape,
         border,
         indicatorStyle,
         labelTextStyle,
@@ -341,12 +308,14 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is AdaptiveNavigationBarThemeData &&
+    return other is CustomNavigationBarThemeData &&
         other.height == height &&
         other.backgroundColor == backgroundColor &&
         other.elevation == elevation &&
         other.shadowColor == shadowColor &&
         other.surfaceTintColor == surfaceTintColor &&
+        other.indicatorColor == indicatorColor &&
+        other.indicatorShape == indicatorShape &&
         other.border == border &&
         other.indicatorStyle == indicatorStyle &&
         other.labelTextStyle == labelTextStyle &&
@@ -367,6 +336,13 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
     properties.add(DoubleProperty("elevation", elevation));
     properties.add(ColorProperty("shadowColor", shadowColor));
     properties.add(ColorProperty("surfaceTintColor", surfaceTintColor));
+    properties.add(ColorProperty("indicatorColor", indicatorColor));
+    properties.add(
+      DiagnosticsProperty<ShapeBorder?>(
+        "indicatorShape",
+        indicatorShape,
+      ),
+    );
     properties.add(
       DiagnosticsProperty<BorderSide?>(
         "border",
@@ -430,293 +406,45 @@ class AdaptiveNavigationBarThemeData with Diagnosticable {
   }
 }
 
-/// Navigation-rail-specific styling shared by adaptive medium+ breakpoints.
-@immutable
-class AdaptiveNavigationRailThemeData with Diagnosticable {
-  /// Creates navigation-rail styling for adaptive medium+ layouts.
-  const AdaptiveNavigationRailThemeData({
-    this.backgroundColor,
-    this.elevation,
-    this.shadowColor,
-    this.surfaceTintColor,
-    this.border,
-    this.margin,
-    this.padding,
-    this.indicatorStyle,
-    this.selectedIconTheme,
-    this.unselectedIconTheme,
-    this.selectedLabelTextStyle,
-    this.unselectedLabelTextStyle,
-    this.compactLabelType,
-    this.expandedLabelType,
-    this.extendedNavigationRailWidth,
+/// An inherited widget that defines visual properties for [NavigationBar]s and
+/// [NavigationDestination]s in this widget's subtree.
+///
+/// Values specified here are used for [NavigationBar] properties that are not
+/// given an explicit non-null value.
+class CustomNavigationBarTheme extends InheritedTheme
+    implements NavigationBarTheme {
+  /// Creates a custom navigation bar theme.
+  const CustomNavigationBarTheme({
+    required this.data,
+    required super.child,
+    super.key,
   });
 
-  /// Optional navigation rail background color.
-  final Color? backgroundColor;
+  /// The custom navigation bar theme data for descendants.
+  @override
+  final CustomNavigationBarThemeData data;
 
-  /// Optional navigation rail elevation.
-  final double? elevation;
-
-  /// Optional shadow color used by the navigation rail.
-  final Color? shadowColor;
-
-  /// Optional surface tint color used by the navigation rail.
-  final Color? surfaceTintColor;
-
-  /// Optional border around the outer navigation rail surface.
-  final BorderSide? border;
-
-  /// Optional outer margin around rail destinations.
-  final EdgeInsetsGeometry? margin;
-
-  /// Optional inner padding for rail destinations.
-  final EdgeInsetsGeometry? padding;
-
-  /// Optional indicator-style override scoped to the navigation rail.
+  /// The closest instance of this class that encloses the given context.
   ///
-  /// This takes precedence over top-level [AdaptiveScaffoldThemeData.indicatorStyle]
-  /// when resolving rail destination interaction and selected-fill behavior.
-  final NavigationIndicatorThemeData? indicatorStyle;
+  /// If there is no enclosing [CustomNavigationBarTheme] widget, then
+  /// framework [NavigationBarTheme] and finally [ThemeData.navigationBarTheme]
+  /// are used.
+  static NavigationBarThemeData of(BuildContext context) {
+    final NavigationBarTheme? navigationBarTheme = context
+            .dependOnInheritedWidgetOfExactType<CustomNavigationBarTheme>() ??
+        context.dependOnInheritedWidgetOfExactType<NavigationBarTheme>();
 
-  /// Optional icon theme for selected rail destinations.
-  final IconThemeData? selectedIconTheme;
-
-  /// Optional icon theme for unselected rail destinations.
-  final IconThemeData? unselectedIconTheme;
-
-  /// Optional text style for selected rail labels.
-  final TextStyle? selectedLabelTextStyle;
-
-  /// Optional text style for unselected rail labels.
-  final TextStyle? unselectedLabelTextStyle;
-
-  /// Optional label behavior for compact rail breakpoints.
-  final NavigationRailLabelType? compactLabelType;
-
-  /// Optional label behavior for expanded rail breakpoints.
-  final NavigationRailLabelType? expandedLabelType;
-
-  /// Optional width for extended navigation rails.
-  final double? extendedNavigationRailWidth;
-
-  /// Creates a copy of this navigation rail theme with the given fields
-  /// replaced.
-  AdaptiveNavigationRailThemeData copyWith({
-    Color? backgroundColor,
-    double? elevation,
-    Color? shadowColor,
-    Color? surfaceTintColor,
-    BorderSide? border,
-    EdgeInsetsGeometry? margin,
-    EdgeInsetsGeometry? padding,
-    NavigationIndicatorThemeData? indicatorStyle,
-    IconThemeData? selectedIconTheme,
-    IconThemeData? unselectedIconTheme,
-    TextStyle? selectedLabelTextStyle,
-    TextStyle? unselectedLabelTextStyle,
-    NavigationRailLabelType? compactLabelType,
-    NavigationRailLabelType? expandedLabelType,
-    double? extendedNavigationRailWidth,
-  }) {
-    return AdaptiveNavigationRailThemeData(
-      backgroundColor: backgroundColor ?? this.backgroundColor,
-      elevation: elevation ?? this.elevation,
-      shadowColor: shadowColor ?? this.shadowColor,
-      surfaceTintColor: surfaceTintColor ?? this.surfaceTintColor,
-      border: border ?? this.border,
-      margin: margin ?? this.margin,
-      padding: padding ?? this.padding,
-      indicatorStyle: indicatorStyle ?? this.indicatorStyle,
-      selectedIconTheme: selectedIconTheme ?? this.selectedIconTheme,
-      unselectedIconTheme: unselectedIconTheme ?? this.unselectedIconTheme,
-      selectedLabelTextStyle:
-          selectedLabelTextStyle ?? this.selectedLabelTextStyle,
-      unselectedLabelTextStyle:
-          unselectedLabelTextStyle ?? this.unselectedLabelTextStyle,
-      compactLabelType: compactLabelType ?? this.compactLabelType,
-      expandedLabelType: expandedLabelType ?? this.expandedLabelType,
-      extendedNavigationRailWidth:
-          extendedNavigationRailWidth ?? this.extendedNavigationRailWidth,
-    );
-  }
-
-  /// Linearly interpolates between two adaptive navigation rail themes.
-  static AdaptiveNavigationRailThemeData? lerp(
-    AdaptiveNavigationRailThemeData? a,
-    AdaptiveNavigationRailThemeData? b,
-    double t,
-  ) {
-    if (identical(a, b)) {
-      return a;
-    }
-    if (a == null && b == null) {
-      return null;
-    }
-    return AdaptiveNavigationRailThemeData(
-      backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
-      elevation: lerpDouble(a?.elevation, b?.elevation, t),
-      shadowColor: Color.lerp(a?.shadowColor, b?.shadowColor, t),
-      surfaceTintColor: Color.lerp(a?.surfaceTintColor, b?.surfaceTintColor, t),
-      border: a?.border == null && b?.border == null
-          ? null
-          : BorderSide.lerp(
-              a?.border ?? BorderSide.none,
-              b?.border ?? BorderSide.none,
-              t,
-            ),
-      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
-      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
-      indicatorStyle: NavigationIndicatorThemeData.lerp(
-        a?.indicatorStyle,
-        b?.indicatorStyle,
-        t,
-      ),
-      selectedIconTheme:
-          IconThemeData.lerp(a?.selectedIconTheme, b?.selectedIconTheme, t),
-      unselectedIconTheme: IconThemeData.lerp(
-        a?.unselectedIconTheme,
-        b?.unselectedIconTheme,
-        t,
-      ),
-      selectedLabelTextStyle: TextStyle.lerp(
-        a?.selectedLabelTextStyle,
-        b?.selectedLabelTextStyle,
-        t,
-      ),
-      unselectedLabelTextStyle: TextStyle.lerp(
-        a?.unselectedLabelTextStyle,
-        b?.unselectedLabelTextStyle,
-        t,
-      ),
-      compactLabelType: t < 0.5 ? a?.compactLabelType : b?.compactLabelType,
-      expandedLabelType: t < 0.5 ? a?.expandedLabelType : b?.expandedLabelType,
-      extendedNavigationRailWidth: lerpDouble(
-        a?.extendedNavigationRailWidth,
-        b?.extendedNavigationRailWidth,
-        t,
-      ),
-    );
+    return navigationBarTheme?.data ?? Theme.of(context).navigationBarTheme;
   }
 
   @override
-  int get hashCode => Object.hashAll(<Object?>[
-        backgroundColor,
-        elevation,
-        shadowColor,
-        surfaceTintColor,
-        border,
-        margin,
-        padding,
-        indicatorStyle,
-        selectedIconTheme,
-        unselectedIconTheme,
-        selectedLabelTextStyle,
-        unselectedLabelTextStyle,
-        compactLabelType,
-        expandedLabelType,
-        extendedNavigationRailWidth,
-      ]);
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other.runtimeType != runtimeType) {
-      return false;
-    }
-    return other is AdaptiveNavigationRailThemeData &&
-        other.backgroundColor == backgroundColor &&
-        other.elevation == elevation &&
-        other.shadowColor == shadowColor &&
-        other.surfaceTintColor == surfaceTintColor &&
-        other.border == border &&
-        other.margin == margin &&
-        other.padding == padding &&
-        other.indicatorStyle == indicatorStyle &&
-        other.selectedIconTheme == selectedIconTheme &&
-        other.unselectedIconTheme == unselectedIconTheme &&
-        other.selectedLabelTextStyle == selectedLabelTextStyle &&
-        other.unselectedLabelTextStyle == unselectedLabelTextStyle &&
-        other.compactLabelType == compactLabelType &&
-        other.expandedLabelType == expandedLabelType &&
-        other.extendedNavigationRailWidth == extendedNavigationRailWidth;
+  Widget wrap(BuildContext context, Widget child) {
+    return CustomNavigationBarTheme(data: data, child: child);
   }
 
   @override
-  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
-    super.debugFillProperties(properties);
-    properties.add(ColorProperty("backgroundColor", backgroundColor));
-    properties.add(DoubleProperty("elevation", elevation));
-    properties.add(ColorProperty("shadowColor", shadowColor));
-    properties.add(ColorProperty("surfaceTintColor", surfaceTintColor));
-    properties.add(
-      DiagnosticsProperty<BorderSide?>(
-        "border",
-        border,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<EdgeInsetsGeometry?>(
-        "margin",
-        margin,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<EdgeInsetsGeometry?>(
-        "padding",
-        padding,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<NavigationIndicatorThemeData?>(
-        "indicatorStyle",
-        indicatorStyle,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<IconThemeData?>(
-        "selectedIconTheme",
-        selectedIconTheme,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<IconThemeData?>(
-        "unselectedIconTheme",
-        unselectedIconTheme,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<TextStyle?>(
-        "selectedLabelTextStyle",
-        selectedLabelTextStyle,
-      ),
-    );
-    properties.add(
-      DiagnosticsProperty<TextStyle?>(
-        "unselectedLabelTextStyle",
-        unselectedLabelTextStyle,
-      ),
-    );
-    properties.add(
-      EnumProperty<NavigationRailLabelType>(
-        "compactLabelType",
-        compactLabelType,
-      ),
-    );
-    properties.add(
-      EnumProperty<NavigationRailLabelType>(
-        "expandedLabelType",
-        expandedLabelType,
-      ),
-    );
-    properties.add(
-      DoubleProperty(
-        "extendedNavigationRailWidth",
-        extendedNavigationRailWidth,
-      ),
-    );
+  bool updateShouldNotify(CustomNavigationBarTheme oldWidget) {
+    return data != oldWidget.data;
   }
 }
 
@@ -801,11 +529,11 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   NavigationIndicatorThemeData? get indicatorStyle => _data?.indicatorStyle;
 
   /// Navigation-bar-specific styling shared by adaptive small-breakpoint bars.
-  AdaptiveNavigationBarThemeData? get navigationBarTheme =>
+  CustomNavigationBarThemeData? get navigationBarTheme =>
       _data?.navigationBarTheme;
 
   /// Navigation-rail-specific styling shared by adaptive medium+ breakpoints.
-  AdaptiveNavigationRailThemeData? get navigationRailTheme =>
+  CustomNavigationRailThemeData? get navigationRailTheme =>
       _data?.navigationRailTheme;
 
   /// Resolved theme data, falling back to defaults when no data is provided.
@@ -896,7 +624,7 @@ class AdaptiveScaffoldThemeData
   });
 
   /// Navigation-rail-specific styling shared by adaptive medium+ breakpoints.
-  final AdaptiveNavigationRailThemeData? navigationRailTheme;
+  final CustomNavigationRailThemeData? navigationRailTheme;
 
   /// Optional label behavior for compact rail and small navigation bar.
   ///
@@ -955,13 +683,13 @@ class AdaptiveScaffoldThemeData
   final NavigationIndicatorThemeData? indicatorStyle;
 
   /// Navigation-bar-specific styling shared by adaptive small-breakpoint bars.
-  final AdaptiveNavigationBarThemeData? navigationBarTheme;
+  final CustomNavigationBarThemeData? navigationBarTheme;
 
   /// Creates a copy of this object but with the given fields replaced with the
   /// new values.
   @override
   AdaptiveScaffoldThemeData copyWith({
-    AdaptiveNavigationRailThemeData? navigationRailTheme,
+    CustomNavigationRailThemeData? navigationRailTheme,
     @Deprecated(
       "Use navigationRailTheme?.compactLabelType instead. "
       "This parameter will be removed after v4.1.0+1.",
@@ -981,7 +709,7 @@ class AdaptiveScaffoldThemeData
     Curve? transitionCurve,
     Duration? transitionDuration,
     NavigationIndicatorThemeData? indicatorStyle,
-    AdaptiveNavigationBarThemeData? navigationBarTheme,
+    CustomNavigationBarThemeData? navigationBarTheme,
   }) {
     return AdaptiveScaffoldThemeData(
       navigationRailTheme: navigationRailTheme ?? this.navigationRailTheme,
@@ -1007,7 +735,7 @@ class AdaptiveScaffoldThemeData
     }
 
     return AdaptiveScaffoldThemeData(
-      navigationRailTheme: AdaptiveNavigationRailThemeData.lerp(
+      navigationRailTheme: CustomNavigationRailThemeData.lerp(
         a.navigationRailTheme,
         b.navigationRailTheme,
         t,
@@ -1028,7 +756,7 @@ class AdaptiveScaffoldThemeData
         b.indicatorStyle,
         t,
       ),
-      navigationBarTheme: AdaptiveNavigationBarThemeData.lerp(
+      navigationBarTheme: CustomNavigationBarThemeData.lerp(
         a.navigationBarTheme,
         b.navigationBarTheme,
         t,
@@ -1087,7 +815,7 @@ class AdaptiveScaffoldThemeData
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
     properties.add(
-      DiagnosticsProperty<AdaptiveNavigationRailThemeData?>(
+      DiagnosticsProperty<CustomNavigationRailThemeData?>(
         "navigationRailTheme",
         navigationRailTheme,
       ),
@@ -1131,7 +859,7 @@ class AdaptiveScaffoldThemeData
       ),
     );
     properties.add(
-      DiagnosticsProperty<AdaptiveNavigationBarThemeData?>(
+      DiagnosticsProperty<CustomNavigationBarThemeData?>(
         "navigationBarTheme",
         navigationBarTheme,
       ),

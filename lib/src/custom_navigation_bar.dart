@@ -8,6 +8,7 @@ import "dart:ui" show SemanticsRole;
 import "package:flutter/foundation.dart" show kIsWeb;
 import "package:flutter/material.dart";
 
+import "adaptive_scaffold_theme.dart" show CustomNavigationBarTheme;
 import "compact_destination_layout.dart";
 import "interaction_shape_resolver.dart";
 import "navigation_destination_types.dart";
@@ -289,7 +290,7 @@ class CustomNavigationBar extends StatelessWidget {
     final NavigationBarThemeData defaults = _defaultsFor(context);
 
     final NavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.of(context);
+        CustomNavigationBarTheme.of(context);
     final double effectiveHeight =
         height ?? navigationBarTheme.height ?? defaults.height!;
     final NavigationDestinationLabelBehavior effectiveLabelBehavior =
@@ -468,7 +469,7 @@ class CustomNavigationDestination extends NavigationDestination {
     };
 
     final NavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.of(context);
+        CustomNavigationBarTheme.of(context);
     final NavigationBarThemeData defaults = _defaultsFor(context);
     final Animation<double> animation = info.selectedAnimation;
     final WidgetStateProperty<TextStyle?>? labelTextStyleOverride =
@@ -836,7 +837,7 @@ class _NavigationDestinationBuilderState
     final _NavigationDestinationInfo info =
         _NavigationDestinationInfo.of(context);
     final NavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.of(context);
+        CustomNavigationBarTheme.of(context);
     final ThemeData theme = Theme.of(context);
     final bool isSelected = widget.animation.isForwardOrCompleted;
     final NavigationDestinationRegion? destinationFillRegion =

@@ -9,6 +9,65 @@ import "package:flutter/rendering.dart";
 import "package:flutter_test/flutter_test.dart";
 
 void main() {
+  test("CustomNavigationRailThemeData converts to framework theme data", () {
+    const CustomNavigationRailThemeData data = CustomNavigationRailThemeData(
+      backgroundColor: Color(0xFFFAFAFA),
+      elevation: 3,
+      selectedLabelTextStyle: TextStyle(fontSize: 14),
+      unselectedLabelTextStyle: TextStyle(fontSize: 12),
+      selectedIconTheme: IconThemeData(size: 28),
+      unselectedIconTheme: IconThemeData(size: 20),
+      groupAlignment: 0.25,
+      labelType: NavigationRailLabelType.selected,
+      useIndicator: true,
+      indicatorColor: Color(0xFF00695C),
+      indicatorShape: StadiumBorder(),
+      minWidth: 80,
+      minExtendedWidth: 220,
+    );
+
+    final NavigationRailThemeData framework = data.toNavigationRailThemeData();
+
+    expect(framework.backgroundColor, data.backgroundColor);
+    expect(framework.elevation, data.elevation);
+    expect(framework.selectedLabelTextStyle, data.selectedLabelTextStyle);
+    expect(framework.unselectedLabelTextStyle, data.unselectedLabelTextStyle);
+    expect(framework.selectedIconTheme, data.selectedIconTheme);
+    expect(framework.unselectedIconTheme, data.unselectedIconTheme);
+    expect(framework.groupAlignment, data.groupAlignment);
+    expect(framework.labelType, data.labelType);
+    expect(framework.useIndicator, data.useIndicator);
+    expect(framework.indicatorColor, data.indicatorColor);
+    expect(framework.indicatorShape, data.indicatorShape);
+    expect(framework.minWidth, data.minWidth);
+    expect(framework.minExtendedWidth, data.minExtendedWidth);
+  });
+
+  test("NavigationRail framework conversion can round-trip shared fields", () {
+    const NavigationRailThemeData frameworkData = NavigationRailThemeData(
+      backgroundColor: Color(0xFF101010),
+      elevation: 6,
+      labelType: NavigationRailLabelType.all,
+      indicatorColor: Color(0xFF42A5F5),
+      indicatorShape: StadiumBorder(),
+      minWidth: 72,
+      minExtendedWidth: 256,
+    );
+
+    final CustomNavigationRailThemeData customData =
+        CustomNavigationRailThemeData.fromNavigationRailThemeData(
+      frameworkData,
+    );
+
+    expect(customData.backgroundColor, frameworkData.backgroundColor);
+    expect(customData.elevation, frameworkData.elevation);
+    expect(customData.labelType, frameworkData.labelType);
+    expect(customData.indicatorColor, frameworkData.indicatorColor);
+    expect(customData.indicatorShape, frameworkData.indicatorShape);
+    expect(customData.minWidth, frameworkData.minWidth);
+    expect(customData.minExtendedWidth, frameworkData.minExtendedWidth);
+  });
+
   test("copyWith, ==, hashCode basics", () {
     expect(
       const CustomNavigationRailThemeData(),

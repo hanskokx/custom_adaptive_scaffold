@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         ),
         extensions: const <ThemeExtension<dynamic>>[
           AdaptiveScaffoldThemeData(
-            navigationRailTheme: AdaptiveNavigationRailThemeData(
+            navigationRailTheme: CustomNavigationRailThemeData(
               compactLabelType: NavigationRailLabelType.selected,
               elevation: 2,
               margin: EdgeInsets.symmetric(vertical: 4),
@@ -49,7 +49,7 @@ class MyApp extends StatelessWidget {
             transitionAnimation: NavigationDestinationAnimation.fadeSwap,
             transitionCurve: Curves.easeOutCubic,
             transitionDuration: Duration(milliseconds: 220),
-            navigationBarTheme: AdaptiveNavigationBarThemeData(
+            navigationBarTheme: CustomNavigationBarThemeData(
               tooltipVerticalOffset: 56,
               margin: EdgeInsets.symmetric(horizontal: 4),
               padding: EdgeInsets.symmetric(vertical: 2),

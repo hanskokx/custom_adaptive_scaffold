@@ -17,6 +17,81 @@ import "package:flutter/services.dart";
 import "package:flutter_test/flutter_test.dart";
 
 void main() {
+  test("CustomNavigationBarThemeData converts to framework theme data", () {
+    const CustomNavigationBarThemeData data = CustomNavigationBarThemeData(
+      height: 78,
+      backgroundColor: Color(0xFF101820),
+      elevation: 4,
+      shadowColor: Color(0xFF0F0F0F),
+      surfaceTintColor: Color(0xFFECEFF1),
+      indicatorColor: Color(0xFF1E88E5),
+      indicatorShape: StadiumBorder(),
+      labelTextStyle: WidgetStatePropertyAll<TextStyle?>(
+        TextStyle(fontSize: 15),
+      ),
+      iconTheme: WidgetStatePropertyAll<IconThemeData?>(
+        IconThemeData(size: 27),
+      ),
+      labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      overlayColor: WidgetStatePropertyAll<Color?>(Color(0x12000000)),
+      labelPadding: EdgeInsets.only(top: 3),
+    );
+
+    final NavigationBarThemeData framework = data.toNavigationBarThemeData();
+    expect(framework.height, data.height);
+    expect(framework.backgroundColor, data.backgroundColor);
+    expect(framework.elevation, data.elevation);
+    expect(framework.shadowColor, data.shadowColor);
+    expect(framework.surfaceTintColor, data.surfaceTintColor);
+    expect(framework.indicatorColor, data.indicatorColor);
+    expect(framework.indicatorShape, data.indicatorShape);
+    expect(framework.labelBehavior, data.labelBehavior);
+    expect(framework.labelPadding, data.labelPadding);
+  });
+
+  test("NavigationBar framework conversion can round-trip shared fields", () {
+    const NavigationBarThemeData frameworkData = NavigationBarThemeData(
+      height: 74,
+      backgroundColor: Color(0xFF223344),
+      elevation: 5,
+      indicatorColor: Color(0xFFAA5500),
+      indicatorShape: StadiumBorder(),
+      labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
+    );
+
+    final CustomNavigationBarThemeData customData =
+        CustomNavigationBarThemeData.fromNavigationBarThemeData(frameworkData);
+
+    expect(customData.height, frameworkData.height);
+    expect(customData.backgroundColor, frameworkData.backgroundColor);
+    expect(customData.elevation, frameworkData.elevation);
+    expect(customData.indicatorColor, frameworkData.indicatorColor);
+    expect(customData.indicatorShape, frameworkData.indicatorShape);
+    expect(customData.labelBehavior, frameworkData.labelBehavior);
+  });
+
+  test(
+    "NavigationBar indicatorStyle overrides framework indicator fields",
+    () {
+      const Color styleColor = Color(0xFFEF5350);
+      const ShapeBorder styleShape = RoundedRectangleBorder();
+      const Color rawColor = Color(0xFF1E88E5);
+
+      const CustomNavigationBarThemeData data = CustomNavigationBarThemeData(
+        indicatorColor: rawColor,
+        indicatorShape: StadiumBorder(),
+        indicatorStyle: NavigationIndicatorThemeData(
+          color: styleColor,
+          shape: styleShape,
+        ),
+      );
+
+      final NavigationBarThemeData framework = data.toNavigationBarThemeData();
+      expect(framework.indicatorColor, styleColor);
+      expect(framework.indicatorShape, styleShape);
+    },
+  );
+
   testWidgets("Navigation bar updates destinations when tapped",
       (WidgetTester tester) async {
     var mutatedIndex = -1;
