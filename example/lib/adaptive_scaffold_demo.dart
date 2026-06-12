@@ -106,7 +106,6 @@ class _MyHomePageState extends State<MyHomePage> {
         transitionCurve: Curves.easeOutCubic,
         transitionDuration: Duration(milliseconds: 220),
         destinationFillRegion: NavigationDestinationRegion.content,
-        destinationFillShape: StadiumBorder(),
       ),
       // An option to override the default breakpoints used for small, medium,
       // mediumLarge, large, and extraLarge.
