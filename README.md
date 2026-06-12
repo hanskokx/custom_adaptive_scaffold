@@ -67,7 +67,7 @@ width and platform. For example, the navigational elements would be a
 devices. The body is the primary screen that takes up the space left by the
 navigational elements. The secondaryBody acts as an option to split the space
 between two panes for purposes such as having a detail view. There is some
-automatic functionality with foldables to handle the split between panels
+automatic functionality with foldable devices to handle the split between panels
 properly. `AdaptiveScaffold` is much simpler to use but is not the best if you
 would like high customizability. Apps that would like more refined layout and/or
 animation should use `AdaptiveLayout`.
