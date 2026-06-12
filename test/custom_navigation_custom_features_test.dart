@@ -900,7 +900,6 @@ void main() {
               <WidgetStatesConstraint, ShapeBorder?>{
                 WidgetState.pressed: pressedShape,
                 WidgetState.selected: selectedShape,
-                WidgetState.any: selectedShape,
               },
             ),
             destinations: const <NavigationRailDestination>[
@@ -1059,7 +1058,6 @@ void main() {
               <WidgetStatesConstraint, ShapeBorder?>{
                 WidgetState.pressed: pressedShape,
                 WidgetState.selected: selectedShape,
-                WidgetState.any: selectedShape,
               },
             ),
             destinations: const <Widget>[
