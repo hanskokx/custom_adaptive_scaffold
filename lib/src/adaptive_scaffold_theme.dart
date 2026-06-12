@@ -18,37 +18,12 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   /// Creates a theme that can be used for the Adaptive Scaffold Theme.
   const AdaptiveScaffoldTheme({
     super.key,
-    NavigationRailLabelType? compactLabelType,
-    NavigationRailLabelType? expandedLabelType,
-    NavigationDestinationAnimation? transitionAnimation,
-    Curve? transitionCurve,
-    Duration? transitionDuration,
-    NavigationDestinationRegion? destinationFillRegion,
-    NavigationDestinationRegion? destinationHoverRegion,
-    WidgetStateProperty<ShapeBorder?>? shape,
     AdaptiveScaffoldThemeData? data,
     Widget? child,
-  })  : _compactLabelType = compactLabelType,
-        _expandedLabelType = expandedLabelType,
-        _transitionAnimation =
-            transitionAnimation ?? NavigationDestinationAnimation.none,
-        _transitionCurve = transitionCurve ?? Curves.easeInOut,
-        _transitionDuration = transitionDuration,
-        _destinationFillRegion = destinationFillRegion,
-        _destinationHoverRegion = destinationHoverRegion,
-        _shape = shape,
-        _data = data,
+  })  : _data = data,
         super(child: child ?? const SizedBox());
 
   final AdaptiveScaffoldThemeData? _data;
-  final NavigationRailLabelType? _compactLabelType;
-  final NavigationRailLabelType? _expandedLabelType;
-  final NavigationDestinationAnimation _transitionAnimation;
-  final Curve _transitionCurve;
-  final Duration? _transitionDuration;
-  final NavigationDestinationRegion? _destinationFillRegion;
-  final NavigationDestinationRegion? _destinationHoverRegion;
-  final WidgetStateProperty<ShapeBorder?>? _shape;
 
   /// Optional label behavior for compact rail and small navigation bar.
   ///
@@ -62,8 +37,7 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   /// [NavigationDestinationLabelBehavior.alwaysShow].
   ///
   /// When null, rail and bar each use their theme defaults.
-  NavigationRailLabelType? get compactLabelType =>
-      _data != null ? _data.compactLabelType : _compactLabelType;
+  NavigationRailLabelType? get compactLabelType => _data?.compactLabelType;
 
   /// Optional label behavior for expanded navigation rail breakpoints.
   ///
@@ -71,55 +45,44 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   /// breakpoints.
   ///
   /// When null, defaults to [NavigationRailLabelType.all].
-  NavigationRailLabelType? get expandedLabelType =>
-      _data != null ? _data.expandedLabelType : _expandedLabelType;
+  NavigationRailLabelType? get expandedLabelType => _data?.expandedLabelType;
 
   /// Icon transition preset used by small breakpoint navigation bar and
   /// compact (medium breakpoint) navigation rail destinations.
   ///
   /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
   NavigationDestinationAnimation get transitionAnimation =>
-      _data != null ? _data.transitionAnimation : _transitionAnimation;
+      _data?.transitionAnimation ??
+      const AdaptiveScaffoldThemeData().transitionAnimation;
 
   /// Curve used by compact rail icon transitions.
   Curve get transitionCurve =>
-      _data != null ? _data.transitionCurve : _transitionCurve;
+      _data?.transitionCurve ??
+      const AdaptiveScaffoldThemeData().transitionCurve;
 
   /// Optional duration used by compact rail icon transitions.
-  Duration? get transitionDuration =>
-      _data != null ? _data.transitionDuration : _transitionDuration;
+  Duration? get transitionDuration => _data?.transitionDuration;
 
   /// Controls where destination selected fill/highlight is painted.
   ///
   /// When null, uses Flutter's default indicator path.
   /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
   NavigationDestinationRegion? get destinationFillRegion =>
-      _data != null ? _data.destinationFillRegion : _destinationFillRegion;
+      _data?.destinationFillRegion;
 
   /// Controls where destination hover/ink effects are painted.
   ///
   /// When null, this follows [destinationFillRegion].
   NavigationDestinationRegion? get destinationHoverRegion =>
-      _data != null ? _data.destinationHoverRegion : _destinationHoverRegion;
+      _data?.destinationHoverRegion;
 
   /// Optional shape for destination navigation elements.
   ///
   /// If null, the resolved navigation rail indicator shape is used.
-  WidgetStateProperty<ShapeBorder?>? get shape =>
-      _data != null ? _data.shape : _shape;
+  WidgetStateProperty<ShapeBorder?>? get shape => _data?.shape;
 
   AdaptiveScaffoldThemeData get data =>
-      _data ??
-      AdaptiveScaffoldThemeData(
-        compactLabelType: compactLabelType,
-        expandedLabelType: expandedLabelType,
-        transitionAnimation: transitionAnimation,
-        transitionCurve: transitionCurve,
-        transitionDuration: transitionDuration,
-        destinationFillRegion: destinationFillRegion,
-        destinationHoverRegion: destinationHoverRegion,
-        shape: shape,
-      );
+      _data ?? const AdaptiveScaffoldThemeData();
 
   /// Retrieves the [AdaptiveScaffoldThemeData] from the closest ancestor
   /// [AdaptiveScaffoldTheme].
@@ -189,28 +152,54 @@ class AdaptiveScaffoldThemeData
     this.shape,
   });
 
-  /// Overrides the default value of [NavigationRail.labelType] for the compact rail and small navigation.
+  /// Optional label behavior for compact rail and small navigation bar.
+  ///
+  /// For rail, this is passed as [NavigationRail.labelType].
+  /// For bar, it is mapped as:
+  /// [NavigationRailLabelType.none] ->
+  /// [NavigationDestinationLabelBehavior.alwaysHide],
+  /// [NavigationRailLabelType.selected] ->
+  /// [NavigationDestinationLabelBehavior.onlyShowSelected],
+  /// [NavigationRailLabelType.all] ->
+  /// [NavigationDestinationLabelBehavior.alwaysShow].
+  ///
+  /// When null, rail and bar each use their theme defaults.
   final NavigationRailLabelType? compactLabelType;
 
-  /// Overrides the default label type of the expanded rail used on medium-large and up breakpoints.
+  /// Optional label behavior for expanded navigation rail breakpoints.
+  ///
+  /// This only applies to the extended rail used on medium-large and up
+  /// breakpoints.
+  ///
+  /// When null, defaults to [NavigationRailLabelType.all].
   final NavigationRailLabelType? expandedLabelType;
 
-  /// Overrides the default icon transition in navigation rail destinations.
+  /// Icon transition preset used by small breakpoint navigation bar and
+  /// compact (medium breakpoint) navigation rail destinations.
+  ///
+  /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
   final NavigationDestinationAnimation transitionAnimation;
 
-  /// Overrides the default curve used by the navigation rail destination icon transition.
+  /// Curve used by compact rail icon transitions.
   final Curve transitionCurve;
 
-  /// Overrides the default duration used by the navigation rail destination icon transition.
+  /// Optional duration used by compact rail icon transitions.
   final Duration? transitionDuration;
 
-  /// Overrides the default region used for destination selected fill/highlight.
+  /// Controls where destination selected fill/highlight is painted.
+  ///
+  /// When null, uses Flutter's default indicator path.
+  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
   final NavigationDestinationRegion? destinationFillRegion;
 
-  /// Overrides the default region used for destination hover/ink effects.
+  /// Controls where destination hover/ink effects are painted.
+  ///
+  /// When null, this follows [destinationFillRegion].
   final NavigationDestinationRegion? destinationHoverRegion;
 
-  /// Overrides the default shape used for destination navigation elements.
+  /// Optional shape for destination navigation elements.
+  ///
+  /// If null, the resolved navigation rail indicator shape is used.
   final WidgetStateProperty<ShapeBorder?>? shape;
 
   /// Creates a copy of this object but with the given fields replaced with the
