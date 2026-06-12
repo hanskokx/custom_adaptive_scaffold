@@ -293,14 +293,19 @@ void main() {
       ),
     );
 
-    final Finder inkResponses = find.byWidgetPredicate(
-      (Widget widget) => widget is InkResponse,
-    );
-    expect(inkResponses, findsNWidgets(2));
+    const List<String> labels = <String>["Home", "Search"];
 
-    for (int i = 0; i < 2; i++) {
-      final InkResponse ink = tester.widget<InkResponse>(inkResponses.at(i));
-      final RenderBox box = tester.renderObject<RenderBox>(inkResponses.at(i));
+    for (final String label in labels) {
+      final Finder inkResponse = find.ancestor(
+        of: find.text(label),
+        matching: find.byWidgetPredicate(
+          (Widget widget) => widget is InkResponse,
+        ),
+      );
+      expect(inkResponse, findsOneWidget);
+
+      final InkResponse ink = tester.widget<InkResponse>(inkResponse);
+      final RenderBox box = tester.renderObject<RenderBox>(inkResponse);
       final RectCallback? rectCallback = ink.getRectCallback(box);
 
       expect(rectCallback, isNotNull);
