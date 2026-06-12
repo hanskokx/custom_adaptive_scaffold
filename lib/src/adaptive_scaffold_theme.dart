@@ -1,10 +1,10 @@
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 
-import "../custom_adaptive_scaffold.dart";
+import "navigation_destination_types.dart";
 
 @Deprecated(
-  "Use AdaptiveScaffoldTheme instead. "
+  "Use AdaptiveScaffoldThemeData instead. "
   "This feature was deprecated after v4.1.0",
 )
 typedef AdaptiveScaffoldNavigationThemeData = AdaptiveScaffoldThemeData;
