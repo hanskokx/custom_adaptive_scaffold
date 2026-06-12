@@ -5,8 +5,6 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/material.dart";
 
-import "adaptive_scaffold_theme.dart";
-
 /// Spacing value of the compact breakpoint according to
 /// the material 3 design spec.
 const double kMaterialCompactSpacing = 0;
@@ -391,8 +389,7 @@ class AdaptiveScaffold extends StatefulWidget {
     Duration? iconTransitionDuration,
     NavigationDestinationRegion? destinationFillRegion,
     NavigationDestinationRegion? destinationHoverRegion,
-    ShapeBorder? destinationFillShape,
-    ShapeBorder? destinationHoverShape,
+    WidgetStateProperty<ShapeBorder?>? shape,
   }) {
     if (extended && width == 72) {
       width = 192;
@@ -451,8 +448,7 @@ class AdaptiveScaffold extends StatefulWidget {
                             iconTransitionDuration: iconTransitionDuration,
                             destinationFillRegion: destinationFillRegion,
                             destinationHoverRegion: destinationHoverRegion,
-                            destinationFillShape: destinationFillShape,
-                            destinationHoverShape: destinationHoverShape,
+                            shape: shape,
                           ),
                         ),
                       ),
@@ -479,8 +475,7 @@ class AdaptiveScaffold extends StatefulWidget {
         NavigationDestinationAnimation.none,
     NavigationDestinationRegion? destinationFillRegion,
     NavigationDestinationRegion? destinationHoverRegion,
-    ShapeBorder? destinationFillShape,
-    ShapeBorder? destinationHoverShape,
+    WidgetStateProperty<ShapeBorder?>? shape,
   }) {
     return Builder(
       builder: (BuildContext context) {
@@ -522,8 +517,7 @@ class AdaptiveScaffold extends StatefulWidget {
               labelBehavior: _labelBehaviorFromType(labelBehavior),
               destinationFillRegion: destinationFillRegion,
               destinationHoverRegion: destinationHoverRegion,
-              destinationFillShape: destinationFillShape,
-              destinationHoverShape: destinationHoverShape,
+              shape: shape,
             ),
           ),
         );
@@ -701,9 +695,41 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   Widget build(BuildContext context) {
     final NavigationRailThemeData navRailTheme =
         Theme.of(context).navigationRailTheme;
-    final AdaptiveScaffoldThemeData? navigationTheme = widget.navigationTheme;
+    final AdaptiveScaffoldThemeData? extensionNavigationTheme =
+        Theme.of(context).extension<AdaptiveScaffoldThemeData>();
+    final AdaptiveScaffoldThemeData? inheritedNavigationTheme =
+        AdaptiveScaffoldTheme.maybeOf(context);
+    final AdaptiveScaffoldThemeData? widgetNavigationTheme =
+        widget.navigationTheme;
     final AdaptiveScaffoldThemeData effectiveNavigationTheme =
-        navigationTheme ?? const AdaptiveScaffoldThemeData();
+        AdaptiveScaffoldThemeData(
+      compactLabelType: widgetNavigationTheme?.compactLabelType ??
+          inheritedNavigationTheme?.compactLabelType ??
+          extensionNavigationTheme?.compactLabelType,
+      expandedLabelType: widgetNavigationTheme?.expandedLabelType ??
+          inheritedNavigationTheme?.expandedLabelType ??
+          extensionNavigationTheme?.expandedLabelType,
+      transitionAnimation: widgetNavigationTheme?.transitionAnimation ??
+          inheritedNavigationTheme?.transitionAnimation ??
+          extensionNavigationTheme?.transitionAnimation ??
+          NavigationDestinationAnimation.none,
+      transitionCurve: widgetNavigationTheme?.transitionCurve ??
+          inheritedNavigationTheme?.transitionCurve ??
+          extensionNavigationTheme?.transitionCurve ??
+          Curves.easeInOut,
+      transitionDuration: widgetNavigationTheme?.transitionDuration ??
+          inheritedNavigationTheme?.transitionDuration ??
+          extensionNavigationTheme?.transitionDuration,
+      destinationFillRegion: widgetNavigationTheme?.destinationFillRegion ??
+          inheritedNavigationTheme?.destinationFillRegion ??
+          extensionNavigationTheme?.destinationFillRegion,
+      destinationHoverRegion: widgetNavigationTheme?.destinationHoverRegion ??
+          inheritedNavigationTheme?.destinationHoverRegion ??
+          extensionNavigationTheme?.destinationHoverRegion,
+      shape: widgetNavigationTheme?.shape ??
+          inheritedNavigationTheme?.shape ??
+          extensionNavigationTheme?.shape,
+    );
 
     final List<NavigationRailDestination> destinations = widget.destinations
         .map(
@@ -759,9 +785,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.destinationFillRegion,
               destinationHoverRegion:
                   effectiveNavigationTheme.destinationHoverRegion,
-              destinationFillShape: effectiveNavigationTheme.shape,
-              destinationHoverShape:
-                  effectiveNavigationTheme.destinationHoverShape,
+              shape: effectiveNavigationTheme.shape,
             ),
           ),
           widget.mediumLargeBreakpoint: SlotLayout.from(
@@ -787,9 +811,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.destinationFillRegion,
               destinationHoverRegion:
                   effectiveNavigationTheme.destinationHoverRegion,
-              destinationFillShape: effectiveNavigationTheme.shape,
-              destinationHoverShape:
-                  effectiveNavigationTheme.destinationHoverShape,
+              shape: effectiveNavigationTheme.shape,
             ),
           ),
           widget.largeBreakpoint: SlotLayout.from(
@@ -819,9 +841,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.destinationFillRegion,
               destinationHoverRegion:
                   effectiveNavigationTheme.destinationHoverRegion,
-              destinationFillShape: effectiveNavigationTheme.shape,
-              destinationHoverShape:
-                  effectiveNavigationTheme.destinationHoverShape,
+              shape: effectiveNavigationTheme.shape,
             ),
           ),
           widget.extraLargeBreakpoint: SlotLayout.from(
@@ -851,9 +871,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.destinationFillRegion,
               destinationHoverRegion:
                   effectiveNavigationTheme.destinationHoverRegion,
-              destinationFillShape: effectiveNavigationTheme.shape,
-              destinationHoverShape:
-                  effectiveNavigationTheme.destinationHoverShape,
+              shape: effectiveNavigationTheme.shape,
             ),
           ),
         },
@@ -875,9 +893,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                         effectiveNavigationTheme.destinationFillRegion,
                     destinationHoverRegion:
                         effectiveNavigationTheme.destinationHoverRegion,
-                    destinationFillShape: effectiveNavigationTheme.shape,
-                    destinationHoverShape:
-                        effectiveNavigationTheme.destinationHoverShape,
+                    shape: effectiveNavigationTheme.shape,
                   ),
                 ),
               },

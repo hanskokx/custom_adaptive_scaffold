@@ -40,6 +40,16 @@ class MyApp extends StatelessWidget {
           padding: EdgeInsets.symmetric(vertical: 2),
           labelPadding: EdgeInsets.only(top: 6),
         ),
+        extensions: const <ThemeExtension<dynamic>>[
+          AdaptiveScaffoldThemeData(
+            compactLabelType: NavigationRailLabelType.selected,
+            transitionAnimation: NavigationDestinationAnimation.fadeSwap,
+            transitionCurve: Curves.easeOutCubic,
+            transitionDuration: Duration(milliseconds: 220),
+            destinationFillRegion: NavigationDestinationRegion.content,
+            shape: WidgetStatePropertyAll<ShapeBorder?>(StadiumBorder()),
+          ),
+        ],
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           type: BottomNavigationBarType.fixed,
         ),
@@ -100,14 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return AdaptiveScaffold(
       // An option to override the default transition duration.
       transitionDuration: Duration(milliseconds: _transitionDuration),
-      navigationTheme: const AdaptiveScaffoldThemeData(
-        compactLabelType: NavigationRailLabelType.selected,
-        transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-        transitionCurve: Curves.easeOutCubic,
-        transitionDuration: Duration(milliseconds: 220),
-        destinationFillRegion: NavigationDestinationRegion.content,
-        shape: StadiumBorder(),
-      ),
       // An option to override the default breakpoints used for small, medium,
       // mediumLarge, large, and extraLarge.
       smallBreakpoint: const Breakpoint(endWidth: 700),

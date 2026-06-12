@@ -739,7 +739,7 @@ void main() {
     expect(rect.height, greaterThanOrEqualTo(32));
   });
 
-  testWidgets("destinationFillShape is applied to interaction shape", (
+  testWidgets("shape is applied to interaction shape", (
     WidgetTester tester,
   ) async {
     final ShapeBorder fillShape = RoundedRectangleBorder(
@@ -753,7 +753,7 @@ void main() {
           body: CustomNavigationRail(
             selectedIndex: 0,
             destinationFillRegion: NavigationDestinationRegion.full,
-            destinationFillShape: fillShape,
+            shape: WidgetStatePropertyAll<ShapeBorder?>(fillShape),
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),
@@ -778,6 +778,109 @@ void main() {
 
     final InkResponse firstInk = tester.widget<InkResponse>(inkResponses.first);
     expect(firstInk.customBorder, same(fillShape));
+  });
+
+  testWidgets("stateful shape uses selected state when hovered is absent", (
+    WidgetTester tester,
+  ) async {
+    const ShapeBorder selectedShape = StadiumBorder();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            destinationFillRegion: NavigationDestinationRegion.full,
+            shape: const WidgetStateProperty<ShapeBorder?>.fromMap(
+              <WidgetStatesConstraint, ShapeBorder?>{
+                WidgetState.selected: selectedShape,
+              },
+            ),
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget is InkResponse,
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
+      for (int i = 0; i < 2; i += 1)
+        tester.widget<InkResponse>(inkResponses.at(i)).customBorder,
+    ];
+
+    expect(
+      resolvedBorders,
+      everyElement(same(selectedShape)),
+    );
+  });
+
+  testWidgets("stateful shape uses hovered state for interaction border", (
+    WidgetTester tester,
+  ) async {
+    const ShapeBorder hoveredShape = CircleBorder();
+    const ShapeBorder selectedShape = StadiumBorder();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: ThemeData(useMaterial3: true),
+        home: Scaffold(
+          body: CustomNavigationRail(
+            selectedIndex: 0,
+            destinationFillRegion: NavigationDestinationRegion.full,
+            shape: const WidgetStateProperty<ShapeBorder?>.fromMap(
+              <WidgetStatesConstraint, ShapeBorder?>{
+                WidgetState.hovered: hoveredShape,
+                WidgetState.selected: selectedShape,
+                WidgetState.any: selectedShape,
+              },
+            ),
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.home_outlined),
+                selectedIcon: Icon(Icons.home),
+                label: Text("Home"),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search_outlined),
+                selectedIcon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    final Finder inkResponses = find.byWidgetPredicate(
+      (Widget widget) => widget is InkResponse,
+    );
+    expect(inkResponses, findsNWidgets(2));
+
+    final List<ShapeBorder?> resolvedBorders = <ShapeBorder?>[
+      for (int i = 0; i < 2; i += 1)
+        tester.widget<InkResponse>(inkResponses.at(i)).customBorder,
+    ];
+
+    expect(
+      resolvedBorders,
+      everyElement(same(hoveredShape)),
+    );
   });
 
   testWidgets("bar label fill mode uses label-only fixed-height pill", (

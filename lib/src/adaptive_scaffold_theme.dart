@@ -1,7 +1,13 @@
 import "package:flutter/foundation.dart";
-import "package:flutter/widgets.dart";
+import "package:flutter/material.dart";
 
 import "../custom_adaptive_scaffold.dart";
+
+@Deprecated(
+  "Use AdaptiveScaffoldTheme instead. "
+  "This feature was deprecated after v4.0.0",
+)
+typedef AdaptiveScaffoldNavigationThemeData = AdaptiveScaffoldThemeData;
 
 /// Optional, adaptive-navigation-specific overrides for [AdaptiveScaffold].
 ///
@@ -127,9 +133,15 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
   /// AdaptiveScaffoldThemeData theme = AdaptiveScaffoldTheme.of(context);
   /// ```
   static AdaptiveScaffoldThemeData of(BuildContext context) {
+    return maybeOf(context) ?? const AdaptiveScaffoldThemeData();
+  }
+
+  /// Retrieves the [AdaptiveScaffoldThemeData] from the closest ancestor
+  /// [AdaptiveScaffoldTheme], if available.
+  static AdaptiveScaffoldThemeData? maybeOf(BuildContext context) {
     final AdaptiveScaffoldTheme? adaptiveScaffoldTheme =
         context.dependOnInheritedWidgetOfExactType<AdaptiveScaffoldTheme>();
-    return adaptiveScaffoldTheme?.data ?? const AdaptiveScaffoldThemeData();
+    return adaptiveScaffoldTheme?.data;
   }
 
   /// Linearly interpolate between two AdaptiveScaffold themes.
@@ -162,7 +174,7 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
         t,
         ShapeBorder.lerp,
       ),
-      data: AdaptiveScaffoldThemeData.lerp(
+      data: AdaptiveScaffoldThemeData._lerpThemeData(
         a?.data ?? const AdaptiveScaffoldThemeData(),
         b?.data ?? const AdaptiveScaffoldThemeData(),
         t,
@@ -181,7 +193,8 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
 }
 
 @immutable
-class AdaptiveScaffoldThemeData with Diagnosticable {
+class AdaptiveScaffoldThemeData
+    extends ThemeExtension<AdaptiveScaffoldThemeData> with Diagnosticable {
   const AdaptiveScaffoldThemeData({
     this.compactLabelType,
     this.expandedLabelType,
@@ -219,6 +232,7 @@ class AdaptiveScaffoldThemeData with Diagnosticable {
 
   /// Creates a copy of this object but with the given fields replaced with the
   /// new values.
+  @override
   AdaptiveScaffoldThemeData copyWith({
     NavigationRailLabelType? compactLabelType,
     NavigationRailLabelType? expandedLabelType,
@@ -227,8 +241,7 @@ class AdaptiveScaffoldThemeData with Diagnosticable {
     Duration? transitionDuration,
     NavigationDestinationRegion? destinationFillRegion,
     NavigationDestinationRegion? destinationHoverRegion,
-    WidgetStateProperty<ShapeBorder?>? destinationFillShape,
-    WidgetStateProperty<ShapeBorder?>? destinationHoverShape,
+    WidgetStateProperty<ShapeBorder?>? shape,
   }) {
     return AdaptiveScaffoldThemeData(
       compactLabelType: compactLabelType ?? this.compactLabelType,
@@ -240,14 +253,11 @@ class AdaptiveScaffoldThemeData with Diagnosticable {
           destinationFillRegion ?? this.destinationFillRegion,
       destinationHoverRegion:
           destinationHoverRegion ?? this.destinationHoverRegion,
-      shape: destinationFillShape ?? this.shape,
+      shape: shape ?? this.shape,
     );
   }
 
-  /// Linearly interpolate between two scaffold navigation themes.
-  ///
-  /// {@macro dart.ui.shadow.lerp}
-  factory AdaptiveScaffoldThemeData.lerp(
+  factory AdaptiveScaffoldThemeData._lerpThemeData(
     AdaptiveScaffoldThemeData a,
     AdaptiveScaffoldThemeData b,
     double t,
@@ -274,6 +284,20 @@ class AdaptiveScaffoldThemeData with Diagnosticable {
         ShapeBorder.lerp,
       ),
     );
+  }
+
+  /// Linearly interpolate between two scaffold navigation themes.
+  ///
+  /// {@macro dart.ui.shadow.lerp}
+  @override
+  AdaptiveScaffoldThemeData lerp(
+    covariant ThemeExtension<AdaptiveScaffoldThemeData>? other,
+    double t,
+  ) {
+    if (other is! AdaptiveScaffoldThemeData) {
+      return this;
+    }
+    return AdaptiveScaffoldThemeData._lerpThemeData(this, other, t);
   }
 
   @override

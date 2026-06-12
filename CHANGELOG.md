@@ -1,3 +1,34 @@
+## 4.1.1
+
+* **[BREAKING] Adaptive destination shape API now uses a single `shape` value**
+  * Removed dual-shape configuration (`destinationFillShape` and
+    `destinationHoverShape`) across custom navigation widgets and adaptive
+    scaffold helpers.
+  * Added/standardized a single `shape` property for destination interaction
+    geometry.
+  * Selected fill and hover/pressed interaction now resolve from the same
+    shape value.
+
+* **[CHANGE] `AdaptiveScaffoldNavigationThemeData` is now `AdaptiveScaffoldThemeData`**
+
+* **[FEAT] `AdaptiveScaffoldThemeData` is now a `ThemeExtension`**
+  * You can configure adaptive navigation defaults directly through
+    `ThemeData.extensions`.
+  * `AdaptiveScaffold` now resolves navigation theme values with this
+    precedence:
+    1. `AdaptiveScaffold.navigationTheme`
+    2. nearest `AdaptiveScaffoldTheme`
+    3. `ThemeData.extensions`
+    4. defaults
+
+* **[DOC] Updated migration guidance and examples**
+  * Updated README and example app to use `AdaptiveScaffoldThemeData` and the
+    new `ThemeData.extensions` integration path.
+
+## 4.0.0 - REDACTED
+
+* This version was redacted due to an incorrect attempt at specifying a theme object.
+
 ## 4.0.2
 
 * **[FEAT] Destination hover shape is now configurable independently**

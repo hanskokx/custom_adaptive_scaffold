@@ -23,8 +23,7 @@ class RailDestination extends StatefulWidget {
     this.indicatorShape,
     this.destinationFillRegion,
     this.destinationHoverRegion,
-    this.destinationFillShape,
-    this.destinationHoverShape,
+    this.shape,
     this.disabled = false,
     this.extended = true,
     this.padding,
@@ -54,8 +53,7 @@ class RailDestination extends StatefulWidget {
   final ShapeBorder? indicatorShape;
   final NavigationDestinationRegion? destinationFillRegion;
   final NavigationDestinationRegion? destinationHoverRegion;
-  final ShapeBorder? destinationFillShape;
-  final ShapeBorder? destinationHoverShape;
+  final WidgetStateProperty<ShapeBorder?>? shape;
   final bool disabled;
   final bool extended;
   final EdgeInsetsGeometry? padding;
@@ -71,6 +69,12 @@ class RailDestination extends StatefulWidget {
 
 class _RailDestinationState extends State<RailDestination>
     with TickerProviderStateMixin {
+  static const Set<WidgetState> _selectedState = <WidgetState>{
+    WidgetState.selected,
+  };
+  static const Set<WidgetState> _hoveredState = <WidgetState>{
+    WidgetState.hovered,
+  };
   late CurvedAnimation _positionAnimation;
   late Animation<double> _destinationAnimation;
   AnimationController? _ownedDestinationController;
@@ -253,12 +257,14 @@ class _RailDestinationState extends State<RailDestination>
     final bool shouldPaintSelectedFill = selected && isCustomFillMode;
     final bool shouldShowIconIndicator =
         (widget.useIndicator ?? false) && isDefaultFillPath;
-    final ShapeBorder effectiveIconIndicatorShape =
-        widget.destinationFillShape ??
-            indicatorShape ??
-            (destinationFillRegion == NavigationDestinationRegion.full
-                ? const RoundedRectangleBorder()
-                : const StadiumBorder());
+    final ShapeBorder? selectedStateShape =
+        widget.shape?.resolve(_selectedState);
+    final ShapeBorder? hoverStateShape = widget.shape?.resolve(_hoveredState);
+    final ShapeBorder effectiveIconIndicatorShape = selectedStateShape ??
+        indicatorShape ??
+        (destinationFillRegion == NavigationDestinationRegion.full
+            ? const RoundedRectangleBorder()
+            : const StadiumBorder());
     final Color? selectedFillColor = indicatorColor;
 
     final IconThemeData unselectedIconTheme =
@@ -652,9 +658,11 @@ class _RailDestinationState extends State<RailDestination>
             ? const RoundedRectangleBorder()
             : const StadiumBorder();
     final ShapeBorder effectiveFillShape =
-        widget.destinationFillShape ?? indicatorShape ?? defaultFillShape;
-    final ShapeBorder effectiveInkShape =
-        widget.destinationHoverShape ?? effectiveFillShape;
+        selectedStateShape ?? indicatorShape ?? defaultFillShape;
+    final ShapeBorder effectiveInkShape = hoverStateShape ??
+        selectedStateShape ??
+        indicatorShape ??
+        defaultFillShape;
     final bool hasVisibleText = !collapsed
         ? switch (labelType) {
             NavigationRailLabelType.none => false,

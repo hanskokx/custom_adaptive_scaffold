@@ -129,8 +129,7 @@ class CustomNavigationRail extends StatefulWidget {
     this.indicatorShape,
     this.destinationFillRegion,
     this.destinationHoverRegion,
-    this.destinationFillShape,
-    this.destinationHoverShape,
+    this.shape,
     this.leadingAtTop = true,
     this.trailingAtBottom = false,
     this.scrollable = false,
@@ -370,17 +369,7 @@ class CustomNavigationRail extends StatefulWidget {
   ///
   /// If null, [indicatorShape] / theme indicator shape is used, then
   /// [StadiumBorder].
-  final ShapeBorder? destinationFillShape;
-
-  /// Optional shape used for hover/ink interaction when
-  /// [destinationHoverRegion] is configured.
-  ///
-  /// Note: this is only applied when [ThemeData.useMaterial3] is true. In
-  /// Material 2, hover/ink interaction continues using the default border
-  /// radius behavior.
-  ///
-  /// If null, falls back to [destinationFillShape].
-  final ShapeBorder? destinationHoverShape;
+  final WidgetStateProperty<ShapeBorder?>? shape;
 
   /// Icon transition preset for destination icon swaps.
   ///
@@ -638,8 +627,7 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
                 indicatorShape: indicatorShape,
                 destinationFillRegion: widget.destinationFillRegion,
                 destinationHoverRegion: widget.destinationHoverRegion,
-                destinationFillShape: widget.destinationFillShape,
-                destinationHoverShape: widget.destinationHoverShape,
+                shape: widget.shape,
                 onTap: () {
                   if (widget.onDestinationSelected != null) {
                     widget.onDestinationSelected!(i);
