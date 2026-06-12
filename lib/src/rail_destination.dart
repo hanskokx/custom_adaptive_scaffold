@@ -23,6 +23,8 @@ class RailDestination extends StatefulWidget {
     this.indicatorShape,
     this.destinationFillRegion,
     this.destinationHoverRegion,
+    this.destinationFillShape,
+    this.destinationHoverShape,
     this.disabled = false,
     this.extended = true,
     this.padding,
@@ -52,6 +54,8 @@ class RailDestination extends StatefulWidget {
   final ShapeBorder? indicatorShape;
   final NavigationDestinationRegion? destinationFillRegion;
   final NavigationDestinationRegion? destinationHoverRegion;
+  final ShapeBorder? destinationFillShape;
+  final ShapeBorder? destinationHoverShape;
   final bool disabled;
   final bool extended;
   final EdgeInsetsGeometry? padding;
@@ -250,7 +254,7 @@ class _RailDestinationState extends State<RailDestination>
     final bool shouldShowIconIndicator =
         (widget.useIndicator ?? false) && isDefaultFillPath;
     final ShapeBorder effectiveIconIndicatorShape =
-        Theme.of(context).appBarTheme.shape ??
+        widget.destinationFillShape ??
             indicatorShape ??
             (destinationFillRegion == NavigationDestinationRegion.full
                 ? const RoundedRectangleBorder()
@@ -648,10 +652,9 @@ class _RailDestinationState extends State<RailDestination>
             ? const RoundedRectangleBorder()
             : const StadiumBorder();
     final ShapeBorder effectiveFillShape =
-        Theme.of(context).appBarTheme.shape ??
-            indicatorShape ??
-            defaultFillShape;
-    final ShapeBorder effectiveInkShape = effectiveFillShape;
+        widget.destinationFillShape ?? indicatorShape ?? defaultFillShape;
+    final ShapeBorder effectiveInkShape =
+        widget.destinationHoverShape ?? effectiveFillShape;
     final bool hasVisibleText = !collapsed
         ? switch (labelType) {
             NavigationRailLabelType.none => false,

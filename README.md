@@ -34,8 +34,10 @@ several places:
   - Extended layout controls (`leadingAtTop`, `trailingAtBottom`, `scrollable`,
     `mainAxisAlignment`).
   - Configurable rail destination fill/highlight via
-    `destinationFillRegion`, `destinationHoverRegion`, and
-    `ThemeData.appBarTheme.shape`.
+    `destinationFillRegion`, `destinationHoverRegion`,
+    `destinationFillShape`, and `destinationHoverShape`.
+  - `AdaptiveScaffold` exposes the same fill options through
+    `navigationTheme: AdaptiveScaffoldNavigationThemeData(...)`.
 - Theme extensions:
   - `CustomNavigationBarThemeData`: `margin`, `padding`,
     `tooltipVerticalOffset`.
@@ -298,8 +300,6 @@ CustomNavigationDestination(
 By default, `CustomNavigationRail` follows Flutter-style selection rendering,
 where the indicator sits behind the icon area.
 
-Shape is resolved from appBar theme shape (`ThemeData.appBarTheme.shape`).
-
 When you want custom destination fill/highlight scopes, choose a
 `destinationFillRegion`:
 
@@ -309,12 +309,15 @@ When you want custom destination fill/highlight scopes, choose a
 - `label`
 - `full`
 
-Example using full-widget fill:
+Example using full-widget fill plus a custom shape:
 
 ```dart
 CustomNavigationRail(
   selectedIndex: selectedIndex,
   destinationFillRegion: NavigationDestinationRegion.full,
+  destinationFillShape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
   destinations: destinations,
 )
 ```
@@ -328,6 +331,9 @@ AdaptiveScaffold.standardNavigationRail(
   selectedIndex: selectedIndex,
   destinations: railDestinations,
   destinationFillRegion: NavigationDestinationRegion.full,
+  destinationFillShape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.circular(12),
+  ),
 )
 ```
 
@@ -339,6 +345,7 @@ AdaptiveScaffold(
   destinations: destinations,
   navigationTheme: const AdaptiveScaffoldNavigationThemeData(
     destinationFillRegion: NavigationDestinationRegion.label,
+    destinationFillShape: StadiumBorder(),
   ),
   body: (BuildContext context) => const Placeholder(),
 )
@@ -346,6 +353,8 @@ AdaptiveScaffold(
 
 To control hover/pressed interaction region independently, use
 `destinationHoverRegion` (defaults to `destinationFillRegion` when omitted).
+To control hover/pressed interaction shape independently, use
+`destinationHoverShape` (defaults to `destinationFillShape` when omitted):
 
 ```dart
 AdaptiveScaffold(
@@ -353,6 +362,10 @@ AdaptiveScaffold(
   navigationTheme: const AdaptiveScaffoldNavigationThemeData(
     destinationFillRegion: NavigationDestinationRegion.icon,
     destinationHoverRegion: NavigationDestinationRegion.full,
+    destinationFillShape: StadiumBorder(),
+    destinationHoverShape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(12),
+    ),
   ),
   body: (BuildContext context) => const Placeholder(),
 )

@@ -1,37 +1,3 @@
-## 4.1.0
-
-* **[BREAKING] `destinationFillShape` and `destinationHoverShape` removed**
-  * `destinationFillShape` and `destinationHoverShape` were removed from:
-    * `AdaptiveScaffoldNavigationThemeData`
-    * `AdaptiveScaffold` (navigation helpers / navigationTheme)
-    * `CustomNavigationBar`
-    * `CustomNavigationRail`
-    * `RailDestination`
-  * The functionality is now consolidated into `ThemeData.appBarTheme.shape`.
-  * Migration: remove the old parameters and set `appBarTheme.shape` via
-    `AppBarTheme`.
-
-Before:
-```dart
-navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-  destinationFillShape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(4)),
-  ),
-  destinationHoverShape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(4)),
-  ),
-),
-```
-
-After:
-```dart
-appBarTheme: const AppBarTheme(
-  shape: RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(4)),
-  ),
-),
-```
-
 ## 4.0.2
 
 * **[FEAT] Destination hover shape is now configurable independently**

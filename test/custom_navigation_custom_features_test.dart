@@ -739,7 +739,7 @@ void main() {
     expect(rect.height, greaterThanOrEqualTo(32));
   });
 
-  testWidgets("ThemeData.appBarTheme.shape is applied to interaction shape", (
+  testWidgets("destinationFillShape is applied to interaction shape", (
     WidgetTester tester,
   ) async {
     final ShapeBorder fillShape = RoundedRectangleBorder(
@@ -748,14 +748,12 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: ThemeData(
-          useMaterial3: true,
-          appBarTheme: AppBarTheme(shape: fillShape),
-        ),
+        theme: ThemeData(useMaterial3: true),
         home: Scaffold(
           body: CustomNavigationRail(
             selectedIndex: 0,
             destinationFillRegion: NavigationDestinationRegion.full,
+            destinationFillShape: fillShape,
             destinations: const <NavigationRailDestination>[
               NavigationRailDestination(
                 icon: Icon(Icons.home_outlined),

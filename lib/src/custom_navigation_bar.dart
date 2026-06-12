@@ -38,9 +38,6 @@ const double _horizontalDestinationPadding = 8.0;
 /// [DefaultTextStyle]s or [IconTheme]s but rather controlled by parameters or
 /// the [NavigationBarThemeData].
 ///
-/// The shape of the navigation bar indicators is controlled by
-/// [ThemeData.appBarTheme.shape].
-///
 /// This widget holds a collection of destinations (usually
 /// [CustomNavigationDestination]s).
 ///
@@ -108,6 +105,8 @@ class CustomNavigationBar extends StatelessWidget {
     this.labelPadding,
     this.destinationFillRegion,
     this.destinationHoverRegion,
+    this.destinationFillShape,
+    this.destinationHoverShape,
     this.maintainBottomViewPadding = false,
   })  : assert(destinations.length >= 2),
         assert(0 <= selectedIndex && selectedIndex < destinations.length);
@@ -247,6 +246,20 @@ class CustomNavigationBar extends StatelessWidget {
   /// When null, this follows [destinationFillRegion].
   final NavigationDestinationRegion? destinationHoverRegion;
 
+  /// Optional shape for destination fill/highlight.
+  ///
+  /// If null, the resolved navigation bar indicator shape is used.
+  final ShapeBorder? destinationFillShape;
+
+  /// Optional shape used for hover/ink interaction.
+  ///
+  /// Note: this is only applied when [ThemeData.useMaterial3] is true. In
+  /// Material 2, hover/ink interaction continues using the default border
+  /// radius behavior.
+  ///
+  /// If null, falls back to [destinationFillShape].
+  final ShapeBorder? destinationHoverShape;
+
   /// Specifies whether [SafeArea] should maintain bottom view padding.
   final bool maintainBottomViewPadding;
 
@@ -320,6 +333,8 @@ class CustomNavigationBar extends StatelessWidget {
                               labelPadding: labelPadding,
                               destinationFillRegion: destinationFillRegion,
                               destinationHoverRegion: destinationHoverRegion,
+                              destinationFillShape: destinationFillShape,
+                              destinationHoverShape: destinationHoverShape,
                               onTap: _handleTap(i),
                               child: destinations[i],
                             );
@@ -804,10 +819,9 @@ class _NavigationDestinationBuilderState
         widget.iconIndicatorShape == null &&
         widget.labelIndicatorShape == null;
     final ShapeBorder effectiveFillShape =
-        Theme.of(context).appBarTheme.shape ??
-            widget.shape ??
-            const StadiumBorder();
-    final ShapeBorder effectiveHoverShape = effectiveFillShape;
+        info.destinationFillShape ?? widget.shape ?? const StadiumBorder();
+    final ShapeBorder effectiveHoverShape =
+        info.destinationHoverShape ?? effectiveFillShape;
     final TextDirection textDirection = Directionality.of(context);
     final EdgeInsets fillPadding = widget.padding.resolve(textDirection);
     final bool hasVisibleText = switch (info.labelBehavior) {
@@ -991,6 +1005,8 @@ class _NavigationDestinationInfo extends InheritedWidget {
     required this.labelPadding,
     required this.destinationFillRegion,
     required this.destinationHoverRegion,
+    required this.destinationFillShape,
+    required this.destinationHoverShape,
     required this.onTap,
     required super.child,
   });
@@ -1075,6 +1091,12 @@ class _NavigationDestinationInfo extends InheritedWidget {
   /// Where destination hover/ink interaction effects are painted.
   final NavigationDestinationRegion? destinationHoverRegion;
 
+  /// Optional override shape for destination fill/highlight.
+  final ShapeBorder? destinationFillShape;
+
+  /// Optional override shape for hover/ink interaction.
+  final ShapeBorder? destinationHoverShape;
+
   /// The callback that should be called when this destination is tapped.
   ///
   /// This is computed by calling [CustomNavigationBar.onDestinationSelected]
@@ -1109,6 +1131,8 @@ class _NavigationDestinationInfo extends InheritedWidget {
         labelPadding != oldWidget.labelPadding ||
         destinationFillRegion != oldWidget.destinationFillRegion ||
         destinationHoverRegion != oldWidget.destinationHoverRegion ||
+        destinationFillShape != oldWidget.destinationFillShape ||
+        destinationHoverShape != oldWidget.destinationHoverShape ||
         onTap != oldWidget.onTap;
   }
 }
