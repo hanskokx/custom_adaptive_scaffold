@@ -1,15 +1,4 @@
-## 4.1.1
-
-* **[BREAKING] Adaptive destination shape API now uses a single `shape` value**
-  * Removed dual-shape configuration (`destinationFillShape` and
-    `destinationHoverShape`) across custom navigation widgets and adaptive
-    scaffold helpers.
-  * Added/standardized a single `shape` property for destination interaction
-    geometry.
-  * Selected fill and hover/pressed interaction now resolve from the same
-    shape value.
-
-* **[CHANGE] `AdaptiveScaffoldNavigationThemeData` is now `AdaptiveScaffoldThemeData`**
+## 4.1.0+1
 
 * **[FEAT] `AdaptiveScaffoldThemeData` is now a `ThemeExtension`**
   * You can configure adaptive navigation defaults directly through
@@ -24,6 +13,46 @@
 * **[DOC] Updated migration guidance and examples**
   * Updated README and example app to use `AdaptiveScaffoldThemeData` and the
     new `ThemeData.extensions` integration path.
+
+* **[CHANGE] `AdaptiveScaffoldNavigationThemeData` has been renamed to `AdaptiveScaffoldThemeData`**
+
+* **[BREAKING] `destinationFillShape` and `destinationHoverShape` removed**
+  * `destinationFillShape` and `destinationHoverShape` were removed from:
+    * `AdaptiveScaffoldThemeData`
+    * `AdaptiveScaffold` (navigation helpers / navigationTheme)
+    * `CustomNavigationBar`
+    * `CustomNavigationRail`
+    * `RailDestination`
+  * Added/standardized a single `shape` property for destination interaction
+    geometry.
+  * Selected fill and hover/pressed interaction now resolve from the same
+    shape value.
+  * The functionality is now consolidated into `navigationTheme.shape`.
+  * Migration: remove the old parameters and set `navigationTheme.shape` via
+    `AdaptiveScaffoldThemeData`.
+
+Before:
+
+```dart
+navigationTheme: const AdaptiveScaffoldNavigationThemeData(
+  destinationFillShape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4)),
+  ),
+  destinationHoverShape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4)),
+  ),
+),
+```
+
+After:
+
+```dart
+navigationTheme: const AdaptiveScaffoldThemeData(
+  shape: RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(4)),
+  ),
+),
+```
 
 ## 4.0.0 - REDACTED
 
