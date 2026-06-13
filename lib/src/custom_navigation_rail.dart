@@ -148,9 +148,9 @@ class CustomNavigationRail extends StatefulWidget {
           selectedIndex == null ||
               (0 <= selectedIndex && selectedIndex < destinations.length),
         ),
-        assert(elevation == null || elevation > 0),
-        assert(minWidth == null || minWidth > 0),
-        assert(minExtendedWidth == null || minExtendedWidth > 0),
+        assert(elevation == null || elevation >= 0),
+        assert(minWidth == null || minWidth >= 0),
+        assert(minExtendedWidth == null || minExtendedWidth >= 0),
         assert(
           (minWidth == null || minExtendedWidth == null) ||
               minExtendedWidth >= minWidth,

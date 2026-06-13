@@ -46,9 +46,6 @@ class MyApp extends StatelessWidget {
                 destinationFillRegion: NavigationDestinationRegion.content,
               ),
             ),
-            transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-            transitionCurve: Curves.easeOutCubic,
-            transitionDuration: Duration(milliseconds: 220),
             navigationBarTheme: CustomNavigationBarThemeData(
               tooltipVerticalOffset: 56,
               margin: EdgeInsets.symmetric(horizontal: 4),
@@ -126,6 +123,9 @@ class _MyHomePageState extends State<MyHomePage> {
     return AdaptiveScaffold(
       // An option to override the default transition duration.
       transitionDuration: Duration(milliseconds: _transitionDuration),
+      navigationTransitionAnimation: NavigationDestinationAnimation.fadeSwap,
+      navigationTransitionCurve: Curves.easeOutCubic,
+      navigationTransitionDuration: const Duration(milliseconds: 220),
       // An option to override the default breakpoints used for small, medium,
       // mediumLarge, large, and extraLarge.
       smallBreakpoint: const Breakpoint(endWidth: 700),

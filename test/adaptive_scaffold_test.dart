@@ -938,6 +938,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                compactLabelType: NavigationRailLabelType.none,
+              ),
+            ],
             navigationRailTheme: const NavigationRailThemeData(
               labelType: NavigationRailLabelType.all,
             ),
@@ -946,9 +951,6 @@ void main() {
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                compactLabelType: NavigationRailLabelType.none,
-              ),
             ),
           ),
         ),
@@ -987,7 +989,6 @@ void main() {
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
-              navigationTheme: null,
             ),
           ),
         ),
@@ -996,62 +997,6 @@ void main() {
       final CustomNavigationRail compactRail = tester
           .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
       expect(compactRail.labelType, NavigationRailLabelType.none);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold uses nested compact rail label type over top-level compatibility field",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            navigationRailTheme: const NavigationRailThemeData(
-              labelType: NavigationRailLabelType.none,
-            ),
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                navigationRailTheme: CustomNavigationRailThemeData(
-                  compactLabelType: NavigationRailLabelType.all,
-                ),
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                navigationRailTheme: CustomNavigationRailThemeData(
-                  compactLabelType: NavigationRailLabelType.selected,
-                ),
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  compactLabelType: NavigationRailLabelType.none,
-                  navigationRailTheme: CustomNavigationRailThemeData(
-                    compactLabelType: NavigationRailLabelType.all,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(compactRail.labelType, NavigationRailLabelType.all);
     },
   );
 
@@ -1072,6 +1017,11 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                compactLabelType: NavigationRailLabelType.selected,
+              ),
+            ],
             navigationRailTheme: const NavigationRailThemeData(
               labelType: NavigationRailLabelType.none,
             ),
@@ -1080,9 +1030,6 @@ void main() {
             data: const MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                compactLabelType: NavigationRailLabelType.selected,
-              ),
             ),
           ),
         ),
@@ -1091,426 +1038,6 @@ void main() {
       final CustomNavigationRail compactRail = tester
           .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
       expect(compactRail.labelType, NavigationRailLabelType.selected);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies theme precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                compactLabelType: NavigationRailLabelType.none,
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                compactLabelType: NavigationRailLabelType.all,
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  compactLabelType: NavigationRailLabelType.selected,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(compactRail.labelType, NavigationRailLabelType.selected);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies shape precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const ShapeBorder extensionShape = StadiumBorder();
-      const ShapeBorder inheritedShape = CircleBorder();
-      const ShapeBorder widgetShape = RoundedRectangleBorder();
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  interactionShape:
-                      WidgetStatePropertyAll<ShapeBorder?>(extensionShape),
-                ),
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  interactionShape:
-                      WidgetStatePropertyAll<ShapeBorder?>(inheritedShape),
-                ),
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  indicatorStyle: NavigationIndicatorThemeData(
-                    interactionShape:
-                        WidgetStatePropertyAll<ShapeBorder?>(widgetShape),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(compactRail.shape, isA<WidgetStateProperty<ShapeBorder?>>());
-      expect(
-        compactRail.shape?.resolve(const <WidgetState>{WidgetState.selected}),
-        same(widgetShape),
-      );
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies destinationFillRegion precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  destinationFillRegion: NavigationDestinationRegion.icon,
-                ),
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  destinationFillRegion: NavigationDestinationRegion.label,
-                ),
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  indicatorStyle: NavigationIndicatorThemeData(
-                    destinationFillRegion: NavigationDestinationRegion.full,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(
-        compactRail.destinationFillRegion,
-        NavigationDestinationRegion.full,
-      );
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies destinationHoverRegion precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  destinationHoverRegion: NavigationDestinationRegion.icon,
-                ),
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  destinationHoverRegion: NavigationDestinationRegion.label,
-                ),
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  indicatorStyle: NavigationIndicatorThemeData(
-                    destinationHoverRegion: NavigationDestinationRegion.full,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(
-        compactRail.destinationHoverRegion,
-        NavigationDestinationRegion.full,
-      );
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies transitionDuration precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const Duration extensionDuration = Duration(milliseconds: 100);
-      const Duration inheritedDuration = Duration(milliseconds: 200);
-      const Duration widgetDuration = Duration(milliseconds: 300);
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                transitionDuration: extensionDuration,
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                transitionDuration: inheritedDuration,
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  transitionDuration: widgetDuration,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(compactRail.iconTransitionDuration, widgetDuration);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies bar theme precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const double extensionHeight = 72;
-      const double inheritedHeight = 76;
-      const double widgetHeight = 84;
-      const NavigationDestinationLabelBehavior extensionLabelBehavior =
-          NavigationDestinationLabelBehavior.alwaysHide;
-      const NavigationDestinationLabelBehavior inheritedLabelBehavior =
-          NavigationDestinationLabelBehavior.onlyShowSelected;
-      const NavigationDestinationLabelBehavior widgetLabelBehavior =
-          NavigationDestinationLabelBehavior.alwaysShow;
-      const ShapeBorder extensionIndicatorShape = StadiumBorder();
-      const ShapeBorder inheritedIndicatorShape = CircleBorder();
-      const ShapeBorder widgetIndicatorShape = BeveledRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(8)),
-      );
-
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                navigationBarTheme: CustomNavigationBarThemeData(
-                  height: extensionHeight,
-                  labelBehavior: extensionLabelBehavior,
-                ),
-                indicatorStyle: NavigationIndicatorThemeData(
-                  shape: extensionIndicatorShape,
-                ),
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(500, 800)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                navigationBarTheme: CustomNavigationBarThemeData(
-                  height: inheritedHeight,
-                  labelBehavior: inheritedLabelBehavior,
-                ),
-                indicatorStyle: NavigationIndicatorThemeData(
-                  shape: inheritedIndicatorShape,
-                ),
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  navigationBarTheme: CustomNavigationBarThemeData(
-                    height: widgetHeight,
-                    labelBehavior: widgetLabelBehavior,
-                  ),
-                  indicatorStyle: NavigationIndicatorThemeData(
-                    shape: widgetIndicatorShape,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final Finder barFinder = find.byType(CustomNavigationBar);
-      expect(barFinder, findsOneWidget);
-
-      final CustomNavigationBar bar = tester.widget<CustomNavigationBar>(
-        barFinder,
-      );
-      expect(bar.labelBehavior, widgetLabelBehavior);
-
-      final Finder navBarThemeFinder = find.ancestor(
-        of: barFinder,
-        matching: find.byType(NavigationBarTheme),
-      );
-      expect(navBarThemeFinder, findsWidgets);
-
-      final NavigationBarTheme navBarTheme = tester.widget<NavigationBarTheme>(
-        navBarThemeFinder.first,
-      );
-      expect(navBarTheme.data.height, widgetHeight);
-      expect(navBarTheme.data.labelBehavior, widgetLabelBehavior);
-      expect(navBarTheme.data.indicatorShape, widgetIndicatorShape);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold bar indicatorStyle precedence local > shared",
-    (WidgetTester tester) async {
-      const ShapeBorder sharedShape = CircleBorder();
-      const ShapeBorder localShape = RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(14)),
-      );
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(500, 800)),
-            child: AdaptiveScaffold(
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  interactionShape:
-                      WidgetStatePropertyAll<ShapeBorder?>(sharedShape),
-                ),
-                navigationBarTheme: CustomNavigationBarThemeData(
-                  indicatorStyle: NavigationIndicatorThemeData(
-                    interactionShape:
-                        WidgetStatePropertyAll<ShapeBorder?>(localShape),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final Finder barFinder = find.byType(CustomNavigationBar);
-      expect(barFinder, findsOneWidget);
-      final Finder inkResponses = find.descendant(
-        of: barFinder,
-        matching: find.byWidgetPredicate(
-          (Widget widget) => widget is InkResponse,
-        ),
-      );
-      expect(inkResponses, findsWidgets);
-      final InkResponse firstInk = tester.widget<InkResponse>(
-        inkResponses.first,
-      );
-      expect(firstInk.customBorder, localShape);
     },
   );
 
@@ -1532,21 +1059,27 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffold(
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  interactionShape:
-                      WidgetStatePropertyAll<ShapeBorder?>(sharedShape),
-                ),
-                navigationRailTheme: CustomNavigationRailThemeData(
+          home: Theme(
+            data: ThemeData(
+              extensions: const <ThemeExtension<dynamic>>[
+                AdaptiveScaffoldThemeData(
                   indicatorStyle: NavigationIndicatorThemeData(
                     interactionShape:
-                        WidgetStatePropertyAll<ShapeBorder?>(localShape),
+                        WidgetStatePropertyAll<ShapeBorder?>(sharedShape),
+                  ),
+                  navigationRailTheme: CustomNavigationRailThemeData(
+                    indicatorStyle: NavigationIndicatorThemeData(
+                      interactionShape:
+                          WidgetStatePropertyAll<ShapeBorder?>(localShape),
+                    ),
                   ),
                 ),
+              ],
+            ),
+            child: MediaQuery(
+              data: const MediaQueryData(size: Size(800, 600)),
+              child: AdaptiveScaffold(
+                destinations: destinations,
               ),
             ),
           ),
@@ -1560,159 +1093,6 @@ void main() {
         compactRail.shape?.resolve(const <WidgetState>{WidgetState.selected}),
         same(localShape),
       );
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies rail surface and border precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const double extensionElevation = 1;
-      const double inheritedElevation = 3;
-      const double widgetElevation = 6;
-      const Color extensionShadow = Color(0xFF111111);
-      const Color inheritedShadow = Color(0xFF222222);
-      const Color widgetShadow = Color(0xFF333333);
-      const Color extensionTint = Color(0xFF444444);
-      const Color inheritedTint = Color(0xFF555555);
-      const Color widgetTint = Color(0xFF666666);
-      const BorderSide extensionBorder =
-          BorderSide(color: Color(0xFFAA1111), width: 1);
-      const BorderSide inheritedBorder =
-          BorderSide(color: Color(0xFF11AA11), width: 2);
-      const BorderSide widgetBorder =
-          BorderSide(color: Color(0xFF1111AA), width: 3);
-      const EdgeInsets extensionMargin = EdgeInsets.all(2);
-      const EdgeInsets inheritedMargin = EdgeInsets.all(4);
-      const EdgeInsets widgetMargin = EdgeInsets.all(6);
-      const EdgeInsets extensionPadding = EdgeInsets.all(3);
-      const EdgeInsets inheritedPadding = EdgeInsets.all(5);
-      const EdgeInsets widgetPadding = EdgeInsets.all(7);
-
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                navigationRailTheme: CustomNavigationRailThemeData(
-                  elevation: extensionElevation,
-                  shadowColor: extensionShadow,
-                  surfaceTintColor: extensionTint,
-                  border: extensionBorder,
-                  margin: extensionMargin,
-                  padding: extensionPadding,
-                ),
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                navigationRailTheme: CustomNavigationRailThemeData(
-                  elevation: inheritedElevation,
-                  shadowColor: inheritedShadow,
-                  surfaceTintColor: inheritedTint,
-                  border: inheritedBorder,
-                  margin: inheritedMargin,
-                  padding: inheritedPadding,
-                ),
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  navigationRailTheme: CustomNavigationRailThemeData(
-                    elevation: widgetElevation,
-                    shadowColor: widgetShadow,
-                    surfaceTintColor: widgetTint,
-                    border: widgetBorder,
-                    margin: widgetMargin,
-                    padding: widgetPadding,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(compactRail.elevation, widgetElevation);
-      expect(compactRail.shadowColor, widgetShadow);
-      expect(compactRail.surfaceTintColor, widgetTint);
-      expect(compactRail.border, widgetBorder);
-      expect(compactRail.margin, widgetMargin);
-      expect(compactRail.padding, widgetPadding);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies bar border precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const BorderSide extensionBorder =
-          BorderSide(color: Color(0xFFAA1111), width: 1);
-      const BorderSide inheritedBorder =
-          BorderSide(color: Color(0xFF11AA11), width: 2);
-      const BorderSide widgetBorder =
-          BorderSide(color: Color(0xFF1111AA), width: 3);
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                navigationBarTheme: CustomNavigationBarThemeData(
-                  border: extensionBorder,
-                ),
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(500, 800)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                navigationBarTheme: CustomNavigationBarThemeData(
-                  border: inheritedBorder,
-                ),
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  navigationBarTheme: CustomNavigationBarThemeData(
-                    border: widgetBorder,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationBar bar = tester.widget<CustomNavigationBar>(
-        find.byType(CustomNavigationBar),
-      );
-      expect(bar.border, widgetBorder);
     },
   );
 
@@ -1736,17 +1116,23 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(500, 800)),
-            child: AdaptiveScaffold(
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  destinationFillRegion: NavigationDestinationRegion.full,
-                  interactionShape:
-                      WidgetStatePropertyAll<ShapeBorder?>(interactionShape),
-                  shape: indicatorShape,
+          home: Theme(
+            data: ThemeData(
+              extensions: const <ThemeExtension<dynamic>>[
+                AdaptiveScaffoldThemeData(
+                  indicatorStyle: NavigationIndicatorThemeData(
+                    destinationFillRegion: NavigationDestinationRegion.full,
+                    interactionShape:
+                        WidgetStatePropertyAll<ShapeBorder?>(interactionShape),
+                    shape: indicatorShape,
+                  ),
                 ),
+              ],
+            ),
+            child: MediaQuery(
+              data: const MediaQueryData(size: Size(500, 800)),
+              child: AdaptiveScaffold(
+                destinations: destinations,
               ),
             ),
           ),
@@ -1767,70 +1153,6 @@ void main() {
         inkResponses.first,
       );
       expect(firstInk.customBorder, interactionShape);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies bar margin/padding precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const EdgeInsets extensionMargin = EdgeInsets.symmetric(horizontal: 4);
-      const EdgeInsets inheritedMargin = EdgeInsets.symmetric(horizontal: 10);
-      const EdgeInsets widgetMargin = EdgeInsets.symmetric(horizontal: 16);
-      const EdgeInsets extensionPadding = EdgeInsets.symmetric(horizontal: 2);
-      const EdgeInsets inheritedPadding = EdgeInsets.symmetric(horizontal: 6);
-      const EdgeInsets widgetPadding = EdgeInsets.symmetric(horizontal: 12);
-
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                navigationBarTheme: CustomNavigationBarThemeData(
-                  margin: extensionMargin,
-                  padding: extensionPadding,
-                ),
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(500, 800)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                navigationBarTheme: CustomNavigationBarThemeData(
-                  margin: inheritedMargin,
-                  padding: inheritedPadding,
-                ),
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  navigationBarTheme: CustomNavigationBarThemeData(
-                    margin: widgetMargin,
-                    padding: widgetPadding,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationBar bar = tester.widget<CustomNavigationBar>(
-        find.byType(CustomNavigationBar),
-      );
-      expect(bar.margin, widgetMargin);
-      expect(bar.padding, widgetPadding);
     },
   );
 
@@ -2007,15 +1329,21 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(500, 800)),
-            child: AdaptiveScaffold(
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                indicatorStyle: NavigationIndicatorThemeData(
-                  destinationFillRegion: NavigationDestinationRegion.full,
-                  shape: indicatorShape,
+          home: Theme(
+            data: ThemeData(
+              extensions: const <ThemeExtension<dynamic>>[
+                AdaptiveScaffoldThemeData(
+                  indicatorStyle: NavigationIndicatorThemeData(
+                    destinationFillRegion: NavigationDestinationRegion.full,
+                    shape: indicatorShape,
+                  ),
                 ),
+              ],
+            ),
+            child: MediaQuery(
+              data: const MediaQueryData(size: Size(500, 800)),
+              child: AdaptiveScaffold(
+                destinations: destinations,
               ),
             ),
           ),
@@ -2059,14 +1387,16 @@ void main() {
             navigationRailTheme: const NavigationRailThemeData(
               labelType: NavigationRailLabelType.all,
             ),
+            extensions: const <ThemeExtension<dynamic>>[
+              AdaptiveScaffoldThemeData(
+                expandedLabelType: NavigationRailLabelType.none,
+              ),
+            ],
           ),
           home: MediaQuery(
             data: const MediaQueryData(size: Size(1300, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                expandedLabelType: NavigationRailLabelType.none,
-              ),
             ),
           ),
         ),
@@ -2130,13 +1460,19 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(1300, 600)),
-            child: AdaptiveScaffold(
-              selectedIndex: 0,
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                expandedLabelType: NavigationRailLabelType.selected,
+          home: Theme(
+            data: ThemeData(
+              extensions: const <ThemeExtension<dynamic>>[
+                AdaptiveScaffoldThemeData(
+                  expandedLabelType: NavigationRailLabelType.selected,
+                ),
+              ],
+            ),
+            child: MediaQuery(
+              data: const MediaQueryData(size: Size(1300, 600)),
+              child: AdaptiveScaffold(
+                selectedIndex: 0,
+                destinations: destinations,
               ),
             ),
           ),
@@ -2168,12 +1504,18 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(1300, 600)),
-            child: AdaptiveScaffold(
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldThemeData(
-                extendedNavigationRailWidth: themedExtendedWidth,
+          home: Theme(
+            data: ThemeData(
+              extensions: const <ThemeExtension<dynamic>>[
+                AdaptiveScaffoldThemeData(
+                  extendedNavigationRailWidth: themedExtendedWidth,
+                ),
+              ],
+            ),
+            child: MediaQuery(
+              data: const MediaQueryData(size: Size(1300, 600)),
+              child: AdaptiveScaffold(
+                destinations: destinations,
               ),
             ),
           ),
@@ -2185,57 +1527,6 @@ void main() {
       expect(expandedRailFinder, findsOneWidget);
       final Size expandedRailSize = tester.getSize(expandedRailFinder);
       expect(expandedRailSize.width, themedExtendedWidth);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold applies extended rail width precedence widget > inherited > extension",
-    (WidgetTester tester) async {
-      const double extensionWidth = 220;
-      const double inheritedWidth = 236;
-      const double widgetWidth = 264;
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            extensions: const <ThemeExtension<dynamic>>[
-              AdaptiveScaffoldThemeData(
-                extendedNavigationRailWidth: extensionWidth,
-              ),
-            ],
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(1300, 600)),
-            child: AdaptiveScaffoldTheme(
-              data: const AdaptiveScaffoldThemeData(
-                extendedNavigationRailWidth: inheritedWidth,
-              ),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-                navigationTheme: const AdaptiveScaffoldThemeData(
-                  extendedNavigationRailWidth: widgetWidth,
-                ),
-              ),
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final Finder expandedRailFinder = find.byType(CustomNavigationRail);
-      expect(expandedRailFinder, findsOneWidget);
-      final Size expandedRailSize = tester.getSize(expandedRailFinder);
-      expect(expandedRailSize.width, widgetWidth);
     },
   );
 

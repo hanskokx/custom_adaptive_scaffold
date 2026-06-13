@@ -12,30 +12,32 @@ for behavior that intentionally diverges.
 
 ## Table Of Contents
 
-- [How This Package Differs From Flutter](#how-this-package-differs-from-flutter)
-- [AdaptiveScaffold](#adaptivescaffold)
-  - [Panel Primary/Secondary Behavior](#panel-primarysecondary-behavior)
-  - [AdaptiveBody Context](#adaptivebody-context)
-  - [Primary/Secondary API Summary](#primarysecondary-api-summary)
-  - [Primary/Secondary Example](#primarysecondary-example)
-  - [Migration Notes](#migration-notes)
-- [CustomNavigationDestination](#customnavigationdestination)
-  - [Per-destination label visibility](#per-destination-label-visibility)
-  - [Animated icon transitions](#animated-icon-transitions)
-  - [Full icon+label transition composition](#full-iconlabel-transition-composition)
-  - [Custom navigation rail transitions](#custom-navigation-rail-transitions)
-  - [Destination Fill And Hover Regions](#destination-fill-and-hover-regions)
-  - [Add Adaptive Theme Via Theme Extensions](#add-adaptive-theme-via-theme-extensions)
-  - [Styling Reference](#styling-reference)
-  - [Scoped selection indicator](#scoped-selection-indicator)
-  - [Tooltip](#tooltip)
-  - [Example Usage](#example-usage)
-- [The Background Widget Suite](#the-background-widget-suite)
-  - [Breakpoint](#breakpoint)
-  - [AdaptiveLayout](#adaptivelayout)
-  - [SlotLayout](#slotlayout)
-  - [SlotLayout.from](#slotlayoutfrom)
-  - [Example Usage](#example-usage-1)
+- [(Custom) Adaptive Scaffold](#custom-adaptive-scaffold)
+  - [Table Of Contents](#table-of-contents)
+  - [How This Package Differs From Flutter](#how-this-package-differs-from-flutter)
+  - [AdaptiveScaffold](#adaptivescaffold)
+    - [Panel Primary/Secondary Behavior](#panel-primarysecondary-behavior)
+    - [AdaptiveBody Context](#adaptivebody-context)
+    - [Primary/Secondary API Summary](#primarysecondary-api-summary)
+    - [Primary/Secondary Example](#primarysecondary-example)
+    - [Migration Notes](#migration-notes)
+  - [CustomNavigationDestination](#customnavigationdestination)
+    - [Per-destination label visibility](#per-destination-label-visibility)
+    - [Animated icon transitions](#animated-icon-transitions)
+    - [Full icon+label transition composition](#full-iconlabel-transition-composition)
+    - [Custom navigation rail transitions](#custom-navigation-rail-transitions)
+    - [Destination Fill And Hover Regions](#destination-fill-and-hover-regions)
+    - [Add Adaptive Theme Via Theme Extensions](#add-adaptive-theme-via-theme-extensions)
+    - [Styling Reference](#styling-reference)
+    - [Scoped selection indicator](#scoped-selection-indicator)
+    - [Tooltip](#tooltip)
+    - [Example Usage](#example-usage)
+  - [The Background Widget Suite](#the-background-widget-suite)
+    - [Breakpoint](#breakpoint)
+    - [AdaptiveLayout](#adaptivelayout)
+    - [SlotLayout](#slotlayout)
+    - [SlotLayout.from](#slotlayoutfrom)
+    - [Example Usage](#example-usage-1)
 
 ## How This Package Differs From Flutter
 
@@ -61,7 +63,6 @@ several places:
     `destinationFillRegion`, `destinationHoverRegion`,
     and `interactionShape`.
   - `AdaptiveScaffold` exposes the same fill options through
-    `navigationTheme: AdaptiveScaffoldThemeData(...)` and
     `ThemeData.extensions`.
 - Theme extensions:
   - `CustomNavigationRailThemeData`: `backgroundColor`, `elevation`,
@@ -411,21 +412,20 @@ AdaptiveScaffold(
 )
 ```
 
-Navigation behavior overrides are also configured through
-`AdaptiveScaffoldThemeData`:
+Navigation behavior overrides are configured directly on `AdaptiveScaffold`:
 
 ```dart
 AdaptiveScaffold(
   destinations: destinations,
+  navigationTransitionAnimation: NavigationDestinationAnimation.fadeSwap,
+  navigationTransitionCurve: Curves.easeOutCubic,
+  navigationTransitionDuration: Duration(milliseconds: 220),
   navigationTheme: const AdaptiveScaffoldThemeData(
     navigationRailTheme: CustomNavigationRailThemeData(
       compactLabelType: NavigationRailLabelType.selected,
       expandedLabelType: NavigationRailLabelType.all,
       extendedNavigationRailWidth: 224,
     ),
-    transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-    transitionCurve: Curves.easeOutCubic,
-    transitionDuration: Duration(milliseconds: 220),
   ),
   body: (BuildContext context) => const Placeholder(),
 )
@@ -488,9 +488,6 @@ MaterialApp(
           expandedLabelType: NavigationRailLabelType.all,
           extendedNavigationRailWidth: 224,
         ),
-        transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-        transitionCurve: Curves.easeOutCubic,
-        transitionDuration: Duration(milliseconds: 220),
         indicatorStyle: NavigationIndicatorThemeData(
           destinationFillRegion: NavigationDestinationRegion.content,
           destinationHoverRegion: NavigationDestinationRegion.full,
@@ -649,8 +646,11 @@ Theme precedence is:
 
 Notes:
 
-- `transitionAnimation` is shared by both compact rail and small navigation
-  bar destination transitions.
+- `AdaptiveScaffold.navigationTransitionAnimation` is shared by both compact
+  rail and small navigation bar destination transitions.
+- `AdaptiveScaffold.navigationTransitionCurve` and
+  `AdaptiveScaffold.navigationTransitionDuration` control the curve and
+  duration for those transitions.
 - `navigationRailTheme.compactLabelType` configures compact rail labels
   directly, and maps to the corresponding small navigation bar label behavior.
 - `navigationRailTheme.expandedLabelType` applies only to expanded rails

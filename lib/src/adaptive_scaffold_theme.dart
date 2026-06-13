@@ -4,7 +4,6 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 
 import "custom_navigation_rail_theme.dart";
-import "navigation_destination_types.dart";
 import "navigation_indicator_theme.dart";
 
 /// Navigation-bar-specific styling shared by adaptive small-breakpoint bars.
@@ -491,22 +490,6 @@ class AdaptiveScaffoldTheme extends InheritedTheme with Diagnosticable {
       _data?.navigationRailTheme?.extendedNavigationRailWidth ??
       _data?.extendedNavigationRailWidth;
 
-  /// Icon transition preset used by small breakpoint navigation bar and
-  /// compact (medium breakpoint) navigation rail destinations.
-  ///
-  /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
-  NavigationDestinationAnimation get transitionAnimation =>
-      _data?.transitionAnimation ??
-      const AdaptiveScaffoldThemeData().transitionAnimation;
-
-  /// Curve used by compact rail icon transitions.
-  Curve get transitionCurve =>
-      _data?.transitionCurve ??
-      const AdaptiveScaffoldThemeData().transitionCurve;
-
-  /// Optional duration used by compact rail icon transitions.
-  Duration? get transitionDuration => _data?.transitionDuration;
-
   /// Indicator-specific styling shared by adaptive navigation destinations.
   NavigationIndicatorThemeData? get indicatorStyle => _data?.indicatorStyle;
 
@@ -598,9 +581,6 @@ class AdaptiveScaffoldThemeData
       "This field will be removed after v4.1.0+1.",
     )
     this.extendedNavigationRailWidth,
-    this.transitionAnimation = NavigationDestinationAnimation.none,
-    this.transitionCurve = Curves.easeInOut,
-    this.transitionDuration,
     this.indicatorStyle,
     this.navigationBarTheme,
   });
@@ -649,18 +629,6 @@ class AdaptiveScaffoldThemeData
   )
   final double? extendedNavigationRailWidth;
 
-  /// Icon transition preset used by small breakpoint navigation bar and
-  /// compact (medium breakpoint) navigation rail destinations.
-  ///
-  /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
-  final NavigationDestinationAnimation transitionAnimation;
-
-  /// Curve used by compact rail icon transitions.
-  final Curve transitionCurve;
-
-  /// Optional duration used by compact rail icon transitions.
-  final Duration? transitionDuration;
-
   /// Indicator-specific styling shared by adaptive navigation destinations.
   final NavigationIndicatorThemeData? indicatorStyle;
 
@@ -687,9 +655,6 @@ class AdaptiveScaffoldThemeData
       "This parameter will be removed after v4.1.0+1.",
     )
     double? extendedNavigationRailWidth,
-    NavigationDestinationAnimation? transitionAnimation,
-    Curve? transitionCurve,
-    Duration? transitionDuration,
     NavigationIndicatorThemeData? indicatorStyle,
     CustomNavigationBarThemeData? navigationBarTheme,
   }) {
@@ -699,9 +664,6 @@ class AdaptiveScaffoldThemeData
       expandedLabelType: expandedLabelType ?? this.expandedLabelType,
       extendedNavigationRailWidth:
           extendedNavigationRailWidth ?? this.extendedNavigationRailWidth,
-      transitionAnimation: transitionAnimation ?? this.transitionAnimation,
-      transitionCurve: transitionCurve ?? this.transitionCurve,
-      transitionDuration: transitionDuration ?? this.transitionDuration,
       indicatorStyle: indicatorStyle ?? this.indicatorStyle,
       navigationBarTheme: navigationBarTheme ?? this.navigationBarTheme,
     );
@@ -729,10 +691,6 @@ class AdaptiveScaffoldThemeData
         b.extendedNavigationRailWidth,
         t,
       ),
-      transitionAnimation:
-          t < 0.5 ? a.transitionAnimation : b.transitionAnimation,
-      transitionCurve: t < 0.5 ? a.transitionCurve : b.transitionCurve,
-      transitionDuration: t < 0.5 ? a.transitionDuration : b.transitionDuration,
       indicatorStyle: NavigationIndicatorThemeData.lerp(
         a.indicatorStyle,
         b.indicatorStyle,
@@ -766,9 +724,6 @@ class AdaptiveScaffoldThemeData
         compactLabelType,
         expandedLabelType,
         extendedNavigationRailWidth,
-        transitionAnimation,
-        transitionCurve,
-        transitionDuration,
         indicatorStyle,
         navigationBarTheme,
       ]);
@@ -786,9 +741,6 @@ class AdaptiveScaffoldThemeData
         other.compactLabelType == compactLabelType &&
         other.expandedLabelType == expandedLabelType &&
         other.extendedNavigationRailWidth == extendedNavigationRailWidth &&
-        other.transitionAnimation == transitionAnimation &&
-        other.transitionCurve == transitionCurve &&
-        other.transitionDuration == transitionDuration &&
         other.indicatorStyle == indicatorStyle &&
         other.navigationBarTheme == navigationBarTheme;
   }
@@ -818,20 +770,6 @@ class AdaptiveScaffoldThemeData
       DoubleProperty(
         "extendedNavigationRailWidth",
         extendedNavigationRailWidth,
-      ),
-    );
-    properties.add(
-      EnumProperty<NavigationDestinationAnimation>(
-        "transitionAnimation",
-        transitionAnimation,
-      ),
-    );
-    properties
-        .add(DiagnosticsProperty<Curve>("transitionCurve", transitionCurve));
-    properties.add(
-      DiagnosticsProperty<Duration>(
-        "transitionDuration",
-        transitionDuration,
       ),
     );
     properties.add(

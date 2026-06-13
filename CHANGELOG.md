@@ -117,6 +117,16 @@ AdaptiveScaffold(
   * Configure compact and expanded rail behavior directly on
     `AdaptiveScaffoldThemeData(navigationRailTheme: ...)`.
 
+* **[BREAKING] Adaptive destination transition options moved from theme to widget**
+  * Removed `transitionAnimation`, `transitionCurve`, and
+    `transitionDuration` from `AdaptiveScaffoldThemeData`.
+  * Added widget-level replacements on `AdaptiveScaffold`:
+    `navigationTransitionAnimation`, `navigationTransitionCurve`, and
+    `navigationTransitionDuration`.
+  * Migration: move transition overrides from
+    `navigationTheme: AdaptiveScaffoldThemeData(...)` to the
+    `AdaptiveScaffold(...)` constructor.
+
 * **[FEAT] `AdaptiveScaffoldThemeData` now supports themed extended rail width**
   * Added `extendedNavigationRailWidth` to configure extended rail width via
     `AdaptiveScaffold.navigationTheme`, `AdaptiveScaffoldTheme`, or
@@ -140,7 +150,8 @@ AdaptiveScaffold(
 
 * **[DOC] Updated migration guidance and examples**
   * Updated README and example app to use `AdaptiveScaffoldThemeData` and the
-    `ThemeData.extensions` integration path.
+    `ThemeData.extensions` integration path, and to configure destination
+    transition animation on `AdaptiveScaffold` directly.
 
 ## 4.1.0 - REDACTED
 

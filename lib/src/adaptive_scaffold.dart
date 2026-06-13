@@ -132,10 +132,12 @@ class AdaptiveScaffold extends StatefulWidget {
     this.extendedNavigationRailWidth = 192,
     this.appBarBreakpoint,
     this.navigationRailDestinationBuilder,
+    this.navigationTransitionAnimation = NavigationDestinationAnimation.none,
+    this.navigationTransitionCurve = Curves.easeInOut,
+    this.navigationTransitionDuration,
     this.groupAlignment,
     this.padding,
     this.controller,
-    this.navigationTheme = const AdaptiveScaffoldThemeData(),
   }) : assert(
           destinations.length >= 2,
           "At least two destinations are required",
@@ -327,6 +329,19 @@ class AdaptiveScaffold extends StatefulWidget {
   /// Used to map NavigationDestination to NavigationRailDestination.
   final NavigationRailDestinationBuilder? navigationRailDestinationBuilder;
 
+  /// Icon transition preset used by compact rail and small navigation bar
+  /// destinations.
+  ///
+  /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
+  final NavigationDestinationAnimation navigationTransitionAnimation;
+
+  /// Curve used by compact rail and small navigation bar icon transitions.
+  final Curve navigationTransitionCurve;
+
+  /// Optional duration used by compact rail and small navigation bar icon
+  /// transitions.
+  final Duration? navigationTransitionDuration;
+
   /// Applies a [Padding] around the [NavigationRail].
   final EdgeInsetsGeometry? padding;
 
@@ -337,9 +352,6 @@ class AdaptiveScaffold extends StatefulWidget {
   /// secondaryBody. On medium and larger breakpoints, both panes remain
   /// visible according to the existing slot behavior.
   final AdaptiveScaffoldController? controller;
-
-  /// Optional adaptive-navigation-specific behavior overrides.
-  final AdaptiveScaffoldThemeData? navigationTheme;
 
   /// Callback function for when the index of a [NavigationRail] changes.
   static WidgetBuilder emptyBuilder = (_) => const SizedBox();
@@ -757,160 +769,124 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
         Theme.of(context).extension<AdaptiveScaffoldThemeData>();
     final AdaptiveScaffoldThemeData? inheritedNavigationTheme =
         AdaptiveScaffoldTheme.maybeOf(context);
-    final AdaptiveScaffoldThemeData? widgetNavigationTheme =
-        widget.navigationTheme;
+
     final CustomNavigationBarThemeData effectiveNavigationBarTheme =
         CustomNavigationBarThemeData(
-      height: widgetNavigationTheme?.navigationBarTheme?.height ??
-          inheritedNavigationTheme?.navigationBarTheme?.height ??
+      height: inheritedNavigationTheme?.navigationBarTheme?.height ??
           extensionNavigationTheme?.navigationBarTheme?.height ??
           navBarTheme.height,
       backgroundColor:
-          widgetNavigationTheme?.navigationBarTheme?.backgroundColor ??
-              inheritedNavigationTheme?.navigationBarTheme?.backgroundColor ??
+          inheritedNavigationTheme?.navigationBarTheme?.backgroundColor ??
               extensionNavigationTheme?.navigationBarTheme?.backgroundColor ??
               navBarTheme.backgroundColor,
-      elevation: widgetNavigationTheme?.navigationBarTheme?.elevation ??
-          inheritedNavigationTheme?.navigationBarTheme?.elevation ??
+      elevation: inheritedNavigationTheme?.navigationBarTheme?.elevation ??
           extensionNavigationTheme?.navigationBarTheme?.elevation ??
           navBarTheme.elevation,
-      shadowColor: widgetNavigationTheme?.navigationBarTheme?.shadowColor ??
-          inheritedNavigationTheme?.navigationBarTheme?.shadowColor ??
+      shadowColor: inheritedNavigationTheme?.navigationBarTheme?.shadowColor ??
           extensionNavigationTheme?.navigationBarTheme?.shadowColor ??
           navBarTheme.shadowColor,
       surfaceTintColor:
-          widgetNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
-              inheritedNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
+          inheritedNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
               extensionNavigationTheme?.navigationBarTheme?.surfaceTintColor ??
               navBarTheme.surfaceTintColor,
       indicatorColor:
-          widgetNavigationTheme?.navigationBarTheme?.indicatorColor ??
-              inheritedNavigationTheme?.navigationBarTheme?.indicatorColor ??
+          inheritedNavigationTheme?.navigationBarTheme?.indicatorColor ??
               extensionNavigationTheme?.navigationBarTheme?.indicatorColor ??
               navBarTheme.indicatorColor,
       indicatorShape:
-          widgetNavigationTheme?.navigationBarTheme?.indicatorShape ??
-              inheritedNavigationTheme?.navigationBarTheme?.indicatorShape ??
+          inheritedNavigationTheme?.navigationBarTheme?.indicatorShape ??
               extensionNavigationTheme?.navigationBarTheme?.indicatorShape ??
               navBarTheme.indicatorShape,
-      border: widgetNavigationTheme?.navigationBarTheme?.border ??
-          inheritedNavigationTheme?.navigationBarTheme?.border ??
+      border: inheritedNavigationTheme?.navigationBarTheme?.border ??
           extensionNavigationTheme?.navigationBarTheme?.border,
       indicatorStyle:
-          widgetNavigationTheme?.navigationBarTheme?.indicatorStyle ??
-              inheritedNavigationTheme?.navigationBarTheme?.indicatorStyle ??
+          inheritedNavigationTheme?.navigationBarTheme?.indicatorStyle ??
               extensionNavigationTheme?.navigationBarTheme?.indicatorStyle,
       labelTextStyle:
-          widgetNavigationTheme?.navigationBarTheme?.labelTextStyle ??
-              inheritedNavigationTheme?.navigationBarTheme?.labelTextStyle ??
+          inheritedNavigationTheme?.navigationBarTheme?.labelTextStyle ??
               extensionNavigationTheme?.navigationBarTheme?.labelTextStyle ??
               navBarTheme.labelTextStyle,
-      iconTheme: widgetNavigationTheme?.navigationBarTheme?.iconTheme ??
-          inheritedNavigationTheme?.navigationBarTheme?.iconTheme ??
+      iconTheme: inheritedNavigationTheme?.navigationBarTheme?.iconTheme ??
           extensionNavigationTheme?.navigationBarTheme?.iconTheme ??
           navBarTheme.iconTheme,
-      labelBehavior: widgetNavigationTheme?.navigationBarTheme?.labelBehavior ??
+      labelBehavior:
           inheritedNavigationTheme?.navigationBarTheme?.labelBehavior ??
-          extensionNavigationTheme?.navigationBarTheme?.labelBehavior ??
-          navBarTheme.labelBehavior,
-      overlayColor: widgetNavigationTheme?.navigationBarTheme?.overlayColor ??
+              extensionNavigationTheme?.navigationBarTheme?.labelBehavior ??
+              navBarTheme.labelBehavior,
+      overlayColor:
           inheritedNavigationTheme?.navigationBarTheme?.overlayColor ??
-          extensionNavigationTheme?.navigationBarTheme?.overlayColor ??
-          navBarTheme.overlayColor,
-      margin: widgetNavigationTheme?.navigationBarTheme?.margin ??
-          inheritedNavigationTheme?.navigationBarTheme?.margin ??
+              extensionNavigationTheme?.navigationBarTheme?.overlayColor ??
+              navBarTheme.overlayColor,
+      margin: inheritedNavigationTheme?.navigationBarTheme?.margin ??
           extensionNavigationTheme?.navigationBarTheme?.margin,
-      padding: widgetNavigationTheme?.navigationBarTheme?.padding ??
-          inheritedNavigationTheme?.navigationBarTheme?.padding ??
+      padding: inheritedNavigationTheme?.navigationBarTheme?.padding ??
           extensionNavigationTheme?.navigationBarTheme?.padding,
-      tooltipVerticalOffset: widgetNavigationTheme
+      tooltipVerticalOffset: inheritedNavigationTheme
               ?.navigationBarTheme?.tooltipVerticalOffset ??
-          inheritedNavigationTheme?.navigationBarTheme?.tooltipVerticalOffset ??
           extensionNavigationTheme?.navigationBarTheme?.tooltipVerticalOffset,
-      labelPadding: widgetNavigationTheme?.navigationBarTheme?.labelPadding ??
+      labelPadding:
           inheritedNavigationTheme?.navigationBarTheme?.labelPadding ??
-          extensionNavigationTheme?.navigationBarTheme?.labelPadding ??
-          navBarTheme.labelPadding,
+              extensionNavigationTheme?.navigationBarTheme?.labelPadding ??
+              navBarTheme.labelPadding,
     );
     final CustomNavigationRailThemeData effectiveNavigationRailTheme =
         CustomNavigationRailThemeData(
       backgroundColor:
-          widgetNavigationTheme?.navigationRailTheme?.backgroundColor ??
-              inheritedNavigationTheme?.navigationRailTheme?.backgroundColor ??
+          inheritedNavigationTheme?.navigationRailTheme?.backgroundColor ??
               extensionNavigationTheme?.navigationRailTheme?.backgroundColor ??
               navRailTheme.backgroundColor,
-      elevation: widgetNavigationTheme?.navigationRailTheme?.elevation ??
-          inheritedNavigationTheme?.navigationRailTheme?.elevation ??
+      elevation: inheritedNavigationTheme?.navigationRailTheme?.elevation ??
           extensionNavigationTheme?.navigationRailTheme?.elevation ??
           navRailTheme.elevation,
-      shadowColor: widgetNavigationTheme?.navigationRailTheme?.shadowColor ??
-          inheritedNavigationTheme?.navigationRailTheme?.shadowColor ??
+      shadowColor: inheritedNavigationTheme?.navigationRailTheme?.shadowColor ??
           extensionNavigationTheme?.navigationRailTheme?.shadowColor,
       surfaceTintColor:
-          widgetNavigationTheme?.navigationRailTheme?.surfaceTintColor ??
-              inheritedNavigationTheme?.navigationRailTheme?.surfaceTintColor ??
+          inheritedNavigationTheme?.navigationRailTheme?.surfaceTintColor ??
               extensionNavigationTheme?.navigationRailTheme?.surfaceTintColor,
-      border: widgetNavigationTheme?.navigationRailTheme?.border ??
-          inheritedNavigationTheme?.navigationRailTheme?.border ??
+      border: inheritedNavigationTheme?.navigationRailTheme?.border ??
           extensionNavigationTheme?.navigationRailTheme?.border,
-      margin: widgetNavigationTheme?.navigationRailTheme?.margin ??
-          inheritedNavigationTheme?.navigationRailTheme?.margin ??
+      margin: inheritedNavigationTheme?.navigationRailTheme?.margin ??
           extensionNavigationTheme?.navigationRailTheme?.margin,
-      padding: widgetNavigationTheme?.navigationRailTheme?.padding ??
-          inheritedNavigationTheme?.navigationRailTheme?.padding ??
+      padding: inheritedNavigationTheme?.navigationRailTheme?.padding ??
           extensionNavigationTheme?.navigationRailTheme?.padding,
       indicatorStyle:
-          widgetNavigationTheme?.navigationRailTheme?.indicatorStyle ??
-              inheritedNavigationTheme?.navigationRailTheme?.indicatorStyle ??
+          inheritedNavigationTheme?.navigationRailTheme?.indicatorStyle ??
               extensionNavigationTheme?.navigationRailTheme?.indicatorStyle,
-      selectedIconTheme: widgetNavigationTheme
+      selectedIconTheme: inheritedNavigationTheme
               ?.navigationRailTheme?.selectedIconTheme ??
-          inheritedNavigationTheme?.navigationRailTheme?.selectedIconTheme ??
           extensionNavigationTheme?.navigationRailTheme?.selectedIconTheme ??
           navRailTheme.selectedIconTheme,
-      unselectedIconTheme: widgetNavigationTheme
+      unselectedIconTheme: inheritedNavigationTheme
               ?.navigationRailTheme?.unselectedIconTheme ??
-          inheritedNavigationTheme?.navigationRailTheme?.unselectedIconTheme ??
           extensionNavigationTheme?.navigationRailTheme?.unselectedIconTheme ??
           navRailTheme.unselectedIconTheme,
-      selectedLabelTextStyle:
-          widgetNavigationTheme?.navigationRailTheme?.selectedLabelTextStyle ??
-              inheritedNavigationTheme
-                  ?.navigationRailTheme?.selectedLabelTextStyle ??
-              extensionNavigationTheme
-                  ?.navigationRailTheme?.selectedLabelTextStyle ??
-              navRailTheme.selectedLabelTextStyle,
-      unselectedLabelTextStyle: widgetNavigationTheme
-              ?.navigationRailTheme?.unselectedLabelTextStyle ??
-          inheritedNavigationTheme
+      selectedLabelTextStyle: inheritedNavigationTheme
+              ?.navigationRailTheme?.selectedLabelTextStyle ??
+          extensionNavigationTheme
+              ?.navigationRailTheme?.selectedLabelTextStyle ??
+          navRailTheme.selectedLabelTextStyle,
+      unselectedLabelTextStyle: inheritedNavigationTheme
               ?.navigationRailTheme?.unselectedLabelTextStyle ??
           extensionNavigationTheme
               ?.navigationRailTheme?.unselectedLabelTextStyle ??
           navRailTheme.unselectedLabelTextStyle,
       compactLabelType:
-          widgetNavigationTheme?.navigationRailTheme?.compactLabelType ??
-              inheritedNavigationTheme?.navigationRailTheme?.compactLabelType ??
+          inheritedNavigationTheme?.navigationRailTheme?.compactLabelType ??
               extensionNavigationTheme?.navigationRailTheme?.compactLabelType ??
-              widgetNavigationTheme?.compactLabelType ??
               inheritedNavigationTheme?.compactLabelType ??
               extensionNavigationTheme?.compactLabelType ??
               navRailTheme.labelType ??
               NavigationRailLabelType.none,
-      expandedLabelType: widgetNavigationTheme
+      expandedLabelType: inheritedNavigationTheme
               ?.navigationRailTheme?.expandedLabelType ??
-          inheritedNavigationTheme?.navigationRailTheme?.expandedLabelType ??
           extensionNavigationTheme?.navigationRailTheme?.expandedLabelType ??
-          widgetNavigationTheme?.expandedLabelType ??
           inheritedNavigationTheme?.expandedLabelType ??
           extensionNavigationTheme?.expandedLabelType ??
           NavigationRailLabelType.all,
-      extendedNavigationRailWidth: widgetNavigationTheme
-              ?.navigationRailTheme?.extendedNavigationRailWidth ??
-          inheritedNavigationTheme
+      extendedNavigationRailWidth: inheritedNavigationTheme
               ?.navigationRailTheme?.extendedNavigationRailWidth ??
           extensionNavigationTheme
               ?.navigationRailTheme?.extendedNavigationRailWidth ??
-          widgetNavigationTheme?.extendedNavigationRailWidth ??
           inheritedNavigationTheme?.extendedNavigationRailWidth ??
           extensionNavigationTheme?.extendedNavigationRailWidth ??
           widget.extendedNavigationRailWidth,
@@ -918,23 +894,18 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     final NavigationIndicatorThemeData effectiveSharedIndicatorStyle =
         NavigationIndicatorThemeData(
       destinationFillRegion:
-          widgetNavigationTheme?.indicatorStyle?.destinationFillRegion ??
-              inheritedNavigationTheme?.indicatorStyle?.destinationFillRegion ??
+          inheritedNavigationTheme?.indicatorStyle?.destinationFillRegion ??
               extensionNavigationTheme?.indicatorStyle?.destinationFillRegion,
-      destinationHoverRegion: widgetNavigationTheme
-              ?.indicatorStyle?.destinationHoverRegion ??
+      destinationHoverRegion:
           inheritedNavigationTheme?.indicatorStyle?.destinationHoverRegion ??
-          extensionNavigationTheme?.indicatorStyle?.destinationHoverRegion,
+              extensionNavigationTheme?.indicatorStyle?.destinationHoverRegion,
       interactionShape:
-          widgetNavigationTheme?.indicatorStyle?.interactionShape ??
-              inheritedNavigationTheme?.indicatorStyle?.interactionShape ??
+          inheritedNavigationTheme?.indicatorStyle?.interactionShape ??
               extensionNavigationTheme?.indicatorStyle?.interactionShape,
-      shape: widgetNavigationTheme?.indicatorStyle?.shape ??
-          inheritedNavigationTheme?.indicatorStyle?.shape ??
+      shape: inheritedNavigationTheme?.indicatorStyle?.shape ??
           extensionNavigationTheme?.indicatorStyle?.shape ??
           navRailTheme.indicatorShape,
-      color: widgetNavigationTheme?.indicatorStyle?.color ??
-          inheritedNavigationTheme?.indicatorStyle?.color ??
+      color: inheritedNavigationTheme?.indicatorStyle?.color ??
           extensionNavigationTheme?.indicatorStyle?.color,
     );
     final NavigationIndicatorThemeData effectiveRailIndicatorStyle =
@@ -969,6 +940,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
       color: effectiveNavigationBarTheme.resolvedIndicatorStyle?.color ??
           effectiveSharedIndicatorStyle.color,
     );
+    final NavigationDestinationAnimation
+        effectiveNavigationTransitionAnimation =
+        widget.navigationTransitionAnimation;
+    final Curve effectiveNavigationTransitionCurve =
+        widget.navigationTransitionCurve;
+    final Duration? effectiveNavigationTransitionDuration =
+        widget.navigationTransitionDuration;
     final AdaptiveScaffoldThemeData effectiveNavigationTheme =
         AdaptiveScaffoldThemeData(
       navigationRailTheme: effectiveNavigationRailTheme,
@@ -976,17 +954,6 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
       expandedLabelType: effectiveNavigationRailTheme.expandedLabelType,
       extendedNavigationRailWidth:
           effectiveNavigationRailTheme.extendedNavigationRailWidth,
-      transitionAnimation: widgetNavigationTheme?.transitionAnimation ??
-          inheritedNavigationTheme?.transitionAnimation ??
-          extensionNavigationTheme?.transitionAnimation ??
-          NavigationDestinationAnimation.none,
-      transitionCurve: widgetNavigationTheme?.transitionCurve ??
-          inheritedNavigationTheme?.transitionCurve ??
-          extensionNavigationTheme?.transitionCurve ??
-          Curves.easeInOut,
-      transitionDuration: widgetNavigationTheme?.transitionDuration ??
-          inheritedNavigationTheme?.transitionDuration ??
-          extensionNavigationTheme?.transitionDuration,
       indicatorStyle: effectiveSharedIndicatorStyle,
       navigationBarTheme: effectiveNavigationBarTheme,
     );
@@ -1052,11 +1019,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.navigationRailTheme?.margin,
               destinationPadding:
                   effectiveNavigationTheme.navigationRailTheme?.padding,
-              iconTransitionAnimation:
-                  effectiveNavigationTheme.transitionAnimation,
-              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
-              iconTransitionDuration:
-                  effectiveNavigationTheme.transitionDuration,
+              iconTransitionAnimation: effectiveNavigationTransitionAnimation,
+              iconTransitionCurve: effectiveNavigationTransitionCurve,
+              iconTransitionDuration: effectiveNavigationTransitionDuration,
               indicatorColor: effectiveRailIndicatorStyle.color,
               indicatorShape: effectiveRailIndicatorStyle.shape,
               destinationFillRegion:
@@ -1103,11 +1068,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.navigationRailTheme?.margin,
               destinationPadding:
                   effectiveNavigationTheme.navigationRailTheme?.padding,
-              iconTransitionAnimation:
-                  effectiveNavigationTheme.transitionAnimation,
-              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
-              iconTransitionDuration:
-                  effectiveNavigationTheme.transitionDuration,
+              iconTransitionAnimation: effectiveNavigationTransitionAnimation,
+              iconTransitionCurve: effectiveNavigationTransitionCurve,
+              iconTransitionDuration: effectiveNavigationTransitionDuration,
               indicatorColor: effectiveRailIndicatorStyle.color,
               indicatorShape: effectiveRailIndicatorStyle.shape,
               destinationFillRegion:
@@ -1158,11 +1121,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.navigationRailTheme?.margin,
               destinationPadding:
                   effectiveNavigationTheme.navigationRailTheme?.padding,
-              iconTransitionAnimation:
-                  effectiveNavigationTheme.transitionAnimation,
-              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
-              iconTransitionDuration:
-                  effectiveNavigationTheme.transitionDuration,
+              iconTransitionAnimation: effectiveNavigationTransitionAnimation,
+              iconTransitionCurve: effectiveNavigationTransitionCurve,
+              iconTransitionDuration: effectiveNavigationTransitionDuration,
               indicatorColor: effectiveRailIndicatorStyle.color,
               indicatorShape: effectiveRailIndicatorStyle.shape,
               destinationFillRegion:
@@ -1213,11 +1174,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                   effectiveNavigationTheme.navigationRailTheme?.margin,
               destinationPadding:
                   effectiveNavigationTheme.navigationRailTheme?.padding,
-              iconTransitionAnimation:
-                  effectiveNavigationTheme.transitionAnimation,
-              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
-              iconTransitionDuration:
-                  effectiveNavigationTheme.transitionDuration,
+              iconTransitionAnimation: effectiveNavigationTransitionAnimation,
+              iconTransitionCurve: effectiveNavigationTransitionCurve,
+              iconTransitionDuration: effectiveNavigationTransitionDuration,
               indicatorColor: effectiveRailIndicatorStyle.color,
               indicatorShape: effectiveRailIndicatorStyle.shape,
               destinationFillRegion:
@@ -1243,11 +1202,9 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                         .navigationRailTheme?.compactLabelType,
                     explicitLabelBehavior: effectiveNavigationTheme
                         .navigationBarTheme?.labelBehavior,
-                    transitionAnimation:
-                        effectiveNavigationTheme.transitionAnimation,
-                    transitionCurve: effectiveNavigationTheme.transitionCurve,
-                    transitionDuration:
-                        effectiveNavigationTheme.transitionDuration,
+                    transitionAnimation: effectiveNavigationTransitionAnimation,
+                    transitionCurve: effectiveNavigationTransitionCurve,
+                    transitionDuration: effectiveNavigationTransitionDuration,
                     height: effectiveNavigationTheme.navigationBarTheme?.height,
                     backgroundColor: effectiveNavigationTheme
                         .navigationBarTheme?.backgroundColor,
