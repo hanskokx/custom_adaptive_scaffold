@@ -7,11 +7,14 @@ import "dart:ui";
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
 import "../material.dart";
+import "expanded/extended_navigation_rail_animation.dart";
 import "navigation_rail_theme.dart";
-import "widgets/extended_navigation_rail_animation.dart";
 
+part "compact/compact_navigation_rail_destination.dart";
+part "expanded/expanded_navigation_rail_destination.dart";
 part "widgets/indicator_ink_well.dart";
 part "widgets/rail_destination.dart";
+part "widgets/shared_rail_destination_state.dart";
 
 @Deprecated(
   "Deprecated in favor of NavigationRail. "
@@ -491,45 +494,91 @@ class _NavigationRailState extends State<NavigationRail>
                         for (int i = 0; i < widget.destinations.length; i += 1)
                           Container(
                             margin: railDestinationMargin,
-                            child: RailDestination(
-                              minWidth: widget.minWidth,
-                              minExtendedWidth: widget.minExtendedWidth,
-                              extendedTransitionAnimation: _extendedAnimation,
-                              selected: widget.selectedIndex == i,
-                              icon: widget.selectedIndex == i
-                                  ? widget.destinations[i].selectedIcon
-                                  : widget.destinations[i].icon,
-                              label: widget.destinations[i].labelWidget,
-                              destinationAnimation: _destinationAnimations[i],
-                              labelType: labelType,
-                              iconTheme: widget.selectedIndex == i
-                                  ? selectedIconTheme
-                                  : effectiveUnselectedIconTheme,
-                              labelTextStyle: widget.selectedIndex == i
-                                  ? selectedLabelTextStyle
-                                  : unselectedLabelTextStyle,
-                              padding: railDestinationPadding ??
-                                  widget.destinations[i].padding ??
-                                  const EdgeInsets.symmetric(
-                                    horizontal: _horizontalDestinationPadding,
+                            child: switch (labelType) {
+                              NavigationRailLabelType.none =>
+                                CompactRailDestination(
+                                  minWidth: widget.minWidth,
+                                  minExtendedWidth: widget.minExtendedWidth,
+                                  extendedTransitionAnimation:
+                                      _extendedAnimation,
+                                  selected: widget.selectedIndex == i,
+                                  icon: widget.selectedIndex == i
+                                      ? widget.destinations[i].selectedIcon
+                                      : widget.destinations[i].icon,
+                                  label: widget.destinations[i].labelWidget,
+                                  destinationAnimation:
+                                      _destinationAnimations[i],
+                                  iconTheme: widget.selectedIndex == i
+                                      ? selectedIconTheme
+                                      : effectiveUnselectedIconTheme,
+                                  labelTextStyle: widget.selectedIndex == i
+                                      ? selectedLabelTextStyle
+                                      : unselectedLabelTextStyle,
+                                  padding: railDestinationPadding ??
+                                      widget.destinations[i].padding ??
+                                      const EdgeInsets.symmetric(
+                                        horizontal:
+                                            _horizontalDestinationPadding,
+                                      ),
+                                  useIndicator: useIndicator,
+                                  indicatorColor:
+                                      useIndicator ? indicatorColor : null,
+                                  indicatorShape:
+                                      useIndicator ? indicatorShape : null,
+                                  onTap: () {
+                                    if (widget.onDestinationSelected != null) {
+                                      widget.onDestinationSelected!(i);
+                                    }
+                                  },
+                                  indexLabel: localizations.tabLabel(
+                                    tabIndex: i + 1,
+                                    tabCount: widget.destinations.length,
                                   ),
-                              useIndicator: useIndicator,
-                              indicatorColor:
-                                  useIndicator ? indicatorColor : null,
-                              indicatorShape:
-                                  useIndicator ? indicatorShape : null,
-                              onTap: () {
-                                if (widget.onDestinationSelected != null) {
-                                  widget.onDestinationSelected!(i);
-                                }
-                              },
-                              indexLabel: localizations.tabLabel(
-                                tabIndex: i + 1,
-                                tabCount: widget.destinations.length,
-                              ),
-                              disabled: widget.destinations[i].disabled,
-                              extended: widget.extended,
-                            ),
+                                  disabled: widget.destinations[i].disabled,
+                                ),
+                              _ => RailDestination(
+                                  minWidth: widget.minWidth,
+                                  minExtendedWidth: widget.minExtendedWidth,
+                                  extendedTransitionAnimation:
+                                      _extendedAnimation,
+                                  selected: widget.selectedIndex == i,
+                                  icon: widget.selectedIndex == i
+                                      ? widget.destinations[i].selectedIcon
+                                      : widget.destinations[i].icon,
+                                  label: widget.destinations[i].labelWidget,
+                                  destinationAnimation:
+                                      _destinationAnimations[i],
+                                  labelType: labelType,
+                                  iconTheme: widget.selectedIndex == i
+                                      ? selectedIconTheme
+                                      : effectiveUnselectedIconTheme,
+                                  labelTextStyle: widget.selectedIndex == i
+                                      ? selectedLabelTextStyle
+                                      : unselectedLabelTextStyle,
+                                  padding: railDestinationPadding ??
+                                      widget.destinations[i].padding ??
+                                      const EdgeInsets.symmetric(
+                                        horizontal:
+                                            _horizontalDestinationPadding,
+                                      ),
+                                  useIndicator: useIndicator,
+                                  indicatorColor:
+                                      useIndicator ? indicatorColor : null,
+                                  indicatorShape:
+                                      useIndicator ? indicatorShape : null,
+                                  onTap: () {
+                                    if (widget.onDestinationSelected != null) {
+                                      widget.onDestinationSelected!(i);
+                                    }
+                                  },
+                                  indexLabel: localizations.tabLabel(
+                                    tabIndex: i + 1,
+                                    tabCount: widget.destinations.length,
+                                  ),
+                                  disabled: widget.destinations[i].disabled,
+                                  extended: widget.extended,
+                                )
+                            },
                           ),
                         if (widget.trailing != null) widget.trailing!,
                       ],

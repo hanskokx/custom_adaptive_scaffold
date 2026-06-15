@@ -13,7 +13,6 @@ export "src/navigation_bar/navigation_bar_destination.dart";
 export "src/navigation_bar/navigation_bar_theme.dart"
     hide defaultsFor, NavigationBarDefaultsM2, NavigationBarDefaultsM3;
 export "src/navigation_destination.dart";
-export "src/navigation_drawer/navigation_drawer_destination.dart";
 export "src/navigation_rail/navigation_rail.dart";
 export "src/navigation_rail/navigation_rail_destination.dart";
 export "src/navigation_rail/navigation_rail_theme.dart"

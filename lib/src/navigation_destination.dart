@@ -1,6 +1,5 @@
 import "material.dart";
 import "navigation_bar/navigation_bar_destination.dart";
-import "navigation_drawer/navigation_drawer_destination.dart";
 import "navigation_rail/navigation_rail.dart";
 import "navigation_rail/navigation_rail_destination.dart";
 
@@ -15,8 +14,8 @@ class NavigationDestination extends StatelessWidget {
     this.padding,
     this.disabled = false,
     this.tooltip,
-  }) : selectedIcon = selectedIcon ?? icon,
-       _labelText = label;
+  })  : selectedIcon = selectedIcon ?? icon,
+        _labelText = label;
 
   final bool disabled;
 
@@ -42,17 +41,6 @@ class NavigationDestination extends StatelessWidget {
     return NavigationRailDestination(
       icon: icon,
       label: _labelWidget,
-      selectedIcon: selectedIcon,
-      indicatorColor: indicatorColor,
-      indicatorShape: indicatorShape,
-      padding: padding,
-    );
-  }
-
-  NavigationDrawerDestination toDrawerDestination() {
-    return NavigationDrawerDestination(
-      icon: icon,
-      label: label,
       selectedIcon: selectedIcon,
       indicatorColor: indicatorColor,
       indicatorShape: indicatorShape,

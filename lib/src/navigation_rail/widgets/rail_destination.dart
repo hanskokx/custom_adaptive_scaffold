@@ -250,6 +250,9 @@ class _RailDestinationState extends State<RailDestination>
         isLargeIconSize ? (iconTheme.size! - _kIndicatorHeight) / 2 : 0;
 
     switch (labelType) {
+      // * Compact - The label is not shown, and the destination is centered vertically.
+      // compact_navigation_rail_destination_layout.dart
+      // _CompactRailDestinationLayout
       case NavigationRailLabelType.none:
         // Split the destination spacing across the top and bottom to keep the icon centered.
         final Widget? spacing = material3
