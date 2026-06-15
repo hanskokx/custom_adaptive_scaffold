@@ -5,9 +5,19 @@
 import "dart:ui";
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
 
-part "rail_destination.dart";
+import "../material.dart";
+import "navigation_rail_theme.dart";
+import "widgets/extended_navigation_rail_animation.dart";
+
+part "widgets/indicator_ink_well.dart";
+part "widgets/rail_destination.dart";
+
+@Deprecated(
+  "Deprecated in favor of NavigationRail. "
+  "Prefer hiding NavigationRail from Flutter's Material package.",
+)
+typedef CustomNavigationRail = NavigationRail;
 
 /// A Material Design widget that is meant to be displayed at the left or right of an
 /// app to navigate between a small number of views, typically between three and
@@ -22,7 +32,7 @@ part "rail_destination.dart";
 /// A navigation rail is usually used as the first or last element of a [Row]
 /// which defines the app's [Scaffold] body.
 ///
-/// The appearance of all of the [CustomNavigationRail]s within an app can be
+/// The appearance of all of the [NavigationRail]s within an app can be
 /// specified with [NavigationRailTheme]. The default values for null theme
 /// properties are based on the [Theme]'s [ThemeData.textTheme],
 /// [ThemeData.iconTheme], and [ThemeData.colorScheme].
@@ -34,7 +44,7 @@ part "rail_destination.dart";
 /// for an example.
 ///
 /// {@tool dartpad}
-/// This example shows a [CustomNavigationRail] used within a Scaffold with 3
+/// This example shows a [NavigationRail] used within a Scaffold with 3
 /// [NavigationRailDestination]s. The main content is separated by a divider
 /// (although elevation on the navigation rail can be used instead). The
 /// `_selectedIndex` is updated by the `onDestinationSelected` callback.
@@ -43,7 +53,7 @@ part "rail_destination.dart";
 /// {@end-tool}
 ///
 /// {@tool dartpad}
-/// This sample shows the creation of [CustomNavigationRail] widget used within a Scaffold with 3
+/// This sample shows the creation of [NavigationRail] widget used within a Scaffold with 3
 /// [NavigationRailDestination]s, as described in: https://m3.material.io/components/navigation-rail/overview
 ///
 /// ** See code in examples/api/lib/material/navigation_rail/navigation_rail.1.dart **
@@ -59,7 +69,7 @@ part "rail_destination.dart";
 ///     out horizontally.
 ///  * <https://material.io/components/navigation-rail/>
 ///  * <https://m3.material.io/components/navigation-rail>
-class CustomNavigationRail extends StatefulWidget {
+class NavigationRail extends StatefulWidget {
   /// Creates a Material Design navigation rail.
   ///
   /// The value of [destinations] must be a list of two or more
@@ -82,7 +92,7 @@ class CustomNavigationRail extends StatefulWidget {
   /// defaults are used. See the individual properties for more information.
   ///
   /// Typically used within a [Row] that defines the [Scaffold.body] property.
-  const CustomNavigationRail({
+  const NavigationRail({
     required this.destinations,
     required this.selectedIndex,
     super.key,
@@ -120,7 +130,7 @@ class CustomNavigationRail extends StatefulWidget {
               (labelType == null || labelType == NavigationRailLabelType.none),
         );
 
-  /// Sets the color of the Container that holds all of the [CustomNavigationRail]'s
+  /// Sets the color of the Container that holds all of the [NavigationRail]'s
   /// contents.
   ///
   /// The default value is [NavigationRailThemeData.backgroundColor]. If
@@ -128,7 +138,7 @@ class CustomNavigationRail extends StatefulWidget {
   /// is based on [ColorScheme.surface] of [ThemeData.colorScheme].
   final Color? backgroundColor;
 
-  /// Indicates that the [CustomNavigationRail] should be in the extended state.
+  /// Indicates that the [NavigationRail] should be in the extended state.
   ///
   /// The extended state has a wider rail container, and the labels are
   /// positioned next to the icons. [minExtendedWidth] can be used to set the
@@ -210,7 +220,7 @@ class CustomNavigationRail extends StatefulWidget {
   final double? groupAlignment;
 
   /// Defines the layout and behavior of the labels for the default, unextended
-  /// [CustomNavigationRail].
+  /// [NavigationRail].
   ///
   /// When a navigation rail is [extended], the labels are always shown.
   ///
@@ -254,7 +264,7 @@ class CustomNavigationRail extends StatefulWidget {
   /// The visual properties of the icon in the unselected destination.
   ///
   /// If this field is not provided, or provided with any null properties, then
-  /// a copy of the [IconThemeData.fallback] with a custom [CustomNavigationRail]
+  /// a copy of the [IconThemeData.fallback] with a custom [NavigationRail]
   /// specific color will be used.
   ///
   /// The default value is the [Theme]'s [ThemeData.iconTheme] with a color
@@ -305,21 +315,21 @@ class CustomNavigationRail extends StatefulWidget {
   /// `null`, defaults to [ThemeData.useMaterial3].
   final bool? useIndicator;
 
-  /// Overrides the default value of [CustomNavigationRail]'s selection indicator color,
+  /// Overrides the default value of [NavigationRail]'s selection indicator color,
   /// when [useIndicator] is true.
   ///
   /// If this is null, [NavigationRailThemeData.indicatorColor] is used. If
   /// that is null, defaults to [ColorScheme.secondaryContainer].
   final Color? indicatorColor;
 
-  /// Overrides the default value of [CustomNavigationRail]'s selection indicator shape,
+  /// Overrides the default value of [NavigationRail]'s selection indicator shape,
   /// when [useIndicator] is true.
   ///
   /// If this is null, [NavigationRailThemeData.indicatorShape] is used. If
   /// that is null, defaults to [StadiumBorder].
   final ShapeBorder? indicatorShape;
 
-  /// Returns the animation that controls the [CustomNavigationRail.extended] state.
+  /// Returns the animation that controls the [NavigationRail.extended] state.
   ///
   /// This can be used to synchronize animations in the [leading] or [trailing]
   /// widget, such as an animated menu or a [FloatingActionButton] animation.
@@ -327,24 +337,24 @@ class CustomNavigationRail extends StatefulWidget {
   /// {@tool dartpad}
   /// This example shows how to use this animation to create a [FloatingActionButton]
   /// that animates itself between the normal and extended states of the
-  /// [CustomNavigationRail].
+  /// [NavigationRail].
   ///
-  /// An instance of `MyNavigationRailFab` is created for [CustomNavigationRail.leading].
-  /// Pressing the FAB button toggles the "extended" state of the [CustomNavigationRail].
+  /// An instance of `MyNavigationRailFab` is created for [NavigationRail.leading].
+  /// Pressing the FAB button toggles the "extended" state of the [NavigationRail].
   ///
   /// ** See code in examples/api/lib/material/navigation_rail/navigation_rail.extended_animation.0.dart **
   /// {@end-tool}
   static Animation<double> extendedAnimation(BuildContext context) {
     return context
-        .dependOnInheritedWidgetOfExactType<_ExtendedNavigationRailAnimation>()!
+        .dependOnInheritedWidgetOfExactType<ExtendedNavigationRailAnimation>()!
         .animation;
   }
 
   @override
-  State<CustomNavigationRail> createState() => _CustomNavigationRailState();
+  State<NavigationRail> createState() => _NavigationRailState();
 }
 
-class _CustomNavigationRailState extends State<CustomNavigationRail>
+class _NavigationRailState extends State<NavigationRail>
     with TickerProviderStateMixin {
   late List<AnimationController> _destinationControllers;
   late List<Animation<double>> _destinationAnimations;
@@ -364,7 +374,7 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
   }
 
   @override
-  void didUpdateWidget(CustomNavigationRail oldWidget) {
+  void didUpdateWidget(NavigationRail oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.extended != oldWidget.extended) {
@@ -397,8 +407,8 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     final NavigationRailThemeData navigationRailTheme =
         NavigationRailTheme.of(context);
     final NavigationRailThemeData defaults = Theme.of(context).useMaterial3
-        ? _NavigationRailDefaultsM3(context)
-        : _NavigationRailDefaultsM2(context);
+        ? NavigationRailDefaultsM3(context)
+        : NavigationRailDefaultsM2(context);
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
 
@@ -450,13 +460,12 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
               );
 
     final bool isRTLDirection = Directionality.of(context) == TextDirection.rtl;
-    final bool isCustom = navigationRailTheme is CustomNavigationRailThemeData;
     final EdgeInsetsGeometry? railDestinationMargin =
-        isCustom ? navigationRailTheme.margin : null;
+        navigationRailTheme.margin;
     final EdgeInsetsGeometry? railDestinationPadding =
-        isCustom ? navigationRailTheme.padding : null;
+        navigationRailTheme.padding;
 
-    return _ExtendedNavigationRailAnimation(
+    return ExtendedNavigationRailAnimation(
       animation: _extendedAnimation,
       child: Semantics(
         explicitChildNodes: true,
@@ -490,7 +499,7 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
                               icon: widget.selectedIndex == i
                                   ? widget.destinations[i].selectedIcon
                                   : widget.destinations[i].icon,
-                              label: widget.destinations[i].label,
+                              label: widget.destinations[i].labelWidget,
                               destinationAnimation: _destinationAnimations[i],
                               labelType: labelType,
                               iconTheme: widget.selectedIndex == i

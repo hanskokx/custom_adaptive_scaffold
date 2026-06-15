@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide NavigationDestination, NavigationRailTheme, NavigationRailThemeData;
 
 void main() {
   runApp(const MyApp());
@@ -54,7 +55,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     final NavigationRailThemeData navRailTheme =
-        Theme.of(context).navigationRailTheme;
+        NavigationRailTheme.of(context);
 
     // Define the children to display within the body.
     final List<Widget> children = List<Widget>.generate(10, (int index) {
@@ -147,24 +148,23 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     // Define the list of destinations to be used within the app.
-    const List<CustomNavigationDestination> destinations =
-        <CustomNavigationDestination>[
-      CustomNavigationDestination(
+    const List<NavigationDestination> destinations = <NavigationDestination>[
+      NavigationDestination(
         label: "Inbox",
         icon: Icon(Icons.inbox_outlined),
         selectedIcon: Icon(Icons.inbox),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Articles",
         icon: Icon(Icons.article_outlined),
         selectedIcon: Icon(Icons.article),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Chat",
         icon: Icon(Icons.chat_outlined),
         selectedIcon: Icon(Icons.chat),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Video",
         icon: Icon(Icons.video_call_outlined),
         selectedIcon: Icon(Icons.video_call),

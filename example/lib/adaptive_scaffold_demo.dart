@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide NavigationDestination, NavigationRailThemeData;
 
 void main() {
   runApp(const MyApp());
@@ -107,27 +108,27 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       },
       destinations: const <NavigationDestination>[
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.inbox_outlined),
           selectedIcon: Icon(Icons.inbox),
           label: "Inbox",
         ),
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.article_outlined),
           selectedIcon: Icon(Icons.article),
           label: "Articles",
         ),
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.chat_outlined),
           selectedIcon: Icon(Icons.chat),
           label: "Chat",
         ),
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.video_call_outlined),
           selectedIcon: Icon(Icons.video_call),
           label: "Video",
         ),
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.home_outlined),
           selectedIcon: Icon(Icons.home),
           label: "Inbox",

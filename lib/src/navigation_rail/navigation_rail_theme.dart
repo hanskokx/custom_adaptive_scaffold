@@ -5,8 +5,14 @@
 import "dart:ui" show lerpDouble;
 
 import "package:flutter/foundation.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart" as m
+    show NavigationRailThemeData, NavigationRailTheme;
 import "package:flutter/rendering.dart";
+
+import "../material.dart";
+
+typedef CustomNavigationRailThemeData = NavigationRailThemeData;
+typedef CustomNavigationRailTheme = NavigationRailTheme;
 
 // Examples can assume:
 // late BuildContext context;
@@ -33,11 +39,11 @@ import "package:flutter/rendering.dart";
 ///  * [ThemeData], which describes the overall theme information for the
 ///    application.
 @immutable
-class CustomNavigationRailThemeData
+class NavigationRailThemeData
     with Diagnosticable
-    implements NavigationRailThemeData {
+    implements m.NavigationRailThemeData {
   /// Creates a theme that can be used for [ThemeData.navigationRailTheme].
-  const CustomNavigationRailThemeData({
+  const NavigationRailThemeData({
     this.backgroundColor,
     this.elevation,
     this.unselectedLabelTextStyle,
@@ -51,8 +57,8 @@ class CustomNavigationRailThemeData
     this.indicatorShape,
     this.minWidth,
     this.minExtendedWidth,
-    this.margin = EdgeInsets.zero,
-    this.padding = EdgeInsets.zero,
+    this.margin,
+    this.padding,
   });
 
   /// Color to be used for the [NavigationRail]'s background.
@@ -118,15 +124,15 @@ class CustomNavigationRailThemeData
   final double? minExtendedWidth;
 
   /// Applies a margin around navigation items. Defaults to [EdgeInsets.zero].
-  final EdgeInsetsGeometry margin;
+  final EdgeInsetsGeometry? margin;
 
   /// Applies padding around navigation item content. Defaults to [EdgeInsets.zero].
-  final EdgeInsetsGeometry padding;
+  final EdgeInsetsGeometry? padding;
 
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
   @override
-  CustomNavigationRailThemeData copyWith({
+  NavigationRailThemeData copyWith({
     Color? backgroundColor,
     double? elevation,
     TextStyle? unselectedLabelTextStyle,
@@ -143,7 +149,7 @@ class CustomNavigationRailThemeData
     EdgeInsetsGeometry? margin,
     EdgeInsetsGeometry? padding,
   }) {
-    return CustomNavigationRailThemeData(
+    return NavigationRailThemeData(
       backgroundColor: backgroundColor ?? this.backgroundColor,
       elevation: elevation ?? this.elevation,
       unselectedLabelTextStyle:
@@ -169,15 +175,15 @@ class CustomNavigationRailThemeData
   /// If both arguments are null then null is returned.
   ///
   /// {@macro dart.ui.shadow.lerp}
-  static CustomNavigationRailThemeData? lerp(
-    CustomNavigationRailThemeData? a,
-    CustomNavigationRailThemeData? b,
+  static NavigationRailThemeData? lerp(
+    NavigationRailThemeData? a,
+    NavigationRailThemeData? b,
     double t,
   ) {
     if (identical(a, b)) {
       return a;
     }
-    return CustomNavigationRailThemeData(
+    return NavigationRailThemeData(
       backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
       elevation: lerpDouble(a?.elevation, b?.elevation, t),
       unselectedLabelTextStyle: TextStyle.lerp(
@@ -243,7 +249,7 @@ class CustomNavigationRailThemeData
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is CustomNavigationRailThemeData &&
+    return other is NavigationRailThemeData &&
         other.backgroundColor == backgroundColor &&
         other.elevation == elevation &&
         other.unselectedLabelTextStyle == unselectedLabelTextStyle &&
@@ -264,8 +270,7 @@ class CustomNavigationRailThemeData
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     super.debugFillProperties(properties);
-    const CustomNavigationRailThemeData defaultData =
-        CustomNavigationRailThemeData();
+    const NavigationRailThemeData defaultData = NavigationRailThemeData();
 
     properties.add(
       ColorProperty(
@@ -373,6 +378,24 @@ class CustomNavigationRailThemeData
       ),
     );
   }
+
+  factory NavigationRailThemeData.fromMaterial(
+    m.NavigationRailThemeData material,
+  ) {
+    return NavigationRailThemeData(
+      backgroundColor: material.backgroundColor,
+      elevation: material.elevation,
+      unselectedLabelTextStyle: material.unselectedLabelTextStyle,
+      selectedLabelTextStyle: material.selectedLabelTextStyle,
+      unselectedIconTheme: material.unselectedIconTheme,
+      selectedIconTheme: material.selectedIconTheme,
+      groupAlignment: material.groupAlignment,
+      labelType: material.labelType,
+      useIndicator: material.useIndicator,
+      indicatorColor: material.indicatorColor,
+      indicatorShape: material.indicatorShape,
+    );
+  }
 }
 
 /// An inherited widget that defines visual properties for [NavigationRail]s and
@@ -380,11 +403,11 @@ class CustomNavigationRailThemeData
 ///
 /// Values specified here are used for [NavigationRail] properties that are not
 /// given an explicit non-null value.
-class CustomNavigationRailTheme extends InheritedTheme
-    implements NavigationRailTheme {
+class NavigationRailTheme extends InheritedTheme
+    implements m.NavigationRailTheme {
   /// Creates a navigation rail theme that controls the
   /// [NavigationRailThemeData] properties for a [NavigationRail].
-  const CustomNavigationRailTheme({
+  const NavigationRailTheme({
     required this.data,
     required super.child,
     super.key,
@@ -394,7 +417,7 @@ class CustomNavigationRailTheme extends InheritedTheme
   /// group alignment, and label type and border values for descendant
   /// [NavigationRail] widgets.
   @override
-  final CustomNavigationRailThemeData data;
+  final NavigationRailThemeData data;
 
   /// The closest instance of this class that encloses the given context.
   ///
@@ -407,19 +430,148 @@ class CustomNavigationRailTheme extends InheritedTheme
   /// NavigationRailThemeData theme = NavigationRailTheme.of(context);
   /// ```
   static NavigationRailThemeData of(BuildContext context) {
-    final NavigationRailTheme? navigationRailTheme = context
-            .dependOnInheritedWidgetOfExactType<CustomNavigationRailTheme>() ??
+    // The user is using NavigationRailTheme from this package
+    final NavigationRailTheme? navigationRailTheme =
         context.dependOnInheritedWidgetOfExactType<NavigationRailTheme>();
 
-    return navigationRailTheme?.data ?? Theme.of(context).navigationRailTheme;
+    if (navigationRailTheme != null) {
+      return navigationRailTheme.data;
+    }
+
+    // The user is using a theme extension to provide NavigationRailThemeData
+    // from his package
+
+    final NavigationRailThemeData? themeExtension =
+        Theme.of(context).extension<NavigationRailThemeData>();
+
+    if (themeExtension != null) {
+      return themeExtension;
+    }
+
+    // The user is using Flutter's Material NavigationRailThemeData, so we
+    // convert it to our own NavigationRailThemeData
+    final m.NavigationRailThemeData materialNavigationRailTheme =
+        m.NavigationRailTheme.of(context);
+
+    return NavigationRailThemeData.fromMaterial(materialNavigationRailTheme);
   }
 
   @override
   Widget wrap(BuildContext context, Widget child) {
-    return CustomNavigationRailTheme(data: data, child: child);
+    return NavigationRailTheme(data: data, child: child);
   }
 
   @override
-  bool updateShouldNotify(CustomNavigationRailTheme oldWidget) =>
+  bool updateShouldNotify(NavigationRailTheme oldWidget) =>
       data != oldWidget.data;
 }
+
+// Hand coded defaults based on Material Design 2.
+class NavigationRailDefaultsM2 extends NavigationRailThemeData {
+  NavigationRailDefaultsM2(BuildContext context)
+      : _theme = Theme.of(context),
+        _colors = Theme.of(context).colorScheme,
+        super(
+          elevation: 0,
+          groupAlignment: -1,
+          labelType: NavigationRailLabelType.none,
+          useIndicator: false,
+          minWidth: 72.0,
+          minExtendedWidth: 256,
+        );
+
+  final ThemeData _theme;
+  final ColorScheme _colors;
+
+  @override
+  Color? get backgroundColor => _colors.surface;
+
+  @override
+  TextStyle? get unselectedLabelTextStyle {
+    return _theme.textTheme.bodyLarge!
+        .copyWith(color: _colors.onSurface.withValues(alpha: 0.64));
+  }
+
+  @override
+  TextStyle? get selectedLabelTextStyle {
+    return _theme.textTheme.bodyLarge!.copyWith(color: _colors.primary);
+  }
+
+  @override
+  IconThemeData? get unselectedIconTheme {
+    return IconThemeData(
+      size: 24.0,
+      color: _colors.onSurface,
+      opacity: 0.64,
+    );
+  }
+
+  @override
+  IconThemeData? get selectedIconTheme {
+    return IconThemeData(
+      size: 24.0,
+      color: _colors.primary,
+      opacity: 1.0,
+    );
+  }
+}
+
+// BEGIN GENERATED TOKEN PROPERTIES - NavigationRail
+
+// Do not edit by hand. The code between the "BEGIN GENERATED" and
+// "END GENERATED" comments are generated from data in the Material
+// Design token database by the script:
+//   dev/tools/gen_defaults/bin/gen_defaults.dart.
+
+class NavigationRailDefaultsM3 extends NavigationRailThemeData {
+  NavigationRailDefaultsM3(this.context)
+      : super(
+          elevation: 0.0,
+          groupAlignment: -1,
+          labelType: NavigationRailLabelType.none,
+          useIndicator: true,
+          minWidth: 80.0,
+          minExtendedWidth: 256,
+        );
+
+  final BuildContext context;
+  late final ColorScheme _colors = Theme.of(context).colorScheme;
+  late final TextTheme _textTheme = Theme.of(context).textTheme;
+
+  @override
+  Color? get backgroundColor => _colors.surface;
+
+  @override
+  TextStyle? get unselectedLabelTextStyle {
+    return _textTheme.labelMedium!.copyWith(color: _colors.onSurface);
+  }
+
+  @override
+  TextStyle? get selectedLabelTextStyle {
+    return _textTheme.labelMedium!.copyWith(color: _colors.onSurface);
+  }
+
+  @override
+  IconThemeData? get unselectedIconTheme {
+    return IconThemeData(
+      size: 24.0,
+      color: _colors.onSurfaceVariant,
+    );
+  }
+
+  @override
+  IconThemeData? get selectedIconTheme {
+    return IconThemeData(
+      size: 24.0,
+      color: _colors.onSecondaryContainer,
+    );
+  }
+
+  @override
+  Color? get indicatorColor => _colors.secondaryContainer;
+
+  @override
+  ShapeBorder? get indicatorShape => const StadiumBorder();
+}
+
+// END GENERATED TOKEN PROPERTIES - NavigationRail

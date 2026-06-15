@@ -1,4 +1,4 @@
-part of "custom_navigation_rail.dart";
+part of "../navigation_rail.dart";
 
 const double _kIndicatorHeight = 32;
 
@@ -130,11 +130,13 @@ class _RailDestinationState extends State<RailDestination>
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final NavigationRailThemeData navigationRailTheme =
-        theme.navigationRailTheme;
+    final NavigationRailThemeData navigationRailTheme = NavigationRailTheme.of(
+      context,
+    );
+
     final NavigationRailThemeData defaults = Theme.of(context).useMaterial3
-        ? _NavigationRailDefaultsM3(context)
-        : _NavigationRailDefaultsM2(context);
+        ? NavigationRailDefaultsM3(context)
+        : NavigationRailDefaultsM2(context);
 
     final bool useIndicator = widget.useIndicator ??
         navigationRailTheme.useIndicator ??
@@ -168,17 +170,14 @@ class _RailDestinationState extends State<RailDestination>
     late final EdgeInsets destinationPadding;
     late final EdgeInsets destinationMargin;
 
-    if (navigationRailTheme is CustomNavigationRailThemeData) {
-      destinationPadding = (widget.padding ?? navigationRailTheme.padding)
-          .resolve(textDirection);
-      destinationMargin =
-          (widget.margin ?? navigationRailTheme.margin).resolve(textDirection);
-    } else {
-      destinationPadding =
-          (widget.padding ?? EdgeInsets.zero).resolve(textDirection);
-      destinationMargin =
-          (widget.margin ?? EdgeInsets.zero).resolve(textDirection);
-    }
+    destinationPadding =
+        (widget.padding ?? navigationRailTheme.padding)?.resolve(
+              textDirection,
+            ) ??
+            EdgeInsets.zero;
+    destinationMargin =
+        (widget.margin ?? navigationRailTheme.margin)?.resolve(textDirection) ??
+            EdgeInsets.zero;
 
     Offset indicatorOffset;
     bool applyXOffset = false;
@@ -292,8 +291,9 @@ class _RailDestinationState extends State<RailDestination>
             ],
           );
         } else {
-          final Animation<double> labelFadeAnimation = extendedAnimation
-              .drive(CurveTween(curve: const Interval(0.0, 0.25)));
+          final Animation<double> labelFadeAnimation = extendedAnimation.drive(
+            CurveTween(curve: const Interval(0.0, 0.25)),
+          );
           applyXOffset = true;
           // This is the content of an expanded nav item (i.e., with a label)
           content = Padding(
@@ -347,8 +347,9 @@ class _RailDestinationState extends State<RailDestination>
             _destinationAnimation.drive(CurveTween(curve: interval));
         final double minHeight = material3 ? 0 : minWidth;
 
-        final Widget topSpacing =
-            SizedBox(height: material3 ? 0 : verticalPadding);
+        final Widget topSpacing = SizedBox(
+          height: material3 ? 0 : verticalPadding,
+        );
         final Widget labelSpacing = SizedBox(
           height: material3
               ? lerpDouble(
@@ -368,7 +369,7 @@ class _RailDestinationState extends State<RailDestination>
           minWidth / 2 + indicatorHorizontalPadding,
           indicatorVerticalPadding + indicatorVerticalOffset,
         );
-        if (minWidth < _NavigationRailDefaultsM2(context).minWidth!) {
+        if (minWidth < NavigationRailDefaultsM2(context).minWidth!) {
           indicatorOffset = Offset(
             minWidth / 2 + _horizontalDestinationSpacingM3,
             indicatorVerticalPadding + indicatorVerticalOffset,
@@ -415,8 +416,9 @@ class _RailDestinationState extends State<RailDestination>
         final Widget topSpacing = SizedBox(
           height: material3 ? 0 : _verticalDestinationPaddingWithLabel,
         );
-        final Widget labelSpacing =
-            SizedBox(height: material3 ? _verticalIconLabelSpacingM3 : 0);
+        final Widget labelSpacing = SizedBox(
+          height: material3 ? _verticalIconLabelSpacingM3 : 0,
+        );
         final Widget bottomSpacing = SizedBox(
           height: material3
               ? _verticalDestinationSpacingM3
@@ -429,7 +431,7 @@ class _RailDestinationState extends State<RailDestination>
           minWidth / 2 + indicatorHorizontalPadding,
           indicatorVerticalPadding + indicatorVerticalOffset,
         );
-        if (minWidth < _NavigationRailDefaultsM2(context).minWidth!) {
+        if (minWidth < NavigationRailDefaultsM2(context).minWidth!) {
           indicatorOffset = Offset(
             minWidth / 2 + _horizontalDestinationSpacingM3,
             indicatorVerticalPadding + indicatorVerticalOffset,
@@ -506,73 +508,6 @@ class _RailDestinationState extends State<RailDestination>
   }
 }
 
-class _IndicatorInkWell extends InkResponse {
-  const _IndicatorInkWell({
-    required this.useMaterial3,
-    required this.indicatorOffset,
-    required this.applyXOffset,
-    required this.textDirection,
-    super.child,
-    super.onTap,
-    ShapeBorder? customBorder,
-    BorderRadius? borderRadius,
-    super.splashColor,
-    super.hoverColor,
-  }) : super(
-          containedInkWell: true,
-          highlightShape: BoxShape.rectangle,
-          borderRadius: useMaterial3 ? null : borderRadius,
-          customBorder: useMaterial3 ? customBorder : null,
-        );
-
-  final bool useMaterial3;
-
-  // The offset used to position Ink highlight.
-  final Offset indicatorOffset;
-
-  // Whether the horizontal offset from indicatorOffset should be used to position Ink highlight.
-  // If true, Ink highlight uses the indicator horizontal offset. If false, Ink highlight is centered horizontally.
-  final bool applyXOffset;
-
-  // The text direction used to adjust the indicator horizontal offset.
-  final TextDirection textDirection;
-
-  @override
-  RectCallback? getRectCallback(RenderBox referenceBox) {
-    if (useMaterial3) {
-      final double boxWidth = referenceBox.size.width;
-      double indicatorHorizontalCenter =
-          applyXOffset ? indicatorOffset.dx : boxWidth / 2;
-      if (textDirection == TextDirection.rtl) {
-        indicatorHorizontalCenter = boxWidth - indicatorHorizontalCenter;
-      }
-      return () {
-        // Defines the bounds of the hover/splash rectangle
-        return Rect.fromLTRB(
-          0,
-          0,
-          referenceBox.size.width,
-          referenceBox.size.height,
-        );
-      };
-    }
-    return null;
-  }
-}
-
-class _ExtendedNavigationRailAnimation extends InheritedWidget {
-  const _ExtendedNavigationRailAnimation({
-    required this.animation,
-    required super.child,
-  });
-
-  final Animation<double> animation;
-
-  @override
-  bool updateShouldNotify(_ExtendedNavigationRailAnimation old) =>
-      animation != old.animation;
-}
-
 // There don't appear to be tokens for these values, but they are
 // shown in the spec.
 const double _horizontalDestinationPadding = 8.0;
@@ -582,113 +517,3 @@ const Widget _verticalSpacer = SizedBox(height: 8.0);
 const double _verticalIconLabelSpacingM3 = 4.0;
 const double _verticalDestinationSpacingM3 = 12.0;
 const double _horizontalDestinationSpacingM3 = 12.0;
-
-// Hand coded defaults based on Material Design 2.
-class _NavigationRailDefaultsM2 extends NavigationRailThemeData {
-  _NavigationRailDefaultsM2(BuildContext context)
-      : _theme = Theme.of(context),
-        _colors = Theme.of(context).colorScheme,
-        super(
-          elevation: 0,
-          groupAlignment: -1,
-          labelType: NavigationRailLabelType.none,
-          useIndicator: false,
-          minWidth: 72.0,
-          minExtendedWidth: 256,
-        );
-
-  final ThemeData _theme;
-  final ColorScheme _colors;
-
-  @override
-  Color? get backgroundColor => _colors.surface;
-
-  @override
-  TextStyle? get unselectedLabelTextStyle {
-    return _theme.textTheme.bodyLarge!
-        .copyWith(color: _colors.onSurface.withValues(alpha: 0.64));
-  }
-
-  @override
-  TextStyle? get selectedLabelTextStyle {
-    return _theme.textTheme.bodyLarge!.copyWith(color: _colors.primary);
-  }
-
-  @override
-  IconThemeData? get unselectedIconTheme {
-    return IconThemeData(
-      size: 24.0,
-      color: _colors.onSurface,
-      opacity: 0.64,
-    );
-  }
-
-  @override
-  IconThemeData? get selectedIconTheme {
-    return IconThemeData(
-      size: 24.0,
-      color: _colors.primary,
-      opacity: 1.0,
-    );
-  }
-}
-
-// BEGIN GENERATED TOKEN PROPERTIES - NavigationRail
-
-// Do not edit by hand. The code between the "BEGIN GENERATED" and
-// "END GENERATED" comments are generated from data in the Material
-// Design token database by the script:
-//   dev/tools/gen_defaults/bin/gen_defaults.dart.
-
-class _NavigationRailDefaultsM3 extends NavigationRailThemeData {
-  _NavigationRailDefaultsM3(this.context)
-      : super(
-          elevation: 0.0,
-          groupAlignment: -1,
-          labelType: NavigationRailLabelType.none,
-          useIndicator: true,
-          minWidth: 80.0,
-          minExtendedWidth: 256,
-        );
-
-  final BuildContext context;
-  late final ColorScheme _colors = Theme.of(context).colorScheme;
-  late final TextTheme _textTheme = Theme.of(context).textTheme;
-
-  @override
-  Color? get backgroundColor => _colors.surface;
-
-  @override
-  TextStyle? get unselectedLabelTextStyle {
-    return _textTheme.labelMedium!.copyWith(color: _colors.onSurface);
-  }
-
-  @override
-  TextStyle? get selectedLabelTextStyle {
-    return _textTheme.labelMedium!.copyWith(color: _colors.onSurface);
-  }
-
-  @override
-  IconThemeData? get unselectedIconTheme {
-    return IconThemeData(
-      size: 24.0,
-      color: _colors.onSurfaceVariant,
-    );
-  }
-
-  @override
-  IconThemeData? get selectedIconTheme {
-    return IconThemeData(
-      size: 24.0,
-      color: _colors.onSecondaryContainer,
-    );
-  }
-
-  @override
-  Color? get indicatorColor => _colors.secondaryContainer;
-
-  @override
-  ShapeBorder? get indicatorShape => const StadiumBorder();
-}
-
-// END GENERATED TOKEN PROPERTIES - NavigationRail

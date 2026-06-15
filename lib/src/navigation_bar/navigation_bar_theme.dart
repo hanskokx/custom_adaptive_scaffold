@@ -5,8 +5,13 @@
 import "dart:ui" show lerpDouble;
 
 import "package:flutter/foundation.dart";
+import "package:flutter/material.dart" as m
+    show NavigationBarThemeData, NavigationBarTheme;
 import "package:flutter/material.dart";
 import "package:flutter/rendering.dart";
+
+typedef CustomNavigationBarThemeData = NavigationBarThemeData;
+typedef CustomNavigationBarTheme = NavigationBarTheme;
 
 // Examples can assume:
 // late BuildContext context;
@@ -34,12 +39,12 @@ import "package:flutter/rendering.dart";
 ///  * [ThemeData], which describes the overall theme information for the
 ///    application.
 @immutable
-class CustomNavigationBarThemeData
+class NavigationBarThemeData
     with Diagnosticable
-    implements NavigationBarThemeData {
+    implements m.NavigationBarThemeData {
   /// Creates a theme that can be used for [ThemeData.navigationBarTheme] and
   /// [NavigationBarTheme].
-  const CustomNavigationBarThemeData({
+  const NavigationBarThemeData({
     this.height,
     this.backgroundColor,
     this.elevation,
@@ -124,7 +129,7 @@ class CustomNavigationBarThemeData
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
   @override
-  CustomNavigationBarThemeData copyWith({
+  NavigationBarThemeData copyWith({
     double? height,
     Color? backgroundColor,
     double? elevation,
@@ -141,7 +146,7 @@ class CustomNavigationBarThemeData
     double? tooltipVerticalOffset,
     EdgeInsetsGeometry? labelPadding,
   }) {
-    return CustomNavigationBarThemeData(
+    return NavigationBarThemeData(
       height: height ?? this.height,
       backgroundColor: backgroundColor ?? this.backgroundColor,
       elevation: elevation ?? this.elevation,
@@ -165,15 +170,15 @@ class CustomNavigationBarThemeData
   /// If both arguments are null then null is returned.
   ///
   /// {@macro dart.ui.shadow.lerp}
-  static CustomNavigationBarThemeData? lerp(
-    CustomNavigationBarThemeData? a,
-    CustomNavigationBarThemeData? b,
+  static NavigationBarThemeData? lerp(
+    NavigationBarThemeData? a,
+    NavigationBarThemeData? b,
     double t,
   ) {
     if (identical(a, b)) {
       return a;
     }
-    return CustomNavigationBarThemeData(
+    return NavigationBarThemeData(
       height: lerpDouble(a?.height, b?.height, t),
       backgroundColor: Color.lerp(a?.backgroundColor, b?.backgroundColor, t),
       elevation: lerpDouble(a?.elevation, b?.elevation, t),
@@ -236,7 +241,7 @@ class CustomNavigationBarThemeData
     if (other.runtimeType != runtimeType) {
       return false;
     }
-    return other is CustomNavigationBarThemeData &&
+    return other is NavigationBarThemeData &&
         other.height == height &&
         other.backgroundColor == backgroundColor &&
         other.elevation == elevation &&
@@ -330,6 +335,27 @@ class CustomNavigationBarThemeData
       ),
     );
   }
+
+  factory NavigationBarThemeData.fromMaterial(
+    m.NavigationBarThemeData? other,
+  ) {
+    return NavigationBarThemeData(
+      height: other?.height,
+      backgroundColor: other?.backgroundColor,
+      elevation: other?.elevation,
+      shadowColor: other?.shadowColor,
+      surfaceTintColor: other?.surfaceTintColor,
+      indicatorColor: other?.indicatorColor,
+      indicatorShape: other?.indicatorShape,
+      labelTextStyle: other?.labelTextStyle,
+      iconTheme: other?.iconTheme,
+      labelBehavior: other?.labelBehavior,
+      overlayColor: other?.overlayColor,
+      margin: EdgeInsets.zero,
+      padding: EdgeInsets.zero,
+      tooltipVerticalOffset: 42,
+    );
+  }
 }
 
 /// An inherited widget that defines visual properties for [NavigationBar]s and
@@ -342,11 +368,11 @@ class CustomNavigationBarThemeData
 ///
 ///  * [ThemeData.navigationBarTheme], which describes the
 ///    [NavigationBarThemeData] in the overall theme for the application.
-class CustomNavigationBarTheme extends InheritedTheme
-    implements NavigationBarTheme {
+class NavigationBarTheme extends InheritedTheme
+    implements m.NavigationBarTheme {
   /// Creates a navigation rail theme that controls the
   /// [NavigationBarThemeData] properties for a [NavigationBar].
-  const CustomNavigationBarTheme({
+  const NavigationBarTheme({
     required this.data,
     required super.child,
     super.key,
@@ -355,7 +381,7 @@ class CustomNavigationBarTheme extends InheritedTheme
   /// Specifies the background color, label text style, icon theme, and label
   /// type values for descendant [NavigationBar] widgets.
   @override
-  final CustomNavigationBarThemeData data;
+  final NavigationBarThemeData data;
 
   /// The closest instance of this class that encloses the given context.
   ///
@@ -368,11 +394,31 @@ class CustomNavigationBarTheme extends InheritedTheme
   /// NavigationBarThemeData theme = NavigationBarTheme.of(context);
   /// ```
   static NavigationBarThemeData of(BuildContext context) {
-    final NavigationBarTheme? navigationBarTheme = context
-            .dependOnInheritedWidgetOfExactType<CustomNavigationBarTheme>() ??
+    // The user is using NavigationBarTheme from this package
+    final NavigationBarTheme? navigationBarTheme =
         context.dependOnInheritedWidgetOfExactType<NavigationBarTheme>();
 
-    return navigationBarTheme?.data ?? Theme.of(context).navigationBarTheme;
+    if (navigationBarTheme != null) {
+      return navigationBarTheme.data;
+    }
+
+    // The user is using a theme extension to provide NavigationBarThemeData
+    // from his package
+
+    final NavigationBarThemeData? themeExtension =
+        Theme.of(context).extension<NavigationBarThemeData>();
+
+    if (themeExtension != null) {
+      return themeExtension;
+    }
+
+    // The user is using Flutter's Material NavigationBarThemeData, so we
+    // convert it to our own NavigationBarThemeData
+
+    final m.NavigationBarThemeData materialNavigationBarTheme =
+        m.NavigationBarTheme.of(context);
+
+    return NavigationBarThemeData.fromMaterial(materialNavigationBarTheme);
   }
 
   @override
@@ -384,3 +430,119 @@ class CustomNavigationBarTheme extends InheritedTheme
   bool updateShouldNotify(NavigationBarTheme oldWidget) =>
       data != oldWidget.data;
 }
+
+NavigationBarThemeData defaultsFor(BuildContext context) {
+  return Theme.of(context).useMaterial3
+      ? NavigationBarDefaultsM3(context)
+      : NavigationBarDefaultsM2(context);
+}
+
+// Hand coded defaults based on Material Design 2.
+class NavigationBarDefaultsM2 extends NavigationBarThemeData {
+  NavigationBarDefaultsM2(BuildContext context)
+      : _theme = Theme.of(context),
+        _colors = Theme.of(context).colorScheme,
+        super(
+          height: 80.0,
+          elevation: 0.0,
+          indicatorShape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+          ),
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        );
+
+  final ThemeData _theme;
+  final ColorScheme _colors;
+
+  // With Material 2, the NavigationBar uses an overlay blend for the
+  // default color regardless of light/dark mode.
+  @override
+  Color? get backgroundColor => ElevationOverlay.colorWithOverlay(
+        _colors.surface,
+        _colors.onSurface,
+        3.0,
+      );
+
+  @override
+  WidgetStateProperty<IconThemeData?>? get iconTheme {
+    return WidgetStatePropertyAll<IconThemeData>(
+      IconThemeData(
+        size: 24,
+        color: _colors.onSurface,
+      ),
+    );
+  }
+
+  @override
+  Color? get indicatorColor => _colors.secondary.withValues(alpha: 0.24);
+
+  @override
+  WidgetStateProperty<TextStyle?>? get labelTextStyle =>
+      WidgetStatePropertyAll<TextStyle?>(
+        _theme.textTheme.labelSmall!.copyWith(color: _colors.onSurface),
+      );
+}
+
+// BEGIN GENERATED TOKEN PROPERTIES - NavigationBar
+
+// Do not edit by hand. The code between the "BEGIN GENERATED" and
+// "END GENERATED" comments are generated from data in the Material
+// Design token database by the script:
+//   dev/tools/gen_defaults/bin/gen_defaults.dart.
+
+class NavigationBarDefaultsM3 extends CustomNavigationBarThemeData {
+  NavigationBarDefaultsM3(this.context)
+      : super(
+          height: 80.0,
+          elevation: 3.0,
+          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+        );
+
+  final BuildContext context;
+  late final ColorScheme _colors = Theme.of(context).colorScheme;
+  late final TextTheme _textTheme = Theme.of(context).textTheme;
+
+  @override
+  Color? get backgroundColor => _colors.surfaceContainer;
+
+  @override
+  Color? get shadowColor => Colors.transparent;
+
+  @override
+  Color? get surfaceTintColor => Colors.transparent;
+
+  @override
+  WidgetStateProperty<IconThemeData?>? get iconTheme {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      return IconThemeData(
+        size: 24.0,
+        color: states.contains(WidgetState.disabled)
+            ? _colors.onSurfaceVariant.withValues(alpha: 0.38)
+            : states.contains(WidgetState.selected)
+                ? _colors.onSecondaryContainer
+                : _colors.onSurfaceVariant,
+      );
+    });
+  }
+
+  @override
+  Color? get indicatorColor => _colors.secondaryContainer;
+  @override
+  ShapeBorder? get indicatorShape => const StadiumBorder();
+
+  @override
+  WidgetStateProperty<TextStyle?>? get labelTextStyle {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      final TextStyle style = _textTheme.labelMedium!;
+      return style.apply(
+        color: states.contains(WidgetState.disabled)
+            ? _colors.onSurfaceVariant.withValues(alpha: 0.38)
+            : states.contains(WidgetState.selected)
+                ? _colors.onSurface
+                : _colors.onSurfaceVariant,
+      );
+    });
+  }
+}
+
+// END GENERATED TOKEN PROPERTIES - NavigationBar

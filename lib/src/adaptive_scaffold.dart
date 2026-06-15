@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
 
-import "custom_navigation_bar.dart";
+import "material.dart";
 
 /// Spacing value of the compact breakpoint according to
 /// the material 3 design spec.
@@ -333,11 +332,7 @@ class AdaptiveScaffold extends StatefulWidget {
   static NavigationRailDestination toRailDestination(
     NavigationDestination destination,
   ) {
-    return NavigationRailDestination(
-      label: Text(destination.label),
-      icon: destination.icon,
-      selectedIcon: destination.selectedIcon,
-    );
+    return destination.toRailDestination();
   }
 
   /// Creates a Material 3 Design Spec abiding [NavigationRail] from a
@@ -383,7 +378,7 @@ class AdaptiveScaffold extends StatefulWidget {
                     constraints:
                         BoxConstraints(minHeight: constraints.maxHeight),
                     child: IntrinsicHeight(
-                      child: CustomNavigationRail(
+                      child: NavigationRail(
                         labelType: labelType,
                         leading: leading,
                         trailing: trailing,
@@ -434,7 +429,7 @@ class AdaptiveScaffold extends StatefulWidget {
           ),
           child: MediaQuery(
             data: MediaQuery.of(context).removePadding(removeTop: true),
-            child: CustomNavigationBar(
+            child: NavigationBar(
               selectedIndex: currentIndex ?? 0,
               destinations: destinations,
               onDestinationSelected: onDestinationSelected,
@@ -614,7 +609,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   @override
   Widget build(BuildContext context) {
     final NavigationRailThemeData navRailTheme =
-        Theme.of(context).navigationRailTheme;
+        NavigationRailTheme.of(context);
 
     final List<NavigationRailDestination> destinations = widget.destinations
         .map(

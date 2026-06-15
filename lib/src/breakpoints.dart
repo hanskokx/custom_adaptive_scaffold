@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "package:flutter/material.dart";
-
 import "../custom_adaptive_scaffold.dart";
+import "material.dart";
 
 /// A group of standard breakpoints built according to the material
 /// specifications for screen width size.

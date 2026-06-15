@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide NavigationDestination, NavigationRailDestination;
 
 /// A more functional demo of the usage of the adaptive layout helper widgets.
 /// Specifically, it is built using an [AdaptiveLayout] and uses static helpers
@@ -223,21 +224,20 @@ class _MyHomePageState extends State<MyHomePage>
 
     // These are the destinations used within the AdaptiveScaffold navigation
     // builders.
-    const List<CustomNavigationDestination> destinations =
-        <CustomNavigationDestination>[
-      CustomNavigationDestination(
+    const List<NavigationDestination> destinations = <NavigationDestination>[
+      NavigationDestination(
         label: "Inbox",
         icon: Icon(Icons.inbox),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Articles",
         icon: Icon(Icons.article_outlined),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Chat",
         icon: Icon(Icons.chat_bubble_outline),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Video",
         icon: Icon(Icons.video_call_outlined),
       ),

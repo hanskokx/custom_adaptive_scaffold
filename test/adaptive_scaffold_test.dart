@@ -3,7 +3,12 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide
+        NavigationDestination,
+        NavigationRailDestination,
+        NavigationRail,
+        NavigationRailThemeData;
 import "package:flutter_test/flutter_test.dart";
 
 import "simulated_layout.dart";
@@ -303,14 +308,13 @@ void main() {
   testWidgets(
     "when destinations passed with all data, it shall not be null",
     (WidgetTester tester) async {
-      const List<CustomNavigationDestination> destinations =
-          <CustomNavigationDestination>[
-        CustomNavigationDestination(
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        NavigationDestination(
           icon: Icon(Icons.inbox_outlined),
           selectedIcon: Icon(Icons.inbox),
           label: "Inbox",
         ),
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.video_call_outlined),
           selectedIcon: Icon(Icons.video_call),
           label: "Video",
@@ -330,10 +334,9 @@ void main() {
 
       final Finder fNavigationRail = find.descendant(
         of: find.byType(AdaptiveScaffold),
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
-      final CustomNavigationRail navigationRail =
-          tester.firstWidget(fNavigationRail);
+      final NavigationRail navigationRail = tester.firstWidget(fNavigationRail);
       expect(
         navigationRail.destinations,
         isA<List<NavigationRailDestination>>(),
@@ -352,7 +355,7 @@ void main() {
         expect(destination.selectedIcon, isNotNull);
       }
 
-      final CustomNavigationDestination firstDestinationFromListPassed =
+      final NavigationDestination firstDestinationFromListPassed =
           destinations.first;
       final NavigationRailDestination firstDestinationFromFinderView =
           navigationRail.destinations.first;
@@ -487,11 +490,11 @@ void main() {
 
       final Finder navigationRailFinder = find.descendant(
         of: primaryNavigationMedium,
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final CustomNavigationRail navigationRailView = tester.firstWidget(
+      final NavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -533,11 +536,11 @@ void main() {
 
       final Finder navigationRailFinder = find.descendant(
         of: primaryNavigationMediumLarge,
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final CustomNavigationRail navigationRailView = tester.firstWidget(
+      final NavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -716,8 +719,8 @@ void main() {
           ),
         ),
       );
-      final CustomNavigationRail rail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      final NavigationRail rail =
+          tester.widget<NavigationRail>(find.byType(NavigationRail));
       expect(rail.groupAlignment, equals(groupAlignment));
     },
   );
@@ -858,11 +861,11 @@ void main() {
     "adaptive scaffold respects NavigationRailLabelType from theme",
     (WidgetTester tester) async {
       const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.home),
           label: "Home",
         ),
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.account_circle),
           label: "Profile",
         ),
@@ -884,8 +887,8 @@ void main() {
         ),
       );
 
-      final CustomNavigationRail rail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      final NavigationRail rail =
+          tester.widget<NavigationRail>(find.byType(NavigationRail));
       expect(rail.labelType, NavigationRailLabelType.all);
     },
   );
