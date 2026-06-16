@@ -1,5 +1,9 @@
 import "../material.dart";
 import "../navigation_destination.dart";
+import "../navigation_icon.dart";
+import "../navigation_rail/navigation_rail.dart";
+import "../navigation_rail/navigation_rail_theme.dart";
+import "../navigation_type.dart";
 import "navigation_bar_theme.dart";
 import "navigation_destination_info.dart";
 import "selectable_animated_builder.dart";
@@ -79,6 +83,9 @@ class NavigationBarDestination extends NavigationDestination {
         shape: indicatorShape,
         padding: padding,
         buildIcon: (BuildContext context) {
+          final ThemeData theme = Theme.of(context);
+          final NavigationRailThemeData navigationRailTheme =
+              NavigationRailTheme.of(context);
           final IconThemeData selectedIconTheme =
               navigationBarTheme.iconTheme?.resolve(selectedState) ??
                   defaults.iconTheme!.resolve(selectedState)!;
@@ -98,9 +105,28 @@ class NavigationBarDestination extends NavigationDestination {
             child: icon,
           );
 
-          return animation.isForwardOrCompleted
+          final Widget themedIcon = animation.isForwardOrCompleted
               ? selectedIconWidget
               : unselectedIconWidget;
+
+          return NavigationIcon(
+            type: NavigationType.bar,
+            data: RailDestinationBuildData(
+              theme: theme,
+              navigationRailTheme: navigationRailTheme,
+              textDirection: Directionality.of(context),
+              material3: theme.useMaterial3,
+              useIndicator: true,
+              indicatorShape: indicatorShape,
+              destinationPadding: EdgeInsets.zero,
+              minWidth: _kIndicatorWidth,
+              minExtendedWidth: _kIndicatorWidth,
+              themedIcon: themedIcon,
+              styledLabel: const SizedBox.shrink(),
+              extendedAnimation: animation,
+              indicatorOffset: const Offset(_kIndicatorWidth / 2, 0),
+            ),
+          );
         },
         buildLabel: (BuildContext context) {
           final TextStyle? effectiveSelectedLabelTextStyle =

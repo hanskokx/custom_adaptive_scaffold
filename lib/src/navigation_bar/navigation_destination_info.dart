@@ -54,7 +54,7 @@ class NavigationDestinationInfo extends InheritedWidget {
 
   /// This is the index of the currently selected destination.
   ///
-  /// This is required for `_IndicatorInkWell` to apply label padding to ripple animations
+  /// This is required for [IndicatorInkWell] to apply label padding to ripple animations
   /// when label behavior is [NavigationDestinationLabelBehavior.onlyShowSelected].
   final int selectedIndex;
 

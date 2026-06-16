@@ -43,8 +43,8 @@ abstract class _BaseRailDestination extends StatefulWidget {
   final EdgeInsetsGeometry? margin;
 }
 
-class _SharedRailDestinationBuildData {
-  _SharedRailDestinationBuildData({
+class RailDestinationBuildData {
+  RailDestinationBuildData({
     required this.theme,
     required this.navigationRailTheme,
     required this.textDirection,
@@ -75,9 +75,9 @@ class _SharedRailDestinationBuildData {
   final Offset indicatorOffset;
 }
 
-abstract class _SharedRailDestinationState<T extends _BaseRailDestination>
+abstract class _SharedNavigationDestinationState<T extends _BaseRailDestination>
     extends State<T> with TickerProviderStateMixin {
-  _SharedRailDestinationBuildData resolveBuildData(BuildContext context) {
+  RailDestinationBuildData resolveBuildData(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final NavigationRailThemeData navigationRailTheme = NavigationRailTheme.of(
       context,
@@ -187,7 +187,7 @@ abstract class _SharedRailDestinationState<T extends _BaseRailDestination>
           indicatorVerticalOffset,
     );
 
-    return _SharedRailDestinationBuildData(
+    return RailDestinationBuildData(
       theme: theme,
       navigationRailTheme: navigationRailTheme,
       textDirection: textDirection,
@@ -205,7 +205,7 @@ abstract class _SharedRailDestinationState<T extends _BaseRailDestination>
   }
 
   Widget wrapDestination({
-    required _SharedRailDestinationBuildData data,
+    required RailDestinationBuildData data,
     required bool applyXOffset,
     required Widget child,
   }) {
@@ -221,29 +221,81 @@ abstract class _SharedRailDestinationState<T extends _BaseRailDestination>
         ? splashColor
         : splashColor.withValues(alpha: 0.04);
 
+    return WrappedRailDestination(
+      selected: widget.selected,
+      disabled: widget.disabled,
+      onTap: widget.onTap,
+      indexLabel: widget.indexLabel,
+      minWidth: data.minWidth,
+      indicatorShape: data.indicatorShape,
+      material3: data.material3,
+      indicatorOffset: data.indicatorOffset,
+      applyXOffset: applyXOffset,
+      textDirection: data.textDirection,
+      splashColor: effectiveSplashColor,
+      hoverColor: effectiveHoverColor,
+      child: child,
+    );
+  }
+}
+
+class WrappedRailDestination extends StatelessWidget {
+  const WrappedRailDestination({
+    required this.selected,
+    required this.disabled,
+    required this.onTap,
+    required this.indexLabel,
+    required this.minWidth,
+    required this.indicatorShape,
+    required this.material3,
+    required this.indicatorOffset,
+    required this.applyXOffset,
+    required this.textDirection,
+    required this.splashColor,
+    required this.hoverColor,
+    required this.child,
+    super.key,
+  });
+
+  final bool? selected;
+  final bool disabled;
+  final VoidCallback? onTap;
+  final String? indexLabel;
+  final double minWidth;
+  final ShapeBorder? indicatorShape;
+  final bool material3;
+  final Offset indicatorOffset;
+  final bool applyXOffset;
+  final TextDirection textDirection;
+  final Color splashColor;
+  final Color hoverColor;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
     return Semantics(
       container: true,
-      selected: widget.selected,
+      selected: selected,
       child: Material(
         type: MaterialType.transparency,
         child: Stack(
           children: <Widget>[
-            _IndicatorInkWell(
-              onTap: widget.disabled ? null : widget.onTap,
+            IndicatorInkWell(
+              onTap: disabled ? null : onTap,
               borderRadius: BorderRadius.all(
-                Radius.circular(data.minWidth / 2.0),
+                Radius.circular(minWidth / 2.0),
               ),
-              customBorder: data.indicatorShape,
-              splashColor: effectiveSplashColor,
-              hoverColor: effectiveHoverColor,
-              useMaterial3: data.material3,
-              indicatorOffset: data.indicatorOffset,
+              customBorder: indicatorShape,
+              splashColor: splashColor,
+              hoverColor: hoverColor,
+              useMaterial3: material3,
+              indicatorOffset: indicatorOffset,
               applyXOffset: applyXOffset,
-              textDirection: data.textDirection,
+              textDirection: textDirection,
               child: child,
             ),
             Semantics(
-              label: widget.indexLabel,
+              label: indexLabel,
             ),
           ],
         ),

@@ -264,22 +264,40 @@ class _RailDestinationState extends State<RailDestination>
               destinationPadding.top +
               indicatorVerticalOffset,
         );
-        final Widget iconPart = ConstrainedBox(
-          constraints: BoxConstraints.tight(
-            Size(minWidth, 44),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              if (spacing != null) spacing,
-              Center(
-                // _AddIndicator is only shown on selected menu items.
-                child: themedIcon,
-              ),
-              if (spacing != null) spacing,
-            ],
+        final Widget iconPart = NavigationIcon(
+          type: NavigationType.rail,
+          data: RailDestinationBuildData(
+            theme: theme,
+            navigationRailTheme: navigationRailTheme,
+            textDirection: textDirection,
+            material3: material3,
+            useIndicator: useIndicator,
+            indicatorShape: indicatorShape,
+            destinationPadding: destinationPadding,
+            minWidth: minWidth,
+            minExtendedWidth: minExtendedWidth,
+            themedIcon: themedIcon,
+            styledLabel: styledLabel,
+            extendedAnimation: extendedAnimation,
+            indicatorOffset: indicatorOffset,
           ),
         );
+        // final Widget iconPart = ConstrainedBox(
+        //   constraints: BoxConstraints.tight(
+        //     Size(minWidth, 44),
+        //   ),
+        //   child: Column(
+        //     mainAxisAlignment: MainAxisAlignment.center,
+        //     children: <Widget>[
+        //       if (spacing != null) spacing,
+        //       Center(
+        //         // _AddIndicator is only shown on selected menu items.
+        //         child: themedIcon,
+        //       ),
+        //       if (spacing != null) spacing,
+        //     ],
+        //   ),
+        // );
         if (collapsed) {
           content = Stack(
             children: <Widget>[
@@ -487,7 +505,7 @@ class _RailDestinationState extends State<RailDestination>
           children: <Widget>[
             /// This is the splash overlay when hovering over a
             /// [CustomNavigationDestination] in a [NavigationRail].
-            _IndicatorInkWell(
+            IndicatorInkWell(
               onTap: widget.disabled ? null : widget.onTap,
               borderRadius: BorderRadius.all(
                 Radius.circular(minWidth / 2.0),

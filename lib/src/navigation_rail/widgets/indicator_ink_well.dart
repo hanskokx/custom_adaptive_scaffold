@@ -1,11 +1,12 @@
 part of "../navigation_rail.dart";
 
-class _IndicatorInkWell extends InkResponse {
-  const _IndicatorInkWell({
+class IndicatorInkWell extends InkResponse {
+  const IndicatorInkWell({
     required this.useMaterial3,
     required this.indicatorOffset,
     required this.applyXOffset,
     required this.textDirection,
+    super.key,
     super.child,
     super.onTap,
     ShapeBorder? customBorder,

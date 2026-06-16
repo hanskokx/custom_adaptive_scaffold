@@ -29,34 +29,36 @@ class ExpandedRailDestination extends _BaseRailDestination {
 }
 
 class _ExpandedRailDestinationState
-    extends _SharedRailDestinationState<ExpandedRailDestination> {
+    extends _SharedNavigationDestinationState<ExpandedRailDestination> {
   @override
   Widget build(BuildContext context) {
-    final _SharedRailDestinationBuildData data = resolveBuildData(context);
+    final RailDestinationBuildData data = resolveBuildData(context);
 
-    final Widget? spacing = data.material3
-        ? const SizedBox(height: _verticalDestinationSpacingM3 / 2)
-        : null;
-    final Widget iconPart = ConstrainedBox(
-      constraints: BoxConstraints.tight(
-        Size(data.minWidth, 44),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          if (spacing != null) spacing,
-          Center(
-            // _AddIndicator is only shown on selected menu items.
-            child: data.themedIcon,
-          ),
-          if (spacing != null) spacing,
-        ],
-      ),
-    );
+    final ColorScheme colors = Theme.of(context).colorScheme;
+    final Color splashColor =
+        data.navigationRailTheme.indicatorColor ?? colors.primary;
+    final bool primaryColorAlphaModified = splashColor.a < 255.0;
 
-    return wrapDestination(
-      data: data,
+    final Color effectiveSplashColor = primaryColorAlphaModified
+        ? splashColor
+        : splashColor.withValues(alpha: 0.12);
+    final Color effectiveHoverColor = primaryColorAlphaModified
+        ? splashColor
+        : splashColor.withValues(alpha: 0.04);
+
+    return WrappedRailDestination(
       applyXOffset: true,
+      selected: widget.selected,
+      disabled: widget.disabled,
+      onTap: widget.onTap,
+      indexLabel: widget.indexLabel,
+      minWidth: data.minWidth,
+      indicatorShape: data.indicatorShape,
+      material3: data.material3,
+      indicatorOffset: data.indicatorOffset,
+      textDirection: data.textDirection,
+      splashColor: effectiveSplashColor,
+      hoverColor: effectiveHoverColor,
       child: Padding(
         padding: widget.padding ?? EdgeInsets.zero,
         child: ConstrainedBox(
@@ -71,7 +73,10 @@ class _ExpandedRailDestinationState
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                iconPart,
+                NavigationIcon(
+                  type: NavigationType.rail,
+                  data: data,
+                ),
                 Flexible(
                   child: Align(
                     heightFactor: 1.0,
