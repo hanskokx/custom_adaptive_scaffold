@@ -80,6 +80,7 @@ class _NavigationDestinationBuilder extends StatefulWidget {
 class _NavigationDestinationBuilderState
     extends State<_NavigationDestinationBuilder> {
   final GlobalKey itemKey = GlobalKey();
+  final GlobalKey iconKey = GlobalKey();
   late final WidgetStatesController _statesController;
 
   @override
@@ -114,10 +115,10 @@ class _NavigationDestinationBuilderState
     final ShapeBorder effectiveNavigationItemIndicatorShape =
         navigationBarTheme.navigationItemIndicatorShape ??
             const StadiumBorder();
-    final WidgetStateProperty<Color?>? effectiveOverlayColor =
-        info.overlayColor ??
-            navigationBarTheme.overlayColor ??
-            defaultsFor(context).overlayColor;
+    final WidgetStateProperty<Color?>? fullItemOverlayColor =
+        effectiveNavigationItemOverlayColor;
+    final WidgetStateProperty<Color?>? iconOverlayColor =
+        navigationBarTheme.overlayColor ?? defaultsFor(context).overlayColor;
 
     return _NavigationBarDestinationSemantics(
       enabled: !widget.disabled,
@@ -132,11 +133,12 @@ class _NavigationDestinationBuilderState
             type: MaterialType.transparency,
             child: _IndicatorInkWell(
               itemKey: itemKey,
+              iconKey: iconKey,
               labelBehavior: info.labelBehavior,
               disableFullItemInk: disableFullItemInk,
               indicatorOverlayColor:
-                  disableFullItemInk ? effectiveOverlayColor : null,
-              overlayColor: effectiveNavigationItemOverlayColor,
+                  disableFullItemInk ? iconOverlayColor : null,
+              overlayColor: fullItemOverlayColor,
               customBorder: effectiveNavigationItemIndicatorShape,
               statesController: _statesController,
               onTap: widget.disabled ? null : info.onTap,
@@ -151,8 +153,11 @@ class _NavigationDestinationBuilderState
                           child: _NavigationBarDestinationLayout(
                             icon: _NavigationBarIndicatorStates(
                               states: _statesController.value,
-                              overlayColor: effectiveOverlayColor,
-                              child: widget.buildIcon(context),
+                              overlayColor: iconOverlayColor,
+                              child: KeyedSubtree(
+                                key: iconKey,
+                                child: widget.buildIcon(context),
+                              ),
                             ),
                             itemKey: itemKey,
                             padding: widget.padding,
@@ -175,6 +180,7 @@ class _NavigationDestinationBuilderState
 class _IndicatorInkWell extends InkResponse {
   const _IndicatorInkWell({
     required this.itemKey,
+    required this.iconKey,
     required this.labelBehavior,
     required this.disableFullItemInk,
     this.indicatorOverlayColor,
@@ -190,6 +196,7 @@ class _IndicatorInkWell extends InkResponse {
         );
 
   final GlobalKey itemKey;
+  final GlobalKey iconKey;
   final NavigationDestinationLabelBehavior labelBehavior;
   final bool disableFullItemInk;
   final WidgetStateProperty<Color?>? indicatorOverlayColor;
@@ -197,10 +204,15 @@ class _IndicatorInkWell extends InkResponse {
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
     return () {
-      final RenderBox itemBox =
-          itemKey.currentContext!.findRenderObject()! as RenderBox;
-      final Rect itemRect = itemBox.localToGlobal(Offset.zero) & itemBox.size;
-      return referenceBox.globalToLocal(itemRect.topLeft) & itemBox.size;
+      final GlobalKey targetKey =
+          disableFullItemInk && iconKey.currentContext != null
+              ? iconKey
+              : itemKey;
+      final RenderBox targetBox =
+          targetKey.currentContext!.findRenderObject()! as RenderBox;
+      final Rect targetRect =
+          targetBox.localToGlobal(Offset.zero) & targetBox.size;
+      return referenceBox.globalToLocal(targetRect.topLeft) & targetBox.size;
     };
   }
 }
