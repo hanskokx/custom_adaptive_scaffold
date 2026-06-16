@@ -413,6 +413,8 @@ class NavigationRailThemeData
       useIndicator: material.useIndicator,
       indicatorColor: material.indicatorColor,
       indicatorShape: material.indicatorShape,
+      minWidth: material.minWidth,
+      minExtendedWidth: material.minExtendedWidth,
     );
   }
 }

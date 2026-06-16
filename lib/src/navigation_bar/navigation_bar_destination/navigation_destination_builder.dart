@@ -87,28 +87,19 @@ class _NavigationDestinationBuilderState
         NavigationDestinationInfo.of(context);
     final NavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
-    final bool isSelected = widget.animation.isForwardOrCompleted;
-
-    final WidgetStateProperty<Color?>? baseOverlayColor =
+    final WidgetStateProperty<Color?>? effectiveOverlayColor =
         info.overlayColor ?? navigationBarTheme.overlayColor;
-    final WidgetStateProperty<Color?>? effectiveOverlayColor = isSelected
-        ? WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-            if (states.contains(WidgetState.hovered) ||
-                states.contains(WidgetState.focused) ||
-                states.contains(WidgetState.pressed)) {
-              return Colors.transparent;
-            }
-            return baseOverlayColor?.resolve(states);
-          })
-        : baseOverlayColor;
 
     return _NavigationBarDestinationSemantics(
+      enabled: !widget.disabled,
       child: _NavigationBarDestinationTooltip(
         message: widget.tooltip ??
             (widget.label is Text ? (widget.label as Text).data : "") ??
             "",
         child: ClipRect(
-          child: InkWell(
+          child: _IndicatorInkWell(
+            itemKey: itemKey,
+            labelBehavior: info.labelBehavior,
             customBorder: widget.shape,
             overlayColor: effectiveOverlayColor,
             onTap: widget.disabled ? null : info.onTap,
@@ -136,5 +127,29 @@ class _NavigationDestinationBuilderState
         ),
       ),
     );
+  }
+}
+
+class _IndicatorInkWell extends InkResponse {
+  const _IndicatorInkWell({
+    required this.itemKey,
+    required this.labelBehavior,
+    super.overlayColor,
+    super.customBorder,
+    super.onTap,
+    super.child,
+  }) : super(containedInkWell: true, highlightColor: Colors.transparent);
+
+  final GlobalKey itemKey;
+  final NavigationDestinationLabelBehavior labelBehavior;
+
+  @override
+  RectCallback? getRectCallback(RenderBox referenceBox) {
+    return () {
+      final RenderBox itemBox =
+          itemKey.currentContext!.findRenderObject()! as RenderBox;
+      final Rect itemRect = itemBox.localToGlobal(Offset.zero) & itemBox.size;
+      return referenceBox.globalToLocal(itemRect.topLeft) & itemBox.size;
+    };
   }
 }

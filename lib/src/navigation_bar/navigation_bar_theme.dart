@@ -162,6 +162,7 @@ class NavigationBarThemeData
       padding: padding ?? this.padding,
       tooltipVerticalOffset:
           tooltipVerticalOffset ?? this.tooltipVerticalOffset,
+      labelPadding: labelPadding ?? this.labelPadding,
     );
   }
 
@@ -212,6 +213,11 @@ class NavigationBarThemeData
       tooltipVerticalOffset:
           lerpDouble(a?.tooltipVerticalOffset, b?.tooltipVerticalOffset, t) ??
               42,
+      labelPadding: EdgeInsetsGeometry.lerp(
+        a?.labelPadding,
+        b?.labelPadding,
+        t,
+      ),
     );
   }
 
@@ -231,6 +237,7 @@ class NavigationBarThemeData
         margin,
         padding,
         tooltipVerticalOffset,
+        labelPadding,
       );
 
   @override
@@ -255,7 +262,8 @@ class NavigationBarThemeData
         other.overlayColor == overlayColor &&
         other.margin == margin &&
         other.padding == padding &&
-        other.tooltipVerticalOffset == tooltipVerticalOffset;
+        other.tooltipVerticalOffset == tooltipVerticalOffset &&
+        other.labelPadding == labelPadding;
   }
 
   @override
@@ -334,6 +342,13 @@ class NavigationBarThemeData
         defaultValue: 42,
       ),
     );
+    properties.add(
+      DiagnosticsProperty<EdgeInsetsGeometry?>(
+        "labelPadding",
+        labelPadding,
+        defaultValue: null,
+      ),
+    );
   }
 
   factory NavigationBarThemeData.fromMaterial(
@@ -354,6 +369,7 @@ class NavigationBarThemeData
       margin: EdgeInsets.zero,
       padding: EdgeInsets.zero,
       tooltipVerticalOffset: 42,
+      labelPadding: other?.labelPadding,
     );
   }
 }
@@ -445,6 +461,7 @@ class NavigationBarDefaultsM2 extends NavigationBarThemeData {
         super(
           height: 80.0,
           elevation: 0.0,
+          labelPadding: const EdgeInsets.only(top: 4),
           indicatorShape: const RoundedRectangleBorder(
             borderRadius: BorderRadius.all(Radius.circular(16)),
           ),
@@ -495,6 +512,7 @@ class NavigationBarDefaultsM3 extends CustomNavigationBarThemeData {
       : super(
           height: 80.0,
           elevation: 3.0,
+          labelPadding: const EdgeInsets.only(top: 4),
           labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         );
 

@@ -86,6 +86,79 @@ Widget _buildRail({
 }
 
 void main() {
+  group("NavigationDestination conversion", () {
+    testWidgets("toBarDestination forwards tooltip",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              tooltip: "Go Home",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ],
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.message, "Go Home");
+    });
+
+    testWidgets("toRailDestination forwards disabled",
+        (WidgetTester tester) async {
+      int tapped = 0;
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 1,
+          onDestinationSelected: (_) => tapped++,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              disabled: true,
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ].map((d) => d.toRailDestination()).toList(),
+        ),
+      );
+
+      await tester.tap(find.byIcon(Icons.home));
+      await tester.pumpAndSettle();
+      expect(tapped, 0);
+    });
+  });
+
+  group("NavigationBar parity options", () {
+    testWidgets("maintainBottomViewPadding is wired to SafeArea",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          maintainBottomViewPadding: true,
+          destinations: const [
+            NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+            NavigationDestination(icon: Icon(Icons.search), label: "Search"),
+          ],
+        ),
+      );
+
+      final SafeArea safeArea =
+          tester.widget<SafeArea>(find.byType(SafeArea).first);
+      expect(safeArea.maintainBottomViewPadding, isTrue);
+    });
+  });
+
   group("NavigationBarDestination", () {
     testWidgets("tap fires onDestinationSelected when enabled",
         (WidgetTester tester) async {

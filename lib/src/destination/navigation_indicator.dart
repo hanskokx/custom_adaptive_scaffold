@@ -1,8 +1,8 @@
 import "package:flutter/material.dart";
 
 /// Default indicator dimensions matching the Material 3 spec.
-const double _kDefaultIndicatorWidth = 64.0;
-const double _kDefaultIndicatorHeight = 32.0;
+const double _kCircularIndicatorDiameter = 56.0;
+const double _kIndicatorHeight = 32.0;
 
 /// Animated selection indicator pill used by both [NavigationBar] and
 /// [NavigationRail] destinations.
@@ -14,8 +14,8 @@ class NavigationIndicator extends StatelessWidget {
     required this.animation,
     super.key,
     this.color,
-    this.width = _kDefaultIndicatorWidth,
-    this.height = _kDefaultIndicatorHeight,
+    this.width = _kCircularIndicatorDiameter,
+    this.height = _kIndicatorHeight,
     this.borderRadius = const BorderRadius.all(Radius.circular(16)),
     this.shape,
   });
@@ -33,7 +33,7 @@ class NavigationIndicator extends StatelessWidget {
 
   /// The width of this indicator.
   ///
-  /// Defaults to `64`.
+  /// Defaults to `56`.
   final double width;
 
   /// The height of this indicator.

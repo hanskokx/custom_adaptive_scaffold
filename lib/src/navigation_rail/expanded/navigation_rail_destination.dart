@@ -131,7 +131,7 @@ class _ExpandedRailDestinationState extends State<ExpandedRailDestination>
                   icon: data.themedIcon,
                   minWidth: data.minWidth,
                   material3: data.material3,
-                  direction: AutoLayoutDirection.horizontal,
+                  direction: Axis.horizontal,
                 ),
                 Flexible(
                   child: Align(

@@ -96,6 +96,8 @@ class NavigationBar extends StatelessWidget {
     this.height,
     this.labelBehavior,
     this.overlayColor,
+    this.labelPadding,
+    this.maintainBottomViewPadding = false,
   })  : assert(destinations.length >= 2),
         assert(0 <= selectedIndex && selectedIndex < destinations.length);
 
@@ -208,6 +210,19 @@ class NavigationBar extends StatelessWidget {
   /// the [NavigationDestination] is focused, hovered, or pressed.
   final WidgetStateProperty<Color?>? overlayColor;
 
+  /// The padding around the [NavigationDestination.label] widget.
+  ///
+  /// When [labelPadding] is null, [NavigationBarThemeData.labelPadding]
+  /// is used. If that is also null, the default padding is 4 pixels on
+  /// the top.
+  final EdgeInsetsGeometry? labelPadding;
+
+  /// Whether the underlying [SafeArea] should maintain bottom view padding.
+  ///
+  /// When true, this prevents the bar from shifting when opening an IME.
+  /// Defaults to false.
+  final bool maintainBottomViewPadding;
+
   VoidCallback _handleTap(int index) {
     return onDestinationSelected != null
         ? () => onDestinationSelected!(index)
@@ -242,6 +257,7 @@ class NavigationBar extends StatelessWidget {
           navigationBarTheme.surfaceTintColor ??
           defaults.surfaceTintColor,
       child: SafeArea(
+        maintainBottomViewPadding: maintainBottomViewPadding,
         child: SizedBox(
           height: effectiveHeight,
           child: Row(
@@ -264,6 +280,7 @@ class NavigationBar extends StatelessWidget {
                       indicatorColor: indicatorColor,
                       indicatorShape: effectiveIndicatorShape,
                       overlayColor: overlayColor,
+                      labelPadding: labelPadding,
                       onTap: _handleTap.call(i),
                       child: destination,
                     );

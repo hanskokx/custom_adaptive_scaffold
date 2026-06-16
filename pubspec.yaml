@@ -9,7 +9,6 @@ environment:
   flutter: ">=3.29.0"
 
 dependencies:
-  auto_layout_frame: ^0.1.2
   flutter:
     sdk: flutter
 

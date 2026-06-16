@@ -13,8 +13,12 @@ class _NavigationBarDestinationSemantics extends StatelessWidget {
   /// Adds the appropriate semantics for navigation bar destinations to the
   /// [child].
   const _NavigationBarDestinationSemantics({
+    required this.enabled,
     required this.child,
   });
+
+  /// Whether this destination is enabled.
+  final bool enabled;
 
   /// The widget that should receive the destination semantics.
   final Widget child;
@@ -32,6 +36,7 @@ class _NavigationBarDestinationSemantics extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         return Semantics(
           selected: destinationInfo.selectedAnimation.isForwardOrCompleted,
+          enabled: enabled,
           container: true,
           child: child,
         );

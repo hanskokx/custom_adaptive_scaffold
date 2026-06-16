@@ -1,5 +1,3 @@
-import "package:auto_layout_frame/auto_layout_frame.dart";
-
 import "../destination/destination_build_data.dart";
 import "../destination/destination_surface_strategy.dart";
 import "../destination/navigation_indicator.dart";
@@ -105,7 +103,7 @@ class NavigationBarDestination extends NavigationDestination {
                 material3: data.material3,
                 height: _kIndicatorHeight,
                 addSpacing: false,
-                direction: AutoLayoutDirection.vertical,
+                direction: Axis.vertical,
               ),
             ],
           );
@@ -119,6 +117,8 @@ class NavigationBarDestination extends NavigationDestination {
           final NavigationBarThemeData barTheme =
               NavigationBarTheme.of(context);
           final NavigationBarThemeData defaults = defaultsFor(context);
+          final NavigationDestinationInfo info =
+              NavigationDestinationInfo.of(context);
 
           final Set<WidgetState> widgetState = {
             if (disabled) WidgetState.disabled,
@@ -130,7 +130,10 @@ class NavigationBarDestination extends NavigationDestination {
                   defaults.labelTextStyle!.resolve(widgetState);
 
           return Padding(
-            padding: const EdgeInsets.only(top: 4),
+            padding: info.labelPadding ??
+                barTheme.labelPadding ??
+                defaults.labelPadding ??
+                const EdgeInsets.only(top: 4),
             child: MediaQuery.withClampedTextScaling(
               maxScaleFactor: _kMaxLabelTextScaleFactor,
               child: DefaultTextStyle(

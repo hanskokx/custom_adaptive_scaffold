@@ -17,6 +17,7 @@ class NavigationDestinationInfo extends InheritedWidget {
     required this.indicatorColor,
     required this.indicatorShape,
     required this.overlayColor,
+    required this.labelPadding,
     required this.onTap,
     required super.child,
     super.key,
@@ -90,6 +91,9 @@ class NavigationDestinationInfo extends InheritedWidget {
   /// This is used by destinations to override the overlay color.
   final WidgetStateProperty<Color?>? overlayColor;
 
+  /// The padding around the destination label.
+  final EdgeInsetsGeometry? labelPadding;
+
   /// The callback that should be called when this destination is tapped.
   ///
   /// This is computed by calling [NavigationBar.onDestinationSelected]
@@ -117,9 +121,14 @@ class NavigationDestinationInfo extends InheritedWidget {
   @override
   bool updateShouldNotify(NavigationDestinationInfo oldWidget) {
     return index != oldWidget.index ||
+        selectedIndex != oldWidget.selectedIndex ||
         totalNumberOfDestinations != oldWidget.totalNumberOfDestinations ||
         selectedAnimation != oldWidget.selectedAnimation ||
         labelBehavior != oldWidget.labelBehavior ||
+        indicatorColor != oldWidget.indicatorColor ||
+        indicatorShape != oldWidget.indicatorShape ||
+        overlayColor != oldWidget.overlayColor ||
+        labelPadding != oldWidget.labelPadding ||
         onTap != oldWidget.onTap;
   }
 }

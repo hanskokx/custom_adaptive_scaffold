@@ -1,4 +1,3 @@
-import "package:auto_layout_frame/auto_layout_frame.dart";
 import "package:flutter/material.dart";
 
 /// Compact icon body widget shared by both rail and bar destinations.
@@ -13,7 +12,7 @@ class NavigationIcon extends StatelessWidget {
     required this.material3,
     this.height = 44.0,
     this.addSpacing = true,
-    this.direction = AutoLayoutDirection.vertical,
+    this.direction = Axis.vertical,
     super.key,
   });
 
@@ -38,9 +37,9 @@ class NavigationIcon extends StatelessWidget {
 
   /// Layout direction of the spacing siblings.
   ///
-  /// Use [AutoLayoutDirection.horizontal] for rail (side spacing) and
-  /// [AutoLayoutDirection.vertical] for bar (top/bottom spacing).
-  final AutoLayoutDirection direction;
+  /// Use [Axis.horizontal] for rail (side spacing) and
+  /// [Axis.vertical] for bar (top/bottom spacing).
+  final Axis direction;
 
   @override
   Widget build(BuildContext context) {
@@ -48,20 +47,27 @@ class NavigationIcon extends StatelessWidget {
     final Widget? spacing =
         (material3 && addSpacing) ? const SizedBox(height: 12.0 / 2) : null;
 
+    final List<Widget> children = <Widget>[
+      if (spacing != null) spacing,
+      Center(child: icon),
+      if (spacing != null) spacing,
+    ];
+
+    final Widget inner = direction == Axis.horizontal
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: children,
+          )
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: children,
+          );
+
     return ConstrainedBox(
       constraints: BoxConstraints.tight(Size(minWidth, height)),
-      child: AutoLayoutFrame(
-        alignChildren: Alignment.center,
-        direction: direction,
-        children: <Widget>[
-          if (spacing != null) spacing,
-          Center(
-            // The shared compact item only owns the icon body.
-            child: icon,
-          ),
-          if (spacing != null) spacing,
-        ],
-      ),
+      child: inner,
     );
   }
 }

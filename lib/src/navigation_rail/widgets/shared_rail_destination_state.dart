@@ -24,6 +24,7 @@ class WrappedRailDestination extends StatelessWidget {
     required this.hoverColor,
     required this.selectionAnimation,
     required this.child,
+    this.tooltip,
     this.centerIndicatorHorizontally = false,
     super.key,
   });
@@ -45,40 +46,22 @@ class WrappedRailDestination extends StatelessWidget {
   final Color hoverColor;
   final Animation<double> selectionAnimation;
   final Widget child;
+  final String? tooltip;
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      container: true,
-      selected: selected,
-      child: Material(
-        type: MaterialType.transparency,
-        child: Stack(
-          children: <Widget>[
-            // Persistent selection pill — rendered at the indicator center.
-            if (indicatorColor != null)
-              if (centerIndicatorHorizontally)
-                Positioned.fill(
-                  child: Align(
-                    alignment: Alignment.topCenter,
-                    child: Padding(
-                      padding: EdgeInsets.only(
-                        top: indicatorOffset.dy - _kIndicatorHeight / 2,
-                      ),
-                      child: NavigationIndicator(
-                        animation: selectionAnimation,
-                        color: indicatorColor,
-                        width: indicatorWidth,
-                        height: _kIndicatorHeight,
-                        shape: indicatorShape,
-                      ),
-                    ),
+    final Widget content = Stack(
+      children: <Widget>[
+        // Persistent selection pill — rendered at the indicator center.
+        if (indicatorColor != null)
+          if (centerIndicatorHorizontally)
+            Positioned.fill(
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    top: indicatorOffset.dy - _kIndicatorHeight / 2,
                   ),
-                )
-              else
-                Positioned(
-                  left: indicatorOffset.dx - indicatorWidth / 2,
-                  top: indicatorOffset.dy - _kIndicatorHeight / 2,
                   child: NavigationIndicator(
                     animation: selectionAnimation,
                     color: indicatorColor,
@@ -87,25 +70,56 @@ class WrappedRailDestination extends StatelessWidget {
                     shape: indicatorShape,
                   ),
                 ),
-            IndicatorInkWell(
-              onTap: disabled ? null : onTap,
-              borderRadius: BorderRadius.all(
-                Radius.circular(minWidth / 2.0),
               ),
-              customBorder: indicatorShape,
-              splashColor: splashColor,
-              hoverColor: hoverColor,
-              useMaterial3: material3,
-              indicatorOffset: indicatorOffset,
-              applyXOffset: applyXOffset,
-              textDirection: textDirection,
-              child: child,
+            )
+          else
+            Positioned(
+              left: indicatorOffset.dx - indicatorWidth / 2,
+              top: indicatorOffset.dy - _kIndicatorHeight / 2,
+              child: NavigationIndicator(
+                animation: selectionAnimation,
+                color: indicatorColor,
+                width: indicatorWidth,
+                height: _kIndicatorHeight,
+                shape: indicatorShape,
+              ),
             ),
-            Semantics(
-              label: indexLabel,
-            ),
-          ],
+        IndicatorInkWell(
+          onTap: disabled ? null : onTap,
+          borderRadius: BorderRadius.all(
+            Radius.circular(minWidth / 2.0),
+          ),
+          customBorder: indicatorShape,
+          splashColor: splashColor,
+          hoverColor: hoverColor,
+          useMaterial3: material3,
+          indicatorOffset: indicatorOffset,
+          applyXOffset: applyXOffset,
+          textDirection: textDirection,
+          child: child,
         ),
+        Semantics(
+          label: indexLabel,
+        ),
+      ],
+    );
+
+    final Widget maybeTooltip = tooltip != null && tooltip!.isNotEmpty
+        ? Tooltip(
+            message: tooltip!,
+            excludeFromSemantics: true,
+            preferBelow: false,
+            child: content,
+          )
+        : content;
+
+    return Semantics(
+      container: true,
+      selected: selected,
+      enabled: !disabled,
+      child: Material(
+        type: MaterialType.transparency,
+        child: maybeTooltip,
       ),
     );
   }

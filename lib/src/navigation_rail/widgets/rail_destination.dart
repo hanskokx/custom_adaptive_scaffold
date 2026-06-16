@@ -35,6 +35,7 @@ class RailDestination extends StatefulWidget {
     this.showLabelsWhenCollapsed = false,
     this.padding,
     this.margin,
+    this.tooltip,
     super.key,
   });
 
@@ -58,6 +59,7 @@ class RailDestination extends StatefulWidget {
   final bool showLabelsWhenCollapsed;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
+  final String? tooltip;
 
   @override
   State<RailDestination> createState() => _RailDestinationState();
@@ -194,21 +196,75 @@ class _RailDestinationState extends State<RailDestination>
           icon: data.themedIcon,
           minWidth: data.minWidth,
           material3: data.material3,
-          direction: AutoLayoutDirection.horizontal,
+          direction: Axis.horizontal,
         );
         if (collapsed) {
-          content = Stack(
-            children: <Widget>[
-              iconPart,
-              // Hidden label preserved for semantics by default.
-              SizedBox.shrink(
-                child: Visibility.maintain(
-                  visible: widget.showLabelsWhenCollapsed,
-                  child: data.styledLabel,
-                ),
+          if (widget.showLabelsWhenCollapsed) {
+            // Label is visible: switch to a proper column layout so the label
+            // sits below the icon and the indicator stays centred over the
+            // icon slot.  Recompute indicatorOffset the same way .all does.
+            final double indicatorHorizontalPadding =
+                (data.destinationPadding.left / 2) -
+                    (data.destinationPadding.right / 2);
+            final double indicatorVerticalPadding =
+                data.destinationPadding.top +
+                    (data.material3 ? 0 : _verticalDestinationPaddingWithLabel);
+            indicatorOffset = Offset(
+              data.minWidth / 2 + indicatorHorizontalPadding,
+              indicatorVerticalPadding +
+                  (_kIndicatorHeight / 2) +
+                  indicatorVerticalOffset,
+            );
+            if (data.minWidth < NavigationRailDefaultsM2(context).minWidth!) {
+              indicatorOffset = Offset(
+                data.minWidth / 2 + _horizontalDestinationSpacingM3,
+                indicatorVerticalPadding +
+                    (_kIndicatorHeight / 2) +
+                    indicatorVerticalOffset,
+              );
+            }
+            content = Container(
+              constraints: BoxConstraints(minWidth: data.minWidth),
+              padding: widget.padding,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(
+                    height: data.material3
+                        ? 0
+                        : _verticalDestinationPaddingWithLabel,
+                  ),
+                  SizedBox(
+                    height: _kIndicatorHeight,
+                    child: Center(child: data.themedIcon),
+                  ),
+                  SizedBox(
+                    height: data.material3 ? _verticalIconLabelSpacingM3 : 0,
+                  ),
+                  data.styledLabel,
+                  SizedBox(
+                    height: data.material3
+                        ? _verticalDestinationSpacingM3
+                        : _verticalDestinationPaddingWithLabel,
+                  ),
+                ],
               ),
-            ],
-          );
+            );
+          } else {
+            // No label: compact icon-only stack.
+            content = Stack(
+              children: <Widget>[
+                iconPart,
+                // Label maintained at 0×0 for semantics only.
+                SizedBox.shrink(
+                  child: Visibility.maintain(
+                    visible: false,
+                    child: data.styledLabel,
+                  ),
+                ),
+              ],
+            );
+          }
         } else {
           final Animation<double> labelFadeAnimation = extendedAnimation.drive(
             CurveTween(curve: const Interval(0.0, 0.25)),
@@ -302,29 +358,28 @@ class _RailDestinationState extends State<RailDestination>
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: data.material3 ? 0 : verticalPadding),
-                Row(
-                  children: [
-                    data.themedIcon,
-                    SizedBox(
-                      height: data.material3
-                          ? lerpDouble(
-                              0,
-                              _verticalIconLabelSpacingM3,
-                              appearingAnimationValue,
-                            )!
-                          : 0,
-                    ),
-                    Align(
-                      alignment: Alignment.topCenter,
-                      heightFactor: appearingAnimationValue,
-                      widthFactor: 1.0,
-                      child: FadeTransition(
-                        alwaysIncludeSemantics: true,
-                        opacity: labelFadeAnimation,
-                        child: data.styledLabel,
-                      ),
-                    ),
-                  ],
+                SizedBox(
+                  height: _kIndicatorHeight,
+                  child: Center(child: data.themedIcon),
+                ),
+                SizedBox(
+                  height: data.material3
+                      ? lerpDouble(
+                          0,
+                          _verticalIconLabelSpacingM3,
+                          appearingAnimationValue,
+                        )!
+                      : 0,
+                ),
+                Align(
+                  alignment: Alignment.topCenter,
+                  heightFactor: appearingAnimationValue,
+                  widthFactor: 1.0,
+                  child: FadeTransition(
+                    alwaysIncludeSemantics: true,
+                    opacity: labelFadeAnimation,
+                    child: data.styledLabel,
+                  ),
                 ),
                 SizedBox(
                   height: data.material3
@@ -373,18 +428,14 @@ class _RailDestinationState extends State<RailDestination>
                 height:
                     data.material3 ? 0 : _verticalDestinationPaddingWithLabel,
               ),
-              Wrap(
-                alignment: WrapAlignment.center,
-                runAlignment: WrapAlignment.center,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                children: [
-                  data.themedIcon,
-                  SizedBox(
-                    height: data.material3 ? _verticalIconLabelSpacingM3 : 0,
-                  ),
-                  data.styledLabel,
-                ],
+              SizedBox(
+                height: _kIndicatorHeight,
+                child: Center(child: data.themedIcon),
               ),
+              SizedBox(
+                height: data.material3 ? _verticalIconLabelSpacingM3 : 0,
+              ),
+              data.styledLabel,
               SizedBox(
                 height: data.material3
                     ? _verticalDestinationSpacingM3
@@ -406,13 +457,18 @@ class _RailDestinationState extends State<RailDestination>
       indicatorShape: data.indicatorShape,
       material3: data.material3,
       indicatorOffset: indicatorOffset,
-      centerIndicatorHorizontally:
-          labelType == NavigationRailLabelType.none && collapsed,
+      // Use Positioned.fill+Align.topCenter (centerIndicatorHorizontally=true)
+      // whenever the icon is centred inside a column — i.e. every layout
+      // except the extended/expanding none case where the label sits to the
+      // right of the icon in a row.  That case is the only one that sets
+      // applyXOffset=true, so tying the two flags together is exact.
+      centerIndicatorHorizontally: !applyXOffset,
       applyXOffset: applyXOffset,
       textDirection: data.textDirection,
       splashColor: data.splashColor,
       hoverColor: data.hoverColor,
       selectionAnimation: _destinationAnimation,
+      tooltip: widget.tooltip,
       child: content,
     );
   }

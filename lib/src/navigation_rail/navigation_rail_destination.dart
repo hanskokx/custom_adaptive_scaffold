@@ -16,5 +16,7 @@ class NavigationRailDestination extends NavigationDestination {
 
   final Widget _label;
 
+  String get tooltipLabel => tooltip ?? label;
+
   Widget get labelWidget => _label;
 }
