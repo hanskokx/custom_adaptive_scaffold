@@ -16,6 +16,7 @@ class WrappedRailDestination extends StatefulWidget {
     required this.indicatorWidth,
     required this.indicatorColor,
     required this.indicatorShape,
+    required this.useIndicator,
     required this.material3,
     required this.indicatorOffset,
     required this.applyXOffset,
@@ -37,6 +38,7 @@ class WrappedRailDestination extends StatefulWidget {
   final double indicatorWidth;
   final Color? indicatorColor;
   final ShapeBorder? indicatorShape;
+  final bool useIndicator;
   final bool material3;
   final Offset indicatorOffset;
   final bool centerIndicatorHorizontally;
@@ -81,7 +83,11 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         NavigationRailTheme.of(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         railTheme.navigationItemOverlayColor;
-    final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
+    final bool useM2FullItemInk = !widget.material3;
+    final bool useM3CustomFullItemOverlay =
+        widget.material3 && effectiveNavigationItemOverlayColor != null;
+    final bool disableFullItemInk =
+        !useM2FullItemInk && !useM3CustomFullItemOverlay;
     final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
     final WidgetStateProperty<Color?> iconOverlayColor =
         WidgetStateProperty.resolveWith((Set<WidgetState> states) {
@@ -94,10 +100,12 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
       }
       return null;
     });
-    final WidgetStateProperty<Color?> effectiveInkOverlayColor =
+    final WidgetStateProperty<Color?>? effectiveInkOverlayColor =
         disableFullItemInk
             ? iconOverlayColor
-            : effectiveNavigationItemOverlayColor;
+            : useM3CustomFullItemOverlay
+                ? effectiveNavigationItemOverlayColor
+                : null;
     final ShapeBorder effectiveNavigationItemIndicatorShape =
         railTheme.navigationItemIndicatorShape ?? const StadiumBorder();
 
@@ -134,7 +142,7 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
     final Widget content = Stack(
       children: <Widget>[
         // Persistent indicator + icon interaction indicator.
-        iconInteractionIndicator,
+        if (widget.useIndicator) iconInteractionIndicator,
         // Inner Material provides an ink surface above the indicator fill,
         // so splash/hover renders on top of the pill rather than behind it.
         Material(

@@ -455,6 +455,7 @@ class _RailDestinationState extends State<RailDestination>
       indicatorWidth: _kRailIndicatorWidth,
       indicatorColor: data.indicatorColor,
       indicatorShape: data.indicatorShape,
+      useIndicator: data.useIndicator,
       material3: data.material3,
       indicatorOffset: indicatorOffset,
       // Use Positioned.fill+Align.topCenter (centerIndicatorHorizontally=true)

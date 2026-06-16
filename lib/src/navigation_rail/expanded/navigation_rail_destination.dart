@@ -111,6 +111,7 @@ class _ExpandedRailDestinationState extends State<ExpandedRailDestination>
       indicatorWidth: _kRailIndicatorWidth,
       indicatorColor: data.indicatorColor,
       indicatorShape: data.indicatorShape,
+      useIndicator: data.useIndicator,
       material3: data.material3,
       indicatorOffset: data.indicatorOffset,
       textDirection: data.textDirection,

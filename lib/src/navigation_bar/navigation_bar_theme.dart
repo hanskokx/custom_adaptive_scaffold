@@ -119,6 +119,8 @@ class NavigationBarThemeData
   ///
   /// This is separate from [overlayColor], which can still be used by custom
   /// indicator visuals.
+  ///
+  /// This has no effect when [ThemeData.useMaterial3] is false.
   final WidgetStateProperty<Color?>? navigationItemOverlayColor;
 
   /// Shape of the full navigation item container ink well.

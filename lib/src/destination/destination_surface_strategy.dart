@@ -177,6 +177,19 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
             railTheme.selectedIconTheme ??
             defaults.selectedIconTheme!;
 
+    // In M2 with indicator enabled, selected icon color should contrast with
+    // the indicator fill. Keep explicit widget/theme icon overrides intact.
+    final bool hasSelectedIconOverride =
+        (input.selected && input.iconTheme != null) ||
+            railTheme.selectedIconTheme != null;
+    final IconThemeData effectiveSelectedIconTheme =
+        !material3 && useIndicator && !hasSelectedIconOverride
+            ? selectedIconTheme.copyWith(
+                color: theme.colorScheme.onSecondary,
+                opacity: 1.0,
+              )
+            : selectedIconTheme;
+
     final TextStyle unselectedLabelTextStyle =
         (input.selected ? null : input.labelTextStyle) ??
             railTheme.unselectedLabelTextStyle ??
@@ -187,7 +200,7 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
             defaults.selectedLabelTextStyle!;
 
     final IconThemeData iconTheme =
-        input.selected ? selectedIconTheme : unselectedIconTheme;
+        input.selected ? effectiveSelectedIconTheme : unselectedIconTheme;
     final TextStyle labelTextStyle =
         input.selected ? selectedLabelTextStyle : unselectedLabelTextStyle;
 
@@ -238,7 +251,7 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     // --- Interaction colors ---
     final Color splashBase =
         railTheme.indicatorColor ?? theme.colorScheme.primary;
-    final bool splashAlphaModified = splashBase.a < 255.0;
+    final bool splashAlphaModified = splashBase.alpha < 255;
 
     return DestinationBuildData(
       themedIcon: themedIcon,
@@ -318,7 +331,7 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
     final Color splashBase = barTheme.indicatorColor ??
         defaults.indicatorColor ??
         theme.colorScheme.secondaryContainer;
-    final bool splashAlphaModified = splashBase.a < 255.0;
+    final bool splashAlphaModified = splashBase.alpha < 255;
 
     return DestinationBuildData(
       themedIcon: themedIcon,

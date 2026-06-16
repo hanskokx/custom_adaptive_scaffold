@@ -127,6 +127,8 @@ class NavigationRailThemeData
   final ShapeBorder? indicatorShape;
 
   /// Overlay colors for the full navigation item container by widget state.
+  ///
+  /// This has no effect when [m.ThemeData.useMaterial3] is false.
   final m.WidgetStateProperty<Color?>? navigationItemOverlayColor;
 
   /// Shape of the full navigation item container ink well.

@@ -113,22 +113,39 @@ class _NavigationDestinationBuilderState
     final CustomNavigationBarThemeData defaults = defaultsFor(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         navigationBarTheme.navigationItemOverlayColor;
-    final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
+    final bool useM2FullItemInk = !theme.useMaterial3;
+    final bool useM3CustomFullItemOverlay =
+        theme.useMaterial3 && effectiveNavigationItemOverlayColor != null;
+    final bool disableFullItemInk =
+        !useM2FullItemInk && !useM3CustomFullItemOverlay;
     final ShapeBorder effectiveNavigationItemIndicatorShape =
         navigationBarTheme.navigationItemIndicatorShape ??
             const StadiumBorder();
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
-        effectiveNavigationItemOverlayColor;
+        useM3CustomFullItemOverlay ? effectiveNavigationItemOverlayColor : null;
     final WidgetStateProperty<Color?>? iconOverlayColor =
         navigationBarTheme.overlayColor ?? defaults.overlayColor;
-    final Color splashBase = navigationBarTheme.indicatorColor ??
+    // M2: use primary-based colors (same convention as M2 rail: 0.12/0.04
+    // opacity). M3 icon-only path: derive from indicatorColor as before.
+    final Color m2SplashBase = theme.colorScheme.primary;
+    final bool m2SplashAlphaModified = m2SplashBase.alpha < 255;
+    final Color m2EffectiveSplashColor = m2SplashAlphaModified
+        ? m2SplashBase
+        : m2SplashBase.withValues(alpha: 0.12);
+    final Color m2EffectiveHoverColor = m2SplashAlphaModified
+        ? m2SplashBase
+        : m2SplashBase.withValues(alpha: 0.04);
+
+    final Color m3SplashBase = navigationBarTheme.indicatorColor ??
         defaults.indicatorColor ??
         theme.colorScheme.secondaryContainer;
-    final bool splashAlphaModified = splashBase.a < 255.0;
-    final Color effectiveSplashColor =
-        splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12);
-    final Color effectiveHoverColor =
-        splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04);
+    final bool m3SplashAlphaModified = m3SplashBase.alpha < 255;
+    final Color m3EffectiveSplashColor = m3SplashAlphaModified
+        ? m3SplashBase
+        : m3SplashBase.withValues(alpha: 0.12);
+    final Color m3EffectiveHoverColor = m3SplashAlphaModified
+        ? m3SplashBase
+        : m3SplashBase.withValues(alpha: 0.04);
 
     return _NavigationBarDestinationSemantics(
       enabled: !widget.disabled,
@@ -149,12 +166,18 @@ class _NavigationDestinationBuilderState
               indicatorOverlayColor:
                   disableFullItemInk ? iconOverlayColor : null,
               overlayColor: fullItemOverlayColor,
-              highlightColor: disableFullItemInk ? null : Colors.transparent,
-              splashColor: disableFullItemInk
-                  ? effectiveSplashColor
-                  : Colors.transparent,
-              hoverColor:
-                  disableFullItemInk ? effectiveHoverColor : Colors.transparent,
+              highlightColor:
+                  useM3CustomFullItemOverlay ? Colors.transparent : null,
+              splashColor: useM2FullItemInk
+                  ? m2EffectiveSplashColor
+                  : disableFullItemInk
+                      ? m3EffectiveSplashColor
+                      : Colors.transparent,
+              hoverColor: useM2FullItemInk
+                  ? m2EffectiveHoverColor
+                  : disableFullItemInk
+                      ? m3EffectiveHoverColor
+                      : Colors.transparent,
               customBorder: effectiveNavigationItemIndicatorShape,
               statesController: _statesController,
               onTap: widget.disabled ? null : info.onTap,
