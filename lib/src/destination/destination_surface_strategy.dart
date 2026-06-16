@@ -226,6 +226,15 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
           indicatorVerticalOffset,
     );
 
+    // --- Indicator color ---
+    // Resolved separately from splashBase so consumers (e.g. WrappedRailDestination)
+    // can render a NavigationIndicator fill independent of the ripple tint.
+    final Color? indicatorColor = useIndicator
+        ? input.indicatorColor ??
+            railTheme.indicatorColor ??
+            defaults.indicatorColor
+        : null;
+
     // --- Interaction colors ---
     final Color splashBase =
         railTheme.indicatorColor ?? theme.colorScheme.primary;
@@ -238,6 +247,7 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
       minExtendedWidth: minExtendedWidth,
       material3: material3,
       useIndicator: useIndicator,
+      indicatorColor: indicatorColor,
       indicatorShape: indicatorShape,
       destinationPadding: destinationPadding,
       textDirection: textDirection,
@@ -317,6 +327,7 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
       minExtendedWidth: _kBarIndicatorWidth,
       material3: material3,
       useIndicator: true,
+      indicatorColor: null, // bar sources indicator color directly from theme
       indicatorShape: indicatorShape,
       destinationPadding: EdgeInsets.zero,
       textDirection: textDirection,

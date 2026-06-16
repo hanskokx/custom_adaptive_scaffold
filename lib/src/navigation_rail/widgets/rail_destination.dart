@@ -370,33 +370,22 @@ class _RailDestinationState extends State<RailDestination>
         );
     }
 
-    return Semantics(
-      container: true,
+    return WrappedRailDestination(
       selected: widget.selected,
-      child: Material(
-        type: MaterialType.transparency,
-        child: Stack(
-          children: <Widget>[
-            IndicatorInkWell(
-              onTap: widget.disabled ? null : widget.onTap,
-              borderRadius: BorderRadius.all(
-                Radius.circular(data.minWidth / 2.0),
-              ),
-              customBorder: widget.indicatorShape,
-              splashColor: data.splashColor,
-              hoverColor: data.hoverColor,
-              useMaterial3: data.material3,
-              indicatorOffset: data.indicatorOffset,
-              applyXOffset: applyXOffset,
-              textDirection: data.textDirection,
-              child: content,
-            ),
-            Semantics(
-              label: widget.indexLabel,
-            ),
-          ],
-        ),
-      ),
+      disabled: widget.disabled,
+      onTap: widget.onTap,
+      indexLabel: widget.indexLabel,
+      minWidth: data.minWidth,
+      indicatorColor: data.indicatorColor,
+      indicatorShape: data.indicatorShape,
+      material3: data.material3,
+      indicatorOffset: indicatorOffset,
+      applyXOffset: applyXOffset,
+      textDirection: data.textDirection,
+      splashColor: data.splashColor,
+      hoverColor: data.hoverColor,
+      selectionAnimation: _destinationAnimation,
+      child: content,
     );
   }
 }

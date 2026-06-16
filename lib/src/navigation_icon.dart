@@ -11,6 +11,8 @@ class NavigationIcon extends StatelessWidget {
     required this.icon,
     required this.minWidth,
     required this.material3,
+    this.height = 44.0,
+    this.addSpacing = true,
     this.direction = AutoLayoutDirection.vertical,
     super.key,
   });
@@ -25,6 +27,15 @@ class NavigationIcon extends StatelessWidget {
   /// Whether Material 3 half-spacing should be injected around the icon.
   final bool material3;
 
+  /// Height of the tight constraint box.  Defaults to 44 (rail slot height).
+  /// Pass 32 ([kDestinationIndicatorHeight]) for bar destinations so the
+  /// layout delegate measures the correct indicator-slot height.
+  final double height;
+
+  /// Whether to inject M3 half-spacing ([SizedBox] 6 px) around the icon.
+  /// Set to false for bar — bar spacing is handled by the layout delegate.
+  final bool addSpacing;
+
   /// Layout direction of the spacing siblings.
   ///
   /// Use [AutoLayoutDirection.horizontal] for rail (side spacing) and
@@ -35,10 +46,10 @@ class NavigationIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     // _kVerticalDestinationSpacingM3 = 12.0 → half-spacing = 6.0
     final Widget? spacing =
-        material3 ? const SizedBox(height: 12.0 / 2) : null;
+        (material3 && addSpacing) ? const SizedBox(height: 12.0 / 2) : null;
 
     return ConstrainedBox(
-      constraints: BoxConstraints.tight(Size(minWidth, 44)),
+      constraints: BoxConstraints.tight(Size(minWidth, height)),
       child: AutoLayoutFrame(
         alignChildren: Alignment.center,
         direction: direction,

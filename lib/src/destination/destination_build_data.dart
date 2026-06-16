@@ -17,6 +17,7 @@ class DestinationBuildData {
     required this.minExtendedWidth,
     required this.material3,
     required this.useIndicator,
+    required this.indicatorColor,
     required this.indicatorShape,
     required this.destinationPadding,
     required this.textDirection,
@@ -45,6 +46,13 @@ class DestinationBuildData {
 
   /// Whether the selection indicator should be rendered.
   final bool useIndicator;
+
+  /// Resolved fill color of the selection indicator.
+  ///
+  /// Used by rail destinations to render [NavigationIndicator].  Bar
+  /// destinations source their indicator color from the bar theme directly
+  /// (passed to [_NavigationDestinationBuilder]).
+  final Color? indicatorColor;
 
   /// Shape of the selection indicator, or null when [useIndicator] is false.
   final ShapeBorder? indicatorShape;

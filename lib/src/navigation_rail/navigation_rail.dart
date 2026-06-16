@@ -9,6 +9,7 @@ import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
 import "../destination/destination_build_data.dart";
 import "../destination/destination_surface_strategy.dart";
+import "../destination/navigation_indicator.dart";
 import "../material.dart";
 import "../navigation_icon.dart";
 import "navigation_rail_theme.dart";

@@ -121,8 +121,6 @@ class _NavigationDestinationBuilderState
                   animation: widget.animation,
                   color: widget.color,
                   shape: widget.shape,
-                  width: double.infinity,
-                  height: double.infinity,
                 ),
                 _StatusTransitionWidgetBuilder(
                   animation: widget.animation,

@@ -2,23 +2,21 @@ import "package:auto_layout_frame/auto_layout_frame.dart";
 
 import "../destination/destination_build_data.dart";
 import "../destination/destination_surface_strategy.dart";
+import "../destination/navigation_indicator.dart";
 import "../material.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
 import "navigation_bar_theme.dart";
 import "navigation_destination_info.dart";
-import "selectable_animated_builder.dart";
 
 part "navigation_bar_destination/navigation_bar_destination_layout.dart";
 part "navigation_bar_destination/navigation_bar_destination_semantics.dart";
 part "navigation_bar_destination/navigation_bar_destination_tooltip.dart";
 part "navigation_bar_destination/navigation_destination_builder.dart";
 part "navigation_bar_destination/navigation_destination_layout_delegate.dart";
-part "navigation_bar_destination/navigation_indicator.dart";
 part "navigation_bar_destination/status_transition_widget_builder.dart";
 
 const double _kIndicatorHeight = 32;
-const double _kIndicatorWidth = 64;
 const double _kMaxLabelTextScaleFactor = 1.3;
 
 /// A Material 3 [NavigationBar] destination.
@@ -95,6 +93,8 @@ class NavigationBarDestination extends NavigationDestination {
             icon: data.themedIcon,
             minWidth: data.minWidth,
             material3: data.material3,
+            height: _kIndicatorHeight,
+            addSpacing: false,
             direction: AutoLayoutDirection.vertical,
           );
         },
