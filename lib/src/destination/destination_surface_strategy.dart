@@ -251,7 +251,8 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     // --- Interaction colors ---
     final Color splashBase =
         railTheme.indicatorColor ?? theme.colorScheme.primary;
-    final bool splashAlphaModified = splashBase.alpha < 255;
+    final bool splashAlphaModified =
+        (splashBase.a * 255.0).round().clamp(0, 255) < 255;
 
     return DestinationBuildData(
       themedIcon: themedIcon,
@@ -331,7 +332,8 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
     final Color splashBase = barTheme.indicatorColor ??
         defaults.indicatorColor ??
         theme.colorScheme.secondaryContainer;
-    final bool splashAlphaModified = splashBase.alpha < 255;
+    final bool splashAlphaModified =
+        (splashBase.a * 255.0).round().clamp(0, 255) < 255;
 
     return DestinationBuildData(
       themedIcon: themedIcon,

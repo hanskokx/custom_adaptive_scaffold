@@ -120,6 +120,8 @@ class _NavigationDestinationBuilderState
         !useM2FullItemInk && !useM3CustomFullItemOverlay;
     final ShapeBorder effectiveNavigationItemIndicatorShape =
         navigationBarTheme.navigationItemIndicatorShape ??
+            navigationBarTheme.indicatorShape ??
+            defaults.indicatorShape ??
             const StadiumBorder();
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
         useM3CustomFullItemOverlay ? effectiveNavigationItemOverlayColor : null;
@@ -128,7 +130,8 @@ class _NavigationDestinationBuilderState
     // M2: use primary-based colors (same convention as M2 rail: 0.12/0.04
     // opacity). M3 icon-only path: derive from indicatorColor as before.
     final Color m2SplashBase = theme.colorScheme.primary;
-    final bool m2SplashAlphaModified = m2SplashBase.alpha < 255;
+    final bool m2SplashAlphaModified =
+        (m2SplashBase.a * 255.0).round().clamp(0, 255) < 255;
     final Color m2EffectiveSplashColor = m2SplashAlphaModified
         ? m2SplashBase
         : m2SplashBase.withValues(alpha: 0.12);
@@ -139,7 +142,8 @@ class _NavigationDestinationBuilderState
     final Color m3SplashBase = navigationBarTheme.indicatorColor ??
         defaults.indicatorColor ??
         theme.colorScheme.secondaryContainer;
-    final bool m3SplashAlphaModified = m3SplashBase.alpha < 255;
+    final bool m3SplashAlphaModified =
+        (m3SplashBase.a * 255.0).round().clamp(0, 255) < 255;
     final Color m3EffectiveSplashColor = m3SplashAlphaModified
         ? m3SplashBase
         : m3SplashBase.withValues(alpha: 0.12);
