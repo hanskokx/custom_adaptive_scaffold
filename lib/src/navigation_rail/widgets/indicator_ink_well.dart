@@ -6,12 +6,15 @@ class IndicatorInkWell extends InkResponse {
     required this.indicatorOffset,
     required this.applyXOffset,
     required this.textDirection,
+    required this.indicatorWidth,
+    required this.disableFullItemInk,
     super.key,
     super.child,
     super.onTap,
     super.statesController,
     ShapeBorder? customBorder,
     BorderRadius? borderRadius,
+    super.highlightColor,
     super.splashColor,
     super.hoverColor,
     super.overlayColor,
@@ -23,16 +26,13 @@ class IndicatorInkWell extends InkResponse {
         );
 
   final bool useMaterial3;
-
-  // The offset used to position Ink highlight.
   final Offset indicatorOffset;
-
-  // Whether the horizontal offset from indicatorOffset should be used to position Ink highlight.
-  // If true, Ink highlight uses the indicator horizontal offset. If false, Ink highlight is centered horizontally.
   final bool applyXOffset;
-
-  // The text direction used to adjust the indicator horizontal offset.
   final TextDirection textDirection;
+  final double indicatorWidth;
+  final bool disableFullItemInk;
+
+  static const double _indicatorHeight = 32.0;
 
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
@@ -43,15 +43,19 @@ class IndicatorInkWell extends InkResponse {
       if (textDirection == TextDirection.rtl) {
         indicatorHorizontalCenter = boxWidth - indicatorHorizontalCenter;
       }
-      return () {
-        // Defines the bounds of the hover/splash rectangle
-        return Rect.fromLTRB(
-          0,
-          0,
-          referenceBox.size.width,
-          referenceBox.size.height,
-        );
-      };
+      if (disableFullItemInk) {
+        return () => Rect.fromCenter(
+              center: Offset(indicatorHorizontalCenter, indicatorOffset.dy),
+              width: indicatorWidth,
+              height: _indicatorHeight,
+            );
+      }
+      return () => Rect.fromLTRB(
+            0,
+            0,
+            referenceBox.size.width,
+            referenceBox.size.height,
+          );
     }
     return null;
   }

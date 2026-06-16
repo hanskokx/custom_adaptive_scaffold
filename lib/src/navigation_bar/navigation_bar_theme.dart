@@ -402,6 +402,9 @@ class NavigationBarThemeData
   factory NavigationBarThemeData.fromMaterial(
     m.NavigationBarThemeData? other,
   ) {
+    if (other is NavigationBarThemeData) {
+      return other;
+    }
     return NavigationBarThemeData(
       height: other?.height,
       backgroundColor: other?.backgroundColor,

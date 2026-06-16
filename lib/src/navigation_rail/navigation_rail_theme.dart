@@ -457,6 +457,9 @@ class NavigationRailThemeData
   factory NavigationRailThemeData.fromMaterial(
     m.NavigationRailThemeData material,
   ) {
+    if (material is NavigationRailThemeData) {
+      return material;
+    }
     return NavigationRailThemeData(
       backgroundColor: material.backgroundColor,
       elevation: material.elevation,

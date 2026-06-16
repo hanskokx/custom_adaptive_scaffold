@@ -126,37 +126,44 @@ class _NavigationDestinationBuilderState
             (widget.label is Text ? (widget.label as Text).data : "") ??
             "",
         child: ClipRect(
-          child: _IndicatorInkWell(
-            itemKey: itemKey,
-            labelBehavior: info.labelBehavior,
-            disableFullItemInk: disableFullItemInk,
-            customBorder: effectiveNavigationItemIndicatorShape,
-            overlayColor: effectiveNavigationItemOverlayColor,
-            statesController: _statesController,
-            onTap: widget.disabled ? null : info.onTap,
-            child: Stack(
-              alignment: Alignment.center,
-              children: <Widget>[
-                _StatusTransitionWidgetBuilder(
-                  animation: widget.animation,
-                  builder: (context, child) => Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: _NavigationBarDestinationLayout(
-                          icon: _NavigationBarIndicatorStates(
-                            states: _statesController.value,
-                            overlayColor: effectiveOverlayColor,
-                            child: widget.buildIcon(context),
+          // Inner Material provides an ink surface above the indicator fill,
+          // so splash/hover renders on top of the pill rather than behind it.
+          child: Material(
+            type: MaterialType.transparency,
+            child: _IndicatorInkWell(
+              itemKey: itemKey,
+              labelBehavior: info.labelBehavior,
+              disableFullItemInk: disableFullItemInk,
+              indicatorOverlayColor:
+                  disableFullItemInk ? effectiveOverlayColor : null,
+              overlayColor: effectiveNavigationItemOverlayColor,
+              customBorder: effectiveNavigationItemIndicatorShape,
+              statesController: _statesController,
+              onTap: widget.disabled ? null : info.onTap,
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  _StatusTransitionWidgetBuilder(
+                    animation: widget.animation,
+                    builder: (context, child) => Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: _NavigationBarDestinationLayout(
+                            icon: _NavigationBarIndicatorStates(
+                              states: _statesController.value,
+                              overlayColor: effectiveOverlayColor,
+                              child: widget.buildIcon(context),
+                            ),
+                            itemKey: itemKey,
+                            padding: widget.padding,
+                            label: widget.buildLabel(context),
                           ),
-                          itemKey: itemKey,
-                          padding: widget.padding,
-                          label: widget.buildLabel(context),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -170,21 +177,22 @@ class _IndicatorInkWell extends InkResponse {
     required this.itemKey,
     required this.labelBehavior,
     required this.disableFullItemInk,
+    this.indicatorOverlayColor,
     super.statesController,
-    super.overlayColor,
     super.customBorder,
     super.onTap,
     super.child,
+    WidgetStateProperty<Color?>? overlayColor,
   }) : super(
           containedInkWell: true,
-          highlightColor: disableFullItemInk ? Colors.transparent : null,
-          splashColor: disableFullItemInk ? Colors.transparent : null,
-          hoverColor: disableFullItemInk ? Colors.transparent : null,
+          overlayColor:
+              disableFullItemInk ? indicatorOverlayColor : overlayColor,
         );
 
   final GlobalKey itemKey;
   final NavigationDestinationLabelBehavior labelBehavior;
   final bool disableFullItemInk;
+  final WidgetStateProperty<Color?>? indicatorOverlayColor;
 
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
@@ -206,11 +214,6 @@ class _NavigationBarIndicatorStates extends InheritedWidget {
 
   final Set<WidgetState> states;
   final WidgetStateProperty<Color?>? overlayColor;
-
-  static _NavigationBarIndicatorStates? maybeOf(BuildContext context) {
-    return context
-        .dependOnInheritedWidgetOfExactType<_NavigationBarIndicatorStates>();
-  }
 
   @override
   bool updateShouldNotify(_NavigationBarIndicatorStates oldWidget) {

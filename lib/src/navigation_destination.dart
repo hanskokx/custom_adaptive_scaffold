@@ -3,6 +3,8 @@ import "navigation_bar/navigation_bar_destination.dart";
 import "navigation_rail/navigation_rail.dart";
 import "navigation_rail/navigation_rail_destination.dart";
 
+typedef CustomNavigationDestination = NavigationDestination;
+
 class NavigationDestination extends StatelessWidget {
   const NavigationDestination({
     required this.icon,

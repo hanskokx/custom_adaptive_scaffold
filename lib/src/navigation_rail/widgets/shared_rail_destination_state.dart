@@ -85,61 +85,63 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
     final ShapeBorder effectiveNavigationItemIndicatorShape =
         railTheme.navigationItemIndicatorShape ?? const StadiumBorder();
 
-    final Widget content = Stack(
-      children: <Widget>[
-        // Persistent selection pill — rendered at the indicator center.
-        if (widget.indicatorColor != null)
-          if (widget.centerIndicatorHorizontally)
-            Positioned.fill(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
-                  ),
-                  child: NavigationIndicator(
-                    animation: widget.selectionAnimation,
-                    color: widget.indicatorColor,
-                    width: widget.indicatorWidth,
-                    height: _kIndicatorHeight,
-                    shape: widget.indicatorShape,
-                    indicatorType: NavigationIndicatorType.navigationRail,
-                    states: _statesController.value,
-                  ),
+    final Widget iconInteractionIndicator = widget.centerIndicatorHorizontally
+        ? Positioned.fill(
+            child: Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.only(
+                  top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
+                ),
+                child: NavigationIndicator(
+                  animation: widget.selectionAnimation,
+                  color: widget.indicatorColor,
+                  width: widget.indicatorWidth,
+                  height: _kIndicatorHeight,
+                  shape: widget.indicatorShape,
                 ),
               ),
-            )
-          else
-            Positioned(
-              left: widget.indicatorOffset.dx - widget.indicatorWidth / 2,
-              top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
-              child: NavigationIndicator(
-                animation: widget.selectionAnimation,
-                color: widget.indicatorColor,
-                width: widget.indicatorWidth,
-                height: _kIndicatorHeight,
-                shape: widget.indicatorShape,
-                indicatorType: NavigationIndicatorType.navigationRail,
-                states: _statesController.value,
-              ),
             ),
-        IndicatorInkWell(
-          onTap: widget.disabled ? null : widget.onTap,
-          borderRadius: BorderRadius.all(
-            Radius.circular(widget.minWidth / 2.0),
+          )
+        : Positioned(
+            left: widget.indicatorOffset.dx - widget.indicatorWidth / 2,
+            top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
+            child: NavigationIndicator(
+              animation: widget.selectionAnimation,
+              color: widget.indicatorColor,
+              width: widget.indicatorWidth,
+              height: _kIndicatorHeight,
+              shape: widget.indicatorShape,
+            ),
+          );
+
+    final Widget content = Stack(
+      children: <Widget>[
+        // Persistent indicator + icon interaction indicator.
+        iconInteractionIndicator,
+        // Inner Material provides an ink surface above the indicator fill,
+        // so splash/hover renders on top of the pill rather than behind it.
+        Material(
+          type: MaterialType.transparency,
+          child: IndicatorInkWell(
+            onTap: widget.disabled ? null : widget.onTap,
+            borderRadius: BorderRadius.all(
+              Radius.circular(widget.minWidth / 2.0),
+            ),
+            customBorder: effectiveNavigationItemIndicatorShape,
+            highlightColor: disableFullItemInk ? Colors.transparent : null,
+            splashColor: widget.splashColor,
+            hoverColor: widget.hoverColor,
+            overlayColor: effectiveNavigationItemOverlayColor,
+            indicatorWidth: widget.indicatorWidth,
+            disableFullItemInk: disableFullItemInk,
+            useMaterial3: widget.material3,
+            indicatorOffset: widget.indicatorOffset,
+            applyXOffset: widget.applyXOffset,
+            textDirection: widget.textDirection,
+            statesController: _statesController,
+            child: widget.child,
           ),
-          customBorder: effectiveNavigationItemIndicatorShape,
-          splashColor:
-              disableFullItemInk ? Colors.transparent : widget.splashColor,
-          hoverColor:
-              disableFullItemInk ? Colors.transparent : widget.hoverColor,
-          overlayColor: effectiveNavigationItemOverlayColor,
-          useMaterial3: widget.material3,
-          indicatorOffset: widget.indicatorOffset,
-          applyXOffset: widget.applyXOffset,
-          textDirection: widget.textDirection,
-          statesController: _statesController,
-          child: widget.child,
         ),
         Semantics(
           label: widget.indexLabel,

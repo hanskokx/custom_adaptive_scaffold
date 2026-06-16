@@ -87,9 +87,6 @@ class NavigationBarDestination extends NavigationDestination {
             ),
           );
 
-          final _NavigationBarIndicatorStates? indicatorStates =
-              _NavigationBarIndicatorStates.maybeOf(context);
-
           return Stack(
             alignment: Alignment.center,
             children: <Widget>[
@@ -99,9 +96,6 @@ class NavigationBarDestination extends NavigationDestination {
                 shape: indicatorShape,
                 width: data.minWidth,
                 height: _kIndicatorHeight,
-                indicatorType: NavigationIndicatorType.navigationBar,
-                states: indicatorStates?.states ?? const <WidgetState>{},
-                overlayColor: indicatorStates?.overlayColor,
               ),
               NavigationIcon(
                 icon: data.themedIcon,
