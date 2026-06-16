@@ -55,6 +55,7 @@ class NavigationRailThemeData
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
+    this.showLabelsWhenCollapsed,
     this.minWidth,
     this.minExtendedWidth,
     this.margin,
@@ -113,6 +114,10 @@ class NavigationRailThemeData
   @override
   final ShapeBorder? indicatorShape;
 
+  /// Whether labels are shown while the rail is collapsed and [labelType] is
+  /// [NavigationRailLabelType.none].
+  final bool? showLabelsWhenCollapsed;
+
   /// Overrides the default value of [NavigationRail]'s minimum width when it
   /// is not extended.
   @override
@@ -144,6 +149,7 @@ class NavigationRailThemeData
     bool? useIndicator,
     Color? indicatorColor,
     ShapeBorder? indicatorShape,
+    bool? showLabelsWhenCollapsed,
     double? minWidth,
     double? minExtendedWidth,
     EdgeInsetsGeometry? margin,
@@ -163,6 +169,8 @@ class NavigationRailThemeData
       useIndicator: useIndicator ?? this.useIndicator,
       indicatorColor: indicatorColor ?? this.indicatorColor,
       indicatorShape: indicatorShape ?? this.indicatorShape,
+      showLabelsWhenCollapsed:
+          showLabelsWhenCollapsed ?? this.showLabelsWhenCollapsed,
       minWidth: minWidth ?? this.minWidth,
       minExtendedWidth: minExtendedWidth ?? this.minExtendedWidth,
       margin: margin ?? this.margin,
@@ -213,6 +221,8 @@ class NavigationRailThemeData
       useIndicator: t < 0.5 ? a?.useIndicator : b?.useIndicator,
       indicatorColor: Color.lerp(a?.indicatorColor, b?.indicatorColor, t),
       indicatorShape: ShapeBorder.lerp(a?.indicatorShape, b?.indicatorShape, t),
+      showLabelsWhenCollapsed:
+          t < 0.5 ? a?.showLabelsWhenCollapsed : b?.showLabelsWhenCollapsed,
       minWidth: lerpDouble(a?.minWidth, b?.minWidth, t),
       minExtendedWidth: lerpDouble(a?.minExtendedWidth, b?.minExtendedWidth, t),
       margin:
@@ -235,6 +245,7 @@ class NavigationRailThemeData
         useIndicator,
         indicatorColor,
         indicatorShape,
+        showLabelsWhenCollapsed,
         minWidth,
         minExtendedWidth,
         margin,
@@ -261,6 +272,7 @@ class NavigationRailThemeData
         other.useIndicator == useIndicator &&
         other.indicatorColor == indicatorColor &&
         other.indicatorShape == indicatorShape &&
+        other.showLabelsWhenCollapsed == showLabelsWhenCollapsed &&
         other.minWidth == minWidth &&
         other.minExtendedWidth == minExtendedWidth &&
         other.margin == margin &&
@@ -347,6 +359,13 @@ class NavigationRailThemeData
         "indicatorShape",
         indicatorShape,
         defaultValue: null,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<bool>(
+        "showLabelsWhenCollapsed",
+        showLabelsWhenCollapsed,
+        defaultValue: defaultData.showLabelsWhenCollapsed,
       ),
     );
     properties.add(

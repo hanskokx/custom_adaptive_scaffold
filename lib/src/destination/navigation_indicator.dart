@@ -87,17 +87,13 @@ class NavigationIndicator extends StatelessWidget {
           ),
         );
       },
-      child: Transform.translate(
-        offset: Offset(0, height / 2),
-        child: SizedBox(
-          width: width,
-          height: height,
-          child: DecoratedBox(
-            decoration: ShapeDecoration(
-              shape:
-                  shape ?? RoundedRectangleBorder(borderRadius: borderRadius),
-              color: resolvedColor,
-            ),
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: DecoratedBox(
+          decoration: ShapeDecoration(
+            shape: shape ?? RoundedRectangleBorder(borderRadius: borderRadius),
+            color: resolvedColor,
           ),
         ),
       ),

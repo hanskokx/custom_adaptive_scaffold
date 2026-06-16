@@ -108,6 +108,7 @@ class _ExpandedRailDestinationState extends State<ExpandedRailDestination>
       onTap: widget.onTap,
       indexLabel: widget.indexLabel,
       minWidth: data.minWidth,
+      indicatorWidth: _kRailIndicatorWidth,
       indicatorColor: data.indicatorColor,
       indicatorShape: data.indicatorShape,
       material3: data.material3,

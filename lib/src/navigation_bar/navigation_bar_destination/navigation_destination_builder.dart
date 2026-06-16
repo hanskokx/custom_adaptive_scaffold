@@ -115,13 +115,6 @@ class _NavigationDestinationBuilderState
             child: Stack(
               alignment: Alignment.center,
               children: <Widget>[
-                // This is the background color of the currently selected
-                // navigation bar item
-                NavigationIndicator(
-                  animation: widget.animation,
-                  color: widget.color,
-                  shape: widget.shape,
-                ),
                 _StatusTransitionWidgetBuilder(
                   animation: widget.animation,
                   builder: (context, child) => Row(

@@ -12,7 +12,7 @@ import "destination_build_data.dart";
 // Rail layout spacing constants (mirror values defined in rail_destination.dart
 // so the strategy has no part-file coupling).
 const double _kIndicatorHeight = 32.0;
-const double _kVerticalDestinationSpacingM3 = 12.0;
+const double _kRailIconSlotHeight = 44.0;
 
 // Bar indicator constant.
 const double _kBarIndicatorWidth = 64.0;
@@ -220,9 +220,9 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
         isLargeIconSize ? (iconTheme.size! - _kIndicatorHeight) / 2 : 0;
 
     final Offset indicatorOffset = Offset(
-      minWidth / 2 + destinationPadding.left,
-      _kVerticalDestinationSpacingM3 / 2 +
-          destinationPadding.top +
+      minWidth / 2,
+      destinationPadding.top +
+          (_kRailIconSlotHeight / 2) +
           indicatorVerticalOffset,
     );
 

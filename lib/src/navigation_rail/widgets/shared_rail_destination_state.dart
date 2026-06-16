@@ -13,6 +13,7 @@ class WrappedRailDestination extends StatelessWidget {
     required this.onTap,
     required this.indexLabel,
     required this.minWidth,
+    required this.indicatorWidth,
     required this.indicatorColor,
     required this.indicatorShape,
     required this.material3,
@@ -23,6 +24,7 @@ class WrappedRailDestination extends StatelessWidget {
     required this.hoverColor,
     required this.selectionAnimation,
     required this.child,
+    this.centerIndicatorHorizontally = false,
     super.key,
   });
 
@@ -31,10 +33,12 @@ class WrappedRailDestination extends StatelessWidget {
   final VoidCallback? onTap;
   final String? indexLabel;
   final double minWidth;
+  final double indicatorWidth;
   final Color? indicatorColor;
   final ShapeBorder? indicatorShape;
   final bool material3;
   final Offset indicatorOffset;
+  final bool centerIndicatorHorizontally;
   final bool applyXOffset;
   final TextDirection textDirection;
   final Color splashColor;
@@ -53,17 +57,36 @@ class WrappedRailDestination extends StatelessWidget {
           children: <Widget>[
             // Persistent selection pill — rendered at the indicator center.
             if (indicatorColor != null)
-              Positioned(
-                left: indicatorOffset.dx - minWidth / 2,
-                top: indicatorOffset.dy - _kIndicatorHeight / 2,
-                child: NavigationIndicator(
-                  animation: selectionAnimation,
-                  color: indicatorColor,
-                  width: minWidth,
-                  height: _kIndicatorHeight,
-                  shape: indicatorShape,
+              if (centerIndicatorHorizontally)
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: EdgeInsets.only(
+                        top: indicatorOffset.dy - _kIndicatorHeight / 2,
+                      ),
+                      child: NavigationIndicator(
+                        animation: selectionAnimation,
+                        color: indicatorColor,
+                        width: indicatorWidth,
+                        height: _kIndicatorHeight,
+                        shape: indicatorShape,
+                      ),
+                    ),
+                  ),
+                )
+              else
+                Positioned(
+                  left: indicatorOffset.dx - indicatorWidth / 2,
+                  top: indicatorOffset.dy - _kIndicatorHeight / 2,
+                  child: NavigationIndicator(
+                    animation: selectionAnimation,
+                    color: indicatorColor,
+                    width: indicatorWidth,
+                    height: _kIndicatorHeight,
+                    shape: indicatorShape,
+                  ),
                 ),
-              ),
             IndicatorInkWell(
               onTap: disabled ? null : onTap,
               borderRadius: BorderRadius.all(

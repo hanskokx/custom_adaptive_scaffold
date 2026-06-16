@@ -89,13 +89,25 @@ class NavigationBarDestination extends NavigationDestination {
             ),
           );
 
-          return NavigationIcon(
-            icon: data.themedIcon,
-            minWidth: data.minWidth,
-            material3: data.material3,
-            height: _kIndicatorHeight,
-            addSpacing: false,
-            direction: AutoLayoutDirection.vertical,
+          return Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              NavigationIndicator(
+                animation: animation,
+                color: indicatorColor,
+                shape: indicatorShape,
+                width: data.minWidth,
+                height: _kIndicatorHeight,
+              ),
+              NavigationIcon(
+                icon: data.themedIcon,
+                minWidth: data.minWidth,
+                material3: data.material3,
+                height: _kIndicatorHeight,
+                addSpacing: false,
+                direction: AutoLayoutDirection.vertical,
+              ),
+            ],
           );
         },
         buildLabel: (BuildContext context) {

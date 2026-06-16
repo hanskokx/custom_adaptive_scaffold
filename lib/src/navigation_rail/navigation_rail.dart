@@ -120,6 +120,7 @@ class NavigationRail extends StatefulWidget {
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
+    this.showLabelsWhenCollapsed,
   })  : assert(destinations.length >= 2),
         assert(
           selectedIndex == null ||
@@ -336,6 +337,13 @@ class NavigationRail extends StatefulWidget {
   /// that is null, defaults to [StadiumBorder].
   final ShapeBorder? indicatorShape;
 
+  /// Whether labels are shown while the rail is collapsed and [labelType] is
+  /// [NavigationRailLabelType.none].
+  ///
+  /// Defaults to [NavigationRailThemeData.showLabelsWhenCollapsed], and if
+  /// that is null, defaults to false.
+  final bool? showLabelsWhenCollapsed;
+
   /// Returns the animation that controls the [NavigationRail.extended] state.
   ///
   /// This can be used to synchronize animations in the [leading] or [trailing]
@@ -454,6 +462,9 @@ class _NavigationRailState extends State<NavigationRail>
     final ShapeBorder? indicatorShape = widget.indicatorShape ??
         navigationRailTheme.indicatorShape ??
         defaults.indicatorShape;
+    final bool showLabelsWhenCollapsed = widget.showLabelsWhenCollapsed ??
+        navigationRailTheme.showLabelsWhenCollapsed ??
+        false;
 
     // For backwards compatibility, in M2 the opacity of the unselected icons needs
     // to be set to the default if it isn't in the given theme. This can be removed
@@ -535,6 +546,7 @@ class _NavigationRailState extends State<NavigationRail>
                                 tabCount: widget.destinations.length,
                               ),
                               disabled: widget.destinations[i].disabled,
+                              showLabelsWhenCollapsed: showLabelsWhenCollapsed,
                             ),
                           ),
                         if (widget.trailing != null) widget.trailing!,

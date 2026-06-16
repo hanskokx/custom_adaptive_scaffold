@@ -10,6 +10,8 @@ const Widget _verticalSpacer = SizedBox(height: 8.0);
 const double _verticalIconLabelSpacingM3 = 4.0;
 const double _verticalDestinationSpacingM3 = 12.0;
 const double _horizontalDestinationSpacingM3 = 12.0;
+const double _kRailIndicatorWidth = 56.0;
+const double _kRailIconSlotHeight = 44.0;
 
 class RailDestination extends StatefulWidget {
   const RailDestination({
@@ -30,6 +32,7 @@ class RailDestination extends StatefulWidget {
     this.indicatorShape,
     this.disabled = false,
     this.extended = true,
+    this.showLabelsWhenCollapsed = false,
     this.padding,
     this.margin,
     super.key,
@@ -52,6 +55,7 @@ class RailDestination extends StatefulWidget {
   final ShapeBorder? indicatorShape;
   final bool disabled;
   final bool extended;
+  final bool showLabelsWhenCollapsed;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
 
@@ -175,6 +179,17 @@ class _RailDestinationState extends State<RailDestination>
       // Compact — label is hidden, icon is centered vertically.
       case NavigationRailLabelType.none:
         // indicatorOffset from the strategy is already correct for this case.
+        final double compactIndicatorHorizontalPadding =
+            collapsed ? 0.0 : data.destinationPadding.left;
+        final double compactIndicatorVerticalPadding =
+            collapsed ? 0.0 : data.destinationPadding.top;
+        indicatorOffset = Offset(
+          compactIndicatorHorizontalPadding + (data.minWidth / 2),
+          compactIndicatorVerticalPadding +
+              (_kRailIconSlotHeight / 2) +
+              indicatorVerticalOffset,
+        );
+
         final Widget iconPart = NavigationIcon(
           icon: data.themedIcon,
           minWidth: data.minWidth,
@@ -185,11 +200,11 @@ class _RailDestinationState extends State<RailDestination>
           content = Stack(
             children: <Widget>[
               iconPart,
-              // Hidden label preserved for semantics.
+              // Hidden label preserved for semantics by default.
               SizedBox.shrink(
                 child: Visibility.maintain(
-                  visible: false,
-                  child: widget.label,
+                  visible: widget.showLabelsWhenCollapsed,
+                  child: data.styledLabel,
                 ),
               ),
             ],
@@ -255,15 +270,20 @@ class _RailDestinationState extends State<RailDestination>
         final double indicatorHorizontalPadding =
             (data.destinationPadding.left / 2) -
                 (data.destinationPadding.right / 2);
-        final double indicatorVerticalPadding = data.destinationPadding.top;
+        final double indicatorVerticalPadding = data.destinationPadding.top +
+            (data.material3 ? 0 : _verticalDestinationPaddingWithLabel);
         indicatorOffset = Offset(
           data.minWidth / 2 + indicatorHorizontalPadding,
-          indicatorVerticalPadding + indicatorVerticalOffset,
+          indicatorVerticalPadding +
+              (_kIndicatorHeight / 2) +
+              indicatorVerticalOffset,
         );
         if (data.minWidth < NavigationRailDefaultsM2(context).minWidth!) {
           indicatorOffset = Offset(
             data.minWidth / 2 + _horizontalDestinationSpacingM3,
-            indicatorVerticalPadding + indicatorVerticalOffset,
+            indicatorVerticalPadding +
+                (_kIndicatorHeight / 2) +
+                indicatorVerticalOffset,
           );
         }
 
@@ -323,15 +343,20 @@ class _RailDestinationState extends State<RailDestination>
         final double indicatorHorizontalPadding =
             (data.destinationPadding.left / 2) -
                 (data.destinationPadding.right / 2);
-        final double indicatorVerticalPadding = data.destinationPadding.top;
+        final double indicatorVerticalPadding = data.destinationPadding.top +
+            (data.material3 ? 0 : _verticalDestinationPaddingWithLabel);
         indicatorOffset = Offset(
           data.minWidth / 2 + indicatorHorizontalPadding,
-          indicatorVerticalPadding + indicatorVerticalOffset,
+          indicatorVerticalPadding +
+              (_kIndicatorHeight / 2) +
+              indicatorVerticalOffset,
         );
         if (data.minWidth < NavigationRailDefaultsM2(context).minWidth!) {
           indicatorOffset = Offset(
             data.minWidth / 2 + _horizontalDestinationSpacingM3,
-            indicatorVerticalPadding + indicatorVerticalOffset,
+            indicatorVerticalPadding +
+                (_kIndicatorHeight / 2) +
+                indicatorVerticalOffset,
           );
         }
 
@@ -376,10 +401,13 @@ class _RailDestinationState extends State<RailDestination>
       onTap: widget.onTap,
       indexLabel: widget.indexLabel,
       minWidth: data.minWidth,
+      indicatorWidth: _kRailIndicatorWidth,
       indicatorColor: data.indicatorColor,
       indicatorShape: data.indicatorShape,
       material3: data.material3,
       indicatorOffset: indicatorOffset,
+      centerIndicatorHorizontally:
+          labelType == NavigationRailLabelType.none && collapsed,
       applyXOffset: applyXOffset,
       textDirection: data.textDirection,
       splashColor: data.splashColor,
