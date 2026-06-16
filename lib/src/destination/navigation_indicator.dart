@@ -92,7 +92,7 @@ class NavigationIndicator extends StatelessWidget {
       child: SizedBox(
         width: width,
         height: height,
-        child: DecoratedBox(
+        child: Ink(
           decoration: ShapeDecoration(
             shape: shape ?? RoundedRectangleBorder(borderRadius: borderRadius),
             color: resolvedColor,

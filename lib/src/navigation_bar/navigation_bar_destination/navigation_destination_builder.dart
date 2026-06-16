@@ -107,8 +107,10 @@ class _NavigationDestinationBuilderState
   Widget build(BuildContext context) {
     final NavigationDestinationInfo info =
         NavigationDestinationInfo.of(context);
+    final ThemeData theme = Theme.of(context);
     final CustomNavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
+    final CustomNavigationBarThemeData defaults = defaultsFor(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         navigationBarTheme.navigationItemOverlayColor;
     final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
@@ -118,7 +120,15 @@ class _NavigationDestinationBuilderState
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
         effectiveNavigationItemOverlayColor;
     final WidgetStateProperty<Color?>? iconOverlayColor =
-        navigationBarTheme.overlayColor ?? defaultsFor(context).overlayColor;
+        navigationBarTheme.overlayColor ?? defaults.overlayColor;
+    final Color splashBase = navigationBarTheme.indicatorColor ??
+        defaults.indicatorColor ??
+        theme.colorScheme.secondaryContainer;
+    final bool splashAlphaModified = splashBase.a < 255.0;
+    final Color effectiveSplashColor =
+        splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12);
+    final Color effectiveHoverColor =
+        splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04);
 
     return _NavigationBarDestinationSemantics(
       enabled: !widget.disabled,
@@ -139,6 +149,8 @@ class _NavigationDestinationBuilderState
               indicatorOverlayColor:
                   disableFullItemInk ? iconOverlayColor : null,
               overlayColor: fullItemOverlayColor,
+              splashColor: effectiveSplashColor,
+              hoverColor: effectiveHoverColor,
               customBorder: effectiveNavigationItemIndicatorShape,
               statesController: _statesController,
               onTap: widget.disabled ? null : info.onTap,
@@ -186,6 +198,8 @@ class _IndicatorInkWell extends InkResponse {
     this.indicatorOverlayColor,
     super.statesController,
     super.customBorder,
+    super.splashColor,
+    super.hoverColor,
     super.onTap,
     super.child,
     WidgetStateProperty<Color?>? overlayColor,
