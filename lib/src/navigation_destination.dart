@@ -56,6 +56,7 @@ class NavigationDestination extends StatelessWidget {
       indicatorColor: indicatorColor,
       indicatorShape: indicatorShape,
       padding: padding,
+      disabled: disabled,
     );
   }
 

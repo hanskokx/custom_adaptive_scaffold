@@ -1,9 +1,10 @@
+import "package:auto_layout_frame/auto_layout_frame.dart";
+
+import "../destination/destination_build_data.dart";
+import "../destination/destination_surface_strategy.dart";
 import "../material.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
-import "../navigation_rail/navigation_rail.dart";
-import "../navigation_rail/navigation_rail_theme.dart";
-import "../navigation_type.dart";
 import "navigation_bar_theme.dart";
 import "navigation_destination_info.dart";
 import "selectable_animated_builder.dart";
@@ -46,31 +47,19 @@ class NavigationBarDestination extends NavigationDestination {
   Widget build(BuildContext context) {
     final NavigationDestinationInfo info =
         NavigationDestinationInfo.of(context);
-    const Set<WidgetState> selectedState = <WidgetState>{
-      WidgetState.selected,
-    };
-    const Set<WidgetState> unselectedState = <WidgetState>{};
-    const Set<WidgetState> disabledState = <WidgetState>{
-      WidgetState.disabled,
-    };
-
     final NavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
-    final NavigationBarThemeData defaults = defaultsFor(context);
     final Animation<double> animation = info.selectedAnimation;
 
     final Color indicatorColor = info.indicatorColor ??
         navigationBarTheme.indicatorColor ??
-        defaults.indicatorColor!;
+        defaultsFor(context).indicatorColor!;
     final ShapeBorder indicatorShape = info.indicatorShape ??
         navigationBarTheme.indicatorShape ??
-        defaults.indicatorShape!;
+        defaultsFor(context).indicatorShape!;
 
-    late final EdgeInsetsGeometry margin;
-    late final EdgeInsetsGeometry padding;
-
-    margin = navigationBarTheme.margin;
-    padding = navigationBarTheme.padding;
+    final EdgeInsetsGeometry margin = navigationBarTheme.margin;
+    final EdgeInsetsGeometry padding = navigationBarTheme.padding;
 
     return Container(
       margin: margin,
@@ -83,75 +72,54 @@ class NavigationBarDestination extends NavigationDestination {
         shape: indicatorShape,
         padding: padding,
         buildIcon: (BuildContext context) {
-          final ThemeData theme = Theme.of(context);
-          final NavigationRailThemeData navigationRailTheme =
-              NavigationRailTheme.of(context);
-          final IconThemeData selectedIconTheme =
-              navigationBarTheme.iconTheme?.resolve(selectedState) ??
-                  defaults.iconTheme!.resolve(selectedState)!;
-          final IconThemeData unselectedIconTheme =
-              navigationBarTheme.iconTheme?.resolve(unselectedState) ??
-                  defaults.iconTheme!.resolve(unselectedState)!;
-          final IconThemeData disabledIconTheme =
-              navigationBarTheme.iconTheme?.resolve(disabledState) ??
-                  defaults.iconTheme!.resolve(disabledState)!;
+          // Pre-select the icon widget based on animation status before
+          // handing to the strategy — matches the parity contract where
+          // both surfaces receive a single already-chosen icon.
+          final bool isSelected = animation.isForwardOrCompleted;
+          final Widget activeIcon = isSelected ? selectedIcon : icon;
 
-          final Widget selectedIconWidget = IconTheme.merge(
-            data: disabled ? disabledIconTheme : selectedIconTheme,
-            child: selectedIcon,
+          final DestinationBuildData data =
+              const BarDestinationStrategy().resolve(
+            context,
+            DestinationResolveInput(
+              icon: activeIcon,
+              label: Text(label),
+              selected: isSelected,
+              disabled: disabled,
+              destinationAnimation: animation,
+              indicatorShape: indicatorShape,
+            ),
           );
-          final Widget unselectedIconWidget = IconTheme.merge(
-            data: disabled ? disabledIconTheme : unselectedIconTheme,
-            child: icon,
-          );
-
-          final Widget themedIcon = animation.isForwardOrCompleted
-              ? selectedIconWidget
-              : unselectedIconWidget;
 
           return NavigationIcon(
-            type: NavigationType.bar,
-            data: RailDestinationBuildData(
-              theme: theme,
-              navigationRailTheme: navigationRailTheme,
-              textDirection: Directionality.of(context),
-              material3: theme.useMaterial3,
-              useIndicator: true,
-              indicatorShape: indicatorShape,
-              destinationPadding: EdgeInsets.zero,
-              minWidth: _kIndicatorWidth,
-              minExtendedWidth: _kIndicatorWidth,
-              themedIcon: themedIcon,
-              styledLabel: const SizedBox.shrink(),
-              extendedAnimation: animation,
-              indicatorOffset: const Offset(_kIndicatorWidth / 2, 0),
-            ),
+            icon: data.themedIcon,
+            minWidth: data.minWidth,
+            material3: data.material3,
+            direction: AutoLayoutDirection.vertical,
           );
         },
         buildLabel: (BuildContext context) {
-          final TextStyle? effectiveSelectedLabelTextStyle =
-              navigationBarTheme.labelTextStyle?.resolve(selectedState) ??
-                  defaults.labelTextStyle!.resolve(selectedState);
-          final TextStyle? effectiveUnselectedLabelTextStyle =
-              navigationBarTheme.labelTextStyle?.resolve(unselectedState) ??
-                  defaults.labelTextStyle!.resolve(unselectedState);
-          final TextStyle? effectiveDisabledLabelTextStyle =
-              navigationBarTheme.labelTextStyle?.resolve(disabledState) ??
-                  defaults.labelTextStyle!.resolve(disabledState);
+          // Label styling is already resolved by the strategy and stored in
+          // data.styledLabel, but the bar label wrapper needs the padding and
+          // text-scale clamping applied here.  We resolve label style directly
+          // from the bar theme to avoid calling the strategy twice.
+          final bool isSelected = animation.isForwardOrCompleted;
+          final NavigationBarThemeData barTheme =
+              NavigationBarTheme.of(context);
+          final NavigationBarThemeData defaults = defaultsFor(context);
 
-          final TextStyle? textStyle = (disabled
-              ? effectiveDisabledLabelTextStyle
-              : animation.isForwardOrCompleted
-                  ? effectiveSelectedLabelTextStyle
-                  : effectiveUnselectedLabelTextStyle);
+          final Set<WidgetState> widgetState = {
+            if (disabled) WidgetState.disabled,
+            if (isSelected && !disabled) WidgetState.selected,
+          };
+
+          final TextStyle? textStyle =
+              barTheme.labelTextStyle?.resolve(widgetState) ??
+                  defaults.labelTextStyle!.resolve(widgetState);
 
           return Padding(
             padding: const EdgeInsets.only(top: 4),
             child: MediaQuery.withClampedTextScaling(
-              // Set maximum text scale factor to _kMaxLabelTextScaleFactor for the
-              // label to keep the visual hierarchy the same even with larger font
-              // sizes. To opt out, wrap the [label] widget in a [MediaQuery] widget
-              // with a different `TextScaler`.
               maxScaleFactor: _kMaxLabelTextScaleFactor,
               child: DefaultTextStyle(
                 style: textStyle ??

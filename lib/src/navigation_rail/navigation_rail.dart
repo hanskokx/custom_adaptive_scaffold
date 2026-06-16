@@ -4,11 +4,13 @@
 
 import "dart:ui";
 
+import "package:auto_layout_frame/auto_layout_frame.dart";
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
+import "../destination/destination_build_data.dart";
+import "../destination/destination_surface_strategy.dart";
 import "../material.dart";
 import "../navigation_icon.dart";
-import "../navigation_type.dart";
 import "expanded/navigation_rail_animation.dart";
 import "navigation_rail_theme.dart";
 
