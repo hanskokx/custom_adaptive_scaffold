@@ -301,11 +301,24 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
     };
 
     // --- Icon theming ---
+    // In M2 the bar defaults return a WidgetStatePropertyAll (same color for
+    // all states) which loses the selected/unselected distinction. Mirror the
+    // M2 rail convention: selected → primary, unselected → onSurface @ 0.64.
+    final bool material3 = theme.useMaterial3;
     final IconThemeData iconTheme = barTheme.iconTheme?.resolve(widgetState) ??
         defaults.iconTheme!.resolve(widgetState)!;
+    final IconThemeData effectiveIconTheme = (!material3 &&
+            barTheme.iconTheme == null &&
+            input.selected &&
+            !input.disabled)
+        ? iconTheme.copyWith(
+            color: theme.colorScheme.primary,
+            opacity: 1.0,
+          )
+        : iconTheme;
 
     final Widget themedIcon = IconTheme.merge(
-      data: iconTheme,
+      data: effectiveIconTheme,
       child: input.icon,
     );
 
@@ -313,15 +326,23 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
     final TextStyle? labelTextStyle =
         barTheme.labelTextStyle?.resolve(widgetState) ??
             defaults.labelTextStyle!.resolve(widgetState);
+    // In M2, mirror the rail convention: selected label uses primary color.
+    final TextStyle? effectiveLabelTextStyle = (!material3 &&
+            barTheme.labelTextStyle == null &&
+            input.selected &&
+            !input.disabled)
+        ? labelTextStyle?.copyWith(color: theme.colorScheme.primary)
+        : labelTextStyle;
 
     final Widget styledLabel = DefaultTextStyle(
-      style: labelTextStyle ?? theme.textTheme.labelMedium ?? const TextStyle(),
+      style: effectiveLabelTextStyle ??
+          theme.textTheme.labelMedium ??
+          const TextStyle(),
       child: input.label,
     );
 
     // --- Geometry ---
     final TextDirection textDirection = Directionality.of(context);
-    final bool material3 = theme.useMaterial3;
 
     final ShapeBorder indicatorShape = input.indicatorShape ??
         barTheme.indicatorShape ??
