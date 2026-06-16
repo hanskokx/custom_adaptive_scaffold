@@ -149,8 +149,12 @@ class _NavigationDestinationBuilderState
               indicatorOverlayColor:
                   disableFullItemInk ? iconOverlayColor : null,
               overlayColor: fullItemOverlayColor,
-              splashColor: effectiveSplashColor,
-              hoverColor: effectiveHoverColor,
+              highlightColor: disableFullItemInk ? null : Colors.transparent,
+              splashColor: disableFullItemInk
+                  ? effectiveSplashColor
+                  : Colors.transparent,
+              hoverColor:
+                  disableFullItemInk ? effectiveHoverColor : Colors.transparent,
               customBorder: effectiveNavigationItemIndicatorShape,
               statesController: _statesController,
               onTap: widget.disabled ? null : info.onTap,
@@ -198,6 +202,7 @@ class _IndicatorInkWell extends InkResponse {
     this.indicatorOverlayColor,
     super.statesController,
     super.customBorder,
+    super.highlightColor,
     super.splashColor,
     super.hoverColor,
     super.onTap,
@@ -205,6 +210,7 @@ class _IndicatorInkWell extends InkResponse {
     WidgetStateProperty<Color?>? overlayColor,
   }) : super(
           containedInkWell: true,
+          highlightShape: BoxShape.rectangle,
           overlayColor:
               disableFullItemInk ? indicatorOverlayColor : overlayColor,
         );

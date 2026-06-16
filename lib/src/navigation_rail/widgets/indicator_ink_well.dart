@@ -21,8 +21,8 @@ class IndicatorInkWell extends InkResponse {
   }) : super(
           containedInkWell: true,
           highlightShape: BoxShape.rectangle,
-          borderRadius: useMaterial3 ? null : borderRadius,
-          customBorder: useMaterial3 ? customBorder : null,
+          borderRadius: customBorder == null ? borderRadius : null,
+          customBorder: customBorder,
         );
 
   final bool useMaterial3;
@@ -36,27 +36,24 @@ class IndicatorInkWell extends InkResponse {
 
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
-    if (useMaterial3) {
-      final double boxWidth = referenceBox.size.width;
-      double indicatorHorizontalCenter =
-          applyXOffset ? indicatorOffset.dx : boxWidth / 2;
-      if (textDirection == TextDirection.rtl) {
-        indicatorHorizontalCenter = boxWidth - indicatorHorizontalCenter;
-      }
-      if (disableFullItemInk) {
-        return () => Rect.fromCenter(
-              center: Offset(indicatorHorizontalCenter, indicatorOffset.dy),
-              width: indicatorWidth,
-              height: _indicatorHeight,
-            );
-      }
-      return () => Rect.fromLTRB(
-            0,
-            0,
-            referenceBox.size.width,
-            referenceBox.size.height,
+    final double boxWidth = referenceBox.size.width;
+    double indicatorHorizontalCenter =
+        applyXOffset ? indicatorOffset.dx : boxWidth / 2;
+    if (textDirection == TextDirection.rtl) {
+      indicatorHorizontalCenter = boxWidth - indicatorHorizontalCenter;
+    }
+    if (disableFullItemInk) {
+      return () => Rect.fromCenter(
+            center: Offset(indicatorHorizontalCenter, indicatorOffset.dy),
+            width: indicatorWidth,
+            height: _indicatorHeight,
           );
     }
-    return null;
+    return () => Rect.fromLTRB(
+          0,
+          0,
+          referenceBox.size.width,
+          referenceBox.size.height,
+        );
   }
 }
