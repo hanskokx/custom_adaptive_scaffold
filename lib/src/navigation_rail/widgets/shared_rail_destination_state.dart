@@ -82,6 +82,22 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         railTheme.navigationItemOverlayColor;
     final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
+    final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
+    final WidgetStateProperty<Color?> iconOverlayColor =
+        WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.pressed) ||
+          states.contains(WidgetState.focused)) {
+        return onSurfaceColor.withValues(alpha: 0.12);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return onSurfaceColor.withValues(alpha: 0.08);
+      }
+      return null;
+    });
+    final WidgetStateProperty<Color?> effectiveInkOverlayColor =
+        disableFullItemInk
+            ? iconOverlayColor
+            : effectiveNavigationItemOverlayColor;
     final ShapeBorder effectiveNavigationItemIndicatorShape =
         railTheme.navigationItemIndicatorShape ?? const StadiumBorder();
 
@@ -129,10 +145,10 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
               Radius.circular(widget.minWidth / 2.0),
             ),
             customBorder: effectiveNavigationItemIndicatorShape,
-            highlightColor: disableFullItemInk ? Colors.transparent : null,
-            splashColor: widget.splashColor,
-            hoverColor: widget.hoverColor,
-            overlayColor: effectiveNavigationItemOverlayColor,
+            highlightColor: null,
+            splashColor: disableFullItemInk ? null : widget.splashColor,
+            hoverColor: disableFullItemInk ? null : widget.hoverColor,
+            overlayColor: effectiveInkOverlayColor,
             indicatorWidth: widget.indicatorWidth,
             disableFullItemInk: disableFullItemInk,
             useMaterial3: widget.material3,
