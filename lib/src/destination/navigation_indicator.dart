@@ -1,8 +1,17 @@
 import "package:flutter/material.dart";
 
+import "../../navigation_bar_theme.dart" as cnb;
+import "../../navigation_rail_theme.dart" as cnr;
+
 /// Default indicator dimensions matching the Material 3 spec.
 const double _kCircularIndicatorDiameter = 56.0;
 const double _kIndicatorHeight = 32.0;
+
+/// Identifies which navigation surface owns this indicator.
+enum NavigationIndicatorType {
+  navigationRail,
+  navigationBar,
+}
 
 /// Animated selection indicator pill used by both [NavigationBar] and
 /// [NavigationRail] destinations.
@@ -18,6 +27,9 @@ class NavigationIndicator extends StatelessWidget {
     this.height = _kIndicatorHeight,
     this.borderRadius = const BorderRadius.all(Radius.circular(16)),
     this.shape,
+    this.indicatorType,
+    this.states = const <WidgetState>{},
+    this.overlayColor,
   });
 
   /// Determines the scale of the indicator.
@@ -56,10 +68,81 @@ class NavigationIndicator extends StatelessWidget {
   /// [borderRadius] is used.
   final ShapeBorder? shape;
 
+  /// Which navigation surface owns this indicator.
+  ///
+  /// When provided, the indicator can resolve a surface-appropriate interactive
+  /// overlay color for hovered/focused/pressed states.
+  final NavigationIndicatorType? indicatorType;
+
+  /// Current widget states from the interaction source.
+  final Set<WidgetState> states;
+
+  /// Optional explicit interactive overlay color resolver.
+  ///
+  /// If null, defaults are derived from the owning surface theme.
+  final WidgetStateProperty<Color?>? overlayColor;
+
+  Color? _resolveInteractionColor(
+    BuildContext context,
+    Color baseIndicatorColor,
+  ) {
+    if (!states.contains(WidgetState.hovered) &&
+        !states.contains(WidgetState.focused) &&
+        !states.contains(WidgetState.pressed)) {
+      return null;
+    }
+
+    final Color? explicitOverlay = overlayColor?.resolve(states);
+    if (explicitOverlay != null) {
+      return explicitOverlay;
+    }
+
+    Color fallbackBase = baseIndicatorColor;
+    switch (indicatorType) {
+      case NavigationIndicatorType.navigationBar:
+        final cnb.CustomNavigationBarThemeData barTheme =
+            cnb.NavigationBarTheme.of(context);
+        final cnb.CustomNavigationBarThemeData defaults =
+            cnb.defaultsFor(context);
+        final Color? themeOverlay =
+            (barTheme.overlayColor ?? defaults.overlayColor)?.resolve(states);
+        if (themeOverlay != null) {
+          return themeOverlay;
+        }
+        fallbackBase =
+            barTheme.indicatorColor ?? defaults.indicatorColor ?? fallbackBase;
+      case NavigationIndicatorType.navigationRail:
+        final cnr.CustomNavigationRailThemeData railTheme =
+            cnr.NavigationRailTheme.of(context);
+        final cnr.CustomNavigationRailThemeData defaults =
+            Theme.of(context).useMaterial3
+                ? cnr.NavigationRailDefaultsM3(context)
+                : cnr.NavigationRailDefaultsM2(context);
+        fallbackBase =
+            railTheme.indicatorColor ?? defaults.indicatorColor ?? fallbackBase;
+      case null:
+        break;
+    }
+
+    if (states.contains(WidgetState.pressed)) {
+      return fallbackBase.withValues(alpha: 0.12);
+    }
+    if (states.contains(WidgetState.focused)) {
+      return fallbackBase.withValues(alpha: 0.12);
+    }
+    if (states.contains(WidgetState.hovered)) {
+      return fallbackBase.withValues(alpha: 0.08);
+    }
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     final Color resolvedColor =
         color ?? Theme.of(context).colorScheme.secondary;
+    final Color? resolvedInteractionColor =
+        _resolveInteractionColor(context, resolvedColor);
+    final bool showInteractionIndicator = resolvedInteractionColor != null;
 
     return AnimatedBuilder(
       animation: animation,
@@ -67,21 +150,21 @@ class NavigationIndicator extends StatelessWidget {
         // Scale: 0 when dismissed; jumps to 40 % the moment animation starts,
         // then eases to 100 % — matching the M3 NavigationBar indicator curve.
         final double scale = animation.isDismissed
-            ? 0.0
+            ? (showInteractionIndicator ? 1.0 : 0.0)
             : Tween<double>(begin: .4, end: 1.0).transform(
                 CurveTween(curve: Curves.easeInOutCubicEmphasized)
                     .transform(animation.value),
               );
 
-        // Fade: 100 ms cross-fade driven by whether the animation is moving
-        // forward or backward.
-        final bool selected = animation.isForwardOrCompleted;
+        final bool showSelectionIndicator = !animation.isDismissed;
 
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.diagonal3Values(scale, 1.0, 1.0),
           child: AnimatedOpacity(
-            opacity: selected ? 1.0 : 0.0,
+            opacity: (showSelectionIndicator || showInteractionIndicator)
+                ? 1.0
+                : 0.0,
             duration: const Duration(milliseconds: 100),
             child: child,
           ),
@@ -90,11 +173,25 @@ class NavigationIndicator extends StatelessWidget {
       child: SizedBox(
         width: width,
         height: height,
-        child: DecoratedBox(
-          decoration: ShapeDecoration(
-            shape: shape ?? RoundedRectangleBorder(borderRadius: borderRadius),
-            color: resolvedColor,
-          ),
+        child: Stack(
+          fit: StackFit.expand,
+          children: <Widget>[
+            DecoratedBox(
+              decoration: ShapeDecoration(
+                shape:
+                    shape ?? RoundedRectangleBorder(borderRadius: borderRadius),
+                color: resolvedColor,
+              ),
+            ),
+            if (resolvedInteractionColor != null)
+              DecoratedBox(
+                decoration: ShapeDecoration(
+                  shape: shape ??
+                      RoundedRectangleBorder(borderRadius: borderRadius),
+                  color: resolvedInteractionColor,
+                ),
+              ),
+          ],
         ),
       ),
     );

@@ -80,15 +80,44 @@ class _NavigationDestinationBuilder extends StatefulWidget {
 class _NavigationDestinationBuilderState
     extends State<_NavigationDestinationBuilder> {
   final GlobalKey itemKey = GlobalKey();
+  late final WidgetStatesController _statesController;
+
+  @override
+  void initState() {
+    super.initState();
+    _statesController = WidgetStatesController();
+    _statesController.addListener(_handleStatesChanged);
+  }
+
+  @override
+  void dispose() {
+    _statesController.removeListener(_handleStatesChanged);
+    _statesController.dispose();
+    super.dispose();
+  }
+
+  void _handleStatesChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final NavigationDestinationInfo info =
         NavigationDestinationInfo.of(context);
-    final NavigationBarThemeData navigationBarTheme =
+    final CustomNavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
+    final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
+        navigationBarTheme.navigationItemOverlayColor;
+    final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
+    final ShapeBorder effectiveNavigationItemIndicatorShape =
+        navigationBarTheme.navigationItemIndicatorShape ??
+            const StadiumBorder();
     final WidgetStateProperty<Color?>? effectiveOverlayColor =
-        info.overlayColor ?? navigationBarTheme.overlayColor;
+        info.overlayColor ??
+            navigationBarTheme.overlayColor ??
+            defaultsFor(context).overlayColor;
 
     return _NavigationBarDestinationSemantics(
       enabled: !widget.disabled,
@@ -100,8 +129,10 @@ class _NavigationDestinationBuilderState
           child: _IndicatorInkWell(
             itemKey: itemKey,
             labelBehavior: info.labelBehavior,
-            customBorder: widget.shape,
-            overlayColor: effectiveOverlayColor,
+            disableFullItemInk: disableFullItemInk,
+            customBorder: effectiveNavigationItemIndicatorShape,
+            overlayColor: effectiveNavigationItemOverlayColor,
+            statesController: _statesController,
             onTap: widget.disabled ? null : info.onTap,
             child: Stack(
               alignment: Alignment.center,
@@ -112,7 +143,11 @@ class _NavigationDestinationBuilderState
                     children: <Widget>[
                       Expanded(
                         child: _NavigationBarDestinationLayout(
-                          icon: widget.buildIcon(context),
+                          icon: _NavigationBarIndicatorStates(
+                            states: _statesController.value,
+                            overlayColor: effectiveOverlayColor,
+                            child: widget.buildIcon(context),
+                          ),
                           itemKey: itemKey,
                           padding: widget.padding,
                           label: widget.buildLabel(context),
@@ -134,14 +169,22 @@ class _IndicatorInkWell extends InkResponse {
   const _IndicatorInkWell({
     required this.itemKey,
     required this.labelBehavior,
+    required this.disableFullItemInk,
+    super.statesController,
     super.overlayColor,
     super.customBorder,
     super.onTap,
     super.child,
-  }) : super(containedInkWell: true, highlightColor: Colors.transparent);
+  }) : super(
+          containedInkWell: true,
+          highlightColor: disableFullItemInk ? Colors.transparent : null,
+          splashColor: disableFullItemInk ? Colors.transparent : null,
+          hoverColor: disableFullItemInk ? Colors.transparent : null,
+        );
 
   final GlobalKey itemKey;
   final NavigationDestinationLabelBehavior labelBehavior;
+  final bool disableFullItemInk;
 
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
@@ -151,5 +194,28 @@ class _IndicatorInkWell extends InkResponse {
       final Rect itemRect = itemBox.localToGlobal(Offset.zero) & itemBox.size;
       return referenceBox.globalToLocal(itemRect.topLeft) & itemBox.size;
     };
+  }
+}
+
+class _NavigationBarIndicatorStates extends InheritedWidget {
+  const _NavigationBarIndicatorStates({
+    required this.states,
+    required this.overlayColor,
+    required super.child,
+  });
+
+  final Set<WidgetState> states;
+  final WidgetStateProperty<Color?>? overlayColor;
+
+  static _NavigationBarIndicatorStates? maybeOf(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<_NavigationBarIndicatorStates>();
+  }
+
+  @override
+  bool updateShouldNotify(_NavigationBarIndicatorStates oldWidget) {
+    return states.length != oldWidget.states.length ||
+        !states.containsAll(oldWidget.states) ||
+        overlayColor != oldWidget.overlayColor;
   }
 }

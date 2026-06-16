@@ -11,7 +11,6 @@ import "../destination/destination_surface_strategy.dart";
 import "../destination/navigation_indicator.dart";
 import "../material.dart";
 import "../navigation_icon.dart";
-import "navigation_rail_theme.dart";
 import "widgets/navigation_rail_animation.dart";
 
 part "expanded/navigation_rail_destination.dart";

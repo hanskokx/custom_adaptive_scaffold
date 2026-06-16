@@ -6,7 +6,7 @@ part of "../navigation_rail.dart";
 /// All visually resolved data comes from [DestinationBuildData]; the caller
 /// (typically [_RailDestinationState] or [_ExpandedRailDestinationState])
 /// supplies the additional interaction-specific fields.
-class WrappedRailDestination extends StatelessWidget {
+class WrappedRailDestination extends StatefulWidget {
   const WrappedRailDestination({
     required this.selected,
     required this.disabled,
@@ -49,74 +49,118 @@ class WrappedRailDestination extends StatelessWidget {
   final String? tooltip;
 
   @override
+  State<WrappedRailDestination> createState() => _WrappedRailDestinationState();
+}
+
+class _WrappedRailDestinationState extends State<WrappedRailDestination> {
+  late final WidgetStatesController _statesController;
+
+  @override
+  void initState() {
+    super.initState();
+    _statesController = WidgetStatesController();
+    _statesController.addListener(_handleStatesChanged);
+  }
+
+  @override
+  void dispose() {
+    _statesController.removeListener(_handleStatesChanged);
+    _statesController.dispose();
+    super.dispose();
+  }
+
+  void _handleStatesChanged() {
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final CustomNavigationRailThemeData railTheme =
+        NavigationRailTheme.of(context);
+    final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
+        railTheme.navigationItemOverlayColor;
+    final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
+    final ShapeBorder effectiveNavigationItemIndicatorShape =
+        railTheme.navigationItemIndicatorShape ?? const StadiumBorder();
+
     final Widget content = Stack(
       children: <Widget>[
         // Persistent selection pill — rendered at the indicator center.
-        if (indicatorColor != null)
-          if (centerIndicatorHorizontally)
+        if (widget.indicatorColor != null)
+          if (widget.centerIndicatorHorizontally)
             Positioned.fill(
               child: Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
                   padding: EdgeInsets.only(
-                    top: indicatorOffset.dy - _kIndicatorHeight / 2,
+                    top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
                   ),
                   child: NavigationIndicator(
-                    animation: selectionAnimation,
-                    color: indicatorColor,
-                    width: indicatorWidth,
+                    animation: widget.selectionAnimation,
+                    color: widget.indicatorColor,
+                    width: widget.indicatorWidth,
                     height: _kIndicatorHeight,
-                    shape: indicatorShape,
+                    shape: widget.indicatorShape,
+                    indicatorType: NavigationIndicatorType.navigationRail,
+                    states: _statesController.value,
                   ),
                 ),
               ),
             )
           else
             Positioned(
-              left: indicatorOffset.dx - indicatorWidth / 2,
-              top: indicatorOffset.dy - _kIndicatorHeight / 2,
+              left: widget.indicatorOffset.dx - widget.indicatorWidth / 2,
+              top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
               child: NavigationIndicator(
-                animation: selectionAnimation,
-                color: indicatorColor,
-                width: indicatorWidth,
+                animation: widget.selectionAnimation,
+                color: widget.indicatorColor,
+                width: widget.indicatorWidth,
                 height: _kIndicatorHeight,
-                shape: indicatorShape,
+                shape: widget.indicatorShape,
+                indicatorType: NavigationIndicatorType.navigationRail,
+                states: _statesController.value,
               ),
             ),
         IndicatorInkWell(
-          onTap: disabled ? null : onTap,
+          onTap: widget.disabled ? null : widget.onTap,
           borderRadius: BorderRadius.all(
-            Radius.circular(minWidth / 2.0),
+            Radius.circular(widget.minWidth / 2.0),
           ),
-          customBorder: indicatorShape,
-          splashColor: splashColor,
-          hoverColor: hoverColor,
-          useMaterial3: material3,
-          indicatorOffset: indicatorOffset,
-          applyXOffset: applyXOffset,
-          textDirection: textDirection,
-          child: child,
+          customBorder: effectiveNavigationItemIndicatorShape,
+          splashColor:
+              disableFullItemInk ? Colors.transparent : widget.splashColor,
+          hoverColor:
+              disableFullItemInk ? Colors.transparent : widget.hoverColor,
+          overlayColor: effectiveNavigationItemOverlayColor,
+          useMaterial3: widget.material3,
+          indicatorOffset: widget.indicatorOffset,
+          applyXOffset: widget.applyXOffset,
+          textDirection: widget.textDirection,
+          statesController: _statesController,
+          child: widget.child,
         ),
         Semantics(
-          label: indexLabel,
+          label: widget.indexLabel,
         ),
       ],
     );
 
-    final Widget maybeTooltip = tooltip != null && tooltip!.isNotEmpty
-        ? Tooltip(
-            message: tooltip!,
-            excludeFromSemantics: true,
-            preferBelow: false,
-            child: content,
-          )
-        : content;
+    final Widget maybeTooltip =
+        widget.tooltip != null && widget.tooltip!.isNotEmpty
+            ? Tooltip(
+                message: widget.tooltip!,
+                excludeFromSemantics: true,
+                preferBelow: false,
+                child: content,
+              )
+            : content;
 
     return Semantics(
       container: true,
-      selected: selected,
-      enabled: !disabled,
+      selected: widget.selected,
+      enabled: !widget.disabled,
       child: Material(
         type: MaterialType.transparency,
         child: maybeTooltip,

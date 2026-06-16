@@ -1,10 +1,10 @@
+import "../../navigation_bar_theme.dart";
 import "../destination/destination_build_data.dart";
 import "../destination/destination_surface_strategy.dart";
 import "../destination/navigation_indicator.dart";
 import "../material.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
-import "navigation_bar_theme.dart";
 import "navigation_destination_info.dart";
 
 part "navigation_bar_destination/navigation_bar_destination_layout.dart";
@@ -87,6 +87,9 @@ class NavigationBarDestination extends NavigationDestination {
             ),
           );
 
+          final _NavigationBarIndicatorStates? indicatorStates =
+              _NavigationBarIndicatorStates.maybeOf(context);
+
           return Stack(
             alignment: Alignment.center,
             children: <Widget>[
@@ -96,6 +99,9 @@ class NavigationBarDestination extends NavigationDestination {
                 shape: indicatorShape,
                 width: data.minWidth,
                 height: _kIndicatorHeight,
+                indicatorType: NavigationIndicatorType.navigationBar,
+                states: indicatorStates?.states ?? const <WidgetState>{},
+                overlayColor: indicatorStates?.overlayColor,
               ),
               NavigationIcon(
                 icon: data.themedIcon,

@@ -6,20 +6,10 @@ import "dart:ui" show lerpDouble;
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart" as m
-    show
-        NavigationRailThemeData,
-        NavigationRailTheme,
-        IconThemeData,
-        NavigationRailLabelType,
-        WidgetStateProperty,
-        InheritedTheme,
-        BuildContext,
-        Theme,
-        Widget,
-        ThemeData,
-        ColorScheme,
-        TextTheme;
+    show NavigationRailThemeData, NavigationRailTheme;
 import "package:flutter/rendering.dart";
+
+import "src/material.dart";
 
 typedef CustomNavigationRailThemeData = NavigationRailThemeData;
 typedef CustomNavigationRailTheme = NavigationRailTheme;
@@ -95,12 +85,12 @@ class NavigationRailThemeData
   /// The theme to merge with the default icon theme for
   /// [NavigationRailDestination] icons, when the destination is not selected.
   @override
-  final m.IconThemeData? unselectedIconTheme;
+  final IconThemeData? unselectedIconTheme;
 
   /// The theme to merge with the default icon theme for
   /// [NavigationRailDestination] icons, when the destination is selected.
   @override
-  final m.IconThemeData? selectedIconTheme;
+  final IconThemeData? selectedIconTheme;
 
   /// The alignment for the [NavigationRailDestination]s as they are positioned
   /// within the [NavigationRail].
@@ -110,7 +100,7 @@ class NavigationRailThemeData
   /// The type that defines the layout and behavior of the labels in the
   /// [NavigationRail].
   @override
-  final m.NavigationRailLabelType? labelType;
+  final NavigationRailLabelType? labelType;
 
   /// Whether or not the selected [NavigationRailDestination] should include a
   /// [NavigationIndicator].
@@ -127,12 +117,11 @@ class NavigationRailThemeData
   final ShapeBorder? indicatorShape;
 
   /// Overlay colors for the full navigation item container by widget state.
-  final m.WidgetStateProperty<Color?>? navigationItemOverlayColor;
+  final WidgetStateProperty<Color?>? navigationItemOverlayColor;
 
   /// Shape of the full navigation item container ink well.
   ///
-  /// Defaults to [StadiumBorder] in M3. When null, falls back to the M2
-  /// circular border radius based on [minWidth].
+  /// Defaults to [StadiumBorder] at resolution sites when this is null.
   final ShapeBorder? navigationItemIndicatorShape;
 
   /// Whether labels are shown while the rail is collapsed and [labelType] is
@@ -163,14 +152,14 @@ class NavigationRailThemeData
     double? elevation,
     TextStyle? unselectedLabelTextStyle,
     TextStyle? selectedLabelTextStyle,
-    m.IconThemeData? unselectedIconTheme,
-    m.IconThemeData? selectedIconTheme,
+    IconThemeData? unselectedIconTheme,
+    IconThemeData? selectedIconTheme,
     double? groupAlignment,
-    m.NavigationRailLabelType? labelType,
+    NavigationRailLabelType? labelType,
     bool? useIndicator,
     Color? indicatorColor,
     ShapeBorder? indicatorShape,
-    m.WidgetStateProperty<Color?>? navigationItemOverlayColor,
+    WidgetStateProperty<Color?>? navigationItemOverlayColor,
     ShapeBorder? navigationItemIndicatorShape,
     bool? showLabelsWhenCollapsed,
     double? minWidth,
@@ -234,7 +223,7 @@ class NavigationRailThemeData
       unselectedIconTheme:
           a?.unselectedIconTheme == null && b?.unselectedIconTheme == null
               ? null
-              : m.IconThemeData.lerp(
+              : IconThemeData.lerp(
                   a?.unselectedIconTheme,
                   b?.unselectedIconTheme,
                   t,
@@ -242,13 +231,13 @@ class NavigationRailThemeData
       selectedIconTheme: a?.selectedIconTheme == null &&
               b?.selectedIconTheme == null
           ? null
-          : m.IconThemeData.lerp(a?.selectedIconTheme, b?.selectedIconTheme, t),
+          : IconThemeData.lerp(a?.selectedIconTheme, b?.selectedIconTheme, t),
       groupAlignment: lerpDouble(a?.groupAlignment, b?.groupAlignment, t),
       labelType: t < 0.5 ? a?.labelType : b?.labelType,
       useIndicator: t < 0.5 ? a?.useIndicator : b?.useIndicator,
       indicatorColor: Color.lerp(a?.indicatorColor, b?.indicatorColor, t),
       indicatorShape: ShapeBorder.lerp(a?.indicatorShape, b?.indicatorShape, t),
-      navigationItemOverlayColor: m.WidgetStateProperty.lerp<Color?>(
+      navigationItemOverlayColor: WidgetStateProperty.lerp<Color?>(
         a?.navigationItemOverlayColor,
         b?.navigationItemOverlayColor,
         t,
@@ -355,14 +344,14 @@ class NavigationRailThemeData
       ),
     );
     properties.add(
-      DiagnosticsProperty<m.IconThemeData>(
+      DiagnosticsProperty<IconThemeData>(
         "unselectedIconTheme",
         unselectedIconTheme,
         defaultValue: defaultData.unselectedIconTheme,
       ),
     );
     properties.add(
-      DiagnosticsProperty<m.IconThemeData>(
+      DiagnosticsProperty<IconThemeData>(
         "selectedIconTheme",
         selectedIconTheme,
         defaultValue: defaultData.selectedIconTheme,
@@ -376,7 +365,7 @@ class NavigationRailThemeData
       ),
     );
     properties.add(
-      DiagnosticsProperty<m.NavigationRailLabelType>(
+      DiagnosticsProperty<NavigationRailLabelType>(
         "labelType",
         labelType,
         defaultValue: defaultData.labelType,
@@ -404,7 +393,7 @@ class NavigationRailThemeData
       ),
     );
     properties.add(
-      DiagnosticsProperty<m.WidgetStateProperty<Color?>>(
+      DiagnosticsProperty<WidgetStateProperty<Color?>>(
         "navigationItemOverlayColor",
         navigationItemOverlayColor,
         defaultValue: null,
@@ -482,7 +471,7 @@ class NavigationRailThemeData
 ///
 /// Values specified here are used for [NavigationRail] properties that are not
 /// given an explicit non-null value.
-class NavigationRailTheme extends m.InheritedTheme
+class NavigationRailTheme extends InheritedTheme
     implements m.NavigationRailTheme {
   /// Creates a navigation rail theme that controls the
   /// [NavigationRailThemeData] properties for a [NavigationRail].
@@ -508,7 +497,7 @@ class NavigationRailTheme extends m.InheritedTheme
   /// ```dart
   /// NavigationRailThemeData theme = NavigationRailTheme.of(context);
   /// ```
-  static NavigationRailThemeData of(m.BuildContext context) {
+  static NavigationRailThemeData of(BuildContext context) {
     // The user is using NavigationRailTheme from this package
     final NavigationRailTheme? navigationRailTheme =
         context.dependOnInheritedWidgetOfExactType<NavigationRailTheme>();
@@ -521,7 +510,7 @@ class NavigationRailTheme extends m.InheritedTheme
     // from his package
 
     final NavigationRailThemeData? themeExtension =
-        m.Theme.of(context).extension<NavigationRailThemeData>();
+        Theme.of(context).extension<NavigationRailThemeData>();
 
     if (themeExtension != null) {
       return themeExtension;
@@ -536,7 +525,7 @@ class NavigationRailTheme extends m.InheritedTheme
   }
 
   @override
-  m.Widget wrap(m.BuildContext context, m.Widget child) {
+  Widget wrap(BuildContext context, Widget child) {
     return NavigationRailTheme(data: data, child: child);
   }
 
@@ -547,20 +536,20 @@ class NavigationRailTheme extends m.InheritedTheme
 
 // Hand coded defaults based on Material Design 2.
 class NavigationRailDefaultsM2 extends NavigationRailThemeData {
-  NavigationRailDefaultsM2(m.BuildContext context)
-      : _theme = m.Theme.of(context),
-        _colors = m.Theme.of(context).colorScheme,
+  NavigationRailDefaultsM2(BuildContext context)
+      : _theme = Theme.of(context),
+        _colors = Theme.of(context).colorScheme,
         super(
           elevation: 0,
           groupAlignment: -1,
-          labelType: m.NavigationRailLabelType.none,
+          labelType: NavigationRailLabelType.none,
           useIndicator: false,
           minWidth: 72.0,
           minExtendedWidth: 256,
         );
 
-  final m.ThemeData _theme;
-  final m.ColorScheme _colors;
+  final ThemeData _theme;
+  final ColorScheme _colors;
 
   @override
   Color? get backgroundColor => _colors.surface;
@@ -577,8 +566,8 @@ class NavigationRailDefaultsM2 extends NavigationRailThemeData {
   }
 
   @override
-  m.IconThemeData? get unselectedIconTheme {
-    return m.IconThemeData(
+  IconThemeData? get unselectedIconTheme {
+    return IconThemeData(
       size: 24.0,
       color: _colors.onSurface,
       opacity: 0.64,
@@ -586,12 +575,26 @@ class NavigationRailDefaultsM2 extends NavigationRailThemeData {
   }
 
   @override
-  m.IconThemeData? get selectedIconTheme {
-    return m.IconThemeData(
+  IconThemeData? get selectedIconTheme {
+    return IconThemeData(
       size: 24.0,
       color: _colors.primary,
       opacity: 1.0,
     );
+  }
+
+  @override
+  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.pressed) ||
+          states.contains(WidgetState.focused)) {
+        return _colors.onSurface.withValues(alpha: 0.12);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return _colors.onSurface.withValues(alpha: 0.08);
+      }
+      return null;
+    });
   }
 }
 
@@ -607,15 +610,15 @@ class NavigationRailDefaultsM3 extends NavigationRailThemeData {
       : super(
           elevation: 0.0,
           groupAlignment: -1,
-          labelType: m.NavigationRailLabelType.none,
+          labelType: NavigationRailLabelType.none,
           useIndicator: true,
           minWidth: 80.0,
           minExtendedWidth: 256,
         );
 
-  final m.BuildContext context;
-  late final m.ColorScheme _colors = m.Theme.of(context).colorScheme;
-  late final m.TextTheme _textTheme = m.Theme.of(context).textTheme;
+  final BuildContext context;
+  late final ColorScheme _colors = Theme.of(context).colorScheme;
+  late final TextTheme _textTheme = Theme.of(context).textTheme;
 
   @override
   Color? get backgroundColor => _colors.surface;
@@ -631,16 +634,16 @@ class NavigationRailDefaultsM3 extends NavigationRailThemeData {
   }
 
   @override
-  m.IconThemeData? get unselectedIconTheme {
-    return m.IconThemeData(
+  IconThemeData? get unselectedIconTheme {
+    return IconThemeData(
       size: 24.0,
       color: _colors.onSurfaceVariant,
     );
   }
 
   @override
-  m.IconThemeData? get selectedIconTheme {
-    return m.IconThemeData(
+  IconThemeData? get selectedIconTheme {
+    return IconThemeData(
       size: 24.0,
       color: _colors.onSecondaryContainer,
     );
@@ -651,6 +654,20 @@ class NavigationRailDefaultsM3 extends NavigationRailThemeData {
 
   @override
   ShapeBorder? get indicatorShape => const StadiumBorder();
+
+  @override
+  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
+    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.pressed) ||
+          states.contains(WidgetState.focused)) {
+        return _colors.onSurface.withValues(alpha: 0.12);
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return _colors.onSurface.withValues(alpha: 0.08);
+      }
+      return null;
+    });
+  }
 }
 
 // END GENERATED TOKEN PROPERTIES - NavigationRail

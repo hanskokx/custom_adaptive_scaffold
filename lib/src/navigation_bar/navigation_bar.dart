@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "../../navigation_bar_theme.dart";
 import "../material.dart";
 import "../navigation_destination.dart";
 import "navigation_bar_destination.dart";
-import "navigation_bar_theme.dart";
 import "navigation_destination_info.dart";
 import "selectable_animated_builder.dart";
 

@@ -9,10 +9,12 @@ class IndicatorInkWell extends InkResponse {
     super.key,
     super.child,
     super.onTap,
+    super.statesController,
     ShapeBorder? customBorder,
     BorderRadius? borderRadius,
     super.splashColor,
     super.hoverColor,
+    super.overlayColor,
   }) : super(
           containedInkWell: true,
           highlightShape: BoxShape.rectangle,
