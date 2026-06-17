@@ -10,7 +10,28 @@ import "destination_info.dart";
 import "selectable_animated_builder.dart";
 import "theme_defaults.dart";
 
+/// A typedef alias for [NavigationDestination].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's
+/// `NavigationDestination`. Equivalent to [CustomNavigationDestination].
 typedef CustomNavigationBarDestination = NavigationDestination;
+
+/// A typedef alias for [NavigationBar].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's `NavigationBar`.
+///
+/// ```dart
+/// import 'package:flutter/material.dart';
+/// import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
+///
+/// // Use CustomNavigationBar instead of NavigationBar.
+/// CustomNavigationBar(
+///   selectedIndex: _selectedIndex,
+///   destinations: const [/* … */],
+/// )
+/// ```
 typedef CustomNavigationBar = NavigationBar;
 
 // Examples can assume:
@@ -113,7 +134,7 @@ class NavigationBar extends StatelessWidget {
   final int selectedIndex;
 
   /// The list of destinations (usually [NavigationDestination]s) in this
-  /// [CustomNavigationBar].
+  /// [NavigationBar].
   ///
   /// When [selectedIndex] is updated, the destination from this list at
   /// [selectedIndex] will animate from 0 (unselected) to 1.0 (selected). When
@@ -126,10 +147,10 @@ class NavigationBar extends StatelessWidget {
   ///
   /// This callback usually updates the int passed to [selectedIndex].
   ///
-  /// Upon updating [selectedIndex], the [CustomNavigationBar] will be rebuilt.
+  /// Upon updating [selectedIndex], the [NavigationBar] will be rebuilt.
   final ValueChanged<int>? onDestinationSelected;
 
-  /// The color of the [CustomNavigationBar] itself.
+  /// The color of the [NavigationBar] itself.
   ///
   /// If null, [NavigationBarThemeData.backgroundColor] is used. If that
   /// is also null, then if [ThemeData.useMaterial3] is true, the value is
@@ -181,7 +202,7 @@ class NavigationBar extends StatelessWidget {
   /// Otherwise, [RoundedRectangleBorder] with a circular border radius of 16 is used.
   final ShapeBorder? indicatorShape;
 
-  /// The height of the [CustomNavigationBar] itself.
+  /// The height of the [NavigationBar] itself.
   ///
   /// If this is used in [Scaffold.bottomNavigationBar] and the scaffold is
   /// full-screen, the safe area padding is also added to the height

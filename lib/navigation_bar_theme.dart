@@ -12,7 +12,18 @@ import "package:flutter/rendering.dart";
 
 import "src/navigation_bar/theme_defaults.dart";
 
+/// A typedef alias for [NavigationBarThemeData].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's
+/// `NavigationBarThemeData`.
 typedef CustomNavigationBarThemeData = NavigationBarThemeData;
+
+/// A typedef alias for [NavigationBarTheme].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's
+/// `NavigationBarTheme`.
 typedef CustomNavigationBarTheme = NavigationBarTheme;
 
 // Examples can assume:
@@ -133,13 +144,22 @@ class NavigationBarThemeData
   /// Defaults to [StadiumBorder] at resolution sites when this is null.
   final ShapeBorder? navigationItemIndicatorShape;
 
-  /// Applies a margin around navigation items.
+  /// Applies a margin around each navigation item in the bar.
+  ///
+  /// This creates space between adjacent destination items and between items
+  /// and the bar edges. If null, defaults to [EdgeInsets.zero].
   final EdgeInsetsGeometry? margin;
 
-  /// Applies padding around navigation item content.
+  /// Applies padding inside each navigation item's content area.
+  ///
+  /// This creates space between the item boundary and the icon/label. If null,
+  /// defaults to [EdgeInsets.zero].
   final EdgeInsetsGeometry? padding;
 
-  /// Defines the x/y offset of tooltip popovers.
+  /// Defines the x/y offset of tooltip popovers relative to the default
+  /// anchor position.
+  ///
+  /// If null, the tooltip renders at its default position.
   final Offset? tooltipOffset;
 
   /// Controls which gesture triggers the tooltip popover.
@@ -152,10 +172,20 @@ class NavigationBarThemeData
   /// can continue to activate navigation.
   final TooltipTriggerMode? tooltipTrigger;
 
-  /// Overrides [tooltipTrigger] when the destination label is visible.
+  /// Overrides [tooltipTrigger] specifically when the destination label is
+  /// currently visible.
+  ///
+  /// When non-null, takes precedence over [tooltipTrigger] for the
+  /// label-visible state.
   final TooltipTriggerMode? tooltipTriggerWhenLabelVisible;
 
-  /// Overrides [tooltipTrigger] when the destination label is hidden.
+  /// Overrides [tooltipTrigger] specifically when the destination label is
+  /// currently hidden (e.g., when [labelBehavior] is
+  /// [NavigationDestinationLabelBehavior.alwaysHide] or the destination is
+  /// unselected in [NavigationDestinationLabelBehavior.onlyShowSelected]).
+  ///
+  /// When non-null, takes precedence over [tooltipTrigger] for the
+  /// label-hidden state.
   final TooltipTriggerMode? tooltipTriggerWhenLabelHidden;
 
   /// Applies padding around navigation item labels. Defaults to [EdgeInsets.zero].

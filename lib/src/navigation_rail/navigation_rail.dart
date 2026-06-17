@@ -11,7 +11,6 @@ import "../navigation_icon.dart";
 import "../navigation_shared/destination_build_data.dart";
 import "../navigation_shared/destination_surface_strategy.dart";
 import "../navigation_shared/navigation_destination_tooltip.dart";
-import "../navigation_shared/navigation_indicator.dart";
 import "destination_widgets/animation.dart";
 import "theme_defaults.dart";
 
@@ -22,8 +21,23 @@ part "destination_widgets/indicator_ink_well.dart";
 
 @Deprecated(
   "Deprecated in favor of NavigationRail. "
-  "Prefer hiding NavigationRail from Flutter's Material package.",
+  "Prefer hiding NavigationRail from Flutter's Material package using:\n"
+  "  import 'package:flutter/material.dart' hide NavigationRail;\n"
+  "or use NavigationRail directly from this package after hiding the Flutter original.",
 )
+
+/// A deprecated typedef alias for [NavigationRail].
+///
+/// Migrate by either hiding Flutter's `NavigationRail` in your import and
+/// using `NavigationRail` directly, or continuing to use `CustomNavigationRail`
+/// until the next major version.
+///
+/// ```dart
+/// // Preferred migration:
+/// import 'package:flutter/material.dart' hide NavigationRail;
+/// import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
+/// // Then use NavigationRail directly.
+/// ```
 typedef CustomNavigationRail = NavigationRail;
 
 /// A Material Design widget that is meant to be displayed at the left or right of an

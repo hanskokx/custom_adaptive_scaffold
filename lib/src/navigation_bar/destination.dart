@@ -22,12 +22,24 @@ const double _kMaxLabelTextScaleFactor = 1.3;
 ///
 /// Displays a label below an icon. Use with [NavigationBar.destinations].
 ///
+/// This is the bar-specific subclass of [NavigationDestination]. It extends
+/// [NavigationDestination] with bar-specific rendering: it resolves the
+/// indicator color and shape from [NavigationBarThemeData], applies [margin]
+/// and [padding] from the theme or the destination itself, and builds the
+/// full bar destination visual hierarchy.
+///
+/// In most cases, [NavigationDestination] can be used directly in a
+/// [NavigationBar]; use [NavigationBarDestination] explicitly when you need
+/// bar-specific configuration that is not available on the base class.
+///
 /// See also:
 ///
 ///  * [NavigationBar], for an interactive code sample.
+///  * [NavigationDestination], the shared base class.
+///  * [NavigationRailDestination], the rail-specific counterpart.
 class NavigationBarDestination extends NavigationDestination {
   /// Creates a navigation bar destination with an icon and a label, to be used
-  /// in the [NavigationBar.destinations].
+  /// in [NavigationBar.destinations].
   const NavigationBarDestination({
     required super.icon,
     super.key,

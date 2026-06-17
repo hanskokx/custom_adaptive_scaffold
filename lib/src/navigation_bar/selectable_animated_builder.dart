@@ -1,36 +1,36 @@
 import "package:flutter/material.dart";
 
-// Builder widget for widgets that need to be animated from 0 (unselected) to
-// 1.0 (selected).
-//
-// This widget creates and manages an [AnimationController] that it passes down
-// to the child through the [builder] function.
-//
-// When [isSelected] is `true`, the animation controller will animate from
-// 0 to 1 (for [duration] time).
-//
-// When [isSelected] is `false`, the animation controller will animate from
-// 1 to 0 (for [duration] time).
-//
-// If [isSelected] is updated while the widget is animating, the animation will
-// be reversed until it is either 0 or 1 again. If [alwaysDoFullAnimation] is
-// true, the animation will reset to 0 or 1 before beginning the animation, so
-// that the full animation is done.
-//
-// Usage:
-// ```dart
-// _SelectableAnimatedBuilder(
-//   isSelected: _isDrawerOpen,
-//   builder: (context, animation) {
-//     return AnimatedIcon(
-//       icon: AnimatedIcons.menu_arrow,
-//       progress: animation,
-//       semanticLabel: 'Show menu',
-//     );
-//   }
-// )
-// ```
-
+/// A widget that animates from 0 (unselected) to 1.0 (selected) and back,
+/// managing an [AnimationController] internally.
+///
+/// This widget creates and manages an [AnimationController] that it passes down
+/// to the child through the [builder] function.
+///
+/// When [isSelected] is `true`, the animation controller animates from 0 to 1
+/// over [duration]. When [isSelected] is `false`, the controller animates from
+/// 1 to 0 over [duration].
+///
+/// If [isSelected] changes while the animation is in progress, the animation
+/// reverses from its current value unless [alwaysDoFullAnimation] is `true`,
+/// in which case the animation resets to 0 or 1 before playing in full.
+///
+/// Used internally by [NavigationBar] and [NavigationRail] destinations to
+/// drive the icon/indicator transition between selected and unselected states.
+///
+/// {@tool snippet}
+/// ```dart
+/// SelectableAnimatedBuilder(
+///   isSelected: _isDrawerOpen,
+///   builder: (context, animation) {
+///     return AnimatedIcon(
+///       icon: AnimatedIcons.menu_arrow,
+///       progress: animation,
+///       semanticLabel: 'Show menu',
+///     );
+///   },
+/// )
+/// ```
+/// {@end-tool}
 class SelectableAnimatedBuilder extends StatefulWidget {
   /// Builds and maintains an [AnimationController] that will animate from 0 to
   /// 1 and back depending on when [isSelected] is true.

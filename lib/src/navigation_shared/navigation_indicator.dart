@@ -5,16 +5,40 @@ const double _kCircularIndicatorDiameter = 56.0;
 const double _kIndicatorHeight = 32.0;
 
 /// Identifies which navigation surface owns this indicator.
+///
+/// Used internally to apply surface-appropriate sizing defaults when building
+/// a [NavigationIndicator] for a rail vs. bar destination.
 enum NavigationIndicatorType {
+  /// The indicator is used inside a [NavigationRail] destination.
   navigationRail,
+
+  /// The indicator is used inside a [NavigationBar] destination.
   navigationBar,
 }
+
+/// A typedef alias for [NavigationIndicator].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's
+/// [NavigationIndicator].
+typedef CustomNavigationIndicator = NavigationIndicator;
 
 /// Animated selection indicator pill used by both [NavigationBar] and
 /// [NavigationRail] destinations.
 ///
-/// When [animation] is 0 the indicator is absent.  As [animation] grows
-/// from 0 → 1 the indicator scales in on the x-axis and fades in over 100 ms.
+/// When [animation] is 0 the indicator is absent. As [animation] grows from
+/// 0 to 1, the indicator scales in on the x-axis using
+/// [Curves.easeInOutCubicEmphasized] and fades in.
+///
+/// The indicator is placed behind the destination icon in a [Stack] and is
+/// driven by the destination's selection animation so it appears/disappears
+/// as the destination gains or loses selection.
+///
+/// See also:
+///
+///  * [NavigationBar], which uses this widget behind each destination icon.
+///  * [NavigationRail], which uses this widget behind each destination icon.
+///  * [CustomNavigationIndicator], a typedef alias for this class.
 class NavigationIndicator extends StatelessWidget {
   const NavigationIndicator({
     required this.animation,

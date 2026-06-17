@@ -12,7 +12,18 @@ import "package:flutter/rendering.dart";
 import "src/_internal_material.dart";
 import "src/navigation_rail/theme_defaults.dart";
 
+/// A typedef alias for [NavigationRailThemeData].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's
+/// `NavigationRailThemeData`.
 typedef CustomNavigationRailThemeData = NavigationRailThemeData;
+
+/// A typedef alias for [NavigationRailTheme].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's
+/// `NavigationRailTheme`.
 typedef CustomNavigationRailTheme = NavigationRailTheme;
 
 // Examples can assume:
@@ -145,13 +156,22 @@ class NavigationRailThemeData
   @override
   final double? minExtendedWidth;
 
-  /// Applies a margin around navigation items. Defaults to [EdgeInsets.zero].
+  /// Applies a margin around each navigation item in the rail.
+  ///
+  /// This creates space between adjacent destination items and between items
+  /// and the rail edges. Defaults to [EdgeInsets.zero].
   final EdgeInsetsGeometry? margin;
 
-  /// Applies padding around navigation item content. Defaults to [EdgeInsets.zero].
+  /// Applies padding inside each navigation item's content area.
+  ///
+  /// This creates space between the item boundary and the icon/label.
+  /// Defaults to [EdgeInsets.zero].
   final EdgeInsetsGeometry? padding;
 
-  /// Defines the x/y offset of tooltip popovers.
+  /// Defines the x/y offset of tooltip popovers relative to the default
+  /// anchor position.
+  ///
+  /// If null, the tooltip renders at its default position.
   final Offset? tooltipOffset;
 
   /// Controls which gesture triggers the tooltip popover.
@@ -164,10 +184,19 @@ class NavigationRailThemeData
   /// can continue to activate navigation.
   final TooltipTriggerMode? tooltipTrigger;
 
-  /// Overrides [tooltipTrigger] when the destination label is visible.
+  /// Overrides [tooltipTrigger] specifically when the destination label is
+  /// currently visible.
+  ///
+  /// When non-null, takes precedence over [tooltipTrigger] for the
+  /// label-visible state.
   final TooltipTriggerMode? tooltipTriggerWhenLabelVisible;
 
-  /// Overrides [tooltipTrigger] when the destination label is hidden.
+  /// Overrides [tooltipTrigger] specifically when the destination label is
+  /// currently hidden (e.g., when [labelType] is
+  /// [NavigationRailLabelType.none] and [showLabelsWhenCollapsed] is false).
+  ///
+  /// When non-null, takes precedence over [tooltipTrigger] for the
+  /// label-hidden state.
   final TooltipTriggerMode? tooltipTriggerWhenLabelHidden;
 
   /// Creates a copy of this object with the given fields replaced with the

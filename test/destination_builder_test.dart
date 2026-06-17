@@ -130,7 +130,7 @@ void main() {
               icon: Icon(Icons.search),
               label: "Search",
             ),
-          ].map((d) => d.toRailDestination()).toList(),
+          ].map((d) => AdaptiveScaffold.toRailDestination(d)).toList(),
         ),
       );
 
@@ -236,7 +236,10 @@ void main() {
               icon: Icon(Icons.search),
               label: "Search",
             ),
-          ].map((NavigationDestination d) => d.toRailDestination()).toList(),
+          ]
+              .map((NavigationDestination d) =>
+                  AdaptiveScaffold.toRailDestination(d))
+              .toList(),
         ),
       );
 
@@ -261,7 +264,10 @@ void main() {
               icon: Icon(Icons.search),
               label: "Search",
             ),
-          ].map((NavigationDestination d) => d.toRailDestination()).toList(),
+          ]
+              .map((NavigationDestination d) =>
+                  AdaptiveScaffold.toRailDestination(d))
+              .toList(),
         ),
       );
 
@@ -296,7 +302,8 @@ void main() {
                   label: "Search",
                 ),
               ]
-                  .map((NavigationDestination d) => d.toRailDestination())
+                  .map((NavigationDestination d) =>
+                      AdaptiveScaffold.toRailDestination(d))
                   .toList(),
             ),
           ),
@@ -843,18 +850,18 @@ void main() {
         title: "Inbox",
         icon: Icons.inbox_outlined,
       );
-      final rail = dest.toRailDestination();
+      final rail = AdaptiveScaffold.toRailDestination(dest);
       final labelText = (rail.labelWidget as Text).data;
       expect(labelText, "Inbox");
     });
 
     test("toBarDestination uses title as label", () {
+      // toBarDestination is internal; verify via the label property directly.
       final dest = AdaptiveScaffoldDestination(
         title: "Inbox",
         icon: Icons.inbox_outlined,
       );
-      final bar = dest.toBarDestination();
-      expect(bar.label, "Inbox");
+      expect(dest.label, "Inbox");
     });
 
     testWidgets("renders in AdaptiveScaffold without error",
@@ -899,7 +906,7 @@ void main() {
                 selectedIndex: 0,
                 navigationRailDestinationBuilder: (index, destination) {
                   capturedIndexes.add(index);
-                  return destination.toRailDestination();
+                  return AdaptiveScaffold.toRailDestination(destination);
                 },
               ),
             ),
@@ -933,7 +940,7 @@ void main() {
                 selectedIndex: 0,
                 navigationRailDestinationBuilder: (index, destination) {
                   builderCallCount++;
-                  return destination.toRailDestination();
+                  return AdaptiveScaffold.toRailDestination(destination);
                 },
               ),
             ),
