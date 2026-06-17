@@ -69,6 +69,23 @@ void main() {
         theme.colorScheme.secondaryContainer,
       );
       expect(_indicatorDecoration(tester)?.shape, const StadiumBorder());
+      final Iterable<InkResponse> railInkResponses = tester.allWidgets
+          .whereType<InkResponse>()
+          .where(
+            (InkResponse widget) =>
+                find
+                    .byWidget(widget)
+                    .evaluate()
+                    .single
+                    .findAncestorWidgetOfExactType<CustomNavigationRail>() !=
+                null,
+          );
+      expect(
+        railInkResponses.any(
+          (InkResponse widget) => widget.customBorder == const StadiumBorder(),
+        ),
+        isTrue,
+      );
     },
   );
 

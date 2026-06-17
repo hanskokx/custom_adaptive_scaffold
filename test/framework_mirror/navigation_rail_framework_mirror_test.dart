@@ -5419,7 +5419,7 @@ void main() {
         await _pumpCustomNavigationRail(
           tester,
           useMaterial3: false,
-          textScaleFactor: 3.0,
+          textScaleFactor: 0.75,
           navigationRail: CustomNavigationRail(
             selectedIndex: 0,
             minWidth: 56.0,
