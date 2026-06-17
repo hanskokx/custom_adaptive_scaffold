@@ -86,7 +86,7 @@ class AdaptiveScaffold extends StatefulWidget {
   /// Returns a const [AdaptiveScaffold] by passing information down to an
   /// [AdaptiveLayout].
   const AdaptiveScaffold({
-    required this.destinations,
+    this.destinations = const <NavigationDestination>[],
     super.key,
     this.selectedIndex = 0,
     this.leadingUnextendedNavRail,
@@ -608,16 +608,19 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     final NavigationRailThemeData navRailTheme =
         NavigationRailTheme.of(context);
 
-    final List<NavigationRailDestination> destinations = widget.destinations
-        .map(
-          (NavigationDestination destination) =>
-              widget.navigationRailDestinationBuilder?.call(
-                widget.destinations.indexOf(destination),
-                destination,
-              ) ??
-              AdaptiveScaffold.toRailDestination(destination),
-        )
-        .toList();
+    final List<NavigationRailDestination> destinations = [
+      for (int i = 0; i < widget.destinations.length; i++)
+        widget.navigationRailDestinationBuilder?.call(
+              i,
+              widget.destinations[i],
+            ) ??
+            AdaptiveScaffold.toRailDestination(widget.destinations[i]),
+    ];
+    final int? safeSelectedIndex = (widget.selectedIndex != null &&
+            widget.destinations.isNotEmpty &&
+            widget.selectedIndex! < widget.destinations.length)
+        ? widget.selectedIndex
+        : null;
 
     final bool viewIsCollapsed = widget.smallBreakpoint.isActive(context);
     final bool hasCollapsiblePrimarySecondary = widget.controller != null &&
@@ -641,7 +644,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               width: widget.navigationRailWidth,
               leading: widget.leadingUnextendedNavRail,
               trailing: widget.trailingNavRail,
-              selectedIndex: widget.selectedIndex,
+              selectedIndex: safeSelectedIndex,
               destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor: navRailTheme.backgroundColor,
@@ -661,7 +664,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
-              selectedIndex: widget.selectedIndex,
+              selectedIndex: safeSelectedIndex,
               destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor: navRailTheme.backgroundColor,
@@ -681,13 +684,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
-              selectedIndex: widget.selectedIndex,
-              destinations: widget.destinations
-                  .map(
-                    (NavigationDestination destination) =>
-                        AdaptiveScaffold.toRailDestination(destination),
-                  )
-                  .toList(),
+              selectedIndex: safeSelectedIndex,
+              destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor: navRailTheme.backgroundColor,
               selectedIconTheme: navRailTheme.selectedIconTheme,
@@ -704,13 +702,8 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
-              selectedIndex: widget.selectedIndex,
-              destinations: widget.destinations
-                  .map(
-                    (NavigationDestination destination) =>
-                        AdaptiveScaffold.toRailDestination(destination),
-                  )
-                  .toList(),
+              selectedIndex: safeSelectedIndex,
+              destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor: navRailTheme.backgroundColor,
               selectedIconTheme: navRailTheme.selectedIconTheme,
@@ -728,11 +721,13 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               config: <Breakpoint, SlotLayoutConfig>{
                 widget.smallBreakpoint: SlotLayout.from(
                   key: const Key("bottomNavigation"),
-                  builder: (_) => AdaptiveScaffold.standardBottomNavigationBar(
-                    currentIndex: widget.selectedIndex,
-                    destinations: widget.destinations,
-                    onDestinationSelected: widget.onSelectedIndexChange,
-                  ),
+                  builder: (_) => widget.destinations.length >= 2
+                      ? AdaptiveScaffold.standardBottomNavigationBar(
+                          currentIndex: safeSelectedIndex,
+                          destinations: widget.destinations,
+                          onDestinationSelected: widget.onSelectedIndexChange,
+                        )
+                      : const SizedBox.shrink(),
                 ),
               },
             )
@@ -914,7 +909,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                 extended: true,
                 leading: widget.leadingExtendedNavRail,
                 trailing: widget.trailingNavRail,
-                selectedIndex: widget.selectedIndex,
+                selectedIndex: safeSelectedIndex,
                 destinations: destinations,
                 onDestinationSelected: _onDrawerDestinationSelected,
                 backgroundColor: navRailTheme.backgroundColor,

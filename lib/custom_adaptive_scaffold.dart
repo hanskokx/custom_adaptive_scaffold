@@ -14,6 +14,7 @@ export "src/adaptive_layout.dart";
 export "src/adaptive_scaffold.dart";
 export "src/adaptive_scaffold_controller.dart";
 export "src/breakpoints.dart";
+export "src/destination/adaptive_scaffold_destination.dart";
 export "src/navigation_bar/navigation_bar.dart";
 export "src/navigation_bar/navigation_bar_destination.dart";
 export "src/navigation_destination.dart";
