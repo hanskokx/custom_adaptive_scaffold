@@ -734,7 +734,7 @@ class SemanticsTester {
 
   @override
   String toString() =>
-      "SemanticsTester for ${tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode}";
+      "SemanticsTester for ${tester.binding.renderViews.first.owner?.semanticsOwner?.rootSemanticsNode}";
 
   bool _stringAttributesEqual(
     List<StringAttribute> first,
@@ -914,7 +914,8 @@ class SemanticsTester {
 
     visit(
       ancestor ??
-          tester.binding.pipelineOwner.semanticsOwner!.rootSemanticsNode!,
+          tester.binding.renderViews.first.owner!.semanticsOwner!
+              .rootSemanticsNode!,
     );
 
     return result;
@@ -971,8 +972,8 @@ class SemanticsTester {
   String generateTestSemanticsExpressionForCurrentSemanticsTree(
     DebugSemanticsDumpOrder childOrder,
   ) {
-    final SemanticsNode? node =
-        tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode;
+    final SemanticsNode? node = tester
+        .binding.renderViews.first.owner?.semanticsOwner?.rootSemanticsNode;
     return _generateSemanticsTestForNode(node, 0, childOrder);
   }
 
@@ -1126,7 +1127,8 @@ class _HasSemantics extends Matcher {
     Map<dynamic, dynamic> matchState,
   ) {
     final bool doesMatch = _semantics._matches(
-      item.tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode,
+      item.tester.binding.renderViews.first.owner?.semanticsOwner
+          ?.rootSemanticsNode,
       matchState,
       ignoreTransform: ignoreTransform,
       ignoreRect: ignoreRect,
@@ -1140,7 +1142,7 @@ class _HasSemantics extends Matcher {
         childOrder,
       );
     }
-    if (item.tester.binding.pipelineOwner.semanticsOwner == null) {
+    if (item.tester.binding.renderViews.first.owner?.semanticsOwner == null) {
       matchState["additional-notes"] =
           "(Check that the SemanticsTester has not been disposed early.)";
     }
@@ -1173,8 +1175,8 @@ class _HasSemantics extends Matcher {
         .add("Current SemanticsNode tree:\n")
         .add(
           _indent(
-            RendererBinding
-                .instance.pipelineOwner.semanticsOwner?.rootSemanticsNode
+            RendererBinding.instance.renderViews.first.owner?.semanticsOwner
+                ?.rootSemanticsNode
                 ?.toStringDeep(childOrder: childOrder),
           ),
         )
