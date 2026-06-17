@@ -18,6 +18,13 @@ part "destination/status_transition_builder.dart";
 const double _kIndicatorHeight = 32;
 const double _kMaxLabelTextScaleFactor = 1.3;
 
+/// A typedef alias for [NavigationDestination].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's
+/// `NavigationDestination`. Equivalent to [CustomNavigationDestination].
+typedef CustomNavigationBarDestination = NavigationDestination;
+
 /// A Material 3 [NavigationBar] destination.
 ///
 /// Displays a label below an icon. Use with [NavigationBar.destinations].

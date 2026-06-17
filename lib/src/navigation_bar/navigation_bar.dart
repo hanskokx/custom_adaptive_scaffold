@@ -10,13 +10,6 @@ import "destination_info.dart";
 import "selectable_animated_builder.dart";
 import "theme_defaults.dart";
 
-/// A typedef alias for [NavigationDestination].
-///
-/// Use this name when you need to import both this package and
-/// `package:flutter/material.dart` without hiding Flutter's
-/// `NavigationDestination`. Equivalent to [CustomNavigationDestination].
-typedef CustomNavigationBarDestination = NavigationDestination;
-
 /// A typedef alias for [NavigationBar].
 ///
 /// Use this name when you need to import both this package and

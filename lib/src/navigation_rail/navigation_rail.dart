@@ -19,13 +19,6 @@ part "destination_widgets/destination_shared_state.dart";
 part "destination_widgets/destination_widget.dart";
 part "destination_widgets/indicator_ink_well.dart";
 
-@Deprecated(
-  "Deprecated in favor of NavigationRail. "
-  "Prefer hiding NavigationRail from Flutter's Material package using:\n"
-  "  import 'package:flutter/material.dart' hide NavigationRail;\n"
-  "or use NavigationRail directly from this package after hiding the Flutter original.",
-)
-
 /// A deprecated typedef alias for [NavigationRail].
 ///
 /// Migrate by either hiding Flutter's `NavigationRail` in your import and
