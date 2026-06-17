@@ -1,7 +1,7 @@
-import "material.dart";
-import "navigation_bar/navigation_bar_destination.dart";
+import "_internal_material.dart";
+import "navigation_bar/destination.dart";
+import "navigation_rail/destination.dart";
 import "navigation_rail/navigation_rail.dart";
-import "navigation_rail/navigation_rail_destination.dart";
 
 typedef CustomNavigationDestination = NavigationDestination;
 
@@ -13,6 +13,7 @@ class NavigationDestination extends StatelessWidget {
     Widget? selectedIcon,
     this.indicatorColor,
     this.indicatorShape,
+    this.margin,
     this.padding,
     this.disabled = false,
     this.tooltip,
@@ -26,18 +27,28 @@ class NavigationDestination extends StatelessWidget {
 
   final String? _labelText;
 
-  String get label => _labelText ?? tooltip ?? "";
+  String get label => _labelText ?? tooltipMessage ?? "";
 
   final String? tooltip;
+
+  String? get tooltipMessage {
+    if (tooltip == null) {
+      return _labelText?.isNotEmpty == true ? _labelText : null;
+    }
+    return tooltip!.isNotEmpty ? tooltip : null;
+  }
 
   final Color? indicatorColor;
   final ShapeBorder? indicatorShape;
 
+  final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
 
   Widget get _labelWidget => _labelText?.isNotEmpty == true
       ? Text(_labelText!)
-      : (tooltip != null ? Text(tooltip!) : const SizedBox.shrink());
+      : (tooltipMessage != null
+          ? Text(tooltipMessage!)
+          : const SizedBox.shrink());
 
   NavigationRailDestination toRailDestination() {
     return NavigationRailDestination(
@@ -46,9 +57,10 @@ class NavigationDestination extends StatelessWidget {
       selectedIcon: selectedIcon,
       indicatorColor: indicatorColor,
       indicatorShape: indicatorShape,
+      margin: margin,
       padding: padding,
       disabled: disabled,
-      tooltip: tooltip,
+      tooltip: tooltipMessage,
     );
   }
 
@@ -59,9 +71,10 @@ class NavigationDestination extends StatelessWidget {
       selectedIcon: selectedIcon,
       indicatorColor: indicatorColor,
       indicatorShape: indicatorShape,
+      margin: margin,
       padding: padding,
       disabled: disabled,
-      tooltip: tooltip,
+      tooltip: tooltipMessage,
     );
   }
 

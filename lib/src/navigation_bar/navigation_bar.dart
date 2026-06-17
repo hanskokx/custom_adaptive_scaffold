@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import "../../navigation_bar_theme.dart";
-import "../material.dart";
+import "../_internal_material.dart";
 import "../navigation_destination.dart";
-import "navigation_bar_destination.dart";
-import "navigation_destination_info.dart";
+import "destination.dart";
+import "destination_info.dart";
 import "selectable_animated_builder.dart";
+import "theme_defaults.dart";
 
 typedef CustomNavigationBarDestination = NavigationDestination;
 typedef CustomNavigationBar = NavigationBar;
@@ -231,7 +232,7 @@ class NavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NavigationBarThemeData defaults = defaultsFor(context);
+    final NavigationBarThemeData defaults = navigationBarDefaultsFor(context);
 
     final NavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
@@ -261,9 +262,9 @@ class NavigationBar extends StatelessWidget {
         child: SizedBox(
           height: effectiveHeight,
           child: Row(
-            children: destinations.map((e) {
-              final int i = destinations.indexOf(e);
-              final NavigationBarDestination destination = e.toBarDestination();
+            children: List<Widget>.generate(destinations.length, (int i) {
+              final NavigationBarDestination destination =
+                  destinations[i].toBarDestination();
 
               return Expanded(
                 child: SelectableAnimatedBuilder(
@@ -287,7 +288,7 @@ class NavigationBar extends StatelessWidget {
                   },
                 ),
               );
-            }).toList(),
+            }),
           ),
         ),
       ),

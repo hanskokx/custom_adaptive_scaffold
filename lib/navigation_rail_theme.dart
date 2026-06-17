@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "dart:ui" show lerpDouble;
+import "dart:ui" show Offset, lerpDouble;
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart" as m
     show NavigationRailThemeData, NavigationRailTheme;
 import "package:flutter/rendering.dart";
 
-import "src/material.dart";
+import "src/_internal_material.dart";
+import "src/navigation_rail/theme_defaults.dart";
 
 typedef CustomNavigationRailThemeData = NavigationRailThemeData;
 typedef CustomNavigationRailTheme = NavigationRailTheme;
@@ -46,22 +47,26 @@ class NavigationRailThemeData
   const NavigationRailThemeData({
     this.backgroundColor,
     this.elevation,
-    this.unselectedLabelTextStyle,
-    this.selectedLabelTextStyle,
-    this.unselectedIconTheme,
-    this.selectedIconTheme,
     this.groupAlignment,
-    this.labelType,
-    this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
-    this.navigationItemOverlayColor,
-    this.navigationItemIndicatorShape,
-    this.showLabelsWhenCollapsed,
-    this.minWidth,
-    this.minExtendedWidth,
+    this.labelType,
     this.margin,
+    this.minExtendedWidth,
+    this.minWidth,
+    this.navigationItemIndicatorShape,
+    this.navigationItemOverlayColor,
     this.padding,
+    this.selectedIconTheme,
+    this.selectedLabelTextStyle,
+    this.showLabelsWhenCollapsed,
+    this.tooltipOffset,
+    this.tooltipTrigger,
+    this.tooltipTriggerWhenLabelHidden,
+    this.tooltipTriggerWhenLabelVisible,
+    this.unselectedIconTheme,
+    this.unselectedLabelTextStyle,
+    this.useIndicator,
   });
 
   /// Color to be used for the [NavigationRail]'s background.
@@ -146,6 +151,25 @@ class NavigationRailThemeData
   /// Applies padding around navigation item content. Defaults to [EdgeInsets.zero].
   final EdgeInsetsGeometry? padding;
 
+  /// Defines the x/y offset of tooltip popovers.
+  final Offset? tooltipOffset;
+
+  /// Controls which gesture triggers the tooltip popover.
+  ///
+  /// If null, Flutter's platform default is used (long press on mobile,
+  /// long press and hover on desktop).
+  ///
+  /// For navigation destinations in this package, [TooltipTriggerMode.tap]
+  /// is mapped to a secondary tap (such as right click) so the primary tap
+  /// can continue to activate navigation.
+  final TooltipTriggerMode? tooltipTrigger;
+
+  /// Overrides [tooltipTrigger] when the destination label is visible.
+  final TooltipTriggerMode? tooltipTriggerWhenLabelVisible;
+
+  /// Overrides [tooltipTrigger] when the destination label is hidden.
+  final TooltipTriggerMode? tooltipTriggerWhenLabelHidden;
+
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
   @override
@@ -168,6 +192,10 @@ class NavigationRailThemeData
     double? minExtendedWidth,
     EdgeInsetsGeometry? margin,
     EdgeInsetsGeometry? padding,
+    Offset? tooltipOffset,
+    TooltipTriggerMode? tooltipTrigger,
+    TooltipTriggerMode? tooltipTriggerWhenLabelVisible,
+    TooltipTriggerMode? tooltipTriggerWhenLabelHidden,
   }) {
     return NavigationRailThemeData(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -193,6 +221,12 @@ class NavigationRailThemeData
       minExtendedWidth: minExtendedWidth ?? this.minExtendedWidth,
       margin: margin ?? this.margin,
       padding: padding ?? this.padding,
+      tooltipOffset: tooltipOffset ?? this.tooltipOffset,
+      tooltipTrigger: tooltipTrigger ?? this.tooltipTrigger,
+      tooltipTriggerWhenLabelVisible:
+          tooltipTriggerWhenLabelVisible ?? this.tooltipTriggerWhenLabelVisible,
+      tooltipTriggerWhenLabelHidden:
+          tooltipTriggerWhenLabelHidden ?? this.tooltipTriggerWhenLabelHidden,
     );
   }
 
@@ -254,15 +288,21 @@ class NavigationRailThemeData
           t < 0.5 ? a?.showLabelsWhenCollapsed : b?.showLabelsWhenCollapsed,
       minWidth: lerpDouble(a?.minWidth, b?.minWidth, t),
       minExtendedWidth: lerpDouble(a?.minExtendedWidth, b?.minExtendedWidth, t),
-      margin:
-          EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t) ?? EdgeInsets.zero,
-      padding:
-          EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t) ?? EdgeInsets.zero,
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+      tooltipOffset: Offset.lerp(a?.tooltipOffset, b?.tooltipOffset, t),
+      tooltipTrigger: t < 0.5 ? a?.tooltipTrigger : b?.tooltipTrigger,
+      tooltipTriggerWhenLabelVisible: t < 0.5
+          ? a?.tooltipTriggerWhenLabelVisible
+          : b?.tooltipTriggerWhenLabelVisible,
+      tooltipTriggerWhenLabelHidden: t < 0.5
+          ? a?.tooltipTriggerWhenLabelHidden
+          : b?.tooltipTriggerWhenLabelHidden,
     );
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll(<Object?>[
         backgroundColor,
         elevation,
         unselectedLabelTextStyle,
@@ -281,7 +321,11 @@ class NavigationRailThemeData
         minExtendedWidth,
         margin,
         padding,
-      );
+        tooltipOffset,
+        tooltipTrigger,
+        tooltipTriggerWhenLabelVisible,
+        tooltipTriggerWhenLabelHidden,
+      ]);
 
   @override
   bool operator ==(Object other) {
@@ -309,7 +353,12 @@ class NavigationRailThemeData
         other.minWidth == minWidth &&
         other.minExtendedWidth == minExtendedWidth &&
         other.margin == margin &&
-        other.padding == padding;
+        other.padding == padding &&
+        other.tooltipOffset == tooltipOffset &&
+        other.tooltipTrigger == tooltipTrigger &&
+        other.tooltipTriggerWhenLabelVisible ==
+            tooltipTriggerWhenLabelVisible &&
+        other.tooltipTriggerWhenLabelHidden == tooltipTriggerWhenLabelHidden;
   }
 
   @override
@@ -433,14 +482,42 @@ class NavigationRailThemeData
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "margin",
         margin,
-        defaultValue: EdgeInsets.zero,
+        defaultValue: null,
       ),
     );
     properties.add(
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "padding",
         padding,
-        defaultValue: EdgeInsets.zero,
+        defaultValue: null,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<Offset?>(
+        "tooltipOffset",
+        tooltipOffset,
+        defaultValue: null,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTrigger",
+        tooltipTrigger,
+        defaultValue: null,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTriggerWhenLabelVisible",
+        tooltipTriggerWhenLabelVisible,
+        defaultValue: null,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTriggerWhenLabelHidden",
+        tooltipTriggerWhenLabelHidden,
+        defaultValue: null,
       ),
     );
   }
@@ -467,6 +544,12 @@ class NavigationRailThemeData
       navigationItemIndicatorShape: null,
       minWidth: material.minWidth,
       minExtendedWidth: material.minExtendedWidth,
+      margin: null,
+      padding: null,
+      tooltipOffset: null,
+      tooltipTrigger: null,
+      tooltipTriggerWhenLabelVisible: null,
+      tooltipTriggerWhenLabelHidden: null,
     );
   }
 }
@@ -502,8 +585,7 @@ class NavigationRailTheme extends InheritedTheme
   /// ```dart
   /// NavigationRailThemeData theme = NavigationRailTheme.of(context);
   /// ```
-  static NavigationRailThemeData of(BuildContext context) {
-    // The user is using NavigationRailTheme from this package
+  static NavigationRailThemeData? maybeOf(BuildContext context) {
     final NavigationRailTheme? navigationRailTheme =
         context.dependOnInheritedWidgetOfExactType<NavigationRailTheme>();
 
@@ -511,22 +593,71 @@ class NavigationRailTheme extends InheritedTheme
       return navigationRailTheme.data;
     }
 
-    // The user is using a theme extension to provide NavigationRailThemeData
-    // from his package
-
-    final NavigationRailThemeData? themeExtension =
-        Theme.of(context).extension<NavigationRailThemeData>();
-
-    if (themeExtension != null) {
-      return themeExtension;
-    }
-
-    // The user is using Flutter's Material NavigationRailThemeData, so we
-    // convert it to our own NavigationRailThemeData
     final m.NavigationRailThemeData materialNavigationRailTheme =
         m.NavigationRailTheme.of(context);
 
+    if (materialNavigationRailTheme is NavigationRailThemeData) {
+      return materialNavigationRailTheme;
+    }
+
+    final bool hasAnyExplicitValue =
+        materialNavigationRailTheme.backgroundColor != null ||
+            materialNavigationRailTheme.elevation != null ||
+            materialNavigationRailTheme.unselectedLabelTextStyle != null ||
+            materialNavigationRailTheme.selectedLabelTextStyle != null ||
+            materialNavigationRailTheme.unselectedIconTheme != null ||
+            materialNavigationRailTheme.selectedIconTheme != null ||
+            materialNavigationRailTheme.groupAlignment != null ||
+            materialNavigationRailTheme.labelType != null ||
+            materialNavigationRailTheme.useIndicator != null ||
+            materialNavigationRailTheme.indicatorColor != null ||
+            materialNavigationRailTheme.indicatorShape != null ||
+            materialNavigationRailTheme.minWidth != null ||
+            materialNavigationRailTheme.minExtendedWidth != null;
+
+    if (!hasAnyExplicitValue) {
+      return null;
+    }
+
     return NavigationRailThemeData.fromMaterial(materialNavigationRailTheme);
+  }
+
+  static NavigationRailThemeData of(BuildContext context) {
+    final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
+
+    final NavigationRailThemeData? explicitTheme = maybeOf(context);
+
+    if (explicitTheme != null) {
+      return defaults.copyWith(
+        backgroundColor: explicitTheme.backgroundColor,
+        elevation: explicitTheme.elevation,
+        unselectedLabelTextStyle: explicitTheme.unselectedLabelTextStyle,
+        selectedLabelTextStyle: explicitTheme.selectedLabelTextStyle,
+        unselectedIconTheme: explicitTheme.unselectedIconTheme,
+        selectedIconTheme: explicitTheme.selectedIconTheme,
+        groupAlignment: explicitTheme.groupAlignment,
+        labelType: explicitTheme.labelType,
+        useIndicator: explicitTheme.useIndicator,
+        indicatorColor: explicitTheme.indicatorColor,
+        indicatorShape: explicitTheme.indicatorShape,
+        navigationItemOverlayColor: explicitTheme.navigationItemOverlayColor,
+        navigationItemIndicatorShape:
+            explicitTheme.navigationItemIndicatorShape,
+        showLabelsWhenCollapsed: explicitTheme.showLabelsWhenCollapsed,
+        minWidth: explicitTheme.minWidth,
+        minExtendedWidth: explicitTheme.minExtendedWidth,
+        margin: explicitTheme.margin,
+        padding: explicitTheme.padding,
+        tooltipOffset: explicitTheme.tooltipOffset,
+        tooltipTrigger: explicitTheme.tooltipTrigger,
+        tooltipTriggerWhenLabelVisible:
+            explicitTheme.tooltipTriggerWhenLabelVisible,
+        tooltipTriggerWhenLabelHidden:
+            explicitTheme.tooltipTriggerWhenLabelHidden,
+      );
+    }
+
+    return defaults;
   }
 
   @override
@@ -538,141 +669,3 @@ class NavigationRailTheme extends InheritedTheme
   bool updateShouldNotify(NavigationRailTheme oldWidget) =>
       data != oldWidget.data;
 }
-
-// Hand coded defaults based on Material Design 2.
-class NavigationRailDefaultsM2 extends NavigationRailThemeData {
-  NavigationRailDefaultsM2(BuildContext context)
-      : _theme = Theme.of(context),
-        _colors = Theme.of(context).colorScheme,
-        super(
-          elevation: 0,
-          groupAlignment: -1,
-          labelType: NavigationRailLabelType.none,
-          useIndicator: false,
-          minWidth: 72.0,
-          minExtendedWidth: 256,
-        );
-
-  final ThemeData _theme;
-  final ColorScheme _colors;
-
-  @override
-  Color? get backgroundColor => _colors.surface;
-
-  @override
-  TextStyle? get unselectedLabelTextStyle {
-    return _theme.textTheme.bodyLarge!
-        .copyWith(color: _colors.onSurface.withValues(alpha: 0.64));
-  }
-
-  @override
-  TextStyle? get selectedLabelTextStyle {
-    return _theme.textTheme.bodyLarge!.copyWith(color: _colors.primary);
-  }
-
-  @override
-  IconThemeData? get unselectedIconTheme {
-    return IconThemeData(
-      size: 24.0,
-      color: _colors.onSurface,
-      opacity: 0.64,
-    );
-  }
-
-  @override
-  IconThemeData? get selectedIconTheme {
-    return IconThemeData(
-      size: 24.0,
-      color: _colors.primary,
-      opacity: 1.0,
-    );
-  }
-
-  @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.pressed) ||
-          states.contains(WidgetState.focused)) {
-        return _colors.onSurface.withValues(alpha: 0.12);
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withValues(alpha: 0.08);
-      }
-      return null;
-    });
-  }
-}
-
-// BEGIN GENERATED TOKEN PROPERTIES - NavigationRail
-
-// Do not edit by hand. The code between the "BEGIN GENERATED" and
-// "END GENERATED" comments are generated from data in the Material
-// Design token database by the script:
-//   dev/tools/gen_defaults/bin/gen_defaults.dart.
-
-class NavigationRailDefaultsM3 extends NavigationRailThemeData {
-  NavigationRailDefaultsM3(this.context)
-      : super(
-          elevation: 0.0,
-          groupAlignment: -1,
-          labelType: NavigationRailLabelType.none,
-          useIndicator: true,
-          minWidth: 80.0,
-          minExtendedWidth: 256,
-        );
-
-  final BuildContext context;
-  late final ColorScheme _colors = Theme.of(context).colorScheme;
-  late final TextTheme _textTheme = Theme.of(context).textTheme;
-
-  @override
-  Color? get backgroundColor => _colors.surface;
-
-  @override
-  TextStyle? get unselectedLabelTextStyle {
-    return _textTheme.labelMedium!.copyWith(color: _colors.onSurface);
-  }
-
-  @override
-  TextStyle? get selectedLabelTextStyle {
-    return _textTheme.labelMedium!.copyWith(color: _colors.onSurface);
-  }
-
-  @override
-  IconThemeData? get unselectedIconTheme {
-    return IconThemeData(
-      size: 24.0,
-      color: _colors.onSurfaceVariant,
-    );
-  }
-
-  @override
-  IconThemeData? get selectedIconTheme {
-    return IconThemeData(
-      size: 24.0,
-      color: _colors.onSecondaryContainer,
-    );
-  }
-
-  @override
-  Color? get indicatorColor => _colors.secondaryContainer;
-
-  @override
-  ShapeBorder? get indicatorShape => const StadiumBorder();
-
-  @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.pressed) ||
-          states.contains(WidgetState.focused)) {
-        return _colors.onSurface.withValues(alpha: 0.12);
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withValues(alpha: 0.08);
-      }
-      return null;
-    });
-  }
-}
-
-// END GENERATED TOKEN PROPERTIES - NavigationRail

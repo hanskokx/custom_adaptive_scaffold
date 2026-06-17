@@ -1,4 +1,4 @@
-part of "../navigation_bar_destination.dart";
+part of "../destination.dart";
 
 /// Widget that listens to an animation, and rebuilds when the animation changes
 /// [AnimationStatus].

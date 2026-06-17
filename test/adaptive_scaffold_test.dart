@@ -8,7 +8,8 @@ import "package:flutter/material.dart"
         NavigationDestination,
         NavigationRailDestination,
         NavigationRail,
-        NavigationRailThemeData;
+        NavigationRailThemeData,
+        NavigationBar;
 import "package:flutter_test/flutter_test.dart";
 
 import "simulated_layout.dart";
@@ -322,9 +323,9 @@ void main() {
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: MediaQuery(
-            data: const MediaQueryData(size: Size(700, 900)),
+            data: MediaQueryData(size: Size(700, 900)),
             child: AdaptiveScaffold(
               destinations: destinations,
             ),
@@ -790,29 +791,67 @@ void main() {
   );
 
   testWidgets(
-    "When only one destination passed, shall throw assertion error",
+    "When only one destination passed, renders without error",
     (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        NavigationDestination(
-          icon: Icon(Icons.inbox_outlined),
-          selectedIcon: Icon(Icons.inbox),
-          label: "Inbox",
-        ),
-      ];
-
-      expect(
-        () => tester.pumpWidget(
-          MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(700, 900)),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-              ),
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(700, 900)),
+            child: AdaptiveScaffold(
+              destinations: <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  selectedIcon: Icon(Icons.inbox),
+                  label: "Inbox",
+                ),
+              ],
             ),
           ),
         ),
-        throwsA(isA<AssertionError>()),
       );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    "When zero destinations passed, renders without error",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(700, 900)),
+            child: AdaptiveScaffold(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    "When fewer than 2 destinations at compact width, bottom nav is not shown",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(400, 800)),
+            child: AdaptiveScaffold(
+              useDrawer: false,
+              destinations: <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  label: "Inbox",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(NavigationBar), findsNothing);
+      expect(tester.takeException(), isNull);
     },
   );
 
@@ -878,8 +917,8 @@ void main() {
               labelType: NavigationRailLabelType.all,
             ),
           ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
+          home: const MediaQuery(
+            data: MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
             ),

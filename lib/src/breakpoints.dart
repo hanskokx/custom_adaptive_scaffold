@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import "../custom_adaptive_scaffold.dart";
-import "material.dart";
+import "_internal_material.dart";
 
 /// A group of standard breakpoints built according to the material
 /// specifications for screen width size.

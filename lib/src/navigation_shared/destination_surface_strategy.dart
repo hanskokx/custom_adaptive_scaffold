@@ -7,6 +7,8 @@ import "package:flutter/material.dart"
 
 import "../../navigation_bar_theme.dart";
 import "../../navigation_rail_theme.dart";
+import "../navigation_bar/theme_defaults.dart";
+import "../navigation_rail/theme_defaults.dart";
 import "destination_build_data.dart";
 
 // Rail layout spacing constants (mirror values defined in rail_destination.dart
@@ -126,9 +128,7 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
   ) {
     final ThemeData theme = Theme.of(context);
     final NavigationRailThemeData railTheme = NavigationRailTheme.of(context);
-    final NavigationRailThemeData defaults = theme.useMaterial3
-        ? NavigationRailDefaultsM3(context)
-        : NavigationRailDefaultsM2(context);
+    final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
 
     // --- Indicator ---
     final bool useIndicator =
@@ -151,11 +151,11 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     final bool material3 = theme.useMaterial3;
 
     final EdgeInsets destinationPadding =
-        (input.padding ?? railTheme.padding)?.resolve(textDirection) ??
-            EdgeInsets.zero;
+        (input.padding ?? railTheme.padding ?? EdgeInsets.zero)
+            .resolve(textDirection);
     final EdgeInsets destinationMargin =
-        (input.margin ?? railTheme.margin)?.resolve(textDirection) ??
-            EdgeInsets.zero;
+        (input.margin ?? railTheme.margin ?? EdgeInsets.zero)
+            .resolve(textDirection);
 
     final double paddingAndMarginWidth =
         destinationPadding.horizontal + destinationMargin.horizontal;
@@ -291,7 +291,7 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
   ) {
     final ThemeData theme = Theme.of(context);
     final NavigationBarThemeData barTheme = NavigationBarTheme.of(context);
-    final NavigationBarThemeData defaults = defaultsFor(context);
+    final NavigationBarThemeData defaults = navigationBarDefaultsFor(context);
 
     // Compute the combined widget state so icon/label styles respond to
     // disabled and selected simultaneously.

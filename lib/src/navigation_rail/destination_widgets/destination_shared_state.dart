@@ -25,6 +25,7 @@ class WrappedRailDestination extends StatefulWidget {
     required this.hoverColor,
     required this.selectionAnimation,
     required this.child,
+    this.tooltipTrigger,
     this.tooltip,
     this.centerIndicatorHorizontally = false,
     super.key,
@@ -48,6 +49,7 @@ class WrappedRailDestination extends StatefulWidget {
   final Color hoverColor;
   final Animation<double> selectionAnimation;
   final Widget child;
+  final TooltipTriggerMode? tooltipTrigger;
   final String? tooltip;
 
   @override
@@ -72,22 +74,30 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
   }
 
   void _handleStatesChanged() {
-    if (mounted) {
-      setState(() {});
+    if (!mounted) {
+      return;
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final CustomNavigationRailThemeData explicitRailTheme =
+        NavigationRailTheme.maybeOf(context) ??
+            const CustomNavigationRailThemeData();
     final CustomNavigationRailThemeData railTheme =
         NavigationRailTheme.of(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
-        railTheme.navigationItemOverlayColor;
-    final bool useM2FullItemInk = !widget.material3;
-    final bool useM3CustomFullItemOverlay =
-        widget.material3 && effectiveNavigationItemOverlayColor != null;
+        explicitRailTheme.navigationItemOverlayColor;
+    final bool hasExplicitNavigationItemIndicatorShape =
+        explicitRailTheme.navigationItemIndicatorShape != null;
     final bool disableFullItemInk =
-        !useM2FullItemInk && !useM3CustomFullItemOverlay;
+        effectiveNavigationItemOverlayColor == null &&
+            !hasExplicitNavigationItemIndicatorShape;
     final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
     final WidgetStateProperty<Color?> iconOverlayColor =
         WidgetStateProperty.resolveWith((Set<WidgetState> states) {
@@ -100,14 +110,28 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
       }
       return null;
     });
-    final WidgetStateProperty<Color?>? effectiveInkOverlayColor =
+    final WidgetStateProperty<Color?> fullItemOverlayColor =
+        WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+      if (states.contains(WidgetState.pressed) ||
+          states.contains(WidgetState.focused)) {
+        return widget.splashColor;
+      }
+      if (states.contains(WidgetState.hovered)) {
+        return widget.hoverColor;
+      }
+      return null;
+    });
+    final WidgetStateProperty<Color?> effectiveInkOverlayColor =
         disableFullItemInk
             ? iconOverlayColor
-            : useM3CustomFullItemOverlay
-                ? effectiveNavigationItemOverlayColor
-                : null;
-    final ShapeBorder effectiveNavigationItemIndicatorShape =
-        railTheme.navigationItemIndicatorShape ?? const StadiumBorder();
+            : effectiveNavigationItemOverlayColor ?? fullItemOverlayColor;
+    final ShapeBorder? effectiveNavigationItemIndicatorShape =
+        disableFullItemInk
+            ? null
+            : explicitRailTheme.navigationItemIndicatorShape ??
+                explicitRailTheme.indicatorShape ??
+                railTheme.indicatorShape ??
+                const StadiumBorder();
 
     final Widget iconInteractionIndicator = widget.centerIndicatorHorizontally
         ? Positioned.fill(
@@ -154,8 +178,8 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
             ),
             customBorder: effectiveNavigationItemIndicatorShape,
             highlightColor: null,
-            splashColor: disableFullItemInk ? null : widget.splashColor,
-            hoverColor: disableFullItemInk ? null : widget.hoverColor,
+            splashColor: disableFullItemInk ? null : Colors.transparent,
+            hoverColor: disableFullItemInk ? null : Colors.transparent,
             overlayColor: effectiveInkOverlayColor,
             indicatorWidth: widget.indicatorWidth,
             disableFullItemInk: disableFullItemInk,
@@ -173,23 +197,18 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
       ],
     );
 
-    final Widget maybeTooltip =
-        widget.tooltip != null && widget.tooltip!.isNotEmpty
-            ? Tooltip(
-                message: widget.tooltip!,
-                excludeFromSemantics: true,
-                preferBelow: false,
-                child: content,
-              )
-            : content;
-
     return Semantics(
       container: true,
       selected: widget.selected,
       enabled: !widget.disabled,
       child: Material(
         type: MaterialType.transparency,
-        child: maybeTooltip,
+        child: DestinationTooltip(
+          message: widget.tooltip,
+          tooltipOffset: railTheme.tooltipOffset ?? const Offset(0, 24),
+          tooltipTrigger: widget.tooltipTrigger,
+          child: content,
+        ),
       ),
     );
   }

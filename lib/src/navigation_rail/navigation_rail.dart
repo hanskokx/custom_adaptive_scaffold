@@ -6,17 +6,19 @@ import "dart:ui";
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
-import "../destination/destination_build_data.dart";
-import "../destination/destination_surface_strategy.dart";
-import "../destination/navigation_indicator.dart";
-import "../material.dart";
+import "../_internal_material.dart";
 import "../navigation_icon.dart";
-import "widgets/navigation_rail_animation.dart";
+import "../navigation_shared/destination_build_data.dart";
+import "../navigation_shared/destination_surface_strategy.dart";
+import "../navigation_shared/navigation_destination_tooltip.dart";
+import "../navigation_shared/navigation_indicator.dart";
+import "destination_widgets/animation.dart";
+import "theme_defaults.dart";
 
-part "expanded/navigation_rail_destination.dart";
-part "widgets/indicator_ink_well.dart";
-part "widgets/rail_destination.dart";
-part "widgets/shared_rail_destination_state.dart";
+part "destination_layout/destination.dart";
+part "destination_widgets/destination_shared_state.dart";
+part "destination_widgets/destination_widget.dart";
+part "destination_widgets/indicator_ink_well.dart";
 
 @Deprecated(
   "Deprecated in favor of NavigationRail. "
@@ -436,9 +438,7 @@ class _NavigationRailState extends State<NavigationRail>
   Widget build(BuildContext context) {
     final NavigationRailThemeData navigationRailTheme =
         NavigationRailTheme.of(context);
-    final NavigationRailThemeData defaults = Theme.of(context).useMaterial3
-        ? NavigationRailDefaultsM3(context)
-        : NavigationRailDefaultsM2(context);
+    final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
 
@@ -501,6 +501,13 @@ class _NavigationRailState extends State<NavigationRail>
     final MainAxisAlignment effectiveMainAxisAlignment =
         widget.mainAxisAlignment ?? MainAxisAlignment.start;
 
+    final Widget? trailing = widget.trailing == null
+        ? null
+        : Material(
+            type: MaterialType.transparency,
+            child: widget.trailing!,
+          );
+
     Widget mainGroup = Column(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: effectiveMainAxisAlignment,
@@ -511,7 +518,7 @@ class _NavigationRailState extends State<NavigationRail>
         ],
         for (int i = 0; i < widget.destinations.length; i += 1)
           Container(
-            margin: railDestinationMargin,
+            margin: widget.destinations[i].margin ?? railDestinationMargin,
             child: RailDestination(
               labelType: labelType,
               minWidth: widget.minWidth,
@@ -529,8 +536,8 @@ class _NavigationRailState extends State<NavigationRail>
               labelTextStyle: widget.selectedIndex == i
                   ? selectedLabelTextStyle
                   : unselectedLabelTextStyle,
-              padding: railDestinationPadding ??
-                  widget.destinations[i].padding ??
+              padding: widget.destinations[i].padding ??
+                  railDestinationPadding ??
                   const EdgeInsets.symmetric(
                     horizontal: _horizontalDestinationPadding,
                   ),
@@ -555,8 +562,7 @@ class _NavigationRailState extends State<NavigationRail>
               tooltip: widget.destinations[i].tooltipLabel,
             ),
           ),
-        if (widget.trailing != null && !widget.trailingAtBottom)
-          widget.trailing!,
+        if (trailing != null && !widget.trailingAtBottom) trailing,
       ],
     );
 
@@ -591,8 +597,7 @@ class _NavigationRailState extends State<NavigationRail>
                         )
                       : mainGroup,
                 ),
-                if (widget.trailing != null && widget.trailingAtBottom)
-                  widget.trailing!,
+                if (trailing != null && widget.trailingAtBottom) trailing,
               ],
             ),
           ),

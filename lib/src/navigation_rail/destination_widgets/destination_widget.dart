@@ -157,14 +157,21 @@ class _RailDestinationState extends State<RailDestination>
 
     // Label type is a layout-level concern, resolved here after theming.
     final NavigationRailThemeData railTheme = NavigationRailTheme.of(context);
-    final NavigationRailThemeData defaults = Theme.of(context).useMaterial3
-        ? NavigationRailDefaultsM3(context)
-        : NavigationRailDefaultsM2(context);
+    final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
     final NavigationRailLabelType labelType =
         widget.labelType ?? railTheme.labelType ?? defaults.labelType!;
 
     final Animation<double> extendedAnimation = data.extendedAnimation;
     final bool collapsed = extendedAnimation.value == 0;
+    final bool isLabelVisible = switch (labelType) {
+      NavigationRailLabelType.none =>
+        !collapsed || widget.showLabelsWhenCollapsed,
+      NavigationRailLabelType.selected => widget.selected ?? false,
+      NavigationRailLabelType.all => true,
+    };
+    final TooltipTriggerMode? effectiveTooltipTrigger = isLabelVisible
+        ? railTheme.tooltipTriggerWhenLabelVisible ?? railTheme.tooltipTrigger
+        : railTheme.tooltipTriggerWhenLabelHidden ?? railTheme.tooltipTrigger;
 
     // Indicator vertical centering when icon exceeds indicator height.
     final bool isLargeIconSize = data.resolvedIconSize != null &&
@@ -215,7 +222,7 @@ class _RailDestinationState extends State<RailDestination>
                   (_kIndicatorHeight / 2) +
                   indicatorVerticalOffset,
             );
-            if (data.minWidth < NavigationRailDefaultsM2(context).minWidth!) {
+            if (data.minWidth < navigationRailMinWidthM2) {
               indicatorOffset = Offset(
                 data.minWidth / 2 + _horizontalDestinationSpacingM3,
                 indicatorVerticalPadding +
@@ -334,7 +341,7 @@ class _RailDestinationState extends State<RailDestination>
               (_kIndicatorHeight / 2) +
               indicatorVerticalOffset,
         );
-        if (data.minWidth < NavigationRailDefaultsM2(context).minWidth!) {
+        if (data.minWidth < navigationRailMinWidthM2) {
           indicatorOffset = Offset(
             data.minWidth / 2 + _horizontalDestinationSpacingM3,
             indicatorVerticalPadding +
@@ -406,7 +413,7 @@ class _RailDestinationState extends State<RailDestination>
               (_kIndicatorHeight / 2) +
               indicatorVerticalOffset,
         );
-        if (data.minWidth < NavigationRailDefaultsM2(context).minWidth!) {
+        if (data.minWidth < navigationRailMinWidthM2) {
           indicatorOffset = Offset(
             data.minWidth / 2 + _horizontalDestinationSpacingM3,
             indicatorVerticalPadding +
@@ -469,6 +476,7 @@ class _RailDestinationState extends State<RailDestination>
       splashColor: data.splashColor,
       hoverColor: data.hoverColor,
       selectionAnimation: _destinationAnimation,
+      tooltipTrigger: effectiveTooltipTrigger,
       tooltip: widget.tooltip,
       child: content,
     );

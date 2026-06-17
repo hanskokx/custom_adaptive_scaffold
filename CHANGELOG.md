@@ -1,3 +1,24 @@
+## UNRELEASED
+
+* Adds `AdaptiveScaffoldDestination`, a new `NavigationDestination` subclass
+  that accepts an `IconData` and a `title` string, matching the API style of
+  the upstream Flutter `AdaptiveScaffoldDestination`. It can be used
+  interchangeably with `NavigationDestination` in any destination list.
+* `AdaptiveScaffold.destinations` is no longer `required` and defaults to
+  `const []`, allowing 0 or 1 destinations without assertion errors.
+* Bottom navigation bar is suppressed when fewer than 2 destinations are
+  provided, matching the underlying `NavigationBar` widget's constraint.
+* `selectedIndex` is now normalized at the `AdaptiveScaffold` boundary: if the
+  index is out of range or destinations is empty, `null` is passed to
+  navigation components to avoid downstream assertion failures.
+* All rail breakpoints (medium, mediumLarge, large, extraLarge) now share a
+  single destination conversion pipeline that consistently applies
+  `navigationRailDestinationBuilder` when provided. Previously, the large and
+  extraLarge breakpoints bypassed the custom builder.
+* Fixed a bug where duplicate destinations in the list caused
+  `navigationRailDestinationBuilder` to receive the first-match index instead
+  of the positional index.
+
 ## 3.0.1
 
 * [FIX] Attaching an `AdaptiveScaffoldController` without `initialIntent` now

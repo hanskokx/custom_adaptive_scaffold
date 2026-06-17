@@ -13,6 +13,7 @@ import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/material.dart"
     hide
         NavigationBar,
+        NavigationBarTheme,
         NavigationDestination,
         NavigationRailDestination,
         NavigationRail,
@@ -137,6 +138,175 @@ void main() {
       await tester.pumpAndSettle();
       expect(tapped, 0);
     });
+
+    testWidgets("bar tooltip falls back to label when tooltip is null",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ],
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.message, "Home");
+    });
+
+    testWidgets("bar tooltip is suppressed when tooltip is empty",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              tooltip: "",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ],
+        ),
+      );
+
+      final List<Tooltip> tooltips =
+          tester.widgetList<Tooltip>(find.byType(Tooltip)).toList();
+      final List<String?> messages =
+          tooltips.map((Tooltip tooltip) => tooltip.message).toList();
+      expect(messages, isNot(contains("")));
+      expect(messages, contains("Search"));
+    });
+
+    testWidgets("bar tooltip uses themed vertical offset",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              tooltipOffset: Offset(0, 64),
+            ),
+          ),
+          home: Scaffold(
+            body: NavigationBar(
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  tooltip: "Go Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.verticalOffset, 64);
+    });
+
+    testWidgets("rail tooltip falls back to label when tooltip is null",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ].map((NavigationDestination d) => d.toRailDestination()).toList(),
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.message, "Home");
+    });
+
+    testWidgets("rail tooltip is suppressed when tooltip is empty",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              tooltip: "",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ].map((NavigationDestination d) => d.toRailDestination()).toList(),
+        ),
+      );
+
+      final List<Tooltip> tooltips =
+          tester.widgetList<Tooltip>(find.byType(Tooltip)).toList();
+      final List<String?> messages =
+          tooltips.map((Tooltip tooltip) => tooltip.message).toList();
+      expect(messages, isNot(contains("")));
+      expect(messages, contains("Search"));
+    });
+
+    testWidgets("rail tooltip uses themed vertical offset",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const CustomNavigationRailThemeData(
+              tooltipOffset: Offset(0, 52),
+            ),
+          ),
+          home: Scaffold(
+            body: NavigationRail(
+              selectedIndex: 0,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  tooltip: "Go Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ]
+                  .map((NavigationDestination d) => d.toRailDestination())
+                  .toList(),
+            ),
+          ),
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.verticalOffset, 52);
+    });
   });
 
   group("NavigationBar parity options", () {
@@ -208,6 +378,272 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.home), findsOneWidget);
       expect(find.byIcon(Icons.home_filled), findsNothing);
+    });
+
+    testWidgets("selection switch updates icons immediately",
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return MaterialApp(
+              home: Scaffold(
+                body: NavigationBar(
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (int index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  destinations: const [
+                    NavigationBarDestination(
+                      icon: Icon(Icons.home),
+                      selectedIcon: Icon(Icons.home_filled),
+                      label: "Home",
+                    ),
+                    NavigationBarDestination(
+                      icon: Icon(Icons.search),
+                      selectedIcon: Icon(Icons.search_off),
+                      label: "Search",
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+
+      expect(find.byIcon(Icons.home_filled), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsNothing);
+
+      await tester.tap(find.text("Search"));
+      await tester.pump();
+
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byIcon(Icons.home_filled), findsNothing);
+      expect(find.byIcon(Icons.search_off), findsOneWidget);
+    });
+
+    testWidgets("previous destination deselects without hover refresh",
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return MaterialApp(
+              home: Scaffold(
+                body: NavigationBar(
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (int index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  destinations: const [
+                    NavigationBarDestination(
+                      icon: Icon(Icons.home),
+                      selectedIcon: Icon(Icons.home_filled),
+                      label: "Home",
+                    ),
+                    NavigationBarDestination(
+                      icon: Icon(Icons.search),
+                      selectedIcon: Icon(Icons.search_off),
+                      label: "Search",
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+
+      // Trigger destination switch and verify deselection before any hover.
+      await tester.tap(find.text("Search"));
+      await tester.pump();
+
+      expect(find.byIcon(Icons.home_filled), findsNothing);
+      expect(find.byIcon(Icons.home), findsOneWidget);
+    });
+
+    testWidgets("navigation item overlay requires explicit opt-in",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              navigationItemIndicatorShape: RoundedRectangleBorder(),
+            ),
+          ),
+          home: Scaffold(
+            body: _buildBar(selectedIndex: 0, onTap: null),
+          ),
+        ),
+      );
+
+      final CustomNavigationBarThemeData? explicitTheme =
+          NavigationBarTheme.maybeOf(
+        tester.element(find.byType(NavigationBar)),
+      );
+      expect(explicitTheme, isNotNull);
+      expect(explicitTheme!.navigationItemOverlayColor, isNull);
+      expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
+    });
+
+    testWidgets(
+        "standardBottomNavigationBar preserves explicit-only overlay intent",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              navigationItemIndicatorShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          home: Scaffold(
+            body: AdaptiveScaffold.standardBottomNavigationBar(
+              currentIndex: 0,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final BuildContext barContext =
+          tester.element(find.byType(NavigationBar));
+      final CustomNavigationBarThemeData? explicitTheme =
+          NavigationBarTheme.maybeOf(barContext);
+
+      expect(explicitTheme, isNotNull);
+      expect(explicitTheme!.navigationItemOverlayColor, isNull);
+      expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
+    });
+
+    testWidgets("navigation rail overlay requires explicit opt-in",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationRailTheme: const CustomNavigationRailThemeData(
+              backgroundColor: Colors.black,
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: [
+                _buildRail(selectedIndex: 0, onTap: null),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final IndicatorInkWell inkWell = tester.widget<IndicatorInkWell>(
+        find.byType(IndicatorInkWell).first,
+      );
+
+      expect(inkWell.disableFullItemInk, isTrue);
+      expect(inkWell.customBorder, isNull);
+    });
+
+    testWidgets("navigation rail item shape enables whole-item ink",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationRailTheme: const CustomNavigationRailThemeData(
+              navigationItemIndicatorShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: [
+                _buildRail(selectedIndex: 0, onTap: null),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final IndicatorInkWell inkWell = tester.widget<IndicatorInkWell>(
+        find.byType(IndicatorInkWell).first,
+      );
+
+      expect(inkWell.disableFullItemInk, isFalse);
+      expect(inkWell.customBorder, isA<RoundedRectangleBorder>());
+      expect(
+        inkWell.overlayColor?.resolve(const <WidgetState>{WidgetState.hovered}),
+        isNotNull,
+      );
+    });
+
+    testWidgets("standardBottomNavigationBar switches selected icon on tap",
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return MaterialApp(
+              home: Scaffold(
+                body: AdaptiveScaffold.standardBottomNavigationBar(
+                  currentIndex: selectedIndex,
+                  onDestinationSelected: (int index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.home_outlined),
+                      selectedIcon: Icon(Icons.home),
+                      label: "Feed",
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.search_outlined),
+                      selectedIcon: Icon(Icons.search),
+                      label: "Search",
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byIcon(Icons.home_outlined), findsNothing);
+      expect(find.byIcon(Icons.search), findsNothing);
+      expect(find.byIcon(Icons.search_outlined), findsOneWidget);
+
+      await tester.tap(find.text("Search"));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.home), findsNothing);
+      expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.search), findsOneWidget);
+      expect(find.byIcon(Icons.search_outlined), findsNothing);
     });
   });
 
@@ -380,5 +816,137 @@ void main() {
       expect(barTaps, 0, reason: "bar disabled destination must not fire");
       expect(railTaps, 0, reason: "rail disabled destination must not fire");
     });
+  });
+
+  group("AdaptiveScaffoldDestination", () {
+    test("is assignable to List<NavigationDestination>", () {
+      final List<NavigationDestination> destinations = [
+        AdaptiveScaffoldDestination(title: "Home", icon: Icons.home),
+        AdaptiveScaffoldDestination(
+          title: "Profile",
+          icon: Icons.person_outline,
+          selectedIcon: Icons.person,
+        ),
+        const NavigationDestination(
+          icon: Icon(Icons.settings_outlined),
+          selectedIcon: Icon(Icons.settings),
+          label: "Settings",
+        ),
+      ];
+      expect(destinations.length, 3);
+      expect(destinations[0], isA<AdaptiveScaffoldDestination>());
+      expect(destinations[2], isA<NavigationDestination>());
+    });
+
+    test("toRailDestination uses title as label", () {
+      final dest = AdaptiveScaffoldDestination(
+        title: "Inbox",
+        icon: Icons.inbox_outlined,
+      );
+      final rail = dest.toRailDestination();
+      final labelText = (rail.labelWidget as Text).data;
+      expect(labelText, "Inbox");
+    });
+
+    test("toBarDestination uses title as label", () {
+      final dest = AdaptiveScaffoldDestination(
+        title: "Inbox",
+        icon: Icons.inbox_outlined,
+      );
+      final bar = dest.toBarDestination();
+      expect(bar.label, "Inbox");
+    });
+
+    testWidgets("renders in AdaptiveScaffold without error",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(800, 900)),
+            child: AdaptiveScaffold(
+              destinations: [
+                AdaptiveScaffoldDestination(title: "Home", icon: Icons.home),
+                AdaptiveScaffoldDestination(
+                  title: "Profile",
+                  icon: Icons.person,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  group("navigationRailDestinationBuilder index accuracy", () {
+    testWidgets(
+      "builder receives positional index even with duplicate destinations",
+      (WidgetTester tester) async {
+        final List<int> capturedIndexes = [];
+        const NavigationDestination dest = NavigationDestination(
+          icon: Icon(Icons.star),
+          label: "Star",
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(800, 900)),
+              child: AdaptiveScaffold(
+                destinations: const [dest, dest, dest],
+                selectedIndex: 0,
+                navigationRailDestinationBuilder: (index, destination) {
+                  capturedIndexes.add(index);
+                  return destination.toRailDestination();
+                },
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(capturedIndexes, containsAllInOrder([0, 1, 2]));
+      },
+    );
+
+    testWidgets(
+      "builder is called for large breakpoint destinations",
+      (WidgetTester tester) async {
+        int builderCallCount = 0;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(1400, 900)),
+              child: AdaptiveScaffold(
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.home),
+                    label: "Home",
+                  ),
+                  NavigationDestination(
+                    icon: Icon(Icons.person),
+                    label: "Profile",
+                  ),
+                ],
+                selectedIndex: 0,
+                navigationRailDestinationBuilder: (index, destination) {
+                  builderCallCount++;
+                  return destination.toRailDestination();
+                },
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        expect(
+          builderCallCount,
+          greaterThan(0),
+          reason: "navigationRailDestinationBuilder must be called at large "
+              "breakpoints, not bypassed",
+        );
+      },
+    );
   });
 }

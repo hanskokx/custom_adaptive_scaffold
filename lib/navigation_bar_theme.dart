@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "dart:ui" show lerpDouble;
+import "dart:ui" show Offset, lerpDouble;
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart" as m
     show NavigationBarThemeData, NavigationBarTheme;
 import "package:flutter/material.dart";
 import "package:flutter/rendering.dart";
+
+import "src/navigation_bar/theme_defaults.dart";
 
 typedef CustomNavigationBarThemeData = NavigationBarThemeData;
 typedef CustomNavigationBarTheme = NavigationBarTheme;
@@ -45,23 +47,26 @@ class NavigationBarThemeData
   /// Creates a theme that can be used for [ThemeData.navigationBarTheme] and
   /// [NavigationBarTheme].
   const NavigationBarThemeData({
-    this.height,
     this.backgroundColor,
     this.elevation,
-    this.shadowColor,
-    this.surfaceTintColor,
+    this.height,
+    this.iconTheme,
     this.indicatorColor,
     this.indicatorShape,
-    this.labelTextStyle,
-    this.iconTheme,
     this.labelBehavior,
-    this.overlayColor,
-    this.navigationItemOverlayColor,
-    this.navigationItemIndicatorShape,
-    this.margin = EdgeInsets.zero,
-    this.padding = EdgeInsets.zero,
-    this.tooltipVerticalOffset = 42,
     this.labelPadding,
+    this.labelTextStyle,
+    this.margin,
+    this.navigationItemIndicatorShape,
+    this.navigationItemOverlayColor,
+    this.overlayColor,
+    this.padding,
+    this.shadowColor,
+    this.surfaceTintColor,
+    this.tooltipOffset,
+    this.tooltipTrigger,
+    this.tooltipTriggerWhenLabelHidden,
+    this.tooltipTriggerWhenLabelVisible,
   });
 
   /// Overrides the default value of [NavigationBar.height].
@@ -128,14 +133,30 @@ class NavigationBarThemeData
   /// Defaults to [StadiumBorder] at resolution sites when this is null.
   final ShapeBorder? navigationItemIndicatorShape;
 
-  /// Applies a margin around navigation items. Defaults to [EdgeInsets.zero].
-  final EdgeInsetsGeometry margin;
+  /// Applies a margin around navigation items.
+  final EdgeInsetsGeometry? margin;
 
-  /// Applies padding around navigation item content. Defaults to [EdgeInsets.zero].
-  final EdgeInsetsGeometry padding;
+  /// Applies padding around navigation item content.
+  final EdgeInsetsGeometry? padding;
 
-  /// Defines the vertical offset of tooltip popovers. Defaults to 42.
-  final double tooltipVerticalOffset;
+  /// Defines the x/y offset of tooltip popovers.
+  final Offset? tooltipOffset;
+
+  /// Controls which gesture triggers the tooltip popover.
+  ///
+  /// If null, Flutter's platform default is used (long press on mobile,
+  /// long press and hover on desktop).
+  ///
+  /// For navigation destinations in this package, [TooltipTriggerMode.tap]
+  /// is mapped to a secondary tap (such as right click) so the primary tap
+  /// can continue to activate navigation.
+  final TooltipTriggerMode? tooltipTrigger;
+
+  /// Overrides [tooltipTrigger] when the destination label is visible.
+  final TooltipTriggerMode? tooltipTriggerWhenLabelVisible;
+
+  /// Overrides [tooltipTrigger] when the destination label is hidden.
+  final TooltipTriggerMode? tooltipTriggerWhenLabelHidden;
 
   /// Applies padding around navigation item labels. Defaults to [EdgeInsets.zero].
   @override
@@ -160,8 +181,11 @@ class NavigationBarThemeData
     ShapeBorder? navigationItemIndicatorShape,
     EdgeInsetsGeometry? margin,
     EdgeInsetsGeometry? padding,
-    double? tooltipVerticalOffset,
+    Offset? tooltipOffset,
     EdgeInsetsGeometry? labelPadding,
+    TooltipTriggerMode? tooltipTrigger,
+    TooltipTriggerMode? tooltipTriggerWhenLabelVisible,
+    TooltipTriggerMode? tooltipTriggerWhenLabelHidden,
   }) {
     return NavigationBarThemeData(
       height: height ?? this.height,
@@ -181,9 +205,13 @@ class NavigationBarThemeData
           navigationItemIndicatorShape ?? this.navigationItemIndicatorShape,
       margin: margin ?? this.margin,
       padding: padding ?? this.padding,
-      tooltipVerticalOffset:
-          tooltipVerticalOffset ?? this.tooltipVerticalOffset,
+      tooltipOffset: tooltipOffset ?? this.tooltipOffset,
       labelPadding: labelPadding ?? this.labelPadding,
+      tooltipTrigger: tooltipTrigger ?? this.tooltipTrigger,
+      tooltipTriggerWhenLabelVisible:
+          tooltipTriggerWhenLabelVisible ?? this.tooltipTriggerWhenLabelVisible,
+      tooltipTriggerWhenLabelHidden:
+          tooltipTriggerWhenLabelHidden ?? this.tooltipTriggerWhenLabelHidden,
     );
   }
 
@@ -238,18 +266,21 @@ class NavigationBarThemeData
         b?.navigationItemIndicatorShape,
         t,
       ),
-      margin:
-          EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t) ?? EdgeInsets.zero,
-      padding:
-          EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t) ?? EdgeInsets.zero,
-      tooltipVerticalOffset:
-          lerpDouble(a?.tooltipVerticalOffset, b?.tooltipVerticalOffset, t) ??
-              42,
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+      tooltipOffset: Offset.lerp(a?.tooltipOffset, b?.tooltipOffset, t),
       labelPadding: EdgeInsetsGeometry.lerp(
         a?.labelPadding,
         b?.labelPadding,
         t,
       ),
+      tooltipTrigger: t < 0.5 ? a?.tooltipTrigger : b?.tooltipTrigger,
+      tooltipTriggerWhenLabelVisible: t < 0.5
+          ? a?.tooltipTriggerWhenLabelVisible
+          : b?.tooltipTriggerWhenLabelVisible,
+      tooltipTriggerWhenLabelHidden: t < 0.5
+          ? a?.tooltipTriggerWhenLabelHidden
+          : b?.tooltipTriggerWhenLabelHidden,
     );
   }
 
@@ -270,8 +301,11 @@ class NavigationBarThemeData
         navigationItemIndicatorShape,
         margin,
         padding,
-        tooltipVerticalOffset,
+        tooltipOffset,
         labelPadding,
+        tooltipTrigger,
+        tooltipTriggerWhenLabelVisible,
+        tooltipTriggerWhenLabelHidden,
       );
 
   @override
@@ -298,7 +332,11 @@ class NavigationBarThemeData
         other.navigationItemIndicatorShape == navigationItemIndicatorShape &&
         other.margin == margin &&
         other.padding == padding &&
-        other.tooltipVerticalOffset == tooltipVerticalOffset &&
+        other.tooltipOffset == tooltipOffset &&
+        other.tooltipTrigger == tooltipTrigger &&
+        other.tooltipTriggerWhenLabelVisible ==
+            tooltipTriggerWhenLabelVisible &&
+        other.tooltipTriggerWhenLabelHidden == tooltipTriggerWhenLabelHidden &&
         other.labelPadding == labelPadding;
   }
 
@@ -375,27 +413,47 @@ class NavigationBarThemeData
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "margin",
         margin,
-        defaultValue: EdgeInsets.zero,
+        defaultValue: null,
       ),
     );
     properties.add(
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "padding",
         padding,
-        defaultValue: EdgeInsets.zero,
+        defaultValue: null,
       ),
     );
     properties.add(
-      DiagnosticsProperty<double?>(
-        "tooltipVerticalOffset",
-        tooltipVerticalOffset,
-        defaultValue: 42,
+      DiagnosticsProperty<Offset?>(
+        "tooltipOffset",
+        tooltipOffset,
+        defaultValue: null,
       ),
     );
     properties.add(
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "labelPadding",
         labelPadding,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTrigger",
+        tooltipTrigger,
+        defaultValue: null,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTriggerWhenLabelVisible",
+        tooltipTriggerWhenLabelVisible,
+        defaultValue: null,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTriggerWhenLabelHidden",
+        tooltipTriggerWhenLabelHidden,
         defaultValue: null,
       ),
     );
@@ -421,10 +479,13 @@ class NavigationBarThemeData
       overlayColor: other?.overlayColor,
       navigationItemOverlayColor: null,
       navigationItemIndicatorShape: null,
-      margin: EdgeInsets.zero,
-      padding: EdgeInsets.zero,
-      tooltipVerticalOffset: 42,
+      margin: null,
+      padding: null,
+      tooltipOffset: null,
       labelPadding: other?.labelPadding,
+      tooltipTrigger: null,
+      tooltipTriggerWhenLabelVisible: null,
+      tooltipTriggerWhenLabelHidden: null,
     );
   }
 }
@@ -464,32 +525,77 @@ class NavigationBarTheme extends InheritedTheme
   /// ```dart
   /// NavigationBarThemeData theme = NavigationBarTheme.of(context);
   /// ```
-  static NavigationBarThemeData of(BuildContext context) {
-    // The user is using NavigationBarTheme from this package
+  static NavigationBarThemeData? maybeOf(BuildContext context) {
+    // The user is using NavigationBarTheme from this package.
     final NavigationBarTheme? navigationBarTheme =
         context.dependOnInheritedWidgetOfExactType<NavigationBarTheme>();
-
     if (navigationBarTheme != null) {
       return navigationBarTheme.data;
     }
 
-    // The user is using a theme extension to provide NavigationBarThemeData
-    // from his package
-
-    final NavigationBarThemeData? themeExtension =
-        Theme.of(context).extension<NavigationBarThemeData>();
-
-    if (themeExtension != null) {
-      return themeExtension;
-    }
-
     // The user is using Flutter's Material NavigationBarThemeData, so we
-    // convert it to our own NavigationBarThemeData
-
+    // convert it to our own NavigationBarThemeData.
     final m.NavigationBarThemeData materialNavigationBarTheme =
         m.NavigationBarTheme.of(context);
 
+    if (materialNavigationBarTheme is NavigationBarThemeData) {
+      return materialNavigationBarTheme;
+    }
+
+    final bool hasAnyExplicitValue =
+        materialNavigationBarTheme.height != null ||
+            materialNavigationBarTheme.backgroundColor != null ||
+            materialNavigationBarTheme.elevation != null ||
+            materialNavigationBarTheme.shadowColor != null ||
+            materialNavigationBarTheme.surfaceTintColor != null ||
+            materialNavigationBarTheme.indicatorColor != null ||
+            materialNavigationBarTheme.indicatorShape != null ||
+            materialNavigationBarTheme.labelTextStyle != null ||
+            materialNavigationBarTheme.iconTheme != null ||
+            materialNavigationBarTheme.labelBehavior != null ||
+            materialNavigationBarTheme.overlayColor != null ||
+            materialNavigationBarTheme.labelPadding != null;
+
+    if (!hasAnyExplicitValue) {
+      return null;
+    }
+
     return NavigationBarThemeData.fromMaterial(materialNavigationBarTheme);
+  }
+
+  static NavigationBarThemeData of(BuildContext context) {
+    final NavigationBarThemeData defaults = navigationBarDefaultsFor(context);
+
+    final NavigationBarThemeData? explicitTheme = maybeOf(context);
+    if (explicitTheme != null) {
+      return defaults.copyWith(
+        height: explicitTheme.height,
+        backgroundColor: explicitTheme.backgroundColor,
+        elevation: explicitTheme.elevation,
+        shadowColor: explicitTheme.shadowColor,
+        surfaceTintColor: explicitTheme.surfaceTintColor,
+        indicatorColor: explicitTheme.indicatorColor,
+        indicatorShape: explicitTheme.indicatorShape,
+        labelTextStyle: explicitTheme.labelTextStyle,
+        iconTheme: explicitTheme.iconTheme,
+        labelBehavior: explicitTheme.labelBehavior,
+        overlayColor: explicitTheme.overlayColor,
+        navigationItemOverlayColor: explicitTheme.navigationItemOverlayColor,
+        navigationItemIndicatorShape:
+            explicitTheme.navigationItemIndicatorShape,
+        margin: explicitTheme.margin,
+        padding: explicitTheme.padding,
+        tooltipOffset: explicitTheme.tooltipOffset,
+        labelPadding: explicitTheme.labelPadding,
+        tooltipTrigger: explicitTheme.tooltipTrigger,
+        tooltipTriggerWhenLabelVisible:
+            explicitTheme.tooltipTriggerWhenLabelVisible,
+        tooltipTriggerWhenLabelHidden:
+            explicitTheme.tooltipTriggerWhenLabelHidden,
+      );
+    }
+
+    return defaults;
   }
 
   @override
@@ -500,160 +606,6 @@ class NavigationBarTheme extends InheritedTheme
   @override
   bool updateShouldNotify(NavigationBarTheme oldWidget) =>
       data != oldWidget.data;
-}
-
-NavigationBarThemeData defaultsFor(BuildContext context) {
-  return Theme.of(context).useMaterial3
-      ? NavigationBarDefaultsM3(context)
-      : NavigationBarDefaultsM2(context);
-}
-
-// Hand coded defaults based on Material Design 2.
-class NavigationBarDefaultsM2 extends NavigationBarThemeData {
-  NavigationBarDefaultsM2(BuildContext context)
-      : _theme = Theme.of(context),
-        _colors = Theme.of(context).colorScheme,
-        super(
-          height: 80.0,
-          elevation: 0.0,
-          labelPadding: const EdgeInsets.only(top: 4),
-          indicatorShape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        );
-
-  final ThemeData _theme;
-  final ColorScheme _colors;
-
-  // With Material 2, the NavigationBar uses an overlay blend for the
-  // default color regardless of light/dark mode.
-  @override
-  Color? get backgroundColor => ElevationOverlay.colorWithOverlay(
-        _colors.surface,
-        _colors.onSurface,
-        3.0,
-      );
-
-  @override
-  WidgetStateProperty<IconThemeData?>? get iconTheme {
-    return WidgetStatePropertyAll<IconThemeData>(
-      IconThemeData(
-        size: 24,
-        color: _colors.onSurface,
-      ),
-    );
-  }
-
-  @override
-  Color? get indicatorColor => _colors.secondary.withValues(alpha: 0.24);
-
-  @override
-  WidgetStateProperty<TextStyle?>? get labelTextStyle =>
-      WidgetStatePropertyAll<TextStyle?>(
-        _theme.textTheme.labelSmall!.copyWith(color: _colors.onSurface),
-      );
-
-  @override
-  WidgetStateProperty<Color?>? get overlayColor {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.pressed) ||
-          states.contains(WidgetState.focused)) {
-        return _colors.onSurface.withValues(alpha: 0.12);
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withValues(alpha: 0.08);
-      }
-      return null;
-    });
-  }
-
-  @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
-    return overlayColor;
-  }
-}
-
-// BEGIN GENERATED TOKEN PROPERTIES - NavigationBar
-
-// Do not edit by hand. The code between the "BEGIN GENERATED" and
-// "END GENERATED" comments are generated from data in the Material
-// Design token database by the script:
-//   dev/tools/gen_defaults/bin/gen_defaults.dart.
-
-class NavigationBarDefaultsM3 extends CustomNavigationBarThemeData {
-  NavigationBarDefaultsM3(this.context)
-      : super(
-          height: 80.0,
-          elevation: 3.0,
-          labelPadding: const EdgeInsets.only(top: 4),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        );
-
-  final BuildContext context;
-  late final ColorScheme _colors = Theme.of(context).colorScheme;
-  late final TextTheme _textTheme = Theme.of(context).textTheme;
-
-  @override
-  Color? get backgroundColor => _colors.surfaceContainer;
-
-  @override
-  Color? get shadowColor => Colors.transparent;
-
-  @override
-  Color? get surfaceTintColor => Colors.transparent;
-
-  @override
-  WidgetStateProperty<IconThemeData?>? get iconTheme {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      return IconThemeData(
-        size: 24.0,
-        color: states.contains(WidgetState.disabled)
-            ? _colors.onSurfaceVariant.withValues(alpha: 0.38)
-            : states.contains(WidgetState.selected)
-                ? _colors.onSecondaryContainer
-                : _colors.onSurfaceVariant,
-      );
-    });
-  }
-
-  @override
-  Color? get indicatorColor => _colors.secondaryContainer;
-  @override
-  ShapeBorder? get indicatorShape => const StadiumBorder();
-
-  @override
-  WidgetStateProperty<TextStyle?>? get labelTextStyle {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      final TextStyle style = _textTheme.labelMedium!;
-      return style.apply(
-        color: states.contains(WidgetState.disabled)
-            ? _colors.onSurfaceVariant.withValues(alpha: 0.38)
-            : states.contains(WidgetState.selected)
-                ? _colors.onSurface
-                : _colors.onSurfaceVariant,
-      );
-    });
-  }
-
-  @override
-  WidgetStateProperty<Color?>? get overlayColor {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.pressed) ||
-          states.contains(WidgetState.focused)) {
-        return _colors.onSurface.withValues(alpha: 0.12);
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withValues(alpha: 0.08);
-      }
-      return null;
-    });
-  }
-
-  @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
-    return overlayColor;
-  }
 }
 
 // END GENERATED TOKEN PROPERTIES - NavigationBar

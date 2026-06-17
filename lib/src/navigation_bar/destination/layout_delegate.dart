@@ -1,4 +1,4 @@
-part of "../navigation_bar_destination.dart";
+part of "../destination.dart";
 
 /// Custom layout delegate for shifting navigation bar destinations.
 ///
@@ -11,7 +11,7 @@ part of "../navigation_bar_destination.dart";
 /// the icon, but the icon + label combination will be centered.
 ///
 /// Used in a [CustomMultiChildLayout] widget in the
-/// [_NavigationDestinationBuilder].
+/// [_NavigationBarDestinationBuilder].
 class _NavigationDestinationLayoutDelegate extends MultiChildLayoutDelegate {
   _NavigationDestinationLayoutDelegate({required this.animation})
       : super(relayout: animation);
@@ -27,7 +27,7 @@ class _NavigationDestinationLayoutDelegate extends MultiChildLayoutDelegate {
   /// This is used by the [LayoutId] when this delegate is used in a
   /// [CustomMultiChildLayout].
   ///
-  /// See [_NavigationDestinationBuilder].
+  /// See [_NavigationBarDestinationBuilder].
   static const int iconId = 1;
 
   /// ID for the label widget child.
@@ -35,7 +35,7 @@ class _NavigationDestinationLayoutDelegate extends MultiChildLayoutDelegate {
   /// This is used by the [LayoutId] when this delegate is used in a
   /// [CustomMultiChildLayout].
   ///
-  /// See [_NavigationDestinationBuilder].
+  /// See [_NavigationBarDestinationBuilder].
   static const int labelId = 2;
 
   @override

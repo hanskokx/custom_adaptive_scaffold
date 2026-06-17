@@ -1,4 +1,4 @@
-part of "../navigation_bar_destination.dart";
+part of "../destination.dart";
 
 /// Widget that handles the semantics and layout of a navigation bar
 /// destination.
@@ -12,13 +12,14 @@ part of "../navigation_bar_destination.dart";
 /// animation value of 0 is unselected and 1 is selected.
 ///
 /// See [NavigationDestination] for an example.
-class _NavigationDestinationBuilder extends StatefulWidget {
+class _NavigationBarDestinationBuilder extends StatefulWidget {
   /// Builds a destination (icon + label) to use in a Material 3 [NavigationBar].
-  const _NavigationDestinationBuilder({
+  const _NavigationBarDestinationBuilder({
     required this.buildIcon,
     required this.buildLabel,
     required this.label,
     required this.animation,
+    super.key,
     this.color,
     this.shape,
     this.tooltip,
@@ -73,44 +74,37 @@ class _NavigationDestinationBuilder extends StatefulWidget {
   final EdgeInsetsGeometry padding;
 
   @override
-  State<_NavigationDestinationBuilder> createState() =>
-      _NavigationDestinationBuilderState();
+  State<_NavigationBarDestinationBuilder> createState() =>
+      _NavigationBarDestinationBuilderState();
 }
 
-class _NavigationDestinationBuilderState
-    extends State<_NavigationDestinationBuilder> {
+class _NavigationBarDestinationBuilderState
+    extends State<_NavigationBarDestinationBuilder> {
   final GlobalKey itemKey = GlobalKey();
   final GlobalKey iconKey = GlobalKey();
-  late final WidgetStatesController _statesController;
 
   @override
   void initState() {
     super.initState();
-    _statesController = WidgetStatesController();
-    _statesController.addListener(_handleStatesChanged);
   }
 
   @override
   void dispose() {
-    _statesController.removeListener(_handleStatesChanged);
-    _statesController.dispose();
     super.dispose();
-  }
-
-  void _handleStatesChanged() {
-    if (mounted) {
-      setState(() {});
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final NavigationDestinationInfo info =
         NavigationDestinationInfo.of(context);
+    final bool isDisabled = widget.disabled;
+
     final ThemeData theme = Theme.of(context);
     final CustomNavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.of(context);
-    final CustomNavigationBarThemeData defaults = defaultsFor(context);
+        NavigationBarTheme.maybeOf(context) ??
+            const CustomNavigationBarThemeData();
+    final CustomNavigationBarThemeData defaults =
+        navigationBarDefaultsFor(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         navigationBarTheme.navigationItemOverlayColor;
     final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
@@ -133,13 +127,31 @@ class _NavigationDestinationBuilderState
         splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12);
     final Color effectiveHoverColor =
         splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04);
+    final String labelText =
+        widget.label is Text ? (widget.label as Text).data ?? "" : "";
+    final String? tooltipMessage = widget.tooltip == null
+        ? (labelText.isNotEmpty ? labelText : null)
+        : (widget.tooltip!.isNotEmpty ? widget.tooltip : null);
+    final bool isSelected = info.index == info.selectedIndex;
+    final bool isLabelVisible = switch (info.labelBehavior) {
+      NavigationDestinationLabelBehavior.alwaysShow => true,
+      NavigationDestinationLabelBehavior.onlyShowSelected => isSelected,
+      NavigationDestinationLabelBehavior.alwaysHide => false,
+    };
+    final Offset effectiveTooltipOffset =
+        navigationBarTheme.tooltipOffset ?? const Offset(0, 42);
+    final TooltipTriggerMode? effectiveTooltipTrigger = isLabelVisible
+        ? navigationBarTheme.tooltipTriggerWhenLabelVisible ??
+            navigationBarTheme.tooltipTrigger
+        : navigationBarTheme.tooltipTriggerWhenLabelHidden ??
+            navigationBarTheme.tooltipTrigger;
 
     return _NavigationBarDestinationSemantics(
-      enabled: !widget.disabled,
-      child: _NavigationBarDestinationTooltip(
-        message: widget.tooltip ??
-            (widget.label is Text ? (widget.label as Text).data : "") ??
-            "",
+      enabled: !isDisabled,
+      child: DestinationTooltip(
+        message: tooltipMessage,
+        tooltipOffset: effectiveTooltipOffset,
+        tooltipTrigger: effectiveTooltipTrigger,
         child: ClipRect(
           // Inner Material provides an ink surface above the indicator fill,
           // so splash/hover renders on top of the pill rather than behind it.
@@ -160,24 +172,19 @@ class _NavigationDestinationBuilderState
               hoverColor:
                   disableFullItemInk ? effectiveHoverColor : Colors.transparent,
               customBorder: effectiveNavigationItemIndicatorShape,
-              statesController: _statesController,
-              onTap: widget.disabled ? null : info.onTap,
+              onTap: isDisabled ? null : info.onTap,
               child: Stack(
                 alignment: Alignment.center,
                 children: <Widget>[
-                  _StatusTransitionWidgetBuilder(
+                  AnimatedBuilder(
                     animation: widget.animation,
                     builder: (context, child) => Row(
                       children: <Widget>[
                         Expanded(
                           child: _NavigationBarDestinationLayout(
-                            icon: _NavigationBarIndicatorStates(
-                              states: _statesController.value,
-                              overlayColor: iconOverlayColor,
-                              child: KeyedSubtree(
-                                key: iconKey,
-                                child: widget.buildIcon(context),
-                              ),
+                            icon: KeyedSubtree(
+                              key: iconKey,
+                              child: widget.buildIcon(context),
                             ),
                             itemKey: itemKey,
                             padding: widget.padding,
@@ -204,7 +211,6 @@ class _IndicatorInkWell extends InkResponse {
     required this.labelBehavior,
     required this.disableFullItemInk,
     this.indicatorOverlayColor,
-    super.statesController,
     super.customBorder,
     super.highlightColor,
     super.splashColor,
@@ -238,23 +244,5 @@ class _IndicatorInkWell extends InkResponse {
           targetBox.localToGlobal(Offset.zero) & targetBox.size;
       return referenceBox.globalToLocal(targetRect.topLeft) & targetBox.size;
     };
-  }
-}
-
-class _NavigationBarIndicatorStates extends InheritedWidget {
-  const _NavigationBarIndicatorStates({
-    required this.states,
-    required this.overlayColor,
-    required super.child,
-  });
-
-  final Set<WidgetState> states;
-  final WidgetStateProperty<Color?>? overlayColor;
-
-  @override
-  bool updateShouldNotify(_NavigationBarIndicatorStates oldWidget) {
-    return states.length != oldWidget.states.length ||
-        !states.containsAll(oldWidget.states) ||
-        overlayColor != oldWidget.overlayColor;
   }
 }

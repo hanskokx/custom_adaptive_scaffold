@@ -4,19 +4,16 @@
 //
 // Forked, modified, and maintained by Hans Kokx beginning in 2024.
 
-export "navigation_bar_theme.dart"
-    hide defaultsFor, NavigationBarDefaultsM2, NavigationBarDefaultsM3;
 export "navigation_bar_theme.dart";
-export "navigation_rail_theme.dart"
-    hide NavigationRailDefaultsM2, NavigationRailDefaultsM3;
 export "navigation_rail_theme.dart";
 export "src/adaptive_layout.dart";
 export "src/adaptive_scaffold.dart";
 export "src/adaptive_scaffold_controller.dart";
 export "src/breakpoints.dart";
+export "src/navigation_bar/destination.dart";
 export "src/navigation_bar/navigation_bar.dart";
-export "src/navigation_bar/navigation_bar_destination.dart";
 export "src/navigation_destination.dart";
+export "src/navigation_rail/destination.dart";
 export "src/navigation_rail/navigation_rail.dart";
-export "src/navigation_rail/navigation_rail_destination.dart";
+export "src/navigation_shared/adaptive_scaffold_destination.dart";
 export "src/slot_layout.dart";
