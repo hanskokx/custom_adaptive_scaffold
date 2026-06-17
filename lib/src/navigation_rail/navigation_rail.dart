@@ -8,6 +8,7 @@ import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
 import "../destination/destination_build_data.dart";
 import "../destination/destination_surface_strategy.dart";
+import "../destination/navigation_destination_tooltip.dart";
 import "../destination/navigation_indicator.dart";
 import "../material.dart";
 import "../navigation_icon.dart";
@@ -493,12 +494,25 @@ class _NavigationRailState extends State<NavigationRail>
               );
 
     final bool isRTLDirection = Directionality.of(context) == TextDirection.rtl;
-    final EdgeInsetsGeometry? railDestinationMargin = navigationRailTheme.margin;
+    final EdgeInsetsGeometry? railDestinationMargin =
+        navigationRailTheme.margin;
     final EdgeInsetsGeometry? railDestinationPadding =
-      navigationRailTheme.padding;
+        navigationRailTheme.padding;
 
     final MainAxisAlignment effectiveMainAxisAlignment =
         widget.mainAxisAlignment ?? MainAxisAlignment.start;
+
+    final Widget? trailing = widget.trailing == null
+        ? null
+        : Theme(
+            data: Theme.of(context).copyWith(
+              splashFactory: NoSplash.splashFactory,
+              splashColor: Colors.transparent,
+              hoverColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+            ),
+            child: widget.trailing!,
+          );
 
     Widget mainGroup = Column(
       mainAxisSize: MainAxisSize.min,
@@ -510,8 +524,7 @@ class _NavigationRailState extends State<NavigationRail>
         ],
         for (int i = 0; i < widget.destinations.length; i += 1)
           Container(
-            margin:
-                widget.destinations[i].margin ?? railDestinationMargin,
+            margin: widget.destinations[i].margin ?? railDestinationMargin,
             child: RailDestination(
               labelType: labelType,
               minWidth: widget.minWidth,
@@ -529,7 +542,7 @@ class _NavigationRailState extends State<NavigationRail>
               labelTextStyle: widget.selectedIndex == i
                   ? selectedLabelTextStyle
                   : unselectedLabelTextStyle,
-                padding: widget.destinations[i].padding ??
+              padding: widget.destinations[i].padding ??
                   railDestinationPadding ??
                   const EdgeInsets.symmetric(
                     horizontal: _horizontalDestinationPadding,
@@ -555,8 +568,7 @@ class _NavigationRailState extends State<NavigationRail>
               tooltip: widget.destinations[i].tooltipLabel,
             ),
           ),
-        if (widget.trailing != null && !widget.trailingAtBottom)
-          widget.trailing!,
+        if (trailing != null && !widget.trailingAtBottom) trailing,
       ],
     );
 
@@ -591,8 +603,7 @@ class _NavigationRailState extends State<NavigationRail>
                         )
                       : mainGroup,
                 ),
-                if (widget.trailing != null && widget.trailingAtBottom)
-                  widget.trailing!,
+                if (trailing != null && widget.trailingAtBottom) trailing,
               ],
             ),
           ),

@@ -8,7 +8,7 @@ part of "../navigation_bar_destination.dart";
 /// Provides localized semantic labels to the destination, for example, it will
 /// read "Home, Tab 1 of 3".
 ///
-/// Used by [_NavigationDestinationBuilder].
+/// Used by [_NavigationBarDestinationBuilder].
 class _NavigationBarDestinationSemantics extends StatelessWidget {
   /// Adds the appropriate semantics for navigation bar destinations to the
   /// [child].

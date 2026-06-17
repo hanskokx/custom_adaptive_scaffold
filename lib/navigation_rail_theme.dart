@@ -63,6 +63,7 @@ class NavigationRailThemeData
     this.margin,
     this.padding,
     this.tooltipOffset,
+    this.tooltipTrigger,
   });
 
   /// Color to be used for the [NavigationRail]'s background.
@@ -150,6 +151,16 @@ class NavigationRailThemeData
   /// Defines the x/y offset of tooltip popovers.
   final Offset? tooltipOffset;
 
+  /// Controls which gesture triggers the tooltip popover.
+  ///
+  /// If null, Flutter's platform default is used (long press on mobile,
+  /// long press and hover on desktop).
+  ///
+  /// For navigation destinations in this package, [TooltipTriggerMode.tap]
+  /// is mapped to a secondary tap (such as right click) so the primary tap
+  /// can continue to activate navigation.
+  final TooltipTriggerMode? tooltipTrigger;
+
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
   @override
@@ -173,6 +184,7 @@ class NavigationRailThemeData
     EdgeInsetsGeometry? margin,
     EdgeInsetsGeometry? padding,
     Offset? tooltipOffset,
+    TooltipTriggerMode? tooltipTrigger,
   }) {
     return NavigationRailThemeData(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -199,6 +211,7 @@ class NavigationRailThemeData
       margin: margin ?? this.margin,
       padding: padding ?? this.padding,
       tooltipOffset: tooltipOffset ?? this.tooltipOffset,
+      tooltipTrigger: tooltipTrigger ?? this.tooltipTrigger,
     );
   }
 
@@ -263,6 +276,7 @@ class NavigationRailThemeData
       margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
       padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
       tooltipOffset: Offset.lerp(a?.tooltipOffset, b?.tooltipOffset, t),
+      tooltipTrigger: t < 0.5 ? a?.tooltipTrigger : b?.tooltipTrigger,
     );
   }
 
@@ -287,6 +301,7 @@ class NavigationRailThemeData
         margin,
         padding,
         tooltipOffset,
+        tooltipTrigger,
       );
 
   @override
@@ -316,7 +331,8 @@ class NavigationRailThemeData
         other.minExtendedWidth == minExtendedWidth &&
         other.margin == margin &&
         other.padding == padding &&
-        other.tooltipOffset == tooltipOffset;
+        other.tooltipOffset == tooltipOffset &&
+        other.tooltipTrigger == tooltipTrigger;
   }
 
   @override
@@ -457,6 +473,13 @@ class NavigationRailThemeData
         defaultValue: null,
       ),
     );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTrigger",
+        tooltipTrigger,
+        defaultValue: null,
+      ),
+    );
   }
 
   factory NavigationRailThemeData.fromMaterial(
@@ -484,6 +507,7 @@ class NavigationRailThemeData
       margin: null,
       padding: null,
       tooltipOffset: null,
+      tooltipTrigger: null,
     );
   }
 }
@@ -585,6 +609,7 @@ class NavigationRailTheme extends InheritedTheme
         margin: explicitTheme.margin,
         padding: explicitTheme.padding,
         tooltipOffset: explicitTheme.tooltipOffset,
+        tooltipTrigger: explicitTheme.tooltipTrigger,
       );
     }
 

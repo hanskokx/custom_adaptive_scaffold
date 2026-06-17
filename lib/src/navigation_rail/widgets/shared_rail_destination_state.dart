@@ -195,27 +195,18 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
       ],
     );
 
-    final Offset tooltipOffset = railTheme.tooltipOffset ?? const Offset(0, 24);
-
-    final Widget maybeTooltip =
-        widget.tooltip != null && widget.tooltip!.isNotEmpty
-            ? Tooltip(
-                message: widget.tooltip!,
-                verticalOffset: tooltipOffset.dy,
-                excludeFromSemantics: true,
-                preferBelow: false,
-                margin: EdgeInsets.only(left: tooltipOffset.dx),
-                child: content,
-              )
-            : content;
-
     return Semantics(
       container: true,
       selected: widget.selected,
       enabled: !widget.disabled,
       child: Material(
         type: MaterialType.transparency,
-        child: maybeTooltip,
+        child: DestinationTooltip(
+          message: widget.tooltip,
+          tooltipOffset: railTheme.tooltipOffset ?? const Offset(0, 24),
+          tooltipTrigger: railTheme.tooltipTrigger,
+          child: content,
+        ),
       ),
     );
   }

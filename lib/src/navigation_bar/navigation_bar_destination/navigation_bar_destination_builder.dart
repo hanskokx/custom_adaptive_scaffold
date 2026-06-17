@@ -12,9 +12,9 @@ part of "../navigation_bar_destination.dart";
 /// animation value of 0 is unselected and 1 is selected.
 ///
 /// See [NavigationDestination] for an example.
-class _NavigationDestinationBuilder extends StatefulWidget {
+class _NavigationBarDestinationBuilder extends StatefulWidget {
   /// Builds a destination (icon + label) to use in a Material 3 [NavigationBar].
-  const _NavigationDestinationBuilder({
+  const _NavigationBarDestinationBuilder({
     required this.buildIcon,
     required this.buildLabel,
     required this.label,
@@ -74,12 +74,12 @@ class _NavigationDestinationBuilder extends StatefulWidget {
   final EdgeInsetsGeometry padding;
 
   @override
-  State<_NavigationDestinationBuilder> createState() =>
-      _NavigationDestinationBuilderState();
+  State<_NavigationBarDestinationBuilder> createState() =>
+      _NavigationBarDestinationBuilderState();
 }
 
-class _NavigationDestinationBuilderState
-    extends State<_NavigationDestinationBuilder> {
+class _NavigationBarDestinationBuilderState
+    extends State<_NavigationBarDestinationBuilder> {
   final GlobalKey itemKey = GlobalKey();
   final GlobalKey iconKey = GlobalKey();
 
@@ -131,11 +131,17 @@ class _NavigationDestinationBuilderState
     final String? tooltipMessage = widget.tooltip == null
         ? (labelText.isNotEmpty ? labelText : null)
         : (widget.tooltip!.isNotEmpty ? widget.tooltip : null);
+    final Offset effectiveTooltipOffset =
+        navigationBarTheme.tooltipOffset ?? const Offset(0, 42);
+    final TooltipTriggerMode? effectiveTooltipTrigger =
+        navigationBarTheme.tooltipTrigger;
 
     return _NavigationBarDestinationSemantics(
       enabled: !isDisabled,
-      child: _NavigationBarDestinationTooltip(
+      child: DestinationTooltip(
         message: tooltipMessage,
+        tooltipOffset: effectiveTooltipOffset,
+        tooltipTrigger: effectiveTooltipTrigger,
         child: ClipRect(
           // Inner Material provides an ink surface above the indicator fill,
           // so splash/hover renders on top of the pill rather than behind it.

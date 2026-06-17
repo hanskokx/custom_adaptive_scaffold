@@ -62,6 +62,7 @@ class NavigationBarThemeData
     this.padding,
     this.tooltipOffset,
     this.labelPadding,
+    this.tooltipTrigger,
   });
 
   /// Overrides the default value of [NavigationBar.height].
@@ -137,6 +138,16 @@ class NavigationBarThemeData
   /// Defines the x/y offset of tooltip popovers.
   final Offset? tooltipOffset;
 
+  /// Controls which gesture triggers the tooltip popover.
+  ///
+  /// If null, Flutter's platform default is used (long press on mobile,
+  /// long press and hover on desktop).
+  ///
+  /// For navigation destinations in this package, [TooltipTriggerMode.tap]
+  /// is mapped to a secondary tap (such as right click) so the primary tap
+  /// can continue to activate navigation.
+  final TooltipTriggerMode? tooltipTrigger;
+
   /// Applies padding around navigation item labels. Defaults to [EdgeInsets.zero].
   @override
   final EdgeInsetsGeometry? labelPadding;
@@ -162,6 +173,7 @@ class NavigationBarThemeData
     EdgeInsetsGeometry? padding,
     Offset? tooltipOffset,
     EdgeInsetsGeometry? labelPadding,
+    TooltipTriggerMode? tooltipTrigger,
   }) {
     return NavigationBarThemeData(
       height: height ?? this.height,
@@ -183,6 +195,7 @@ class NavigationBarThemeData
       padding: padding ?? this.padding,
       tooltipOffset: tooltipOffset ?? this.tooltipOffset,
       labelPadding: labelPadding ?? this.labelPadding,
+      tooltipTrigger: tooltipTrigger ?? this.tooltipTrigger,
     );
   }
 
@@ -245,6 +258,7 @@ class NavigationBarThemeData
         b?.labelPadding,
         t,
       ),
+      tooltipTrigger: t < 0.5 ? a?.tooltipTrigger : b?.tooltipTrigger,
     );
   }
 
@@ -267,6 +281,7 @@ class NavigationBarThemeData
         padding,
         tooltipOffset,
         labelPadding,
+        tooltipTrigger,
       );
 
   @override
@@ -294,6 +309,8 @@ class NavigationBarThemeData
         other.margin == margin &&
         other.padding == padding &&
         other.tooltipOffset == tooltipOffset &&
+        other.tooltipOffset == tooltipOffset &&
+        other.tooltipTrigger == tooltipTrigger &&
         other.labelPadding == labelPadding;
   }
 
@@ -391,6 +408,12 @@ class NavigationBarThemeData
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "labelPadding",
         labelPadding,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTrigger",
+        tooltipTrigger,
         defaultValue: null,
       ),
     );
@@ -420,6 +443,7 @@ class NavigationBarThemeData
       padding: null,
       tooltipOffset: null,
       labelPadding: other?.labelPadding,
+      tooltipTrigger: null,
     );
   }
 }
@@ -521,6 +545,7 @@ class NavigationBarTheme extends InheritedTheme
         padding: explicitTheme.padding,
         tooltipOffset: explicitTheme.tooltipOffset,
         labelPadding: explicitTheme.labelPadding,
+        tooltipTrigger: explicitTheme.tooltipTrigger,
       );
     }
 

@@ -1,16 +1,16 @@
 import "../../navigation_bar_theme.dart";
 import "../destination/destination_build_data.dart";
 import "../destination/destination_surface_strategy.dart";
+import "../destination/navigation_destination_tooltip.dart";
 import "../destination/navigation_indicator.dart";
 import "../material.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
 import "navigation_destination_info.dart";
 
+part "navigation_bar_destination/navigation_bar_destination_builder.dart";
 part "navigation_bar_destination/navigation_bar_destination_layout.dart";
 part "navigation_bar_destination/navigation_bar_destination_semantics.dart";
-part "navigation_bar_destination/navigation_bar_destination_tooltip.dart";
-part "navigation_bar_destination/navigation_destination_builder.dart";
 part "navigation_bar_destination/navigation_destination_layout_delegate.dart";
 part "navigation_bar_destination/status_transition_widget_builder.dart";
 
@@ -62,7 +62,7 @@ class NavigationBarDestination extends NavigationDestination {
 
     return Container(
       margin: margin,
-      child: _NavigationDestinationBuilder(
+      child: _NavigationBarDestinationBuilder(
         key: ValueKey<String>(
           "bar-destination-${info.index}-${info.selectedIndex == info.index}",
         ),
