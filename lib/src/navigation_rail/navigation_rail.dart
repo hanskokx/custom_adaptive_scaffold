@@ -503,13 +503,8 @@ class _NavigationRailState extends State<NavigationRail>
 
     final Widget? trailing = widget.trailing == null
         ? null
-        : Theme(
-            data: Theme.of(context).copyWith(
-              splashFactory: NoSplash.splashFactory,
-              splashColor: Colors.transparent,
-              hoverColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-            ),
+        : Material(
+            type: MaterialType.transparency,
             child: widget.trailing!,
           );
 
