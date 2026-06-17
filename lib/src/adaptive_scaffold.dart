@@ -417,7 +417,15 @@ class AdaptiveScaffold extends StatefulWidget {
                 const NavigationBarThemeData();
 
         return NavigationBarTheme(
-          data: resolvedNavBarTheme,
+          data: resolvedNavBarTheme.copyWith(
+            iconTheme: WidgetStateProperty.resolveWith((states) {
+              final IconThemeData? existing =
+                  resolvedNavBarTheme.iconTheme?.resolve(states);
+              return (existing ?? const IconThemeData()).copyWith(
+                size: iconSize,
+              );
+            }),
+          ),
           child: MediaQuery(
             data: MediaQuery.of(context).removePadding(removeTop: true),
             child: NavigationBar(
