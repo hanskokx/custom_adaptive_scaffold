@@ -613,6 +613,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
     ];
     final int? safeSelectedIndex = (widget.selectedIndex != null &&
             widget.destinations.isNotEmpty &&
+            widget.selectedIndex! >= 0 &&
             widget.selectedIndex! < widget.destinations.length)
         ? widget.selectedIndex
         : null;
