@@ -34,6 +34,7 @@ class NavigationBarDestination extends NavigationDestination {
     super.selectedIcon,
     super.indicatorColor,
     super.indicatorShape,
+    super.margin,
     super.padding,
     super.disabled,
     super.tooltip,
@@ -55,9 +56,9 @@ class NavigationBarDestination extends NavigationDestination {
         defaultsFor(context).indicatorShape!;
 
     final EdgeInsetsGeometry margin =
-        navigationBarTheme.margin ?? EdgeInsets.zero;
+      this.margin ?? navigationBarTheme.margin ?? EdgeInsets.zero;
     final EdgeInsetsGeometry padding =
-        navigationBarTheme.padding ?? EdgeInsets.zero;
+      this.padding ?? navigationBarTheme.padding ?? EdgeInsets.zero;
 
     return Container(
       margin: margin,

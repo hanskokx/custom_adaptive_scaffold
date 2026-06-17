@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "dart:ui" show lerpDouble;
+import "dart:ui" show Offset, lerpDouble;
 
 import "package:flutter/foundation.dart";
 import "package:flutter/material.dart" as m
@@ -60,7 +60,7 @@ class NavigationBarThemeData
     this.navigationItemIndicatorShape,
     this.margin,
     this.padding,
-    this.tooltipVerticalOffset,
+    this.tooltipOffset,
     this.labelPadding,
   });
 
@@ -134,8 +134,8 @@ class NavigationBarThemeData
   /// Applies padding around navigation item content.
   final EdgeInsetsGeometry? padding;
 
-  /// Defines the vertical offset of tooltip popovers.
-  final double? tooltipVerticalOffset;
+  /// Defines the x/y offset of tooltip popovers.
+  final Offset? tooltipOffset;
 
   /// Applies padding around navigation item labels. Defaults to [EdgeInsets.zero].
   @override
@@ -160,7 +160,7 @@ class NavigationBarThemeData
     ShapeBorder? navigationItemIndicatorShape,
     EdgeInsetsGeometry? margin,
     EdgeInsetsGeometry? padding,
-    double? tooltipVerticalOffset,
+    Offset? tooltipOffset,
     EdgeInsetsGeometry? labelPadding,
   }) {
     return NavigationBarThemeData(
@@ -181,8 +181,7 @@ class NavigationBarThemeData
           navigationItemIndicatorShape ?? this.navigationItemIndicatorShape,
       margin: margin ?? this.margin,
       padding: padding ?? this.padding,
-      tooltipVerticalOffset:
-          tooltipVerticalOffset ?? this.tooltipVerticalOffset,
+      tooltipOffset: tooltipOffset ?? this.tooltipOffset,
       labelPadding: labelPadding ?? this.labelPadding,
     );
   }
@@ -238,10 +237,9 @@ class NavigationBarThemeData
         b?.navigationItemIndicatorShape,
         t,
       ),
-      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
-      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
-      tooltipVerticalOffset:
-          lerpDouble(a?.tooltipVerticalOffset, b?.tooltipVerticalOffset, t),
+        margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+        padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+        tooltipOffset: Offset.lerp(a?.tooltipOffset, b?.tooltipOffset, t),
       labelPadding: EdgeInsetsGeometry.lerp(
         a?.labelPadding,
         b?.labelPadding,
@@ -267,7 +265,7 @@ class NavigationBarThemeData
         navigationItemIndicatorShape,
         margin,
         padding,
-        tooltipVerticalOffset,
+        tooltipOffset,
         labelPadding,
       );
 
@@ -295,7 +293,7 @@ class NavigationBarThemeData
         other.navigationItemIndicatorShape == navigationItemIndicatorShape &&
         other.margin == margin &&
         other.padding == padding &&
-        other.tooltipVerticalOffset == tooltipVerticalOffset &&
+        other.tooltipOffset == tooltipOffset &&
         other.labelPadding == labelPadding;
   }
 
@@ -383,9 +381,9 @@ class NavigationBarThemeData
       ),
     );
     properties.add(
-      DiagnosticsProperty<double?>(
-        "tooltipVerticalOffset",
-        tooltipVerticalOffset,
+      DiagnosticsProperty<Offset?>(
+        "tooltipOffset",
+        tooltipOffset,
         defaultValue: null,
       ),
     );
@@ -420,7 +418,7 @@ class NavigationBarThemeData
       navigationItemIndicatorShape: null,
       margin: null,
       padding: null,
-      tooltipVerticalOffset: null,
+      tooltipOffset: null,
       labelPadding: other?.labelPadding,
     );
   }
@@ -462,12 +460,34 @@ class NavigationBarTheme extends InheritedTheme
   /// NavigationBarThemeData theme = NavigationBarTheme.of(context);
   /// ```
   static NavigationBarThemeData of(BuildContext context) {
+    final NavigationBarThemeData defaults = defaultsFor(context);
+
     // The user is using NavigationBarTheme from this package
     final NavigationBarTheme? navigationBarTheme =
         context.dependOnInheritedWidgetOfExactType<NavigationBarTheme>();
 
     if (navigationBarTheme != null) {
-      return navigationBarTheme.data;
+      return defaults.copyWith(
+        height: navigationBarTheme.data.height,
+        backgroundColor: navigationBarTheme.data.backgroundColor,
+        elevation: navigationBarTheme.data.elevation,
+        shadowColor: navigationBarTheme.data.shadowColor,
+        surfaceTintColor: navigationBarTheme.data.surfaceTintColor,
+        indicatorColor: navigationBarTheme.data.indicatorColor,
+        indicatorShape: navigationBarTheme.data.indicatorShape,
+        labelTextStyle: navigationBarTheme.data.labelTextStyle,
+        iconTheme: navigationBarTheme.data.iconTheme,
+        labelBehavior: navigationBarTheme.data.labelBehavior,
+        overlayColor: navigationBarTheme.data.overlayColor,
+        navigationItemOverlayColor:
+            navigationBarTheme.data.navigationItemOverlayColor,
+        navigationItemIndicatorShape:
+            navigationBarTheme.data.navigationItemIndicatorShape,
+        margin: navigationBarTheme.data.margin,
+        padding: navigationBarTheme.data.padding,
+        tooltipOffset: navigationBarTheme.data.tooltipOffset,
+        labelPadding: navigationBarTheme.data.labelPadding,
+      );
     }
 
     // The user is using a theme extension to provide NavigationBarThemeData
@@ -477,7 +497,26 @@ class NavigationBarTheme extends InheritedTheme
         Theme.of(context).extension<NavigationBarThemeData>();
 
     if (themeExtension != null) {
-      return themeExtension;
+      return defaults.copyWith(
+        height: themeExtension.height,
+        backgroundColor: themeExtension.backgroundColor,
+        elevation: themeExtension.elevation,
+        shadowColor: themeExtension.shadowColor,
+        surfaceTintColor: themeExtension.surfaceTintColor,
+        indicatorColor: themeExtension.indicatorColor,
+        indicatorShape: themeExtension.indicatorShape,
+        labelTextStyle: themeExtension.labelTextStyle,
+        iconTheme: themeExtension.iconTheme,
+        labelBehavior: themeExtension.labelBehavior,
+        overlayColor: themeExtension.overlayColor,
+        navigationItemOverlayColor: themeExtension.navigationItemOverlayColor,
+        navigationItemIndicatorShape:
+            themeExtension.navigationItemIndicatorShape,
+        margin: themeExtension.margin,
+        padding: themeExtension.padding,
+        tooltipOffset: themeExtension.tooltipOffset,
+        labelPadding: themeExtension.labelPadding,
+      );
     }
 
     // The user is using Flutter's Material NavigationBarThemeData, so we
@@ -485,8 +524,27 @@ class NavigationBarTheme extends InheritedTheme
 
     final m.NavigationBarThemeData materialNavigationBarTheme =
         m.NavigationBarTheme.of(context);
-
-    return NavigationBarThemeData.fromMaterial(materialNavigationBarTheme);
+    final NavigationBarThemeData converted =
+        NavigationBarThemeData.fromMaterial(materialNavigationBarTheme);
+    return defaults.copyWith(
+      height: converted.height,
+      backgroundColor: converted.backgroundColor,
+      elevation: converted.elevation,
+      shadowColor: converted.shadowColor,
+      surfaceTintColor: converted.surfaceTintColor,
+      indicatorColor: converted.indicatorColor,
+      indicatorShape: converted.indicatorShape,
+      labelTextStyle: converted.labelTextStyle,
+      iconTheme: converted.iconTheme,
+      labelBehavior: converted.labelBehavior,
+      overlayColor: converted.overlayColor,
+      navigationItemOverlayColor: converted.navigationItemOverlayColor,
+      navigationItemIndicatorShape: converted.navigationItemIndicatorShape,
+      margin: converted.margin,
+      padding: converted.padding,
+      tooltipOffset: converted.tooltipOffset,
+      labelPadding: converted.labelPadding,
+    );
   }
 
   @override

@@ -72,9 +72,14 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
   }
 
   void _handleStatesChanged() {
-    if (mounted) {
-      setState(() {});
+    if (!mounted) {
+      return;
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        setState(() {});
+      }
+    });
   }
 
   @override
@@ -173,12 +178,16 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
       ],
     );
 
+    final Offset tooltipOffset = railTheme.tooltipOffset ?? const Offset(0, 24);
+
     final Widget maybeTooltip =
         widget.tooltip != null && widget.tooltip!.isNotEmpty
             ? Tooltip(
                 message: widget.tooltip!,
+                verticalOffset: tooltipOffset.dy,
                 excludeFromSemantics: true,
                 preferBelow: false,
+                margin: EdgeInsets.only(left: tooltipOffset.dx),
                 child: content,
               )
             : content;

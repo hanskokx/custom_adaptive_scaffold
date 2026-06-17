@@ -9,6 +9,7 @@ class NavigationRailDestination extends NavigationDestination {
     super.selectedIcon,
     super.indicatorColor,
     super.indicatorShape,
+    super.margin,
     super.padding,
     super.disabled,
     super.tooltip,
@@ -16,7 +17,7 @@ class NavigationRailDestination extends NavigationDestination {
 
   final Widget _label;
 
-  String get tooltipLabel => tooltip ?? label;
+  String? get tooltipLabel => tooltipMessage;
 
   Widget get labelWidget => _label;
 }

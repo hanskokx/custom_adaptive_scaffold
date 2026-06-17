@@ -151,11 +151,11 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     final bool material3 = theme.useMaterial3;
 
     final EdgeInsets destinationPadding =
-        (input.padding ?? railTheme.padding)?.resolve(textDirection) ??
-            EdgeInsets.zero;
+      (input.padding ?? railTheme.padding ?? EdgeInsets.zero)
+        .resolve(textDirection);
     final EdgeInsets destinationMargin =
-        (input.margin ?? railTheme.margin)?.resolve(textDirection) ??
-            EdgeInsets.zero;
+      (input.margin ?? railTheme.margin ?? EdgeInsets.zero)
+        .resolve(textDirection);
 
     final double paddingAndMarginWidth =
         destinationPadding.horizontal + destinationMargin.horizontal;

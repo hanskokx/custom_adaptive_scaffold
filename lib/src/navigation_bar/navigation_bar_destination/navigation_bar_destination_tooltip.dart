@@ -26,11 +26,15 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
       return child;
     }
 
+    final Offset tooltipOffset =
+      navigationBarTheme.tooltipOffset ?? const Offset(0, 42);
+
     return Tooltip(
       message: message!,
-      verticalOffset: navigationBarTheme.tooltipVerticalOffset ?? 42,
+      verticalOffset: tooltipOffset.dy,
       excludeFromSemantics: true,
       preferBelow: false,
+      margin: EdgeInsets.only(left: tooltipOffset.dx),
       child: child,
     );
   }

@@ -322,9 +322,9 @@ void main() {
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: MediaQuery(
-            data: const MediaQueryData(size: Size(700, 900)),
+            data: MediaQueryData(size: Size(700, 900)),
             child: AdaptiveScaffold(
               destinations: destinations,
             ),
@@ -802,9 +802,9 @@ void main() {
 
       expect(
         () => tester.pumpWidget(
-          MaterialApp(
+          const MaterialApp(
             home: MediaQuery(
-              data: const MediaQueryData(size: Size(700, 900)),
+              data: MediaQueryData(size: Size(700, 900)),
               child: AdaptiveScaffold(
                 destinations: destinations,
               ),
@@ -878,8 +878,8 @@ void main() {
               labelType: NavigationRailLabelType.all,
             ),
           ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
+          home: const MediaQuery(
+            data: MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
             ),

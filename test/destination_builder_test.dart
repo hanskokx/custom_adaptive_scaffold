@@ -180,10 +180,12 @@ void main() {
         ),
       );
 
-      final Iterable<Tooltip> tooltips =
-          tester.widgetList<Tooltip>(find.byType(Tooltip));
-      expect(tooltips.length, 1);
-      expect(tooltips.first.message, "Search");
+      final List<Tooltip> tooltips =
+          tester.widgetList<Tooltip>(find.byType(Tooltip)).toList();
+      final List<String?> messages =
+          tooltips.map((Tooltip tooltip) => tooltip.message).toList();
+      expect(messages, isNot(contains("")));
+      expect(messages, contains("Search"));
     });
 
     testWidgets("bar tooltip uses themed vertical offset",
@@ -192,7 +194,7 @@ void main() {
         MaterialApp(
           theme: ThemeData(
             navigationBarTheme: const CustomNavigationBarThemeData(
-              tooltipVerticalOffset: 64,
+              tooltipOffset: Offset(0, 64),
             ),
           ),
           home: Scaffold(
@@ -216,6 +218,93 @@ void main() {
       final Tooltip tooltip =
           tester.widget<Tooltip>(find.byType(Tooltip).first);
       expect(tooltip.verticalOffset, 64);
+    });
+
+    testWidgets("rail tooltip falls back to label when tooltip is null",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ].map((NavigationDestination d) => d.toRailDestination()).toList(),
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.message, "Home");
+    });
+
+    testWidgets("rail tooltip is suppressed when tooltip is empty",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              tooltip: "",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ].map((NavigationDestination d) => d.toRailDestination()).toList(),
+        ),
+      );
+
+      final List<Tooltip> tooltips =
+          tester.widgetList<Tooltip>(find.byType(Tooltip)).toList();
+      final List<String?> messages =
+          tooltips.map((Tooltip tooltip) => tooltip.message).toList();
+      expect(messages, isNot(contains("")));
+      expect(messages, contains("Search"));
+    });
+
+    testWidgets("rail tooltip uses themed vertical offset",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const CustomNavigationRailThemeData(
+              tooltipOffset: Offset(0, 52),
+            ),
+          ),
+          home: Scaffold(
+            body: NavigationRail(
+              selectedIndex: 0,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  tooltip: "Go Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ]
+                  .map((NavigationDestination d) => d.toRailDestination())
+                  .toList(),
+            ),
+          ),
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.verticalOffset, 52);
     });
   });
 

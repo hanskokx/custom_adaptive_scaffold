@@ -122,10 +122,7 @@ class AdaptiveScaffold extends StatefulWidget {
     this.groupAlignment,
     this.padding,
     this.controller,
-  }) : assert(
-          destinations.length >= 2,
-          "At least two destinations are required",
-        );
+  });
 
   /// The destinations to be used in navigation items. These are converted to
   /// [NavigationRailDestination]s and [BottomNavigationBarItem]s and inserted

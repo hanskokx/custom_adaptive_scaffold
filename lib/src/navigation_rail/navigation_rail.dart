@@ -493,10 +493,9 @@ class _NavigationRailState extends State<NavigationRail>
               );
 
     final bool isRTLDirection = Directionality.of(context) == TextDirection.rtl;
-    final EdgeInsetsGeometry? railDestinationMargin =
-        navigationRailTheme.margin;
+    final EdgeInsetsGeometry? railDestinationMargin = navigationRailTheme.margin;
     final EdgeInsetsGeometry? railDestinationPadding =
-        navigationRailTheme.padding;
+      navigationRailTheme.padding;
 
     final MainAxisAlignment effectiveMainAxisAlignment =
         widget.mainAxisAlignment ?? MainAxisAlignment.start;
@@ -511,7 +510,8 @@ class _NavigationRailState extends State<NavigationRail>
         ],
         for (int i = 0; i < widget.destinations.length; i += 1)
           Container(
-            margin: railDestinationMargin,
+            margin:
+                widget.destinations[i].margin ?? railDestinationMargin,
             child: RailDestination(
               labelType: labelType,
               minWidth: widget.minWidth,
@@ -529,8 +529,8 @@ class _NavigationRailState extends State<NavigationRail>
               labelTextStyle: widget.selectedIndex == i
                   ? selectedLabelTextStyle
                   : unselectedLabelTextStyle,
-              padding: railDestinationPadding ??
-                  widget.destinations[i].padding ??
+                padding: widget.destinations[i].padding ??
+                  railDestinationPadding ??
                   const EdgeInsets.symmetric(
                     horizontal: _horizontalDestinationPadding,
                   ),
