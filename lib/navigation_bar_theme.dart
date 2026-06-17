@@ -10,6 +10,8 @@ import "package:flutter/material.dart" as m
 import "package:flutter/material.dart";
 import "package:flutter/rendering.dart";
 
+import "src/navigation_bar/navigation_bar_theme_defaults.dart";
+
 typedef CustomNavigationBarThemeData = NavigationBarThemeData;
 typedef CustomNavigationBarTheme = NavigationBarTheme;
 
@@ -45,24 +47,26 @@ class NavigationBarThemeData
   /// Creates a theme that can be used for [ThemeData.navigationBarTheme] and
   /// [NavigationBarTheme].
   const NavigationBarThemeData({
-    this.height,
     this.backgroundColor,
     this.elevation,
-    this.shadowColor,
-    this.surfaceTintColor,
+    this.height,
+    this.iconTheme,
     this.indicatorColor,
     this.indicatorShape,
-    this.labelTextStyle,
-    this.iconTheme,
     this.labelBehavior,
-    this.overlayColor,
-    this.navigationItemOverlayColor,
-    this.navigationItemIndicatorShape,
-    this.margin,
-    this.padding,
-    this.tooltipOffset,
     this.labelPadding,
+    this.labelTextStyle,
+    this.margin,
+    this.navigationItemIndicatorShape,
+    this.navigationItemOverlayColor,
+    this.overlayColor,
+    this.padding,
+    this.shadowColor,
+    this.surfaceTintColor,
+    this.tooltipOffset,
     this.tooltipTrigger,
+    this.tooltipTriggerWhenLabelHidden,
+    this.tooltipTriggerWhenLabelVisible,
   });
 
   /// Overrides the default value of [NavigationBar.height].
@@ -148,6 +152,12 @@ class NavigationBarThemeData
   /// can continue to activate navigation.
   final TooltipTriggerMode? tooltipTrigger;
 
+  /// Overrides [tooltipTrigger] when the destination label is visible.
+  final TooltipTriggerMode? tooltipTriggerWhenLabelVisible;
+
+  /// Overrides [tooltipTrigger] when the destination label is hidden.
+  final TooltipTriggerMode? tooltipTriggerWhenLabelHidden;
+
   /// Applies padding around navigation item labels. Defaults to [EdgeInsets.zero].
   @override
   final EdgeInsetsGeometry? labelPadding;
@@ -174,6 +184,8 @@ class NavigationBarThemeData
     Offset? tooltipOffset,
     EdgeInsetsGeometry? labelPadding,
     TooltipTriggerMode? tooltipTrigger,
+    TooltipTriggerMode? tooltipTriggerWhenLabelVisible,
+    TooltipTriggerMode? tooltipTriggerWhenLabelHidden,
   }) {
     return NavigationBarThemeData(
       height: height ?? this.height,
@@ -196,6 +208,10 @@ class NavigationBarThemeData
       tooltipOffset: tooltipOffset ?? this.tooltipOffset,
       labelPadding: labelPadding ?? this.labelPadding,
       tooltipTrigger: tooltipTrigger ?? this.tooltipTrigger,
+      tooltipTriggerWhenLabelVisible:
+          tooltipTriggerWhenLabelVisible ?? this.tooltipTriggerWhenLabelVisible,
+      tooltipTriggerWhenLabelHidden:
+          tooltipTriggerWhenLabelHidden ?? this.tooltipTriggerWhenLabelHidden,
     );
   }
 
@@ -259,6 +275,12 @@ class NavigationBarThemeData
         t,
       ),
       tooltipTrigger: t < 0.5 ? a?.tooltipTrigger : b?.tooltipTrigger,
+      tooltipTriggerWhenLabelVisible: t < 0.5
+          ? a?.tooltipTriggerWhenLabelVisible
+          : b?.tooltipTriggerWhenLabelVisible,
+      tooltipTriggerWhenLabelHidden: t < 0.5
+          ? a?.tooltipTriggerWhenLabelHidden
+          : b?.tooltipTriggerWhenLabelHidden,
     );
   }
 
@@ -282,6 +304,8 @@ class NavigationBarThemeData
         tooltipOffset,
         labelPadding,
         tooltipTrigger,
+        tooltipTriggerWhenLabelVisible,
+        tooltipTriggerWhenLabelHidden,
       );
 
   @override
@@ -309,8 +333,10 @@ class NavigationBarThemeData
         other.margin == margin &&
         other.padding == padding &&
         other.tooltipOffset == tooltipOffset &&
-        other.tooltipOffset == tooltipOffset &&
         other.tooltipTrigger == tooltipTrigger &&
+        other.tooltipTriggerWhenLabelVisible ==
+            tooltipTriggerWhenLabelVisible &&
+        other.tooltipTriggerWhenLabelHidden == tooltipTriggerWhenLabelHidden &&
         other.labelPadding == labelPadding;
   }
 
@@ -417,6 +443,20 @@ class NavigationBarThemeData
         defaultValue: null,
       ),
     );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTriggerWhenLabelVisible",
+        tooltipTriggerWhenLabelVisible,
+        defaultValue: null,
+      ),
+    );
+    properties.add(
+      DiagnosticsProperty<TooltipTriggerMode?>(
+        "tooltipTriggerWhenLabelHidden",
+        tooltipTriggerWhenLabelHidden,
+        defaultValue: null,
+      ),
+    );
   }
 
   factory NavigationBarThemeData.fromMaterial(
@@ -444,6 +484,8 @@ class NavigationBarThemeData
       tooltipOffset: null,
       labelPadding: other?.labelPadding,
       tooltipTrigger: null,
+      tooltipTriggerWhenLabelVisible: null,
+      tooltipTriggerWhenLabelHidden: null,
     );
   }
 }
@@ -522,7 +564,7 @@ class NavigationBarTheme extends InheritedTheme
   }
 
   static NavigationBarThemeData of(BuildContext context) {
-    final NavigationBarThemeData defaults = defaultsFor(context);
+    final NavigationBarThemeData defaults = navigationBarDefaultsFor(context);
 
     final NavigationBarThemeData? explicitTheme = maybeOf(context);
     if (explicitTheme != null) {
@@ -546,6 +588,10 @@ class NavigationBarTheme extends InheritedTheme
         tooltipOffset: explicitTheme.tooltipOffset,
         labelPadding: explicitTheme.labelPadding,
         tooltipTrigger: explicitTheme.tooltipTrigger,
+        tooltipTriggerWhenLabelVisible:
+            explicitTheme.tooltipTriggerWhenLabelVisible,
+        tooltipTriggerWhenLabelHidden:
+            explicitTheme.tooltipTriggerWhenLabelHidden,
       );
     }
 
@@ -560,160 +606,6 @@ class NavigationBarTheme extends InheritedTheme
   @override
   bool updateShouldNotify(NavigationBarTheme oldWidget) =>
       data != oldWidget.data;
-}
-
-NavigationBarThemeData defaultsFor(BuildContext context) {
-  return Theme.of(context).useMaterial3
-      ? NavigationBarDefaultsM3(context)
-      : NavigationBarDefaultsM2(context);
-}
-
-// Hand coded defaults based on Material Design 2.
-class NavigationBarDefaultsM2 extends NavigationBarThemeData {
-  NavigationBarDefaultsM2(BuildContext context)
-      : _theme = Theme.of(context),
-        _colors = Theme.of(context).colorScheme,
-        super(
-          height: 80.0,
-          elevation: 0.0,
-          labelPadding: const EdgeInsets.only(top: 4),
-          indicatorShape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        );
-
-  final ThemeData _theme;
-  final ColorScheme _colors;
-
-  // With Material 2, the NavigationBar uses an overlay blend for the
-  // default color regardless of light/dark mode.
-  @override
-  Color? get backgroundColor => ElevationOverlay.colorWithOverlay(
-        _colors.surface,
-        _colors.onSurface,
-        3.0,
-      );
-
-  @override
-  WidgetStateProperty<IconThemeData?>? get iconTheme {
-    return WidgetStatePropertyAll<IconThemeData>(
-      IconThemeData(
-        size: 24,
-        color: _colors.onSurface,
-      ),
-    );
-  }
-
-  @override
-  Color? get indicatorColor => _colors.secondary.withValues(alpha: 0.24);
-
-  @override
-  WidgetStateProperty<TextStyle?>? get labelTextStyle =>
-      WidgetStatePropertyAll<TextStyle?>(
-        _theme.textTheme.labelSmall!.copyWith(color: _colors.onSurface),
-      );
-
-  @override
-  WidgetStateProperty<Color?>? get overlayColor {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.pressed) ||
-          states.contains(WidgetState.focused)) {
-        return _colors.onSurface.withValues(alpha: 0.12);
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withValues(alpha: 0.08);
-      }
-      return null;
-    });
-  }
-
-  @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
-    return overlayColor;
-  }
-}
-
-// BEGIN GENERATED TOKEN PROPERTIES - NavigationBar
-
-// Do not edit by hand. The code between the "BEGIN GENERATED" and
-// "END GENERATED" comments are generated from data in the Material
-// Design token database by the script:
-//   dev/tools/gen_defaults/bin/gen_defaults.dart.
-
-class NavigationBarDefaultsM3 extends CustomNavigationBarThemeData {
-  NavigationBarDefaultsM3(this.context)
-      : super(
-          height: 80.0,
-          elevation: 3.0,
-          labelPadding: const EdgeInsets.only(top: 4),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        );
-
-  final BuildContext context;
-  late final ColorScheme _colors = Theme.of(context).colorScheme;
-  late final TextTheme _textTheme = Theme.of(context).textTheme;
-
-  @override
-  Color? get backgroundColor => _colors.surfaceContainer;
-
-  @override
-  Color? get shadowColor => Colors.transparent;
-
-  @override
-  Color? get surfaceTintColor => Colors.transparent;
-
-  @override
-  WidgetStateProperty<IconThemeData?>? get iconTheme {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      return IconThemeData(
-        size: 24.0,
-        color: states.contains(WidgetState.disabled)
-            ? _colors.onSurfaceVariant.withValues(alpha: 0.38)
-            : states.contains(WidgetState.selected)
-                ? _colors.onSecondaryContainer
-                : _colors.onSurfaceVariant,
-      );
-    });
-  }
-
-  @override
-  Color? get indicatorColor => _colors.secondaryContainer;
-  @override
-  ShapeBorder? get indicatorShape => const StadiumBorder();
-
-  @override
-  WidgetStateProperty<TextStyle?>? get labelTextStyle {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      final TextStyle style = _textTheme.labelMedium!;
-      return style.apply(
-        color: states.contains(WidgetState.disabled)
-            ? _colors.onSurfaceVariant.withValues(alpha: 0.38)
-            : states.contains(WidgetState.selected)
-                ? _colors.onSurface
-                : _colors.onSurfaceVariant,
-      );
-    });
-  }
-
-  @override
-  WidgetStateProperty<Color?>? get overlayColor {
-    return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.pressed) ||
-          states.contains(WidgetState.focused)) {
-        return _colors.onSurface.withValues(alpha: 0.12);
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withValues(alpha: 0.08);
-      }
-      return null;
-    });
-  }
-
-  @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
-    return overlayColor;
-  }
 }
 
 // END GENERATED TOKEN PROPERTIES - NavigationBar

@@ -25,6 +25,7 @@ class WrappedRailDestination extends StatefulWidget {
     required this.hoverColor,
     required this.selectionAnimation,
     required this.child,
+    this.tooltipTrigger,
     this.tooltip,
     this.centerIndicatorHorizontally = false,
     super.key,
@@ -48,6 +49,7 @@ class WrappedRailDestination extends StatefulWidget {
   final Color hoverColor;
   final Animation<double> selectionAnimation;
   final Widget child;
+  final TooltipTriggerMode? tooltipTrigger;
   final String? tooltip;
 
   @override
@@ -204,7 +206,7 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         child: DestinationTooltip(
           message: widget.tooltip,
           tooltipOffset: railTheme.tooltipOffset ?? const Offset(0, 24),
-          tooltipTrigger: railTheme.tooltipTrigger,
+          tooltipTrigger: widget.tooltipTrigger,
           child: content,
         ),
       ),

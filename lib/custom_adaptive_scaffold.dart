@@ -4,11 +4,7 @@
 //
 // Forked, modified, and maintained by Hans Kokx beginning in 2024.
 
-export "navigation_bar_theme.dart"
-    hide defaultsFor, NavigationBarDefaultsM2, NavigationBarDefaultsM3;
 export "navigation_bar_theme.dart";
-export "navigation_rail_theme.dart"
-    hide NavigationRailDefaultsM2, NavigationRailDefaultsM3;
 export "navigation_rail_theme.dart";
 export "src/adaptive_layout.dart";
 export "src/adaptive_scaffold.dart";

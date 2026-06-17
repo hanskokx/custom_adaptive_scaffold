@@ -103,7 +103,8 @@ class _NavigationBarDestinationBuilderState
     final CustomNavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.maybeOf(context) ??
             const CustomNavigationBarThemeData();
-    final CustomNavigationBarThemeData defaults = defaultsFor(context);
+    final CustomNavigationBarThemeData defaults =
+        navigationBarDefaultsFor(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         navigationBarTheme.navigationItemOverlayColor;
     final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
@@ -131,10 +132,19 @@ class _NavigationBarDestinationBuilderState
     final String? tooltipMessage = widget.tooltip == null
         ? (labelText.isNotEmpty ? labelText : null)
         : (widget.tooltip!.isNotEmpty ? widget.tooltip : null);
+    final bool isSelected = info.index == info.selectedIndex;
+    final bool isLabelVisible = switch (info.labelBehavior) {
+      NavigationDestinationLabelBehavior.alwaysShow => true,
+      NavigationDestinationLabelBehavior.onlyShowSelected => isSelected,
+      NavigationDestinationLabelBehavior.alwaysHide => false,
+    };
     final Offset effectiveTooltipOffset =
         navigationBarTheme.tooltipOffset ?? const Offset(0, 42);
-    final TooltipTriggerMode? effectiveTooltipTrigger =
-        navigationBarTheme.tooltipTrigger;
+    final TooltipTriggerMode? effectiveTooltipTrigger = isLabelVisible
+        ? navigationBarTheme.tooltipTriggerWhenLabelVisible ??
+            navigationBarTheme.tooltipTrigger
+        : navigationBarTheme.tooltipTriggerWhenLabelHidden ??
+            navigationBarTheme.tooltipTrigger;
 
     return _NavigationBarDestinationSemantics(
       enabled: !isDisabled,

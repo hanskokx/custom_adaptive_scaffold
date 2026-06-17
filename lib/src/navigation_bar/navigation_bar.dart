@@ -6,6 +6,7 @@ import "../../navigation_bar_theme.dart";
 import "../material.dart";
 import "../navigation_destination.dart";
 import "navigation_bar_destination.dart";
+import "navigation_bar_theme_defaults.dart";
 import "navigation_destination_info.dart";
 import "selectable_animated_builder.dart";
 
@@ -231,7 +232,7 @@ class NavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NavigationBarThemeData defaults = defaultsFor(context);
+    final NavigationBarThemeData defaults = navigationBarDefaultsFor(context);
 
     final NavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);

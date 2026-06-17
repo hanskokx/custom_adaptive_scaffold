@@ -12,6 +12,7 @@ import "../destination/navigation_destination_tooltip.dart";
 import "../destination/navigation_indicator.dart";
 import "../material.dart";
 import "../navigation_icon.dart";
+import "navigation_rail_theme_defaults.dart";
 import "widgets/navigation_rail_animation.dart";
 
 part "expanded/navigation_rail_destination.dart";
@@ -437,9 +438,7 @@ class _NavigationRailState extends State<NavigationRail>
   Widget build(BuildContext context) {
     final NavigationRailThemeData navigationRailTheme =
         NavigationRailTheme.of(context);
-    final NavigationRailThemeData defaults = Theme.of(context).useMaterial3
-        ? NavigationRailDefaultsM3(context)
-        : NavigationRailDefaultsM2(context);
+    final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
 

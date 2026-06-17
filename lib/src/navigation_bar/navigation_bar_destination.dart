@@ -6,6 +6,7 @@ import "../destination/navigation_indicator.dart";
 import "../material.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
+import "navigation_bar_theme_defaults.dart";
 import "navigation_destination_info.dart";
 
 part "navigation_bar_destination/navigation_bar_destination_builder.dart";
@@ -50,10 +51,10 @@ class NavigationBarDestination extends NavigationDestination {
 
     final Color indicatorColor = info.indicatorColor ??
         navigationBarTheme.indicatorColor ??
-        defaultsFor(context).indicatorColor!;
+        navigationBarDefaultsFor(context).indicatorColor!;
     final ShapeBorder indicatorShape = info.indicatorShape ??
         navigationBarTheme.indicatorShape ??
-        defaultsFor(context).indicatorShape!;
+        navigationBarDefaultsFor(context).indicatorShape!;
 
     final EdgeInsetsGeometry margin =
         this.margin ?? navigationBarTheme.margin ?? EdgeInsets.zero;
@@ -133,7 +134,8 @@ class NavigationBarDestination extends NavigationDestination {
               currentInfo.index == currentInfo.selectedIndex;
           final NavigationBarThemeData barTheme =
               NavigationBarTheme.of(context);
-          final NavigationBarThemeData defaults = defaultsFor(context);
+          final NavigationBarThemeData defaults =
+              navigationBarDefaultsFor(context);
 
           final Set<WidgetState> widgetState = {
             if (disabled) WidgetState.disabled,
