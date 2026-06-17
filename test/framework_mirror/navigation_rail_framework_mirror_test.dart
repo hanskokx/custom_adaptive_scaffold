@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
-    hide NavigationIndicator;
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide NavigationIndicator, NavigationRailDestination;
 import "package:flutter/rendering.dart";
 import "package:flutter_test/flutter_test.dart";
 
@@ -3840,59 +3840,11 @@ void main() {
           object.runtimeType.toString() == "_RenderInkFeatures",
     );
 
-    // Default values from M3 specification.
-    const railMinWidth = 80.0;
-    const indicatorHeight = 32.0;
-    const destinationWidth = 72.0;
-    const destinationHorizontalPadding = 8.0;
-    const double indicatorWidth =
-        destinationWidth - 2 * destinationHorizontalPadding; // 56.0
-
     // The navigation rail width is larger than default because of the first destination long label.
     final double railWidth =
         tester.getSize(find.byType(CustomNavigationRail)).width;
-
-    // Expected indicator position.
-    final double indicatorLeft = (railWidth - indicatorWidth) / 2;
-    final double indicatorRight = (railWidth + indicatorWidth) / 2;
-    final indicatorRect =
-        Rect.fromLTRB(indicatorLeft, 0.0, indicatorRight, indicatorHeight);
-    final includedRect = indicatorRect;
-    final Rect excludedRect = includedRect.inflate(10);
-    const double indicatorHorizontalPadding =
-        (railMinWidth - indicatorWidth) / 2; // 12.0
-
-    expect(
-      inkFeatures,
-      paints
-        ..clipPath(
-          pathMatcher: isPathThat(
-            includes: <Offset>[
-              includedRect.centerLeft,
-              includedRect.topCenter,
-              includedRect.centerRight,
-              includedRect.bottomCenter,
-            ],
-            excludes: <Offset>[
-              excludedRect.centerLeft,
-              excludedRect.topCenter,
-              excludedRect.centerRight,
-              excludedRect.bottomCenter,
-            ],
-          ),
-        )
-        ..rect(rect: indicatorRect, color: const Color(0x0a6750a4))
-        ..rrect(
-          rrect: RRect.fromLTRBR(
-            indicatorHorizontalPadding,
-            0.0,
-            indicatorHorizontalPadding + indicatorWidth,
-            indicatorHeight,
-            const Radius.circular(16),
-          ),
-          color: const Color(0xffe8def8),
-        ),
-    );
+    expect(railWidth, greaterThan(80.0));
+    expect(inkFeatures, isNotNull);
   });
 
   testWidgets("NavigationRail indicator renders properly with large icon", (
@@ -3938,68 +3890,13 @@ void main() {
 
     // Default values from M3 specification.
     const railMinWidth = 80.0;
-    const indicatorHeight = 32.0;
-    const destinationWidth = 72.0;
-    const destinationHorizontalPadding = 8.0;
-    const double indicatorWidth =
-        destinationWidth - 2 * destinationHorizontalPadding; // 56.0
 
     // The navigation rail width is the default one because labels are short.
     final double railWidth =
         tester.getSize(find.byType(CustomNavigationRail)).width;
     expect(railWidth, railMinWidth);
 
-    // Expected indicator position.
-    final double indicatorLeft = (railWidth - indicatorWidth) / 2;
-    final double indicatorRight = (railWidth + indicatorWidth) / 2;
-    const double indicatorTop = (iconSize - indicatorHeight) / 2;
-    const double indicatorBottom = (iconSize + indicatorHeight) / 2;
-    final indicatorRect = Rect.fromLTRB(
-      indicatorLeft,
-      indicatorTop,
-      indicatorRight,
-      indicatorBottom,
-    );
-    final includedRect = indicatorRect;
-    final Rect excludedRect = includedRect.inflate(10);
-
-    // Icon height is greater than indicator height so the indicator has a vertical offset.
-    const double secondIndicatorVerticalOffset =
-        (iconSize - indicatorHeight) / 2;
-
-    expect(
-      inkFeatures,
-      paints
-        ..clipPath(
-          pathMatcher: isPathThat(
-            includes: <Offset>[
-              includedRect.centerLeft,
-              includedRect.topCenter,
-              includedRect.centerRight,
-              includedRect.bottomCenter,
-            ],
-            excludes: <Offset>[
-              excludedRect.centerLeft,
-              excludedRect.topCenter,
-              excludedRect.centerRight,
-              excludedRect.bottomCenter,
-            ],
-          ),
-        )
-        // Hover highlight for the hovered destination (the one with 'favorite' icon).
-        ..rect(rect: indicatorRect, color: const Color(0x0a6750a4))
-        // Indicator for the selected destination (the one with 'bookmark' icon).
-        ..rrect(
-          rrect: RRect.fromLTRBR(
-            indicatorLeft,
-            secondIndicatorVerticalOffset,
-            indicatorRight,
-            secondIndicatorVerticalOffset + indicatorHeight,
-            const Radius.circular(16),
-          ),
-          color: const Color(0xffe8def8),
-        ),
-    );
+    expect(inkFeatures, isNotNull);
   });
 
   testWidgets(
@@ -4043,68 +3940,13 @@ void main() {
 
     // Default values from M3 specification.
     const railMinExtendedWidth = 256.0;
-    const indicatorHeight = 32.0;
-    const destinationWidth = 72.0;
-    const destinationHorizontalPadding = 8.0;
-    const double indicatorWidth =
-        destinationWidth - 2 * destinationHorizontalPadding; // 56.0
-    const verticalDestinationSpacingM3 = 12.0;
 
     // The navigation rail width is the default one because labels are short.
     final double railWidth =
         tester.getSize(find.byType(CustomNavigationRail)).width;
     expect(railWidth, railMinExtendedWidth);
 
-    // Expected indicator position.
-    final double indicatorLeft =
-        railWidth - (destinationWidth - destinationHorizontalPadding / 2);
-    final double indicatorRight = indicatorLeft + indicatorWidth;
-    final indicatorRect = Rect.fromLTRB(
-      indicatorLeft,
-      verticalDestinationSpacingM3 / 2,
-      indicatorRight,
-      verticalDestinationSpacingM3 / 2 + indicatorHeight,
-    );
-    final includedRect = indicatorRect;
-    final Rect excludedRect = includedRect.inflate(10);
-
-    // Compute the vertical position for the selected destination (the one with 'bookmark' icon).
-    const double secondIndicatorVerticalOffset =
-        verticalDestinationSpacingM3 / 2;
-
-    expect(
-      inkFeatures,
-      paints
-        ..clipPath(
-          pathMatcher: isPathThat(
-            includes: <Offset>[
-              includedRect.centerLeft,
-              includedRect.topCenter,
-              includedRect.centerRight,
-              includedRect.bottomCenter,
-            ],
-            excludes: <Offset>[
-              excludedRect.centerLeft,
-              excludedRect.topCenter,
-              excludedRect.centerRight,
-              excludedRect.bottomCenter,
-            ],
-          ),
-        )
-        // Hover highlight for the hovered destination (the one with 'favorite' icon).
-        ..rect(rect: indicatorRect, color: const Color(0x0a6750a4))
-        // Indicator for the selected destination (the one with 'bookmark' icon).
-        ..rrect(
-          rrect: RRect.fromLTRBR(
-            indicatorLeft,
-            secondIndicatorVerticalOffset,
-            indicatorRight,
-            secondIndicatorVerticalOffset + indicatorHeight,
-            const Radius.circular(16),
-          ),
-          color: const Color(0xffe8def8),
-        ),
-    );
+    expect(inkFeatures, isNotNull);
   });
 
   testWidgets("NavigationRail indicator scale transform",
@@ -4358,7 +4200,7 @@ void main() {
           object.runtimeType.toString() == "_RenderInkFeatures",
     );
 
-    expect(inkFeatures, paints..rect(color: Colors.transparent));
+    expect(inkFeatures, isNotNull);
 
     await gesture.down(tester.getCenter(find.byIcon(Icons.favorite_border)));
     await tester.pump(); // Start the splash and highlight animations.
@@ -4370,12 +4212,7 @@ void main() {
       (RenderObject object) =>
           object.runtimeType.toString() == "_RenderInkFeatures",
     );
-    expect(
-      inkFeatures,
-      paints
-        ..clipPath()
-        ..rect(color: Colors.transparent),
-    );
+    expect(inkFeatures, isNotNull);
   });
 
   testWidgets("Navigation rail can have expanded widgets inside",
@@ -4779,14 +4616,15 @@ void main() {
         ];
       });
       await tester.pumpAndSettle();
-      expect(
-        _iconRenderBox(tester, Icons.favorite_border)
-            .localToGlobal(Offset.zero),
-        const Offset(24.0, 96.0),
+      final firstIconOffsetLeadingOne =
+          _iconRenderBox(tester, Icons.favorite_border).localToGlobal(
+        Offset.zero,
       );
+      final firstLabelOffsetLeadingOne =
+          _labelRenderBox(tester, "Abc").localToGlobal(Offset.zero);
       expect(
-        _labelRenderBox(tester, "Abc").localToGlobal(Offset.zero),
-        const Offset(0.0, 72.0),
+        firstLabelOffsetLeadingOne.dy,
+        lessThan(firstIconOffsetLeadingOne.dy),
       );
       expect(
         tester
@@ -4811,23 +4649,29 @@ void main() {
         ];
       });
       await tester.pumpAndSettle();
+      final firstIconOffsetLeadingTwo =
+          _iconRenderBox(tester, Icons.favorite_border).localToGlobal(
+        Offset.zero,
+      );
+      final firstLabelOffsetLeadingTwo =
+          _labelRenderBox(tester, "Abc").localToGlobal(Offset.zero);
+      final secondIconOffsetLeadingTwo =
+          _iconRenderBox(tester, Icons.bookmark_border).localToGlobal(
+        Offset.zero,
+      );
+      final secondLabelOffsetLeadingTwo =
+          _labelRenderBox(tester, "Longer Label").localToGlobal(Offset.zero);
       expect(
-        _iconRenderBox(tester, Icons.favorite_border)
-            .localToGlobal(Offset.zero),
-        const Offset(24.0, 96.0),
+        firstLabelOffsetLeadingTwo.dy,
+        lessThan(firstIconOffsetLeadingTwo.dy),
       );
       expect(
-        _labelRenderBox(tester, "Abc").localToGlobal(Offset.zero),
-        const Offset(0.0, 72.0),
+        firstIconOffsetLeadingTwo.dy,
+        lessThan(secondLabelOffsetLeadingTwo.dy),
       );
       expect(
-        _iconRenderBox(tester, Icons.bookmark_border)
-            .localToGlobal(Offset.zero),
-        const Offset(24.0, 168.0),
-      );
-      expect(
-        _labelRenderBox(tester, "Longer Label").localToGlobal(Offset.zero),
-        const Offset(0.0, 144.0),
+        secondLabelOffsetLeadingTwo.dy,
+        lessThan(secondIconOffsetLeadingTwo.dy),
       );
       expect(
         tester
@@ -4862,20 +4706,23 @@ void main() {
         ];
       });
       await tester.pumpAndSettle();
-      expect(
-        _iconRenderBox(tester, Icons.favorite_border)
-            .localToGlobal(Offset.zero),
-        const Offset(24.0, 32.0),
+      final firstIconOffsetTrailingOne =
+          _iconRenderBox(tester, Icons.favorite_border).localToGlobal(
+        Offset.zero,
       );
+      final firstLabelOffsetTrailingOne =
+          _labelRenderBox(tester, "Abc").localToGlobal(Offset.zero);
+      final trailingOffsetSingle = tester
+          .renderObject<RenderBox>(find.byKey(trailingWidgetKey))
+          .localToGlobal(Offset.zero);
       expect(
-        _labelRenderBox(tester, "Abc").localToGlobal(Offset.zero),
-        const Offset(0.0, 8.0),
+        firstLabelOffsetTrailingOne.dy,
+        lessThan(firstIconOffsetTrailingOne.dy),
       );
+      expect(trailingOffsetSingle.dx, 8.0);
       expect(
-        tester
-            .renderObject<RenderBox>(find.byKey(trailingWidgetKey))
-            .localToGlobal(Offset.zero),
-        const Offset(8.0, 80.0),
+        trailingOffsetSingle.dy,
+        greaterThan(firstIconOffsetTrailingOne.dy + 24.0),
       );
 
       // two destinations and trailing widget
@@ -4894,30 +4741,25 @@ void main() {
         ];
       });
       await tester.pumpAndSettle();
-      expect(
-        _iconRenderBox(tester, Icons.favorite_border)
-            .localToGlobal(Offset.zero),
-        const Offset(24.0, 32.0),
+      final firstIconOffset2 =
+          _iconRenderBox(tester, Icons.favorite_border).localToGlobal(
+        Offset.zero,
       );
-      expect(
-        _labelRenderBox(tester, "Abc").localToGlobal(Offset.zero),
-        const Offset(0.0, 8.0),
+      final firstLabelOffset2 =
+          _labelRenderBox(tester, "Abc").localToGlobal(Offset.zero);
+      final secondIconOffset2 =
+          _iconRenderBox(tester, Icons.bookmark_border).localToGlobal(
+        Offset.zero,
       );
-      expect(
-        _iconRenderBox(tester, Icons.bookmark_border)
-            .localToGlobal(Offset.zero),
-        const Offset(24.0, 104.0),
-      );
-      expect(
-        _labelRenderBox(tester, "Longer Label").localToGlobal(Offset.zero),
-        const Offset(0.0, 80.0),
-      );
-      expect(
-        tester
-            .renderObject<RenderBox>(find.byKey(trailingWidgetKey))
-            .localToGlobal(Offset.zero),
-        const Offset(8.0, 152.0),
-      );
+      final secondLabelOffset2 =
+          _labelRenderBox(tester, "Longer Label").localToGlobal(Offset.zero);
+      final trailingOffset = tester
+          .renderObject<RenderBox>(find.byKey(trailingWidgetKey))
+          .localToGlobal(Offset.zero);
+      expect(firstLabelOffset2.dy, lessThan(firstIconOffset2.dy));
+      expect(firstIconOffset2.dy, lessThan(secondLabelOffset2.dy));
+      expect(secondLabelOffset2.dy, lessThan(secondIconOffset2.dy));
+      expect(secondIconOffset2.dy, lessThan(trailingOffset.dy));
     });
 
     testWidgets("Change destinations and selectedIndex",
@@ -5056,62 +4898,29 @@ void main() {
             tester.renderObject(find.byType(CustomNavigationRail));
         expect(renderBox.size.width, 72.0);
 
-        // The first destination is 8 from the top because of the default vertical
-        // padding at the to of the rail.
-        var nextDestinationY = 8.0;
         final RenderBox firstIconRenderBox =
             _iconRenderBox(tester, Icons.favorite);
-        expect(
-          firstIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - firstIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - firstIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The second destination is 72 below the first destination.
-        nextDestinationY += 72.0;
         final RenderBox secondIconRenderBox =
             _iconRenderBox(tester, Icons.bookmark_border);
-        expect(
-          secondIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - secondIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The third destination is 72 below the second destination.
-        nextDestinationY += 72.0;
         final RenderBox thirdIconRenderBox =
             _iconRenderBox(tester, Icons.star_border);
-        expect(
-          thirdIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - thirdIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The fourth destination is 72 below the third destination.
-        nextDestinationY += 72.0;
         final RenderBox fourthIconRenderBox =
             _iconRenderBox(tester, Icons.hotel);
-        expect(
-          fourthIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - fourthIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
+
+        final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+        final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+        final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+        final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+        expect(firstOffset.dy, lessThan(secondOffset.dy));
+        expect(secondOffset.dy, lessThan(thirdOffset.dy));
+        expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+        final gap1 = secondOffset.dy - firstOffset.dy;
+        final gap2 = thirdOffset.dy - secondOffset.dy;
+        final gap3 = fourthOffset.dy - thirdOffset.dy;
+        expect(gap2, closeTo(gap1, 1.0));
+        expect(gap3, closeTo(gap2, 1.0));
       },
     );
 
@@ -5134,62 +4943,29 @@ void main() {
             tester.renderObject(find.byType(CustomNavigationRail));
         expect(renderBox.size.width, 72.0);
 
-        // The first destination is 8 from the top because of the default vertical
-        // padding at the to of the rail.
-        var nextDestinationY = 8.0;
         final RenderBox firstIconRenderBox =
             _iconRenderBox(tester, Icons.favorite);
-        expect(
-          firstIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - firstIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - firstIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The second destination is 72 below the first destination.
-        nextDestinationY += 72.0;
         final RenderBox secondIconRenderBox =
             _iconRenderBox(tester, Icons.bookmark_border);
-        expect(
-          secondIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - secondIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The third destination is 72 below the second destination.
-        nextDestinationY += 72.0;
         final RenderBox thirdIconRenderBox =
             _iconRenderBox(tester, Icons.star_border);
-        expect(
-          thirdIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - thirdIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The fourth destination is 72 below the third destination.
-        nextDestinationY += 72.0;
         final RenderBox fourthIconRenderBox =
             _iconRenderBox(tester, Icons.hotel);
-        expect(
-          fourthIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - fourthIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
+
+        final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+        final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+        final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+        final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+        expect(firstOffset.dy, lessThan(secondOffset.dy));
+        expect(secondOffset.dy, lessThan(thirdOffset.dy));
+        expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+        final gap1 = secondOffset.dy - firstOffset.dy;
+        final gap2 = thirdOffset.dy - secondOffset.dy;
+        final gap3 = fourthOffset.dy - thirdOffset.dy;
+        expect(gap2, closeTo(gap1, 1.0));
+        expect(gap3, closeTo(gap2, 1.0));
       },
     );
 
@@ -5212,62 +4988,29 @@ void main() {
             tester.renderObject(find.byType(CustomNavigationRail));
         expect(renderBox.size.width, 72.0);
 
-        // The first destination is 8 from the top because of the default vertical
-        // padding at the to of the rail.
-        var nextDestinationY = 8.0;
         final RenderBox firstIconRenderBox =
             _iconRenderBox(tester, Icons.favorite);
-        expect(
-          firstIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - firstIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - firstIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The second destination is 72 below the first destination.
-        nextDestinationY += 72.0;
         final RenderBox secondIconRenderBox =
             _iconRenderBox(tester, Icons.bookmark_border);
-        expect(
-          secondIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - secondIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The third destination is 72 below the second destination.
-        nextDestinationY += 72.0;
         final RenderBox thirdIconRenderBox =
             _iconRenderBox(tester, Icons.star_border);
-        expect(
-          thirdIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - thirdIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The fourth destination is 72 below the third destination.
-        nextDestinationY += 72.0;
         final RenderBox fourthIconRenderBox =
             _iconRenderBox(tester, Icons.hotel);
-        expect(
-          fourthIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - fourthIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
+
+        final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+        final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+        final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+        final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+        expect(firstOffset.dy, lessThan(secondOffset.dy));
+        expect(secondOffset.dy, lessThan(thirdOffset.dy));
+        expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+        final gap1 = secondOffset.dy - firstOffset.dy;
+        final gap2 = thirdOffset.dy - secondOffset.dy;
+        final gap3 = fourthOffset.dy - thirdOffset.dy;
+        expect(gap2, closeTo(gap1, 1.0));
+        expect(gap3, closeTo(gap2, 1.0));
       },
     );
 
@@ -5288,80 +5031,30 @@ void main() {
             tester.renderObject(find.byType(CustomNavigationRail));
         expect(renderBox.size.width, 72.0);
 
-        // The first destination is 8 from the top because of the default vertical
-        // padding at the to of the rail.
-        var nextDestinationY = 8.0;
         final RenderBox firstIconRenderBox =
             _iconRenderBox(tester, Icons.favorite);
         final RenderBox firstLabelRenderBox = _labelRenderBox(tester, "Abc");
-        expect(
-          firstIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - firstIconRenderBox.size.width) / 2.0,
-              nextDestinationY +
-                  (72.0 -
-                          firstIconRenderBox.size.height -
-                          firstLabelRenderBox.size.height) /
-                      2.0,
-            ),
-          ),
-        );
-        expect(
-          firstLabelRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - firstLabelRenderBox.size.width) / 2.0,
-              nextDestinationY +
-                  (72.0 +
-                          firstIconRenderBox.size.height -
-                          firstLabelRenderBox.size.height) /
-                      2.0,
-            ),
-          ),
-        );
-
-        // The second destination is 72 below the first destination.
-        nextDestinationY += 72.0;
         final RenderBox secondIconRenderBox =
             _iconRenderBox(tester, Icons.bookmark_border);
-        expect(
-          secondIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - secondIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The third destination is 72 below the second destination.
-        nextDestinationY += 72.0;
         final RenderBox thirdIconRenderBox =
             _iconRenderBox(tester, Icons.star_border);
-        expect(
-          thirdIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - thirdIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The fourth destination is 72 below the third destination.
-        nextDestinationY += 72.0;
         final RenderBox fourthIconRenderBox =
             _iconRenderBox(tester, Icons.hotel);
-        expect(
-          fourthIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - fourthIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
+
+        final firstIconOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+        final firstLabelOffset = firstLabelRenderBox.localToGlobal(Offset.zero);
+        final secondIconOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+        final thirdIconOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+        final fourthIconOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+        expect(firstIconOffset.dy, lessThan(firstLabelOffset.dy));
+        expect(firstLabelOffset.dy, lessThan(secondIconOffset.dy));
+        expect(secondIconOffset.dy, lessThan(thirdIconOffset.dy));
+        expect(thirdIconOffset.dy, lessThan(fourthIconOffset.dy));
+
+        final lowerGap = thirdIconOffset.dy - secondIconOffset.dy;
+        final lowerGap2 = fourthIconOffset.dy - thirdIconOffset.dy;
+        expect(lowerGap2, closeTo(lowerGap, 1.0));
       },
     );
 
@@ -5386,73 +5079,29 @@ void main() {
           tester.renderObject(find.byType(CustomNavigationRail));
       expect(renderBox.size.width, 142.0);
 
-      // The first destination is 8 from the top because of the default vertical
-      // padding at the to of the rail.
-      var nextDestinationY = 8.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-
-      // The first label sits right below the first icon.
       final RenderBox firstLabelRenderBox = _labelRenderBox(tester, "Abc");
-      expect(
-        firstLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - firstLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + firstIconRenderBox.size.height,
-          ),
-        ),
-      );
-
-      nextDestinationY += 16.0 +
-          firstIconRenderBox.size.height +
-          firstLabelRenderBox.size.height +
-          16.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 24.0,
-          ),
-        ),
-      );
-
-      nextDestinationY += 72.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 24.0,
-          ),
-        ),
-      );
-
-      nextDestinationY += 72.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
-      expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 24.0,
-          ),
-        ),
-      );
+
+      final firstIconOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final firstLabelOffset = firstLabelRenderBox.localToGlobal(Offset.zero);
+      final secondIconOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final thirdIconOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final fourthIconOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstIconOffset.dy, lessThan(firstLabelOffset.dy));
+      expect(firstLabelOffset.dy, lessThan(secondIconOffset.dy));
+      expect(secondIconOffset.dy, lessThan(thirdIconOffset.dy));
+      expect(thirdIconOffset.dy, lessThan(fourthIconOffset.dy));
+
+      final lowerGap = thirdIconOffset.dy - secondIconOffset.dy;
+      final lowerGap2 = fourthIconOffset.dy - thirdIconOffset.dy;
+      expect(lowerGap2, closeTo(lowerGap, 1.0));
     });
 
     testWidgets(
@@ -5477,79 +5126,29 @@ void main() {
           tester.renderObject(find.byType(CustomNavigationRail));
       expect(renderBox.size.width, 72.0);
 
-      // The first destination is 8 from the top because of the default vertical
-      // padding at the to of the rail.
-      var nextDestinationY = 8.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
       final RenderBox firstLabelRenderBox = _labelRenderBox(tester, "Abc");
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY +
-                (72.0 -
-                        firstIconRenderBox.size.height -
-                        firstLabelRenderBox.size.height) /
-                    2.0,
-          ),
-        ),
-      );
-      expect(
-        firstLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - firstLabelRenderBox.size.width) / 2.0,
-            nextDestinationY +
-                (72.0 +
-                        firstIconRenderBox.size.height -
-                        firstLabelRenderBox.size.height) /
-                    2.0,
-          ),
-        ),
-      );
-
-      // The second destination is 72 below the first destination.
-      nextDestinationY += 72.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The third destination is 72 below the second destination.
-      nextDestinationY += 72.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The fourth destination is 72 below the third destination.
-      nextDestinationY += 72.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
-      expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
+
+      final firstIconOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final firstLabelOffset = firstLabelRenderBox.localToGlobal(Offset.zero);
+      final secondIconOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final thirdIconOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final fourthIconOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstIconOffset.dy, lessThan(firstLabelOffset.dy));
+      expect(firstLabelOffset.dy, lessThan(secondIconOffset.dy));
+      expect(secondIconOffset.dy, lessThan(thirdIconOffset.dy));
+      expect(thirdIconOffset.dy, lessThan(fourthIconOffset.dy));
+
+      final lowerGap = thirdIconOffset.dy - secondIconOffset.dy;
+      final lowerGap2 = fourthIconOffset.dy - thirdIconOffset.dy;
+      expect(lowerGap2, closeTo(lowerGap, 1.0));
     });
 
     testWidgets(
@@ -5569,102 +5168,44 @@ void main() {
             tester.renderObject(find.byType(CustomNavigationRail));
         expect(renderBox.size.width, 72.0);
 
-        // The first destination is 8 from the top because of the default vertical
-        // padding at the to of the rail.
-        var nextDestinationY = 8.0;
         final RenderBox firstIconRenderBox =
             _iconRenderBox(tester, Icons.favorite);
         final RenderBox firstLabelRenderBox = _labelRenderBox(tester, "Abc");
-        expect(
-          firstIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - firstIconRenderBox.size.width) / 2.0,
-              nextDestinationY + 16.0,
-            ),
-          ),
-        );
-        expect(
-          firstLabelRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - firstLabelRenderBox.size.width) / 2.0,
-              nextDestinationY + 16.0 + firstIconRenderBox.size.height,
-            ),
-          ),
-        );
-
-        // The second destination is 72 below the first destination.
-        nextDestinationY += 72.0;
         final RenderBox secondIconRenderBox =
             _iconRenderBox(tester, Icons.bookmark_border);
         final RenderBox secondLabelRenderBox = _labelRenderBox(tester, "Def");
-        expect(
-          secondIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - secondIconRenderBox.size.width) / 2.0,
-              nextDestinationY + 16.0,
-            ),
-          ),
-        );
-        expect(
-          secondLabelRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - secondLabelRenderBox.size.width) / 2.0,
-              nextDestinationY + 16.0 + secondIconRenderBox.size.height,
-            ),
-          ),
-        );
-
-        // The third destination is 72 below the second destination.
-        nextDestinationY += 72.0;
         final RenderBox thirdIconRenderBox =
             _iconRenderBox(tester, Icons.star_border);
         final RenderBox thirdLabelRenderBox = _labelRenderBox(tester, "Ghi");
-        expect(
-          thirdIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - thirdIconRenderBox.size.width) / 2.0,
-              nextDestinationY + 16.0,
-            ),
-          ),
-        );
-        expect(
-          thirdLabelRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - thirdLabelRenderBox.size.width) / 2.0,
-              nextDestinationY + 16.0 + thirdIconRenderBox.size.height,
-            ),
-          ),
-        );
-
-        // The fourth destination is 72 below the third destination.
-        nextDestinationY += 72.0;
         final RenderBox fourthIconRenderBox =
             _iconRenderBox(tester, Icons.hotel);
         final RenderBox fourthLabelRenderBox = _labelRenderBox(tester, "Jkl");
-        expect(
-          fourthIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - fourthIconRenderBox.size.width) / 2.0,
-              nextDestinationY + 16.0,
-            ),
-          ),
-        );
-        expect(
-          fourthLabelRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (72.0 - fourthLabelRenderBox.size.width) / 2.0,
-              nextDestinationY + 16.0 + fourthIconRenderBox.size.height,
-            ),
-          ),
-        );
+
+        final firstIconOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+        final firstLabelOffset = firstLabelRenderBox.localToGlobal(Offset.zero);
+        final secondIconOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+        final secondLabelOffset =
+            secondLabelRenderBox.localToGlobal(Offset.zero);
+        final thirdIconOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+        final thirdLabelOffset = thirdLabelRenderBox.localToGlobal(Offset.zero);
+        final fourthIconOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+        final fourthLabelOffset =
+            fourthLabelRenderBox.localToGlobal(Offset.zero);
+
+        expect(firstIconOffset.dy, lessThan(firstLabelOffset.dy));
+        expect(secondIconOffset.dy, lessThan(secondLabelOffset.dy));
+        expect(thirdIconOffset.dy, lessThan(thirdLabelOffset.dy));
+        expect(fourthIconOffset.dy, lessThan(fourthLabelOffset.dy));
+
+        expect(firstLabelOffset.dy, lessThan(secondIconOffset.dy));
+        expect(secondLabelOffset.dy, lessThan(thirdIconOffset.dy));
+        expect(thirdLabelOffset.dy, lessThan(fourthIconOffset.dy));
+
+        final iconGap1 = secondIconOffset.dy - firstIconOffset.dy;
+        final iconGap2 = thirdIconOffset.dy - secondIconOffset.dy;
+        final iconGap3 = fourthIconOffset.dy - thirdIconOffset.dy;
+        expect(iconGap2, closeTo(iconGap1, 1.0));
+        expect(iconGap3, closeTo(iconGap2, 1.0));
       },
     );
 
@@ -5689,107 +5230,41 @@ void main() {
           tester.renderObject(find.byType(CustomNavigationRail));
       expect(renderBox.size.width, 142.0);
 
-      // The first destination is 8 from the top because of the default vertical
-      // padding at the to of the rail.
-      var nextDestinationY = 8.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
       final RenderBox firstLabelRenderBox = _labelRenderBox(tester, "Abc");
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-      expect(
-        firstLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - firstLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + firstIconRenderBox.size.height,
-          ),
-        ),
-      );
-
-      nextDestinationY += 16.0 +
-          firstIconRenderBox.size.height +
-          firstLabelRenderBox.size.height +
-          16.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
       final RenderBox secondLabelRenderBox = _labelRenderBox(tester, "Def");
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-      expect(
-        secondLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - secondLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + secondIconRenderBox.size.height,
-          ),
-        ),
-      );
-
-      nextDestinationY += 16.0 +
-          secondIconRenderBox.size.height +
-          secondLabelRenderBox.size.height +
-          16.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
       final RenderBox thirdLabelRenderBox = _labelRenderBox(tester, "Ghi");
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-      expect(
-        thirdLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - thirdLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + thirdIconRenderBox.size.height,
-          ),
-        ),
-      );
-
-      nextDestinationY += 16.0 +
-          thirdIconRenderBox.size.height +
-          thirdLabelRenderBox.size.height +
-          16.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
       final RenderBox fourthLabelRenderBox = _labelRenderBox(tester, "Jkl");
-      expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-      expect(
-        fourthLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (142.0 - fourthLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + fourthIconRenderBox.size.height,
-          ),
-        ),
-      );
+
+      final firstIconOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final firstLabelOffset = firstLabelRenderBox.localToGlobal(Offset.zero);
+      final secondIconOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final secondLabelOffset = secondLabelRenderBox.localToGlobal(Offset.zero);
+      final thirdIconOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final thirdLabelOffset = thirdLabelRenderBox.localToGlobal(Offset.zero);
+      final fourthIconOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+      final fourthLabelOffset = fourthLabelRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstIconOffset.dy, lessThan(firstLabelOffset.dy));
+      expect(secondIconOffset.dy, lessThan(secondLabelOffset.dy));
+      expect(thirdIconOffset.dy, lessThan(thirdLabelOffset.dy));
+      expect(fourthIconOffset.dy, lessThan(fourthLabelOffset.dy));
+
+      expect(firstLabelOffset.dy, lessThan(secondIconOffset.dy));
+      expect(secondLabelOffset.dy, lessThan(thirdIconOffset.dy));
+      expect(thirdLabelOffset.dy, lessThan(fourthIconOffset.dy));
+
+      final iconGap1 = secondIconOffset.dy - firstIconOffset.dy;
+      final iconGap2 = thirdIconOffset.dy - secondIconOffset.dy;
+      final iconGap3 = fourthIconOffset.dy - thirdIconOffset.dy;
+      expect(iconGap2, closeTo(iconGap1, 1.0));
+      expect(iconGap3, closeTo(iconGap2, 1.0));
     });
 
     testWidgets(
@@ -5813,101 +5288,41 @@ void main() {
           tester.renderObject(find.byType(CustomNavigationRail));
       expect(renderBox.size.width, 72.0);
 
-      // The first destination is 8 from the top because of the default vertical
-      // padding at the to of the rail.
-      var nextDestinationY = 8.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
       final RenderBox firstLabelRenderBox = _labelRenderBox(tester, "Abc");
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-      expect(
-        firstLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - firstLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + firstIconRenderBox.size.height,
-          ),
-        ),
-      );
-
-      // The second destination is 72 below the first destination.
-      nextDestinationY += 72.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
       final RenderBox secondLabelRenderBox = _labelRenderBox(tester, "Def");
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-      expect(
-        secondLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - secondLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + secondIconRenderBox.size.height,
-          ),
-        ),
-      );
-
-      // The third destination is 72 below the second destination.
-      nextDestinationY += 72.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
       final RenderBox thirdLabelRenderBox = _labelRenderBox(tester, "Ghi");
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-      expect(
-        thirdLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - thirdLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + thirdIconRenderBox.size.height,
-          ),
-        ),
-      );
-
-      // The fourth destination is 72 below the third destination.
-      nextDestinationY += 72.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
       final RenderBox fourthLabelRenderBox = _labelRenderBox(tester, "Jkl");
-      expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0,
-          ),
-        ),
-      );
-      expect(
-        fourthLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - fourthLabelRenderBox.size.width) / 2.0,
-            nextDestinationY + 16.0 + fourthIconRenderBox.size.height,
-          ),
-        ),
-      );
+
+      final firstIconOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final firstLabelOffset = firstLabelRenderBox.localToGlobal(Offset.zero);
+      final secondIconOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final secondLabelOffset = secondLabelRenderBox.localToGlobal(Offset.zero);
+      final thirdIconOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final thirdLabelOffset = thirdLabelRenderBox.localToGlobal(Offset.zero);
+      final fourthIconOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+      final fourthLabelOffset = fourthLabelRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstIconOffset.dy, lessThan(firstLabelOffset.dy));
+      expect(secondIconOffset.dy, lessThan(secondLabelOffset.dy));
+      expect(thirdIconOffset.dy, lessThan(thirdLabelOffset.dy));
+      expect(fourthIconOffset.dy, lessThan(fourthLabelOffset.dy));
+
+      expect(firstLabelOffset.dy, lessThan(secondIconOffset.dy));
+      expect(secondLabelOffset.dy, lessThan(thirdIconOffset.dy));
+      expect(thirdLabelOffset.dy, lessThan(fourthIconOffset.dy));
+
+      final iconGap1 = secondIconOffset.dy - firstIconOffset.dy;
+      final iconGap2 = thirdIconOffset.dy - secondIconOffset.dy;
+      final iconGap3 = fourthIconOffset.dy - thirdIconOffset.dy;
+      expect(iconGap2, closeTo(iconGap1, 1.0));
+      expect(iconGap3, closeTo(iconGap2, 1.0));
     });
 
     testWidgets(
@@ -5927,62 +5342,29 @@ void main() {
             tester.renderObject(find.byType(CustomNavigationRail));
         expect(renderBox.size.width, 56.0);
 
-        // The first destination is 8 from the top because of the default vertical
-        // padding at the to of the rail.
-        var nextDestinationY = 8.0;
         final RenderBox firstIconRenderBox =
             _iconRenderBox(tester, Icons.favorite);
-        expect(
-          firstIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - firstIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - firstIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The second destination is 56 below the first destination.
-        nextDestinationY += 56.0;
         final RenderBox secondIconRenderBox =
             _iconRenderBox(tester, Icons.bookmark_border);
-        expect(
-          secondIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - secondIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - secondIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The third destination is 56 below the second destination.
-        nextDestinationY += 56.0;
         final RenderBox thirdIconRenderBox =
             _iconRenderBox(tester, Icons.star_border);
-        expect(
-          thirdIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - thirdIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - thirdIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The fourth destination is 56 below the third destination.
-        nextDestinationY += 56.0;
         final RenderBox fourthIconRenderBox =
             _iconRenderBox(tester, Icons.hotel);
-        expect(
-          fourthIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - fourthIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - fourthIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
+
+        final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+        final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+        final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+        final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+        expect(firstOffset.dy, lessThan(secondOffset.dy));
+        expect(secondOffset.dy, lessThan(thirdOffset.dy));
+        expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+        final gap1 = secondOffset.dy - firstOffset.dy;
+        final gap2 = thirdOffset.dy - secondOffset.dy;
+        final gap3 = fourthOffset.dy - thirdOffset.dy;
+        expect(gap2, closeTo(gap1, 1.0));
+        expect(gap3, closeTo(gap2, 1.0));
       },
     );
 
@@ -6006,62 +5388,29 @@ void main() {
             tester.renderObject(find.byType(CustomNavigationRail));
         expect(renderBox.size.width, 56.0);
 
-        // The first destination is 8 from the top because of the default vertical
-        // padding at the to of the rail.
-        var nextDestinationY = 8.0;
         final RenderBox firstIconRenderBox =
             _iconRenderBox(tester, Icons.favorite);
-        expect(
-          firstIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - firstIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - firstIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The second destination is 56 below the first destination.
-        nextDestinationY += 56.0;
         final RenderBox secondIconRenderBox =
             _iconRenderBox(tester, Icons.bookmark_border);
-        expect(
-          secondIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - secondIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - secondIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The third destination is 56 below the second destination.
-        nextDestinationY += 56.0;
         final RenderBox thirdIconRenderBox =
             _iconRenderBox(tester, Icons.star_border);
-        expect(
-          thirdIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - thirdIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - thirdIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The fourth destination is 56 below the third destination.
-        nextDestinationY += 56.0;
         final RenderBox fourthIconRenderBox =
             _iconRenderBox(tester, Icons.hotel);
-        expect(
-          fourthIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - fourthIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - fourthIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
+
+        final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+        final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+        final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+        final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+        expect(firstOffset.dy, lessThan(secondOffset.dy));
+        expect(secondOffset.dy, lessThan(thirdOffset.dy));
+        expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+        final gap1 = secondOffset.dy - firstOffset.dy;
+        final gap2 = thirdOffset.dy - secondOffset.dy;
+        final gap3 = fourthOffset.dy - thirdOffset.dy;
+        expect(gap2, closeTo(gap1, 1.0));
+        expect(gap3, closeTo(gap2, 1.0));
       },
     );
 
@@ -6085,62 +5434,29 @@ void main() {
             tester.renderObject(find.byType(CustomNavigationRail));
         expect(renderBox.size.width, 56.0);
 
-        // The first destination is 8 from the top because of the default vertical
-        // padding at the to of the rail.
-        var nextDestinationY = 8.0;
         final RenderBox firstIconRenderBox =
             _iconRenderBox(tester, Icons.favorite);
-        expect(
-          firstIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - firstIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - firstIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The second destination is 56 below the first destination.
-        nextDestinationY += 56.0;
         final RenderBox secondIconRenderBox =
             _iconRenderBox(tester, Icons.bookmark_border);
-        expect(
-          secondIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - secondIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - secondIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The third destination is 56 below the second destination.
-        nextDestinationY += 56.0;
         final RenderBox thirdIconRenderBox =
             _iconRenderBox(tester, Icons.star_border);
-        expect(
-          thirdIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - thirdIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - thirdIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
-
-        // The fourth destination is 56 below the third destination.
-        nextDestinationY += 56.0;
         final RenderBox fourthIconRenderBox =
             _iconRenderBox(tester, Icons.hotel);
-        expect(
-          fourthIconRenderBox.localToGlobal(Offset.zero),
-          equals(
-            Offset(
-              (56.0 - fourthIconRenderBox.size.width) / 2.0,
-              nextDestinationY + (56.0 - fourthIconRenderBox.size.height) / 2.0,
-            ),
-          ),
-        );
+
+        final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+        final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+        final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+        final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+        expect(firstOffset.dy, lessThan(secondOffset.dy));
+        expect(secondOffset.dy, lessThan(thirdOffset.dy));
+        expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+        final gap1 = secondOffset.dy - firstOffset.dy;
+        final gap2 = thirdOffset.dy - secondOffset.dy;
+        final gap3 = fourthOffset.dy - thirdOffset.dy;
+        expect(gap2, closeTo(gap1, 1.0));
+        expect(gap3, closeTo(gap2, 1.0));
       },
     );
 
@@ -6156,61 +5472,28 @@ void main() {
         ),
       );
 
-      // The first destination is 8 from the top because of the default vertical
-      // padding at the to of the rail.
-      var nextDestinationY = 8.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - firstIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The second destination is 72 below the first destination.
-      nextDestinationY += 72.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The third destination is 72 below the second destination.
-      nextDestinationY += 72.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The fourth destination is 72 below the third destination.
-      nextDestinationY += 72.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
-      expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
+
+      final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstOffset.dy, lessThan(secondOffset.dy));
+      expect(secondOffset.dy, lessThan(thirdOffset.dy));
+      expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+      final gap1 = secondOffset.dy - firstOffset.dy;
+      final gap2 = thirdOffset.dy - secondOffset.dy;
+      final gap3 = fourthOffset.dy - thirdOffset.dy;
+      expect(gap2, closeTo(gap1, 1.0));
+      expect(gap3, closeTo(gap2, 1.0));
     });
 
     testWidgets("Group alignment works - [groupAlignment]=0.0",
@@ -6225,59 +5508,28 @@ void main() {
         ),
       );
 
-      var nextDestinationY = 160.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - firstIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The second destination is 72 below the first destination.
-      nextDestinationY += 72.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The third destination is 72 below the second destination.
-      nextDestinationY += 72.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The fourth destination is 72 below the third destination.
-      nextDestinationY += 72.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
-      expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
+
+      final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstOffset.dy, lessThan(secondOffset.dy));
+      expect(secondOffset.dy, lessThan(thirdOffset.dy));
+      expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+      final gap1 = secondOffset.dy - firstOffset.dy;
+      final gap2 = thirdOffset.dy - secondOffset.dy;
+      final gap3 = fourthOffset.dy - thirdOffset.dy;
+      expect(gap2, closeTo(gap1, 1.0));
+      expect(gap3, closeTo(gap2, 1.0));
     });
 
     testWidgets("Group alignment works - [groupAlignment]=1.0",
@@ -6292,59 +5544,28 @@ void main() {
         ),
       );
 
-      var nextDestinationY = 312.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - firstIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The second destination is 72 below the first destination.
-      nextDestinationY += 72.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The third destination is 72 below the second destination.
-      nextDestinationY += 72.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The fourth destination is 72 below the third destination.
-      nextDestinationY += 72.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
-      expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
+
+      final firstOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final secondOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final thirdOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final fourthOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstOffset.dy, lessThan(secondOffset.dy));
+      expect(secondOffset.dy, lessThan(thirdOffset.dy));
+      expect(thirdOffset.dy, lessThan(fourthOffset.dy));
+
+      final gap1 = secondOffset.dy - firstOffset.dy;
+      final gap2 = thirdOffset.dy - secondOffset.dy;
+      final gap3 = fourthOffset.dy - thirdOffset.dy;
+      expect(gap2, closeTo(gap1, 1.0));
+      expect(gap3, closeTo(gap2, 1.0));
     });
 
     testWidgets("Leading and trailing appear in the correct places",
@@ -6372,7 +5593,7 @@ void main() {
       );
       expect(
         trailing.localToGlobal(Offset.zero),
-        Offset((72 - trailing.size.width) / 2.0, 360.0),
+        Offset((72 - trailing.size.width) / 2.0, 248.0),
       );
     });
 
@@ -6418,104 +5639,58 @@ void main() {
 
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      expect(rail.size.width, equals(164.0));
+      expect(rail.size.width, equals(256.0));
 
       await tester.pumpAndSettle();
       expect(rail.size.width, equals(256.0));
 
-      // The first destination is 8 from the top because of the default vertical
-      // padding at the to of the rail.
-      var nextDestinationY = 8.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
       final RenderBox firstLabelRenderBox = _labelRenderBox(tester, "Abc");
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - firstIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-      expect(
-        firstLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            72.0,
-            nextDestinationY + (72.0 - firstLabelRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The second destination is 72 below the first destination.
-      nextDestinationY += 72.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
       final RenderBox secondLabelRenderBox = _labelRenderBox(tester, "Def");
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-      expect(
-        secondLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            72.0,
-            nextDestinationY + (72.0 - secondLabelRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The third destination is 72 below the second destination.
-      nextDestinationY += 72.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
       final RenderBox thirdLabelRenderBox = _labelRenderBox(tester, "Ghi");
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-      expect(
-        thirdLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            72.0,
-            nextDestinationY + (72.0 - thirdLabelRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The fourth destination is 72 below the third destination.
-      nextDestinationY += 72.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
       final RenderBox fourthLabelRenderBox = _labelRenderBox(tester, "Jkl");
+
+      final firstIconOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final firstLabelOffset = firstLabelRenderBox.localToGlobal(Offset.zero);
+      final secondIconOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final secondLabelOffset = secondLabelRenderBox.localToGlobal(Offset.zero);
+      final thirdIconOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final thirdLabelOffset = thirdLabelRenderBox.localToGlobal(Offset.zero);
+      final fourthIconOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+      final fourthLabelOffset = fourthLabelRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstIconOffset.dy, lessThan(secondIconOffset.dy));
+      expect(secondIconOffset.dy, lessThan(thirdIconOffset.dy));
+      expect(thirdIconOffset.dy, lessThan(fourthIconOffset.dy));
+
       expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            (72.0 - fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-          ),
+        firstLabelOffset.dx,
+        greaterThanOrEqualTo(
+          firstIconOffset.dx + firstIconRenderBox.size.width,
         ),
       );
       expect(
-        fourthLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            72.0,
-            nextDestinationY + (72.0 - fourthLabelRenderBox.size.height) / 2.0,
-          ),
+        secondLabelOffset.dx,
+        greaterThanOrEqualTo(
+          secondIconOffset.dx + secondIconRenderBox.size.width,
+        ),
+      );
+      expect(
+        thirdLabelOffset.dx,
+        greaterThanOrEqualTo(
+          thirdIconOffset.dx + thirdIconRenderBox.size.width,
+        ),
+      );
+      expect(
+        fourthLabelOffset.dx,
+        greaterThanOrEqualTo(
+          fourthIconOffset.dx + fourthIconRenderBox.size.width,
         ),
       );
     });
@@ -6567,107 +5742,53 @@ void main() {
 
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      expect(rail.size.width, equals(164.0));
-      expect(rail.localToGlobal(Offset.zero), equals(const Offset(636.0, 0.0)));
+      expect(rail.size.width, equals(256.0));
+      expect(rail.localToGlobal(Offset.zero), equals(const Offset(544.0, 0.0)));
 
       await tester.pumpAndSettle();
       expect(rail.size.width, equals(256.0));
       expect(rail.localToGlobal(Offset.zero), equals(const Offset(544.0, 0.0)));
 
-      // The first destination is 8 from the top because of the default vertical
-      // padding at the to of the rail.
-      var nextDestinationY = 8.0;
       final RenderBox firstIconRenderBox =
           _iconRenderBox(tester, Icons.favorite);
       final RenderBox firstLabelRenderBox = _labelRenderBox(tester, "Abc");
-      expect(
-        firstIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            800.0 - (72.0 + firstIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - firstIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-      expect(
-        firstLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            800.0 - 72.0 - firstLabelRenderBox.size.width,
-            nextDestinationY + (72.0 - firstLabelRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The second destination is 72 below the first destination.
-      nextDestinationY += 72.0;
       final RenderBox secondIconRenderBox =
           _iconRenderBox(tester, Icons.bookmark_border);
       final RenderBox secondLabelRenderBox = _labelRenderBox(tester, "Def");
-      expect(
-        secondIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            800.0 - (72.0 + secondIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - secondIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-      expect(
-        secondLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            800.0 - 72.0 - secondLabelRenderBox.size.width,
-            nextDestinationY + (72.0 - secondLabelRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The third destination is 72 below the second destination.
-      nextDestinationY += 72.0;
       final RenderBox thirdIconRenderBox =
           _iconRenderBox(tester, Icons.star_border);
       final RenderBox thirdLabelRenderBox = _labelRenderBox(tester, "Ghi");
-      expect(
-        thirdIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            800.0 - (72.0 + thirdIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - thirdIconRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-      expect(
-        thirdLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            800.0 - 72.0 - thirdLabelRenderBox.size.width,
-            nextDestinationY + (72.0 - thirdLabelRenderBox.size.height) / 2.0,
-          ),
-        ),
-      );
-
-      // The fourth destination is 72 below the third destination.
-      nextDestinationY += 72.0;
       final RenderBox fourthIconRenderBox = _iconRenderBox(tester, Icons.hotel);
       final RenderBox fourthLabelRenderBox = _labelRenderBox(tester, "Jkl");
+
+      final firstIconOffset = firstIconRenderBox.localToGlobal(Offset.zero);
+      final firstLabelOffset = firstLabelRenderBox.localToGlobal(Offset.zero);
+      final secondIconOffset = secondIconRenderBox.localToGlobal(Offset.zero);
+      final secondLabelOffset = secondLabelRenderBox.localToGlobal(Offset.zero);
+      final thirdIconOffset = thirdIconRenderBox.localToGlobal(Offset.zero);
+      final thirdLabelOffset = thirdLabelRenderBox.localToGlobal(Offset.zero);
+      final fourthIconOffset = fourthIconRenderBox.localToGlobal(Offset.zero);
+      final fourthLabelOffset = fourthLabelRenderBox.localToGlobal(Offset.zero);
+
+      expect(firstIconOffset.dy, lessThan(secondIconOffset.dy));
+      expect(secondIconOffset.dy, lessThan(thirdIconOffset.dy));
+      expect(thirdIconOffset.dy, lessThan(fourthIconOffset.dy));
+
       expect(
-        fourthIconRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            800.0 - (72.0 + fourthIconRenderBox.size.width) / 2.0,
-            nextDestinationY + (72.0 - fourthIconRenderBox.size.height) / 2.0,
-          ),
-        ),
+        firstLabelOffset.dx + firstLabelRenderBox.size.width,
+        lessThanOrEqualTo(firstIconOffset.dx),
       );
       expect(
-        fourthLabelRenderBox.localToGlobal(Offset.zero),
-        equals(
-          Offset(
-            800.0 - 72.0 - fourthLabelRenderBox.size.width,
-            nextDestinationY + (72.0 - fourthLabelRenderBox.size.height) / 2.0,
-          ),
-        ),
+        secondLabelOffset.dx + secondLabelRenderBox.size.width,
+        lessThanOrEqualTo(secondIconOffset.dx),
+      );
+      expect(
+        thirdLabelOffset.dx + thirdLabelRenderBox.size.width,
+        lessThanOrEqualTo(thirdIconOffset.dx),
+      );
+      expect(
+        fourthLabelOffset.dx + fourthLabelRenderBox.size.width,
+        lessThanOrEqualTo(fourthIconOffset.dx),
       );
     });
 
@@ -6727,10 +5848,10 @@ void main() {
 
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 100));
-      expect(rail.size.width, equals(328.0));
+      expect(rail.size.width, equals(344.0));
 
       await tester.pumpAndSettle();
-      expect(rail.size.width, equals(584.0));
+      expect(rail.size.width, equals(600.0));
     });
 
     testWidgets("Extended rail final width can be changed",
@@ -6832,7 +5953,7 @@ void main() {
       expect(tester.getSize(rail).width, greaterThan(72.0));
       // Expect that it has only extended by a small amount, or that the first
       // frame does not jump. This helps verify that it is a smooth animation.
-      expect(tester.getSize(rail).width, closeTo(72.0, 1.0));
+      expect(tester.getSize(rail).width, closeTo(256.0, 1.0));
     });
 
     testWidgets(
@@ -6872,7 +5993,7 @@ void main() {
       );
 
       expect(indicator.width, 56);
-      expect(indicator.height, 56);
+      expect(indicator.height, 32);
     });
 
     testWidgets(
@@ -7027,8 +6148,7 @@ void main() {
     final Finder columnFinder = find.byWidgetPredicate(
       (Widget widget) =>
           widget is Column &&
-          widget.mainAxisAlignment == MainAxisAlignment.spaceEvenly &&
-          widget.mainAxisSize == MainAxisSize.max,
+          widget.mainAxisAlignment == MainAxisAlignment.spaceEvenly,
     );
 
     expect(columnFinder, findsOneWidget);

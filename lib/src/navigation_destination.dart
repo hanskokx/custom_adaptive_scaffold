@@ -186,6 +186,7 @@ class NavigationDestination extends StatelessWidget {
   // Not part of the public API.
   NavigationBarDestination toBarDestination() {
     return NavigationBarDestination(
+      key: key,
       icon: icon,
       label: label,
       selectedIcon: selectedIcon,

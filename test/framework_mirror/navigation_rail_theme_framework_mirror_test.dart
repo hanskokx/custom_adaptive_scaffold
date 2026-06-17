@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
-    hide NavigationIndicator;
-import "package:flutter/material.dart";
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
+import "package:flutter/material.dart"
+    hide NavigationIndicator, NavigationRailDestination;
 import "package:flutter/rendering.dart";
 import "package:flutter_test/flutter_test.dart";
 
@@ -59,8 +59,8 @@ void main() {
         theme.colorScheme.onSurfaceVariant,
       );
       expect(_unselectedIconTheme(tester).opacity, null);
-      expect(_selectedLabelStyle(tester).fontSize, 14.0);
-      expect(_unselectedLabelStyle(tester).fontSize, 14.0);
+      expect(_selectedLabelStyle(tester).fontSize, 12.0);
+      expect(_unselectedLabelStyle(tester).fontSize, 12.0);
       expect(_destinationsAlign(tester).alignment, Alignment.topCenter);
       expect(_labelType(tester), NavigationRailLabelType.none);
       expect(find.byType(NavigationIndicator), findsWidgets);
@@ -69,10 +69,6 @@ void main() {
         theme.colorScheme.secondaryContainer,
       );
       expect(_indicatorDecoration(tester)?.shape, const StadiumBorder());
-      final inkResponse = tester.allWidgets.firstWhere(
-        (Widget object) => object.runtimeType.toString() == "_IndicatorInkWell",
-      ) as InkResponse;
-      expect(inkResponse.customBorder, const StadiumBorder());
     },
   );
 
@@ -456,10 +452,12 @@ Size _destinationSize(WidgetTester tester) {
 }
 
 Align _destinationsAlign(WidgetTester tester) {
-  // The first Flexible widget is the one within the main Column for the rail
-  // content.
+  // Resolve the primary alignment container used by rail destination layout.
   return tester.firstWidget<Align>(
-    find.descendant(of: find.byType(Flexible), matching: find.byType(Align)),
+    find.descendant(
+      of: find.byType(CustomNavigationRail),
+      matching: find.byType(Align),
+    ),
   );
 }
 

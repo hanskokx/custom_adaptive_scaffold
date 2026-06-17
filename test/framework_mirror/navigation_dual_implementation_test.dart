@@ -67,7 +67,6 @@ Widget _buildNavigationBar({
             selectedIcon: d.selectedIcon,
             label: d.label,
             tooltip: d.tooltip,
-            enabled: d.enabled,
           ),
         )
         .toList(growable: false),
@@ -117,12 +116,12 @@ Widget _buildNavigationRail({
     unselectedLabelTextStyle: unselectedLabelTextStyle,
     selectedIconTheme: selectedIconTheme,
     unselectedIconTheme: unselectedIconTheme,
-    destinations: const <NavigationRailDestination>[
-      NavigationRailDestination(
+    destinations: const <cas.NavigationRailDestination>[
+      cas.NavigationRailDestination(
         icon: Icon(Icons.home_outlined),
         label: Text("Home"),
       ),
-      NavigationRailDestination(
+      cas.NavigationRailDestination(
         icon: Icon(Icons.search_outlined),
         label: Text("Search"),
       ),

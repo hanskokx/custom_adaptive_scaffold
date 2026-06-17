@@ -12,7 +12,8 @@ import "dart:math";
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart" hide NavigationIndicator;
+import "package:flutter/material.dart"
+    hide NavigationIndicator, NavigationDestination;
 import "package:flutter/services.dart";
 import "package:flutter_test/flutter_test.dart";
 
@@ -345,7 +346,7 @@ void main() {
                   builder: (BuildContext context) {
                     return Scaffold(
                       bottomNavigationBar: CustomNavigationBar(
-                        destinations: const <NavigationDestination>[
+                        destinations: const <Widget>[
                           CustomNavigationDestination(
                             label: label,
                             icon: Icon(Icons.ac_unit),
@@ -408,7 +409,7 @@ void main() {
                   builder: (BuildContext context) {
                     return Scaffold(
                       bottomNavigationBar: CustomNavigationBar(
-                        destinations: const <NavigationDestination>[
+                        destinations: const <Widget>[
                           CustomNavigationDestination(
                             label: label,
                             icon: Icon(Icons.ac_unit),
@@ -473,7 +474,7 @@ void main() {
                   builder: (BuildContext context) {
                     return Scaffold(
                       bottomNavigationBar: CustomNavigationBar(
-                        destinations: const <NavigationDestination>[
+                        destinations: const <Widget>[
                           CustomNavigationDestination(
                             label: label,
                             icon: Icon(Icons.ac_unit),
@@ -542,7 +543,7 @@ void main() {
         MaterialApp(
           home: Scaffold(
             bottomNavigationBar: CustomNavigationBar(
-              destinations: const <NavigationDestination>[
+              destinations: const <Widget>[
                 CustomNavigationDestination(
                   label: "A",
                   tooltip: "A tooltip",
@@ -690,7 +691,7 @@ void main() {
             CustomNavigationDestination(
               icon: Icon(Icons.ac_unit),
               label: "AC",
-              enabled: false,
+              disabled: true,
             ),
             CustomNavigationDestination(
               icon: Icon(Icons.ac_unit),
@@ -806,7 +807,7 @@ void main() {
           child: CustomNavigationBar(
             animationDuration:
                 const Duration(milliseconds: animationMilliseconds),
-            destinations: const <NavigationDestination>[
+            destinations: const <Widget>[
               CustomNavigationDestination(
                 icon: Icon(Icons.ac_unit),
                 label: "AC",
@@ -1240,7 +1241,7 @@ void main() {
             CustomNavigationDestination(
               icon: Icon(Icons.bookmark),
               label: "Bookmark",
-              enabled: false,
+              disabled: true,
             ),
           ],
           onDestinationSelected: (int i) => selectedIndex = i,
@@ -1699,15 +1700,17 @@ void main() {
     const selectedText = "Home";
     const unselectedText = "Settings";
     const disabledText = "Bookmark";
-    final theme = ThemeData();
     Widget buildCustomNavigationBar({
-      WidgetStateProperty<TextStyle?>? labelTextStyle,
+      WidgetStateProperty<TextStyle?>? themeLabelTextStyle,
     }) {
       return MaterialApp(
-        theme: theme,
+        theme: ThemeData(
+          navigationBarTheme: CustomNavigationBarThemeData(
+            labelTextStyle: themeLabelTextStyle,
+          ),
+        ),
         home: Scaffold(
           bottomNavigationBar: CustomNavigationBar(
-            labelTextStyle: labelTextStyle,
             destinations: const <Widget>[
               CustomNavigationDestination(
                 icon: Icon(Icons.home),
@@ -1718,7 +1721,7 @@ void main() {
                 label: unselectedText,
               ),
               CustomNavigationDestination(
-                enabled: false,
+                disabled: true,
                 icon: Icon(Icons.bookmark),
                 label: disabledText,
               ),
@@ -1729,6 +1732,7 @@ void main() {
     }
 
     await tester.pumpWidget(buildCustomNavigationBar());
+    final theme = Theme.of(tester.element(find.byType(CustomNavigationBar)));
 
     // Test selected label text style.
     expect(_getLabelStyle(tester, selectedText).fontSize, equals(12.0));
@@ -1757,7 +1761,7 @@ void main() {
     const disabledTextStyle = TextStyle(fontSize: 16, color: Color(0xFFFF0000));
     await tester.pumpWidget(
       buildCustomNavigationBar(
-        labelTextStyle: const WidgetStateProperty<
+        themeLabelTextStyle: const WidgetStateProperty<
             TextStyle?>.fromMap(<WidgetStatesConstraint, TextStyle?>{
           WidgetState.disabled: disabledTextStyle,
           WidgetState.selected: selectedTextStyle,
@@ -1806,17 +1810,17 @@ void main() {
     const TextDirection textDirection = TextDirection.ltr;
 
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Directionality(
           textDirection: textDirection,
           child: MediaQuery(
-            data: MediaQueryData(
+            data: const MediaQueryData(
               padding: EdgeInsets.only(bottom: bottomPadding),
             ),
             child: Scaffold(
               bottomNavigationBar: CustomNavigationBar(
                 maintainBottomViewPadding: true,
-                destinations: <Widget>[
+                destinations: const <Widget>[
                   CustomNavigationDestination(
                     icon: Icon(Icons.ac_unit),
                     label: "AC",
@@ -1844,11 +1848,11 @@ void main() {
   testWidgets("NavigationBar does not crash at zero area",
       (WidgetTester tester) async {
     await tester.pumpWidget(
-      const MaterialApp(
+      MaterialApp(
         home: Center(
           child: SizedBox.shrink(
             child: CustomNavigationBar(
-              destinations: <Widget>[
+              destinations: const <Widget>[
                 CustomNavigationDestination(icon: Icon(Icons.add), label: "X"),
                 CustomNavigationDestination(icon: Icon(Icons.abc), label: "Y"),
               ],

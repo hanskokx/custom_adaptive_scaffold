@@ -508,12 +508,7 @@ class _NavigationRailState extends State<NavigationRail>
     final MainAxisAlignment effectiveMainAxisAlignment =
         widget.mainAxisAlignment ?? MainAxisAlignment.start;
 
-    final Widget? trailing = widget.trailing == null
-        ? null
-        : Material(
-            type: MaterialType.transparency,
-            child: widget.trailing!,
-          );
+    final Widget? trailing = widget.trailing;
 
     Widget mainGroup = Column(
       mainAxisSize: MainAxisSize.min,

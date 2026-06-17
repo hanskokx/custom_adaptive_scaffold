@@ -9,7 +9,8 @@ library;
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart" hide NavigationIndicator;
+import "package:flutter/material.dart"
+    hide NavigationIndicator, NavigationDestination;
 import "package:flutter/rendering.dart";
 import "package:flutter/services.dart";
 import "package:flutter_test/flutter_test.dart";
@@ -31,7 +32,7 @@ void main() {
 
     expect(data.margin, isNull);
     expect(data.padding, isNull);
-    expect(data.tooltipVerticalOffset, isNull);
+    expect(data.tooltipOffset, isNull);
   });
 
   test("CustomNavigationBarThemeData lerp special cases", () {
@@ -75,7 +76,7 @@ void main() {
       overlayColor: WidgetStatePropertyAll<Color>(Color(0x00000095)),
       margin: EdgeInsets.all(4),
       padding: EdgeInsets.symmetric(horizontal: 6),
-      tooltipVerticalOffset: 64,
+      tooltipOffset: Offset(0, 64),
       labelPadding: EdgeInsets.all(8),
     ).debugFillProperties(builder);
 
@@ -100,7 +101,7 @@ void main() {
         "overlayColor: WidgetStatePropertyAll(Color(alpha: 0.0000, red: 0.0000, green: 0.0000, blue: 0.5843, colorSpace: ColorSpace.sRGB))",
         "margin: EdgeInsets.all(4.0)",
         "padding: EdgeInsets(6.0, 0.0, 6.0, 0.0)",
-        "tooltipVerticalOffset: 64.0",
+        "tooltipOffset: Offset(0.0, 64.0)",
         "labelPadding: EdgeInsets.all(8.0)",
       ]),
     );
@@ -221,7 +222,7 @@ void main() {
             bottomNavigationBar: Center(
               child: CustomNavigationBar(
                 labelBehavior: labelBehavior,
-                destinations: const <Widget>[
+                destinations: const <NavigationDestination>[
                   CustomNavigationDestination(icon: SizedBox(), label: "AC"),
                   CustomNavigationDestination(icon: SizedBox(), label: "Alarm"),
                 ],
@@ -287,7 +288,7 @@ void main() {
           home: Scaffold(
             bottomNavigationBar: RepaintBoundary(
               child: CustomNavigationBar(
-                destinations: const <Widget>[
+                destinations: const <NavigationDestination>[
                   CustomNavigationDestination(
                     icon: Icon(Icons.ac_unit),
                     label: "AC",

@@ -134,7 +134,7 @@ class NavigationBar extends StatelessWidget {
   /// the animation is increasing or completed, the destination is considered
   /// selected, when the animation is decreasing or dismissed, the destination
   /// is considered unselected.
-  final List<NavigationDestination> destinations;
+  final List<Widget> destinations;
 
   /// Called when one of the [destinations] is selected.
   ///
@@ -277,8 +277,18 @@ class NavigationBar extends StatelessWidget {
           height: effectiveHeight,
           child: Row(
             children: List<Widget>.generate(destinations.length, (int i) {
+              final Widget destinationWidget = destinations[i];
               final NavigationBarDestination destination =
-                  destinations[i].toBarDestination();
+                  destinationWidget is NavigationBarDestination
+                      ? destinationWidget
+                      : destinationWidget is NavigationDestination
+                          ? destinationWidget.toBarDestination()
+                          : NavigationBarDestination(
+                              icon: KeyedSubtree(
+                                key: destinationWidget.key,
+                                child: destinationWidget,
+                              ),
+                            );
 
               return Expanded(
                 child: SelectableAnimatedBuilder(

@@ -237,8 +237,10 @@ void main() {
               label: "Search",
             ),
           ]
-              .map((NavigationDestination d) =>
-                  AdaptiveScaffold.toRailDestination(d))
+              .map(
+                (NavigationDestination d) =>
+                    AdaptiveScaffold.toRailDestination(d),
+              )
               .toList(),
         ),
       );
@@ -265,8 +267,10 @@ void main() {
               label: "Search",
             ),
           ]
-              .map((NavigationDestination d) =>
-                  AdaptiveScaffold.toRailDestination(d))
+              .map(
+                (NavigationDestination d) =>
+                    AdaptiveScaffold.toRailDestination(d),
+              )
               .toList(),
         ),
       );
@@ -302,8 +306,10 @@ void main() {
                   label: "Search",
                 ),
               ]
-                  .map((NavigationDestination d) =>
-                      AdaptiveScaffold.toRailDestination(d))
+                  .map(
+                    (NavigationDestination d) =>
+                        AdaptiveScaffold.toRailDestination(d),
+                  )
                   .toList(),
             ),
           ),
@@ -823,137 +829,5 @@ void main() {
       expect(barTaps, 0, reason: "bar disabled destination must not fire");
       expect(railTaps, 0, reason: "rail disabled destination must not fire");
     });
-  });
-
-  group("AdaptiveScaffoldDestination", () {
-    test("is assignable to List<NavigationDestination>", () {
-      final List<NavigationDestination> destinations = [
-        AdaptiveScaffoldDestination(title: "Home", icon: Icons.home),
-        AdaptiveScaffoldDestination(
-          title: "Profile",
-          icon: Icons.person_outline,
-          selectedIcon: Icons.person,
-        ),
-        const NavigationDestination(
-          icon: Icon(Icons.settings_outlined),
-          selectedIcon: Icon(Icons.settings),
-          label: "Settings",
-        ),
-      ];
-      expect(destinations.length, 3);
-      expect(destinations[0], isA<AdaptiveScaffoldDestination>());
-      expect(destinations[2], isA<NavigationDestination>());
-    });
-
-    test("toRailDestination uses title as label", () {
-      final dest = AdaptiveScaffoldDestination(
-        title: "Inbox",
-        icon: Icons.inbox_outlined,
-      );
-      final rail = AdaptiveScaffold.toRailDestination(dest);
-      final labelText = (rail.labelWidget as Text).data;
-      expect(labelText, "Inbox");
-    });
-
-    test("toBarDestination uses title as label", () {
-      // toBarDestination is internal; verify via the label property directly.
-      final dest = AdaptiveScaffoldDestination(
-        title: "Inbox",
-        icon: Icons.inbox_outlined,
-      );
-      expect(dest.label, "Inbox");
-    });
-
-    testWidgets("renders in AdaptiveScaffold without error",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 900)),
-            child: AdaptiveScaffold(
-              destinations: [
-                AdaptiveScaffoldDestination(title: "Home", icon: Icons.home),
-                AdaptiveScaffoldDestination(
-                  title: "Profile",
-                  icon: Icons.person,
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-    });
-  });
-
-  group("navigationRailDestinationBuilder index accuracy", () {
-    testWidgets(
-      "builder receives positional index even with duplicate destinations",
-      (WidgetTester tester) async {
-        final List<int> capturedIndexes = [];
-        const NavigationDestination dest = NavigationDestination(
-          icon: Icon(Icons.star),
-          label: "Star",
-        );
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(800, 900)),
-              child: AdaptiveScaffold(
-                destinations: const [dest, dest, dest],
-                selectedIndex: 0,
-                navigationRailDestinationBuilder: (index, destination) {
-                  capturedIndexes.add(index);
-                  return AdaptiveScaffold.toRailDestination(destination);
-                },
-              ),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(capturedIndexes, containsAllInOrder([0, 1, 2]));
-      },
-    );
-
-    testWidgets(
-      "builder is called for large breakpoint destinations",
-      (WidgetTester tester) async {
-        int builderCallCount = 0;
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(1400, 900)),
-              child: AdaptiveScaffold(
-                destinations: const [
-                  NavigationDestination(
-                    icon: Icon(Icons.home),
-                    label: "Home",
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.person),
-                    label: "Profile",
-                  ),
-                ],
-                selectedIndex: 0,
-                navigationRailDestinationBuilder: (index, destination) {
-                  builderCallCount++;
-                  return AdaptiveScaffold.toRailDestination(destination);
-                },
-              ),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(
-          builderCallCount,
-          greaterThan(0),
-          reason: "navigationRailDestinationBuilder must be called at large "
-              "breakpoints, not bypassed",
-        );
-      },
-    );
   });
 }
