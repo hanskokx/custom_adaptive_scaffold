@@ -260,9 +260,9 @@ class NavigationRailThemeData
           t < 0.5 ? a?.showLabelsWhenCollapsed : b?.showLabelsWhenCollapsed,
       minWidth: lerpDouble(a?.minWidth, b?.minWidth, t),
       minExtendedWidth: lerpDouble(a?.minExtendedWidth, b?.minExtendedWidth, t),
-          margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
-          padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
-          tooltipOffset: Offset.lerp(a?.tooltipOffset, b?.tooltipOffset, t),
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+      tooltipOffset: Offset.lerp(a?.tooltipOffset, b?.tooltipOffset, t),
     );
   }
 
@@ -519,100 +519,76 @@ class NavigationRailTheme extends InheritedTheme
   /// ```dart
   /// NavigationRailThemeData theme = NavigationRailTheme.of(context);
   /// ```
+  static NavigationRailThemeData? maybeOf(BuildContext context) {
+    final NavigationRailTheme? navigationRailTheme =
+        context.dependOnInheritedWidgetOfExactType<NavigationRailTheme>();
+
+    if (navigationRailTheme != null) {
+      return navigationRailTheme.data;
+    }
+
+    final m.NavigationRailThemeData materialNavigationRailTheme =
+        m.NavigationRailTheme.of(context);
+
+    if (materialNavigationRailTheme is NavigationRailThemeData) {
+      return materialNavigationRailTheme;
+    }
+
+    final bool hasAnyExplicitValue =
+        materialNavigationRailTheme.backgroundColor != null ||
+            materialNavigationRailTheme.elevation != null ||
+            materialNavigationRailTheme.unselectedLabelTextStyle != null ||
+            materialNavigationRailTheme.selectedLabelTextStyle != null ||
+            materialNavigationRailTheme.unselectedIconTheme != null ||
+            materialNavigationRailTheme.selectedIconTheme != null ||
+            materialNavigationRailTheme.groupAlignment != null ||
+            materialNavigationRailTheme.labelType != null ||
+            materialNavigationRailTheme.useIndicator != null ||
+            materialNavigationRailTheme.indicatorColor != null ||
+            materialNavigationRailTheme.indicatorShape != null ||
+            materialNavigationRailTheme.minWidth != null ||
+            materialNavigationRailTheme.minExtendedWidth != null;
+
+    if (!hasAnyExplicitValue) {
+      return null;
+    }
+
+    return NavigationRailThemeData.fromMaterial(materialNavigationRailTheme);
+  }
+
   static NavigationRailThemeData of(BuildContext context) {
     final NavigationRailThemeData defaults = Theme.of(context).useMaterial3
         ? NavigationRailDefaultsM3(context)
         : NavigationRailDefaultsM2(context);
 
-    // The user is using NavigationRailTheme from this package
-    final NavigationRailTheme? navigationRailTheme =
-        context.dependOnInheritedWidgetOfExactType<NavigationRailTheme>();
+    final NavigationRailThemeData? explicitTheme = maybeOf(context);
 
-    if (navigationRailTheme != null) {
+    if (explicitTheme != null) {
       return defaults.copyWith(
-        backgroundColor: navigationRailTheme.data.backgroundColor,
-        elevation: navigationRailTheme.data.elevation,
-        unselectedLabelTextStyle: navigationRailTheme.data.unselectedLabelTextStyle,
-        selectedLabelTextStyle: navigationRailTheme.data.selectedLabelTextStyle,
-        unselectedIconTheme: navigationRailTheme.data.unselectedIconTheme,
-        selectedIconTheme: navigationRailTheme.data.selectedIconTheme,
-        groupAlignment: navigationRailTheme.data.groupAlignment,
-        labelType: navigationRailTheme.data.labelType,
-        useIndicator: navigationRailTheme.data.useIndicator,
-        indicatorColor: navigationRailTheme.data.indicatorColor,
-        indicatorShape: navigationRailTheme.data.indicatorShape,
-        navigationItemOverlayColor:
-            navigationRailTheme.data.navigationItemOverlayColor,
+        backgroundColor: explicitTheme.backgroundColor,
+        elevation: explicitTheme.elevation,
+        unselectedLabelTextStyle: explicitTheme.unselectedLabelTextStyle,
+        selectedLabelTextStyle: explicitTheme.selectedLabelTextStyle,
+        unselectedIconTheme: explicitTheme.unselectedIconTheme,
+        selectedIconTheme: explicitTheme.selectedIconTheme,
+        groupAlignment: explicitTheme.groupAlignment,
+        labelType: explicitTheme.labelType,
+        useIndicator: explicitTheme.useIndicator,
+        indicatorColor: explicitTheme.indicatorColor,
+        indicatorShape: explicitTheme.indicatorShape,
+        navigationItemOverlayColor: explicitTheme.navigationItemOverlayColor,
         navigationItemIndicatorShape:
-            navigationRailTheme.data.navigationItemIndicatorShape,
-        showLabelsWhenCollapsed:
-            navigationRailTheme.data.showLabelsWhenCollapsed,
-        minWidth: navigationRailTheme.data.minWidth,
-        minExtendedWidth: navigationRailTheme.data.minExtendedWidth,
-        margin: navigationRailTheme.data.margin,
-        padding: navigationRailTheme.data.padding,
-        tooltipOffset: navigationRailTheme.data.tooltipOffset,
+            explicitTheme.navigationItemIndicatorShape,
+        showLabelsWhenCollapsed: explicitTheme.showLabelsWhenCollapsed,
+        minWidth: explicitTheme.minWidth,
+        minExtendedWidth: explicitTheme.minExtendedWidth,
+        margin: explicitTheme.margin,
+        padding: explicitTheme.padding,
+        tooltipOffset: explicitTheme.tooltipOffset,
       );
     }
 
-    // The user is using a theme extension to provide NavigationRailThemeData
-    // from his package
-
-    final NavigationRailThemeData? themeExtension =
-        Theme.of(context).extension<NavigationRailThemeData>();
-
-    if (themeExtension != null) {
-      return defaults.copyWith(
-        backgroundColor: themeExtension.backgroundColor,
-        elevation: themeExtension.elevation,
-        unselectedLabelTextStyle: themeExtension.unselectedLabelTextStyle,
-        selectedLabelTextStyle: themeExtension.selectedLabelTextStyle,
-        unselectedIconTheme: themeExtension.unselectedIconTheme,
-        selectedIconTheme: themeExtension.selectedIconTheme,
-        groupAlignment: themeExtension.groupAlignment,
-        labelType: themeExtension.labelType,
-        useIndicator: themeExtension.useIndicator,
-        indicatorColor: themeExtension.indicatorColor,
-        indicatorShape: themeExtension.indicatorShape,
-        navigationItemOverlayColor: themeExtension.navigationItemOverlayColor,
-        navigationItemIndicatorShape:
-            themeExtension.navigationItemIndicatorShape,
-        showLabelsWhenCollapsed: themeExtension.showLabelsWhenCollapsed,
-        minWidth: themeExtension.minWidth,
-        minExtendedWidth: themeExtension.minExtendedWidth,
-        margin: themeExtension.margin,
-        padding: themeExtension.padding,
-        tooltipOffset: themeExtension.tooltipOffset,
-      );
-    }
-
-    // The user is using Flutter's Material NavigationRailThemeData, so we
-    // convert it to our own NavigationRailThemeData
-    final m.NavigationRailThemeData materialNavigationRailTheme =
-        m.NavigationRailTheme.of(context);
-    final NavigationRailThemeData converted =
-        NavigationRailThemeData.fromMaterial(materialNavigationRailTheme);
-    return defaults.copyWith(
-      backgroundColor: converted.backgroundColor,
-      elevation: converted.elevation,
-      unselectedLabelTextStyle: converted.unselectedLabelTextStyle,
-      selectedLabelTextStyle: converted.selectedLabelTextStyle,
-      unselectedIconTheme: converted.unselectedIconTheme,
-      selectedIconTheme: converted.selectedIconTheme,
-      groupAlignment: converted.groupAlignment,
-      labelType: converted.labelType,
-      useIndicator: converted.useIndicator,
-      indicatorColor: converted.indicatorColor,
-      indicatorShape: converted.indicatorShape,
-      navigationItemOverlayColor: converted.navigationItemOverlayColor,
-      navigationItemIndicatorShape: converted.navigationItemIndicatorShape,
-      showLabelsWhenCollapsed: converted.showLabelsWhenCollapsed,
-      minWidth: converted.minWidth,
-      minExtendedWidth: converted.minExtendedWidth,
-      margin: converted.margin,
-      padding: converted.padding,
-      tooltipOffset: converted.tooltipOffset,
-    );
+    return defaults;
   }
 
   @override

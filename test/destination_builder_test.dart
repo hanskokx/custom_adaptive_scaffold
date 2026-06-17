@@ -535,6 +535,68 @@ void main() {
       expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
     });
 
+    testWidgets("navigation rail overlay requires explicit opt-in",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationRailTheme: const CustomNavigationRailThemeData(
+              backgroundColor: Colors.black,
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: [
+                _buildRail(selectedIndex: 0, onTap: null),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final IndicatorInkWell inkWell = tester.widget<IndicatorInkWell>(
+        find.byType(IndicatorInkWell).first,
+      );
+
+      expect(inkWell.disableFullItemInk, isTrue);
+      expect(inkWell.customBorder, isNull);
+    });
+
+    testWidgets("navigation rail item shape enables whole-item ink",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationRailTheme: const CustomNavigationRailThemeData(
+              navigationItemIndicatorShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: [
+                _buildRail(selectedIndex: 0, onTap: null),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final IndicatorInkWell inkWell = tester.widget<IndicatorInkWell>(
+        find.byType(IndicatorInkWell).first,
+      );
+
+      expect(inkWell.disableFullItemInk, isFalse);
+      expect(inkWell.customBorder, isA<RoundedRectangleBorder>());
+      expect(
+        inkWell.overlayColor?.resolve(const <WidgetState>{WidgetState.hovered}),
+        isNotNull,
+      );
+    });
+
     testWidgets("standardBottomNavigationBar switches selected icon on tap",
         (WidgetTester tester) async {
       int selectedIndex = 0;
