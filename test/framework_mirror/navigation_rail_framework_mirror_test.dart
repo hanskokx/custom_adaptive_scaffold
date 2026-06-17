@@ -3090,8 +3090,6 @@ void main() {
       ),
     );
 
-    final Iterable<Widget> indicatorInkWells =
-        tester.widgetList(find.byType(IndicatorInkWell));
     final Padding firstItem = tester.widget<Padding>(
       find
           .ancestor(

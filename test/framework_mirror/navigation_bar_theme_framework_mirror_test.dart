@@ -156,6 +156,86 @@ void main() {
   );
 
   testWidgets(
+    "CustomNavigationBarThemeData values are used when no NavigationBar properties are specified",
+    (WidgetTester tester) async {
+      const height = 200.0;
+      const backgroundColor = Color(0x00000001);
+      const elevation = 42.0;
+      const indicatorColor = Color(0x00000002);
+      const ShapeBorder indicatorShape = CircleBorder();
+      const selectedIconSize = 25.0;
+      const unselectedIconSize = 23.0;
+      const selectedIconColor = Color(0x00000003);
+      const unselectedIconColor = Color(0x00000004);
+      const selectedIconOpacity = 0.99;
+      const unselectedIconOpacity = 0.98;
+      const selectedLabelFontSize = 13.0;
+      const unselectedLabelFontSize = 11.0;
+      const NavigationDestinationLabelBehavior labelBehavior =
+          NavigationDestinationLabelBehavior.alwaysShow;
+      const EdgeInsetsGeometry labelPadding = EdgeInsets.all(8);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: CustomNavigationBarTheme(
+              data: CustomNavigationBarThemeData(
+                height: height,
+                backgroundColor: backgroundColor,
+                elevation: elevation,
+                indicatorColor: indicatorColor,
+                indicatorShape: indicatorShape,
+                iconTheme:
+                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return const IconThemeData(
+                      size: selectedIconSize,
+                      color: selectedIconColor,
+                      opacity: selectedIconOpacity,
+                    );
+                  }
+                  return const IconThemeData(
+                    size: unselectedIconSize,
+                    color: unselectedIconColor,
+                    opacity: unselectedIconOpacity,
+                  );
+                }),
+                labelTextStyle:
+                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return const TextStyle(fontSize: selectedLabelFontSize);
+                  }
+                  return const TextStyle(fontSize: unselectedLabelFontSize);
+                }),
+                labelBehavior: labelBehavior,
+                labelPadding: labelPadding,
+              ),
+              child: CustomNavigationBar(destinations: _destinations()),
+            ),
+          ),
+        ),
+      );
+
+      expect(_barHeight(tester), height);
+      expect(_barMaterial(tester).color, backgroundColor);
+      expect(_barMaterial(tester).elevation, elevation);
+      expect(_indicator(tester)?.color, indicatorColor);
+      expect(_indicator(tester)?.shape, indicatorShape);
+      expect(_selectedIconTheme(tester).size, selectedIconSize);
+      expect(_selectedIconTheme(tester).color, selectedIconColor);
+      expect(_selectedIconTheme(tester).opacity, selectedIconOpacity);
+      expect(_unselectedIconTheme(tester).size, unselectedIconSize);
+      expect(_unselectedIconTheme(tester).color, unselectedIconColor);
+      expect(_unselectedIconTheme(tester).opacity, unselectedIconOpacity);
+      expect(_selectedLabelStyle(tester).fontSize, selectedLabelFontSize);
+      expect(_unselectedLabelStyle(tester).fontSize, unselectedLabelFontSize);
+      expect(_labelBehavior(tester), labelBehavior);
+      expect(_getLabelPadding(tester, "Abc"), labelPadding);
+      expect(_getLabelPadding(tester, "Def"), labelPadding);
+    },
+  );
+
+  testWidgets(
     "NavigationBar values take priority over CustomNavigationBarThemeData values when both properties are specified",
     (WidgetTester tester) async {
       const height = 200.0;
@@ -439,4 +519,38 @@ EdgeInsetsGeometry _getLabelPadding(WidgetTester tester, String text) {
             .first,
       )
       .padding;
+}
+
+IconThemeData _selectedIconTheme(WidgetTester tester) {
+  return _iconTheme(tester, Icons.favorite);
+}
+
+IconThemeData _unselectedIconTheme(WidgetTester tester) {
+  return _iconTheme(tester, Icons.star_border);
+}
+
+IconThemeData _iconTheme(WidgetTester tester, IconData icon) {
+  return tester
+      .firstWidget<IconTheme>(
+        find.ancestor(of: find.byIcon(icon), matching: find.byType(IconTheme)),
+      )
+      .data;
+}
+
+TextStyle _selectedLabelStyle(WidgetTester tester) {
+  return tester
+      .widget<RichText>(
+        find.descendant(of: find.text("Abc"), matching: find.byType(RichText)),
+      )
+      .text
+      .style!;
+}
+
+TextStyle _unselectedLabelStyle(WidgetTester tester) {
+  return tester
+      .widget<RichText>(
+        find.descendant(of: find.text("Def"), matching: find.byType(RichText)),
+      )
+      .text
+      .style!;
 }

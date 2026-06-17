@@ -511,5 +511,97 @@ void main() {
       final double extendedWidth = tester.getSize(_railFinder(impl)).width;
       expect(extendedWidth, greaterThan(compactWidth));
     });
+
+    testWidgets(
+        "${_implName(impl)} NavigationBar destination selected state in semantics",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: _buildNavigationBar(
+              impl: impl,
+              selectedIndex: 0,
+              onSelected: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      // Exactly one destination should expose selected=true via Semantics.
+      final Iterable<Semantics> allSemantics =
+          tester.widgetList<Semantics>(find.byType(Semantics));
+      final Iterable<Semantics> selectedNodes = allSemantics.where(
+        (Semantics s) => s.properties.selected ?? false,
+      );
+      expect(selectedNodes.length, 1);
+    });
+
+    testWidgets(
+        "${_implName(impl)} NavigationBar empty tooltip does not display popup text",
+        (WidgetTester tester) async {
+      const List<NavigationDestination> destinations = <NavigationDestination>[
+        NavigationDestination(
+          icon: Icon(Icons.home_outlined),
+          label: "Home",
+          tooltip: "",
+        ),
+        NavigationDestination(
+          icon: Icon(Icons.search_outlined),
+          label: "Search",
+        ),
+      ];
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: _buildNavigationBar(
+              impl: impl,
+              selectedIndex: 0,
+              destinations: destinations,
+              onSelected: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      await tester.longPress(find.byIcon(Icons.home_outlined));
+      await tester.pumpAndSettle();
+      // Any Tooltip widgets present must have an empty message (popup suppressed).
+      // Both implementations must not show "Home" as a tooltip popup.
+      final Iterable<Tooltip> tooltips =
+          tester.widgetList<Tooltip>(find.byType(Tooltip));
+      expect(
+        tooltips.any(
+          (Tooltip t) =>
+              (t.message?.isNotEmpty ?? false) && t.message == "Home",
+        ),
+        isFalse,
+        reason: "Empty tooltip must not show the label as a tooltip popup.",
+      );
+    });
+
+    testWidgets(
+        "${_implName(impl)} NavigationRail destination selected state in semantics",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: _buildNavigationRail(
+              impl: impl,
+              selectedIndex: 0,
+              onSelected: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      // Exactly one destination should expose selected=true via Semantics.
+      final Iterable<Semantics> allSemantics =
+          tester.widgetList<Semantics>(find.byType(Semantics));
+      final Iterable<Semantics> selectedNodes = allSemantics.where(
+        (Semantics s) => s.properties.selected ?? false,
+      );
+      expect(selectedNodes.length, 1);
+    });
   }
 }
