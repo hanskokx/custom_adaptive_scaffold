@@ -1,4 +1,4 @@
-part of "../navigation_bar_destination.dart";
+part of "../destination.dart";
 
 /// Semantics widget for a navigation bar destination.
 ///

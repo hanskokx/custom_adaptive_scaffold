@@ -9,8 +9,8 @@ import "package:flutter/material.dart" as m
     show NavigationRailThemeData, NavigationRailTheme;
 import "package:flutter/rendering.dart";
 
-import "src/material.dart";
-import "src/navigation_rail/navigation_rail_theme_defaults.dart";
+import "src/_internal_material.dart";
+import "src/navigation_rail/theme_defaults.dart";
 
 typedef CustomNavigationRailThemeData = NavigationRailThemeData;
 typedef CustomNavigationRailTheme = NavigationRailTheme;

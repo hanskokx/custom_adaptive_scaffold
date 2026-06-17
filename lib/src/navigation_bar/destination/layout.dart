@@ -1,4 +1,4 @@
-part of "../navigation_bar_destination.dart";
+part of "../destination.dart";
 
 /// Widget that handles the layout of the icon + label in a navigation bar
 /// destination, based on [NavigationDestinationInfo.labelBehavior] and

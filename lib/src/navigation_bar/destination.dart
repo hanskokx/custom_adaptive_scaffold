@@ -1,19 +1,19 @@
 import "../../navigation_bar_theme.dart";
-import "../destination/destination_build_data.dart";
-import "../destination/destination_surface_strategy.dart";
-import "../destination/navigation_destination_tooltip.dart";
-import "../destination/navigation_indicator.dart";
-import "../material.dart";
+import "../_internal_material.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
-import "navigation_bar_theme_defaults.dart";
-import "navigation_destination_info.dart";
+import "../navigation_shared/destination_build_data.dart";
+import "../navigation_shared/destination_surface_strategy.dart";
+import "../navigation_shared/navigation_destination_tooltip.dart";
+import "../navigation_shared/navigation_indicator.dart";
+import "destination_info.dart";
+import "theme_defaults.dart";
 
-part "navigation_bar_destination/navigation_bar_destination_builder.dart";
-part "navigation_bar_destination/navigation_bar_destination_layout.dart";
-part "navigation_bar_destination/navigation_bar_destination_semantics.dart";
-part "navigation_bar_destination/navigation_destination_layout_delegate.dart";
-part "navigation_bar_destination/status_transition_widget_builder.dart";
+part "destination/builder.dart";
+part "destination/layout.dart";
+part "destination/layout_delegate.dart";
+part "destination/semantics.dart";
+part "destination/status_transition_builder.dart";
 
 const double _kIndicatorHeight = 32;
 const double _kMaxLabelTextScaleFactor = 1.3;

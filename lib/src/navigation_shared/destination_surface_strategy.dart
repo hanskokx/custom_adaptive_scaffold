@@ -7,8 +7,8 @@ import "package:flutter/material.dart"
 
 import "../../navigation_bar_theme.dart";
 import "../../navigation_rail_theme.dart";
-import "../navigation_bar/navigation_bar_theme_defaults.dart";
-import "../navigation_rail/navigation_rail_theme_defaults.dart";
+import "../navigation_bar/theme_defaults.dart";
+import "../navigation_rail/theme_defaults.dart";
 import "destination_build_data.dart";
 
 // Rail layout spacing constants (mirror values defined in rail_destination.dart

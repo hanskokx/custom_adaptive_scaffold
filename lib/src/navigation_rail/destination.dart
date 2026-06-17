@@ -1,4 +1,4 @@
-import "../material.dart";
+import "../_internal_material.dart";
 import "../navigation_destination.dart";
 
 class NavigationRailDestination extends NavigationDestination {

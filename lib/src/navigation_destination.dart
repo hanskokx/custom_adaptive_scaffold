@@ -1,7 +1,7 @@
-import "material.dart";
-import "navigation_bar/navigation_bar_destination.dart";
+import "_internal_material.dart";
+import "navigation_bar/destination.dart";
+import "navigation_rail/destination.dart";
 import "navigation_rail/navigation_rail.dart";
-import "navigation_rail/navigation_rail_destination.dart";
 
 typedef CustomNavigationDestination = NavigationDestination;
 

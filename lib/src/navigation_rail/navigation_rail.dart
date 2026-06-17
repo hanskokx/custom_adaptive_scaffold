@@ -6,19 +6,19 @@ import "dart:ui";
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
-import "../destination/destination_build_data.dart";
-import "../destination/destination_surface_strategy.dart";
-import "../destination/navigation_destination_tooltip.dart";
-import "../destination/navigation_indicator.dart";
-import "../material.dart";
+import "../_internal_material.dart";
 import "../navigation_icon.dart";
-import "navigation_rail_theme_defaults.dart";
-import "widgets/navigation_rail_animation.dart";
+import "../navigation_shared/destination_build_data.dart";
+import "../navigation_shared/destination_surface_strategy.dart";
+import "../navigation_shared/navigation_destination_tooltip.dart";
+import "../navigation_shared/navigation_indicator.dart";
+import "destination_widgets/animation.dart";
+import "theme_defaults.dart";
 
-part "expanded/navigation_rail_destination.dart";
-part "widgets/indicator_ink_well.dart";
-part "widgets/rail_destination.dart";
-part "widgets/shared_rail_destination_state.dart";
+part "destination_layout/destination.dart";
+part "destination_widgets/destination_shared_state.dart";
+part "destination_widgets/destination_widget.dart";
+part "destination_widgets/indicator_ink_well.dart";
 
 @Deprecated(
   "Deprecated in favor of NavigationRail. "

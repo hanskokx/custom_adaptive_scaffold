@@ -4,7 +4,7 @@
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
-import "material.dart";
+import "_internal_material.dart";
 
 /// Spacing value of the compact breakpoint according to
 /// the material 3 design spec.

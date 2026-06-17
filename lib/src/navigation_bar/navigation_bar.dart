@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 import "../../navigation_bar_theme.dart";
-import "../material.dart";
+import "../_internal_material.dart";
 import "../navigation_destination.dart";
-import "navigation_bar_destination.dart";
-import "navigation_bar_theme_defaults.dart";
-import "navigation_destination_info.dart";
+import "destination.dart";
+import "destination_info.dart";
 import "selectable_animated_builder.dart";
+import "theme_defaults.dart";
 
 typedef CustomNavigationBarDestination = NavigationDestination;
 typedef CustomNavigationBar = NavigationBar;

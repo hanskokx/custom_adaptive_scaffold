@@ -10,7 +10,7 @@ import "package:flutter/material.dart" as m
 import "package:flutter/material.dart";
 import "package:flutter/rendering.dart";
 
-import "src/navigation_bar/navigation_bar_theme_defaults.dart";
+import "src/navigation_bar/theme_defaults.dart";
 
 typedef CustomNavigationBarThemeData = NavigationBarThemeData;
 typedef CustomNavigationBarTheme = NavigationBarTheme;
