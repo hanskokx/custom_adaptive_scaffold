@@ -1,4 +1,4 @@
-## UNRELEASED
+## 5.0.0
 
 This release is a near-complete rewrite of the navigation layer. The package
 now more closely mirrors the look, feel, and API of the corresponding Flutter
