@@ -199,7 +199,7 @@ void main() {
   );
 
   testWidgets(
-    "[DIVERGENCE] Custom label style renders ink ripple state",
+    "Custom label style renders ink ripple state",
     (WidgetTester tester) async {
       Widget buildWidget({NavigationDestinationLabelBehavior? labelBehavior}) {
         return MaterialApp(
@@ -244,11 +244,10 @@ void main() {
           ..rect(color: const Color(0x141d1b20)),
       );
     },
-    tags: <String>["divergence"],
   );
 
   testWidgets(
-    "[DIVERGENCE] NavigationBar respects NavigationBarTheme.overlayColor in active/pressed/hovered states",
+    "NavigationBar respects NavigationBarTheme.overlayColor in active/pressed/hovered states",
     (WidgetTester tester) async {
       tester.binding.focusManager.highlightStrategy =
           FocusHighlightStrategy.alwaysTraditional;
@@ -330,7 +329,6 @@ void main() {
         focusColor,
       );
     },
-    tags: <String>["divergence"],
   );
 }
 

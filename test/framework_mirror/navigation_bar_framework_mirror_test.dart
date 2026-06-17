@@ -537,7 +537,7 @@ void main() {
   });
 
   testWidgets(
-    "[DIVERGENCE] Custom tooltips in NavigationBarDestination",
+    "Custom tooltips in NavigationBarDestination",
     (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -574,9 +574,8 @@ void main() {
 
       expect(find.text("C"), findsOneWidget);
       await tester.longPress(find.text("C"));
-      expect(find.byTooltip("C"), findsOneWidget);
+      expect(find.byTooltip("C"), findsNothing);
     },
-    tags: <String>["divergence"],
   );
 
   testWidgets("Navigation bar semantics", (WidgetTester tester) async {
@@ -823,7 +822,7 @@ void main() {
   });
 
   testWidgets(
-    "[DIVERGENCE] Material3 - Navigation indicator renders ripple",
+    "Material3 - Navigation indicator renders ripple",
     (WidgetTester tester) async {
       // This is a regression test for https://github.com/flutter/flutter/issues/116751.
       var selectedIndex = 0;
@@ -918,11 +917,10 @@ void main() {
           ..rect(color: const Color(0x141d1b20)),
       );
     },
-    tags: <String>["divergence"],
   );
 
   testWidgets(
-    "[DIVERGENCE] Material3 - Navigation indicator ripple state test",
+    "Material3 - Navigation indicator ripple state test",
     (WidgetTester tester) async {
       // This is a regression test for https://github.com/flutter/flutter/issues/117420.
 
@@ -992,12 +990,11 @@ void main() {
           ..rect(color: const Color(0x141d1b20)),
       );
     },
-    tags: <String>["divergence"],
   );
 
   // Regression test for https://github.com/flutter/flutter/issues/169249.
   testWidgets(
-    "[DIVERGENCE] Material3 - Navigation indicator moves to selected item",
+    "Material3 - Navigation indicator moves to selected item",
     (
       WidgetTester tester,
     ) async {
@@ -1063,7 +1060,6 @@ void main() {
       expect(beforeScales[0], greaterThan(beforeScales[1]));
       expect(afterScales[1], greaterThan(afterScales[0]));
     },
-    tags: <String>["divergence"],
   );
 
   testWidgets("Navigation indicator scale transform",
@@ -1126,7 +1122,7 @@ void main() {
   });
 
   testWidgets(
-    "[DIVERGENCE] Material3 - Navigation destination updates indicator color and shape",
+    "Material3 - Navigation destination updates indicator color and shape",
     (
       WidgetTester tester,
     ) async {
@@ -1211,7 +1207,6 @@ void main() {
           ..rect(),
       );
     },
-    tags: <String>["divergence"],
   );
 
   testWidgets("Destinations respect their disabled state",
@@ -1250,7 +1245,7 @@ void main() {
   });
 
   testWidgets(
-    "[DIVERGENCE] NavigationBar respects overlayColor in active/pressed/hovered states",
+    "NavigationBar respects overlayColor in active/pressed/hovered states",
     (
       WidgetTester tester,
     ) async {
@@ -1331,7 +1326,6 @@ void main() {
         focusColor,
       );
     },
-    tags: <String>["divergence"],
   );
 
   testWidgets(
@@ -1438,7 +1432,7 @@ void main() {
     });
 
     testWidgets(
-      "[DIVERGENCE] Material2 - Navigation indicator renders ripple",
+      "Material2 - Navigation indicator renders ripple",
       (WidgetTester tester) async {
         // This is a regression test for https://github.com/flutter/flutter/issues/116751.
         var selectedIndex = 0;
@@ -1517,11 +1511,10 @@ void main() {
         await tester.pumpAndSettle();
         expect(inkFeatures, isNotNull);
       },
-      tags: <String>["divergence"],
     );
 
     testWidgets(
-      "[DIVERGENCE] Material2 - Navigation indicator ripple state test",
+      "Material2 - Navigation indicator ripple state test",
       (WidgetTester tester) async {
         // This is a regression test for https://github.com/flutter/flutter/issues/117420.
 
@@ -1585,7 +1578,6 @@ void main() {
         await tester.pumpAndSettle();
         expect(inkFeatures, isNotNull);
       },
-      tags: <String>["divergence"],
     );
 
     testWidgets("Destination icon does not rebuild when tapped",
