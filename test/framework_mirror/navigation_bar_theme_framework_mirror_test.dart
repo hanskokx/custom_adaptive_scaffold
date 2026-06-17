@@ -8,6 +8,7 @@
 library;
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart"
     hide NavigationIndicator, NavigationDestination;
@@ -241,7 +242,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x141d1b20)),
+          ..circle(color: const Color(0x141d1b20)),
       );
     },
   );
@@ -303,18 +304,37 @@ void main() {
           .moveTo(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
+      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
+        (RenderObject object) =>
+            object.runtimeType.toString() == "_RenderInkFeatures",
+      );
+
+      // Test hovered state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.hovered}),
-        hoverColor,
+        inkFeatures,
+        kIsWeb
+            ? (paints
+              ..rrect()
+              ..rrect()
+              ..circle(color: hoverColor))
+            : (paints..circle(color: hoverColor)),
       );
 
       await gesture
           .down(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
+      // Test pressed state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.pressed}),
-        pressedColor,
+        inkFeatures,
+        kIsWeb
+            ? (paints
+              ..circle()
+              ..circle()
+              ..circle(color: pressedColor))
+            : (paints
+              ..circle()
+              ..circle(color: pressedColor)),
       );
 
       await gesture.up();
@@ -324,9 +344,26 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pumpAndSettle();
 
+      // Test focused state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.focused}),
-        focusColor,
+        inkFeatures,
+        kIsWeb
+            ? anyOf(
+                (paints
+                  ..circle()
+                  ..circle(color: focusColor)),
+                (paints
+                  ..circle(color: focusColor)
+                  ..circle()),
+              )
+            : anyOf(
+                (paints
+                  ..circle()
+                  ..circle(color: focusColor)),
+                (paints
+                  ..circle(color: focusColor)
+                  ..circle()),
+              ),
       );
     },
   );

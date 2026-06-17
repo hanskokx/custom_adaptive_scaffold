@@ -600,38 +600,44 @@ void main() {
     expect(
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
+        label: 'AC${kIsWeb ? '' : '\nTab 1 of 3'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         isSelected: true,
         hasSelectedState: true,
         hasEnabledState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
+        label: 'Alarm${kIsWeb ? '' : '\nTab 2 of 3'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         hasSelectedState: true,
         hasEnabledState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("ABC")),
       matchesSemantics(
+        label: 'ABC${kIsWeb ? '' : '\nTab 3 of 3'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         hasSelectedState: true,
         hasEnabledState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
 
@@ -640,38 +646,44 @@ void main() {
     expect(
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
+        label: 'AC${kIsWeb ? '' : '\nTab 1 of 3'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
+        label: 'Alarm${kIsWeb ? '' : '\nTab 2 of 3'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         isSelected: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("ABC")),
       matchesSemantics(
+        label: 'ABC${kIsWeb ? '' : '\nTab 3 of 3'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
   });
@@ -702,6 +714,7 @@ void main() {
       matchesSemantics(
         label: 'AC${kIsWeb ? '' : '\nTab 1 of 2'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
         isSelected: true,
         hasSelectedState: true,
         hasEnabledState: true,
@@ -732,26 +745,30 @@ void main() {
     expect(
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
+        label: 'AC${kIsWeb ? '' : '\nTab 1 of 2'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         isSelected: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
+        label: 'Alarm${kIsWeb ? '' : '\nTab 2 of 2'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
 
@@ -760,26 +777,30 @@ void main() {
     expect(
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
+        label: 'AC${kIsWeb ? '' : '\nTab 1 of 2'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
     expect(
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
+        label: 'Alarm${kIsWeb ? '' : '\nTab 2 of 2'}',
         textDirection: TextDirection.ltr,
+        isButton: true,
+        isFocusable: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
         isSelected: true,
         hasTapAction: true,
         hasFocusAction: true,
-        isFocusable: true,
       ),
     );
   });
@@ -867,7 +888,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x141d1b20)),
+          ..circle(color: const Color(0x141d1b20)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.alwaysHide`.
@@ -883,7 +904,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x141d1b20)),
+          ..circle(color: const Color(0x141d1b20)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.onlyShowSelected`.
@@ -899,7 +920,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x141d1b20)),
+          ..circle(color: const Color(0x141d1b20)),
       );
 
       // Make sure ripple is shifted when selectedIndex changes.
@@ -914,7 +935,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x141d1b20)),
+          ..circle(color: const Color(0x141d1b20)),
       );
     },
   );
@@ -957,7 +978,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x141d1b20)),
+          ..circle(color: const Color(0x141d1b20)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.alwaysHide`.
@@ -972,7 +993,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x141d1b20)),
+          ..circle(color: const Color(0x141d1b20)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.onlyShowSelected`.
@@ -987,7 +1008,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x141d1b20)),
+          ..circle(color: const Color(0x141d1b20)),
       );
     },
   );
@@ -1184,7 +1205,7 @@ void main() {
         defaultInkFeatures,
         paints
           ..clipPath()
-          ..rect(),
+          ..circle(),
       );
 
       await tester.pumpWidget(
@@ -1204,7 +1225,7 @@ void main() {
         customInkFeatures,
         paints
           ..clipPath()
-          ..rect(),
+          ..circle(),
       );
     },
   );
@@ -1300,18 +1321,37 @@ void main() {
           .moveTo(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
+      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
+        (RenderObject object) =>
+            object.runtimeType.toString() == "_RenderInkFeatures",
+      );
+
+      // Test hovered state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.hovered}),
-        hoverColor,
+        inkFeatures,
+        kIsWeb
+            ? (paints
+              ..rrect()
+              ..rrect()
+              ..circle(color: hoverColor))
+            : (paints..circle(color: hoverColor)),
       );
 
       await gesture
           .down(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
+      // Test pressed state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.pressed}),
-        pressedColor,
+        inkFeatures,
+        kIsWeb
+            ? (paints
+              ..circle()
+              ..circle()
+              ..circle(color: pressedColor))
+            : (paints
+              ..circle()
+              ..circle(color: pressedColor)),
       );
 
       await gesture.up();
@@ -1321,9 +1361,26 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pumpAndSettle();
 
+      // Test focused state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.focused}),
-        focusColor,
+        inkFeatures,
+        kIsWeb
+            ? anyOf(
+                (paints
+                  ..circle()
+                  ..circle(color: focusColor)),
+                (paints
+                  ..circle(color: focusColor)
+                  ..circle()),
+              )
+            : anyOf(
+                (paints
+                  ..circle()
+                  ..circle(color: focusColor)),
+                (paints
+                  ..circle(color: focusColor)
+                  ..circle()),
+              ),
       );
     },
   );

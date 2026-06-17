@@ -1,3 +1,5 @@
+import "package:flutter/foundation.dart" show kIsWeb;
+
 import "../../navigation_bar_theme.dart";
 import "../_internal_material.dart";
 import "../navigation_destination.dart";
@@ -131,13 +133,26 @@ class NavigationBarDestination extends NavigationDestination {
                 width: data.minWidth,
                 height: _kIndicatorHeight,
               ),
-              NavigationIcon(
-                icon: data.themedIcon,
-                minWidth: data.minWidth,
-                material3: data.material3,
-                height: _kIndicatorHeight,
-                addSpacing: false,
-                direction: Axis.vertical,
+              Builder(
+                builder: (BuildContext context) {
+                  final NavigationDestinationInfo destinationInfo =
+                      NavigationDestinationInfo.of(context);
+                  final bool selectedForKey =
+                      destinationInfo.index == destinationInfo.selectedIndex;
+                  return KeyedSubtree(
+                    key: ValueKey<String>(
+                      "bar-ink-icon-${destinationInfo.index}-${selectedForKey ? "selected" : "unselected"}",
+                    ),
+                    child: NavigationIcon(
+                      icon: data.themedIcon,
+                      minWidth: data.minWidth,
+                      material3: data.material3,
+                      height: _kIndicatorHeight,
+                      addSpacing: false,
+                      direction: Axis.vertical,
+                    ),
+                  );
+                },
               ),
             ],
           );

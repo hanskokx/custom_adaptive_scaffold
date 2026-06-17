@@ -37,22 +37,24 @@ class _NavigationBarDestinationSemantics extends StatelessWidget {
         return Semantics(
           selected: destinationInfo.selectedAnimation.isForwardOrCompleted,
           enabled: enabled,
-          container: true,
+          button: true,
           child: child,
         );
       },
-      child: Stack(
-        alignment: Alignment.center,
-        children: <Widget>[
-          child,
-          Semantics(
-            label: localizations.tabLabel(
-              tabIndex: destinationInfo.index + 1,
-              tabCount: destinationInfo.totalNumberOfDestinations,
+      child: kIsWeb
+          ? child
+          : Stack(
+              alignment: Alignment.center,
+              children: <Widget>[
+                child,
+                Semantics(
+                  label: localizations.tabLabel(
+                    tabIndex: destinationInfo.index + 1,
+                    tabCount: destinationInfo.totalNumberOfDestinations,
+                  ),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

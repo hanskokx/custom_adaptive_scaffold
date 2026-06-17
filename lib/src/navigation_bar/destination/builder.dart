@@ -115,8 +115,9 @@ class _NavigationBarDestinationBuilderState
             const StadiumBorder();
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
         disableFullItemInk ? null : effectiveNavigationItemOverlayColor;
-    final WidgetStateProperty<Color?>? iconOverlayColor =
-        navigationBarTheme.overlayColor ?? defaults.overlayColor;
+    final WidgetStateProperty<Color?>? iconOverlayColor = info.overlayColor ??
+        navigationBarTheme.overlayColor ??
+        defaults.overlayColor;
 
     final Color splashBase = navigationBarTheme.indicatorColor ??
         defaults.indicatorColor ??
@@ -165,12 +166,13 @@ class _NavigationBarDestinationBuilderState
               indicatorOverlayColor:
                   disableFullItemInk ? iconOverlayColor : null,
               overlayColor: fullItemOverlayColor,
-              highlightColor: disableFullItemInk ? null : Colors.transparent,
-              splashColor: disableFullItemInk
+              highlightColor: Colors.transparent,
+              splashColor: disableFullItemInk && iconOverlayColor == null
                   ? effectiveSplashColor
-                  : Colors.transparent,
-              hoverColor:
-                  disableFullItemInk ? effectiveHoverColor : Colors.transparent,
+                  : null,
+              hoverColor: disableFullItemInk && iconOverlayColor == null
+                  ? effectiveHoverColor
+                  : null,
               customBorder: effectiveNavigationItemIndicatorShape,
               onTap: isDisabled ? null : info.onTap,
               child: Stack(
@@ -182,10 +184,8 @@ class _NavigationBarDestinationBuilderState
                       children: <Widget>[
                         Expanded(
                           child: _NavigationBarDestinationLayout(
-                            icon: KeyedSubtree(
-                              key: iconKey,
-                              child: widget.buildIcon(context),
-                            ),
+                            icon: widget.buildIcon(context),
+                            iconKey: iconKey,
                             itemKey: itemKey,
                             padding: widget.padding,
                             label: widget.buildLabel(context),
@@ -220,7 +220,6 @@ class _IndicatorInkWell extends InkResponse {
     WidgetStateProperty<Color?>? overlayColor,
   }) : super(
           containedInkWell: true,
-          highlightShape: BoxShape.rectangle,
           overlayColor:
               disableFullItemInk ? indicatorOverlayColor : overlayColor,
         );
