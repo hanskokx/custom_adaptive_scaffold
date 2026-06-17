@@ -82,6 +82,57 @@ typedef NavigationRailDestinationBuilder = NavigationRailDestination Function(
 ///   desired way to animate between switches. Often used within [SlotLayout].
 ///  * [Design Doc](https://flutter.dev/go/adaptive-layout-foldables).
 ///  * [Material Design 3 Specifications] (https://m3.material.io/foundations/adaptive-design/overview).
+typedef CustomAdaptiveScaffold = AdaptiveScaffold;
+
+/// Implements the basic visual layout structure for
+/// [Material Design 3](https://m3.material.io/foundations/adaptive-design/overview)
+/// that adapts to a variety of screens.
+///
+/// !["Example of a display made with AdaptiveScaffold"](../../example/demo_files/adaptiveScaffold.gif)
+///
+/// [AdaptiveScaffold] provides a preset of layout, including positions and
+/// animations, by handling macro changes in navigational elements and bodies
+/// based on the current features of the screen, namely screen width and platform.
+/// For example, the navigational elements would be a [BottomNavigationBar] on a
+/// small mobile device or a [Drawer] on a small desktop device and a
+/// [NavigationRail] on larger devices. When the app's size changes, for example
+/// because its window is resized, the corresponding layout transition is animated.
+/// The layout and navigation changes are dictated by "breakpoints" which can be
+/// customized or overridden.
+///
+/// Also provides a variety of helper methods for navigational elements,
+/// animations, and more.
+///
+/// [AdaptiveScaffold] is based on [AdaptiveLayout] but is easier to use at the
+/// cost of being less customizable. Apps that would like more refined layout
+/// and/or animation should use [AdaptiveLayout].
+///
+/// ```dart
+/// AdaptiveScaffold(
+///  destinations: const [
+///    NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox'),
+///    NavigationDestination(icon: Icon(Icons.article), label: 'Articles'),
+///    NavigationDestination(icon: Icon(Icons.chat), label: 'Chat'),
+///    NavigationDestination(icon: Icon(Icons.video_call), label: 'Video'),
+///  ],
+///  smallBody: (_) => ListView.builder(
+///    itemCount: children.length,
+///    itemBuilder: (_, idx) => children[idx]
+///  ),
+///  body: (_) => GridView.count(crossAxisCount: 2, children: children),
+/// ),
+/// ```
+///
+/// See also:
+///
+///  * [AdaptiveLayout], which is what this widget is built upon internally and
+///   acts as a more customizable alternative.
+///  * [SlotLayout], which handles switching and animations between elements
+///   based on [Breakpoint]s.
+///  * [SlotLayout.from], which holds information regarding Widgets and the
+///   desired way to animate between switches. Often used within [SlotLayout].
+///  * [Design Doc](https://flutter.dev/go/adaptive-layout-foldables).
+///  * [Material Design 3 Specifications] (https://m3.material.io/foundations/adaptive-design/overview).
 class AdaptiveScaffold extends StatefulWidget {
   /// Returns a const [AdaptiveScaffold] by passing information down to an
   /// [AdaptiveLayout].
