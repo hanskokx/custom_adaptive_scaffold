@@ -133,13 +133,16 @@ class _NavigationDestinationBuilderState
         splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12);
     final Color effectiveHoverColor =
         splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04);
+    final String labelText =
+        widget.label is Text ? (widget.label as Text).data ?? "" : "";
+    final String? tooltipMessage = widget.tooltip == null
+        ? (labelText.isNotEmpty ? labelText : null)
+        : (widget.tooltip!.isNotEmpty ? widget.tooltip : null);
 
     return _NavigationBarDestinationSemantics(
       enabled: !widget.disabled,
       child: _NavigationBarDestinationTooltip(
-        message: widget.tooltip ??
-            (widget.label is Text ? (widget.label as Text).data : "") ??
-            "",
+        message: tooltipMessage,
         child: ClipRect(
           // Inner Material provides an ink surface above the indicator fill,
           // so splash/hover renders on top of the pill rather than behind it.

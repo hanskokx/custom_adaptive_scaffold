@@ -12,7 +12,7 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
   });
 
   /// The text that is rendered in the tooltip when it appears.
-  final String message;
+  final String? message;
 
   /// The widget that, when pressed, will show a tooltip.
   final Widget child;
@@ -22,13 +22,13 @@ class _NavigationBarDestinationTooltip extends StatelessWidget {
     final NavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
 
-    double tooltipVerticalOffset = 42;
-
-    tooltipVerticalOffset = navigationBarTheme.tooltipVerticalOffset;
+    if (message == null || message!.isEmpty) {
+      return child;
+    }
 
     return Tooltip(
-      message: message,
-      verticalOffset: tooltipVerticalOffset,
+      message: message!,
+      verticalOffset: navigationBarTheme.tooltipVerticalOffset ?? 42,
       excludeFromSemantics: true,
       preferBelow: false,
       child: child,

@@ -54,8 +54,10 @@ class NavigationBarDestination extends NavigationDestination {
         navigationBarTheme.indicatorShape ??
         defaultsFor(context).indicatorShape!;
 
-    final EdgeInsetsGeometry margin = navigationBarTheme.margin;
-    final EdgeInsetsGeometry padding = navigationBarTheme.padding;
+    final EdgeInsetsGeometry margin =
+        navigationBarTheme.margin ?? EdgeInsets.zero;
+    final EdgeInsetsGeometry padding =
+        navigationBarTheme.padding ?? EdgeInsets.zero;
 
     return Container(
       margin: margin,

@@ -137,6 +137,86 @@ void main() {
       await tester.pumpAndSettle();
       expect(tapped, 0);
     });
+
+    testWidgets("bar tooltip falls back to label when tooltip is null",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ],
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.message, "Home");
+    });
+
+    testWidgets("bar tooltip is suppressed when tooltip is empty",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: const [
+            NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              tooltip: "",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ],
+        ),
+      );
+
+      final Iterable<Tooltip> tooltips =
+          tester.widgetList<Tooltip>(find.byType(Tooltip));
+      expect(tooltips.length, 1);
+      expect(tooltips.first.message, "Search");
+    });
+
+    testWidgets("bar tooltip uses themed vertical offset",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              tooltipVerticalOffset: 64,
+            ),
+          ),
+          home: Scaffold(
+            body: NavigationBar(
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  tooltip: "Go Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.verticalOffset, 64);
+    });
   });
 
   group("NavigationBar parity options", () {
