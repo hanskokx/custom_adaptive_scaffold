@@ -237,9 +237,9 @@ class NavigationBarThemeData
         b?.navigationItemIndicatorShape,
         t,
       ),
-        margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
-        padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
-        tooltipOffset: Offset.lerp(a?.tooltipOffset, b?.tooltipOffset, t),
+      margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
+      padding: EdgeInsetsGeometry.lerp(a?.padding, b?.padding, t),
+      tooltipOffset: Offset.lerp(a?.tooltipOffset, b?.tooltipOffset, t),
       labelPadding: EdgeInsetsGeometry.lerp(
         a?.labelPadding,
         b?.labelPadding,
@@ -459,92 +459,72 @@ class NavigationBarTheme extends InheritedTheme
   /// ```dart
   /// NavigationBarThemeData theme = NavigationBarTheme.of(context);
   /// ```
-  static NavigationBarThemeData of(BuildContext context) {
-    final NavigationBarThemeData defaults = defaultsFor(context);
-
-    // The user is using NavigationBarTheme from this package
+  static NavigationBarThemeData? maybeOf(BuildContext context) {
+    // The user is using NavigationBarTheme from this package.
     final NavigationBarTheme? navigationBarTheme =
         context.dependOnInheritedWidgetOfExactType<NavigationBarTheme>();
-
     if (navigationBarTheme != null) {
-      return defaults.copyWith(
-        height: navigationBarTheme.data.height,
-        backgroundColor: navigationBarTheme.data.backgroundColor,
-        elevation: navigationBarTheme.data.elevation,
-        shadowColor: navigationBarTheme.data.shadowColor,
-        surfaceTintColor: navigationBarTheme.data.surfaceTintColor,
-        indicatorColor: navigationBarTheme.data.indicatorColor,
-        indicatorShape: navigationBarTheme.data.indicatorShape,
-        labelTextStyle: navigationBarTheme.data.labelTextStyle,
-        iconTheme: navigationBarTheme.data.iconTheme,
-        labelBehavior: navigationBarTheme.data.labelBehavior,
-        overlayColor: navigationBarTheme.data.overlayColor,
-        navigationItemOverlayColor:
-            navigationBarTheme.data.navigationItemOverlayColor,
-        navigationItemIndicatorShape:
-            navigationBarTheme.data.navigationItemIndicatorShape,
-        margin: navigationBarTheme.data.margin,
-        padding: navigationBarTheme.data.padding,
-        tooltipOffset: navigationBarTheme.data.tooltipOffset,
-        labelPadding: navigationBarTheme.data.labelPadding,
-      );
-    }
-
-    // The user is using a theme extension to provide NavigationBarThemeData
-    // from his package
-
-    final NavigationBarThemeData? themeExtension =
-        Theme.of(context).extension<NavigationBarThemeData>();
-
-    if (themeExtension != null) {
-      return defaults.copyWith(
-        height: themeExtension.height,
-        backgroundColor: themeExtension.backgroundColor,
-        elevation: themeExtension.elevation,
-        shadowColor: themeExtension.shadowColor,
-        surfaceTintColor: themeExtension.surfaceTintColor,
-        indicatorColor: themeExtension.indicatorColor,
-        indicatorShape: themeExtension.indicatorShape,
-        labelTextStyle: themeExtension.labelTextStyle,
-        iconTheme: themeExtension.iconTheme,
-        labelBehavior: themeExtension.labelBehavior,
-        overlayColor: themeExtension.overlayColor,
-        navigationItemOverlayColor: themeExtension.navigationItemOverlayColor,
-        navigationItemIndicatorShape:
-            themeExtension.navigationItemIndicatorShape,
-        margin: themeExtension.margin,
-        padding: themeExtension.padding,
-        tooltipOffset: themeExtension.tooltipOffset,
-        labelPadding: themeExtension.labelPadding,
-      );
+      return navigationBarTheme.data;
     }
 
     // The user is using Flutter's Material NavigationBarThemeData, so we
-    // convert it to our own NavigationBarThemeData
-
+    // convert it to our own NavigationBarThemeData.
     final m.NavigationBarThemeData materialNavigationBarTheme =
         m.NavigationBarTheme.of(context);
-    final NavigationBarThemeData converted =
-        NavigationBarThemeData.fromMaterial(materialNavigationBarTheme);
-    return defaults.copyWith(
-      height: converted.height,
-      backgroundColor: converted.backgroundColor,
-      elevation: converted.elevation,
-      shadowColor: converted.shadowColor,
-      surfaceTintColor: converted.surfaceTintColor,
-      indicatorColor: converted.indicatorColor,
-      indicatorShape: converted.indicatorShape,
-      labelTextStyle: converted.labelTextStyle,
-      iconTheme: converted.iconTheme,
-      labelBehavior: converted.labelBehavior,
-      overlayColor: converted.overlayColor,
-      navigationItemOverlayColor: converted.navigationItemOverlayColor,
-      navigationItemIndicatorShape: converted.navigationItemIndicatorShape,
-      margin: converted.margin,
-      padding: converted.padding,
-      tooltipOffset: converted.tooltipOffset,
-      labelPadding: converted.labelPadding,
-    );
+
+    if (materialNavigationBarTheme is NavigationBarThemeData) {
+      return materialNavigationBarTheme;
+    }
+
+    final bool hasAnyExplicitValue =
+        materialNavigationBarTheme.height != null ||
+            materialNavigationBarTheme.backgroundColor != null ||
+            materialNavigationBarTheme.elevation != null ||
+            materialNavigationBarTheme.shadowColor != null ||
+            materialNavigationBarTheme.surfaceTintColor != null ||
+            materialNavigationBarTheme.indicatorColor != null ||
+            materialNavigationBarTheme.indicatorShape != null ||
+            materialNavigationBarTheme.labelTextStyle != null ||
+            materialNavigationBarTheme.iconTheme != null ||
+            materialNavigationBarTheme.labelBehavior != null ||
+            materialNavigationBarTheme.overlayColor != null ||
+            materialNavigationBarTheme.labelPadding != null;
+
+    if (!hasAnyExplicitValue) {
+      return null;
+    }
+
+    return NavigationBarThemeData.fromMaterial(materialNavigationBarTheme);
+  }
+
+  static NavigationBarThemeData of(BuildContext context) {
+    final NavigationBarThemeData defaults = defaultsFor(context);
+
+    final NavigationBarThemeData? explicitTheme = maybeOf(context);
+    if (explicitTheme != null) {
+      return defaults.copyWith(
+        height: explicitTheme.height,
+        backgroundColor: explicitTheme.backgroundColor,
+        elevation: explicitTheme.elevation,
+        shadowColor: explicitTheme.shadowColor,
+        surfaceTintColor: explicitTheme.surfaceTintColor,
+        indicatorColor: explicitTheme.indicatorColor,
+        indicatorShape: explicitTheme.indicatorShape,
+        labelTextStyle: explicitTheme.labelTextStyle,
+        iconTheme: explicitTheme.iconTheme,
+        labelBehavior: explicitTheme.labelBehavior,
+        overlayColor: explicitTheme.overlayColor,
+        navigationItemOverlayColor: explicitTheme.navigationItemOverlayColor,
+        navigationItemIndicatorShape:
+            explicitTheme.navigationItemIndicatorShape,
+        margin: explicitTheme.margin,
+        padding: explicitTheme.padding,
+        tooltipOffset: explicitTheme.tooltipOffset,
+        labelPadding: explicitTheme.labelPadding,
+      );
+    }
+
+    return defaults;
   }
 
   @override

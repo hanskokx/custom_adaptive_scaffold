@@ -70,21 +70,22 @@ class NavigationIndicator extends StatelessWidget {
     return AnimatedBuilder(
       animation: animation,
       builder: (BuildContext context, Widget? child) {
-        // Scale: 0 when dismissed; jumps to 40 % the moment animation starts,
-        // then eases to 100 % — matching the M3 NavigationBar indicator curve.
-        final double scale = animation.isDismissed
+        // Drive both scale and opacity from the current animation value so the
+        // indicator always settles visually even if the controller stops just
+        // above 0.0 and never hits an exact dismissed status.
+        final double t = animation.value.clamp(0.0, 1.0);
+        final double emphasized =
+            CurveTween(curve: Curves.easeInOutCubicEmphasized).transform(t);
+        final double scale = t == 0.0
             ? 0.0
-            : Tween<double>(begin: .4, end: 1.0).transform(
-                CurveTween(curve: Curves.easeInOutCubicEmphasized)
-                    .transform(animation.value),
-              );
+            : Tween<double>(begin: 0.4, end: 1.0).transform(emphasized);
+        final double opacity = CurveTween(curve: Curves.easeInOut).transform(t);
 
         return Transform(
           alignment: Alignment.center,
           transform: Matrix4.diagonal3Values(scale, 1.0, 1.0),
-          child: AnimatedOpacity(
-            opacity: animation.isDismissed ? 0.0 : 1.0,
-            duration: const Duration(milliseconds: 100),
+          child: Opacity(
+            opacity: opacity,
             child: child,
           ),
         );

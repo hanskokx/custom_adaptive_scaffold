@@ -13,6 +13,7 @@ import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/material.dart"
     hide
         NavigationBar,
+        NavigationBarTheme,
         NavigationDestination,
         NavigationRailDestination,
         NavigationRail,
@@ -377,6 +378,210 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.home), findsOneWidget);
       expect(find.byIcon(Icons.home_filled), findsNothing);
+    });
+
+    testWidgets("selection switch updates icons immediately",
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return MaterialApp(
+              home: Scaffold(
+                body: NavigationBar(
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (int index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  destinations: const [
+                    NavigationBarDestination(
+                      icon: Icon(Icons.home),
+                      selectedIcon: Icon(Icons.home_filled),
+                      label: "Home",
+                    ),
+                    NavigationBarDestination(
+                      icon: Icon(Icons.search),
+                      selectedIcon: Icon(Icons.search_off),
+                      label: "Search",
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+
+      expect(find.byIcon(Icons.home_filled), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsNothing);
+
+      await tester.tap(find.text("Search"));
+      await tester.pump();
+
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byIcon(Icons.home_filled), findsNothing);
+      expect(find.byIcon(Icons.search_off), findsOneWidget);
+    });
+
+    testWidgets("previous destination deselects without hover refresh",
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return MaterialApp(
+              home: Scaffold(
+                body: NavigationBar(
+                  selectedIndex: selectedIndex,
+                  onDestinationSelected: (int index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  destinations: const [
+                    NavigationBarDestination(
+                      icon: Icon(Icons.home),
+                      selectedIcon: Icon(Icons.home_filled),
+                      label: "Home",
+                    ),
+                    NavigationBarDestination(
+                      icon: Icon(Icons.search),
+                      selectedIcon: Icon(Icons.search_off),
+                      label: "Search",
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+
+      // Trigger destination switch and verify deselection before any hover.
+      await tester.tap(find.text("Search"));
+      await tester.pump();
+
+      expect(find.byIcon(Icons.home_filled), findsNothing);
+      expect(find.byIcon(Icons.home), findsOneWidget);
+    });
+
+    testWidgets("navigation item overlay requires explicit opt-in",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              navigationItemIndicatorShape: RoundedRectangleBorder(),
+            ),
+          ),
+          home: Scaffold(
+            body: _buildBar(selectedIndex: 0, onTap: null),
+          ),
+        ),
+      );
+
+      final CustomNavigationBarThemeData? explicitTheme =
+          NavigationBarTheme.maybeOf(
+        tester.element(find.byType(NavigationBar)),
+      );
+      expect(explicitTheme, isNotNull);
+      expect(explicitTheme!.navigationItemOverlayColor, isNull);
+      expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
+    });
+
+    testWidgets(
+        "standardBottomNavigationBar preserves explicit-only overlay intent",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              navigationItemIndicatorShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          home: Scaffold(
+            body: AdaptiveScaffold.standardBottomNavigationBar(
+              currentIndex: 0,
+              destinations: const [
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final BuildContext barContext =
+          tester.element(find.byType(NavigationBar));
+      final CustomNavigationBarThemeData? explicitTheme =
+          NavigationBarTheme.maybeOf(barContext);
+
+      expect(explicitTheme, isNotNull);
+      expect(explicitTheme!.navigationItemOverlayColor, isNull);
+      expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
+    });
+
+    testWidgets("standardBottomNavigationBar switches selected icon on tap",
+        (WidgetTester tester) async {
+      int selectedIndex = 0;
+
+      await tester.pumpWidget(
+        StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) {
+            return MaterialApp(
+              home: Scaffold(
+                body: AdaptiveScaffold.standardBottomNavigationBar(
+                  currentIndex: selectedIndex,
+                  onDestinationSelected: (int index) {
+                    setState(() {
+                      selectedIndex = index;
+                    });
+                  },
+                  destinations: const [
+                    NavigationDestination(
+                      icon: Icon(Icons.home_outlined),
+                      selectedIcon: Icon(Icons.home),
+                      label: "Feed",
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.search_outlined),
+                      selectedIcon: Icon(Icons.search),
+                      label: "Search",
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      );
+
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byIcon(Icons.home_outlined), findsNothing);
+      expect(find.byIcon(Icons.search), findsNothing);
+      expect(find.byIcon(Icons.search_outlined), findsOneWidget);
+
+      await tester.tap(find.text("Search"));
+      await tester.pumpAndSettle();
+
+      expect(find.byIcon(Icons.home), findsNothing);
+      expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.search), findsOneWidget);
+      expect(find.byIcon(Icons.search_outlined), findsNothing);
     });
   });
 

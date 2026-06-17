@@ -56,13 +56,16 @@ class NavigationBarDestination extends NavigationDestination {
         defaultsFor(context).indicatorShape!;
 
     final EdgeInsetsGeometry margin =
-      this.margin ?? navigationBarTheme.margin ?? EdgeInsets.zero;
+        this.margin ?? navigationBarTheme.margin ?? EdgeInsets.zero;
     final EdgeInsetsGeometry padding =
-      this.padding ?? navigationBarTheme.padding ?? EdgeInsets.zero;
+        this.padding ?? navigationBarTheme.padding ?? EdgeInsets.zero;
 
     return Container(
       margin: margin,
       child: _NavigationDestinationBuilder(
+        key: ValueKey<String>(
+          "bar-destination-${info.index}-${info.selectedIndex == info.index}",
+        ),
         label: Text(label),
         tooltip: tooltip,
         disabled: disabled,
@@ -71,11 +74,19 @@ class NavigationBarDestination extends NavigationDestination {
         shape: indicatorShape,
         padding: padding,
         buildIcon: (BuildContext context) {
-          // Pre-select the icon widget based on animation status before
-          // handing to the strategy — matches the parity contract where
-          // both surfaces receive a single already-chosen icon.
-          final bool isSelected = animation.isForwardOrCompleted;
-          final Widget activeIcon = isSelected ? selectedIcon : icon;
+          final NavigationDestinationInfo currentInfo =
+              NavigationDestinationInfo.of(context);
+          final bool isSelected =
+              currentInfo.index == currentInfo.selectedIndex;
+
+          // Pre-select icon from current selected index so icon state flips
+          // immediately when destination selection changes.
+          final Widget activeIcon = KeyedSubtree(
+            key: ValueKey<String>(
+              "bar-icon-${currentInfo.index}-${isSelected ? "selected" : "unselected"}",
+            ),
+            child: isSelected ? selectedIcon : icon,
+          );
 
           final DestinationBuildData data =
               const BarDestinationStrategy().resolve(
@@ -116,12 +127,13 @@ class NavigationBarDestination extends NavigationDestination {
           // data.styledLabel, but the bar label wrapper needs the padding and
           // text-scale clamping applied here.  We resolve label style directly
           // from the bar theme to avoid calling the strategy twice.
-          final bool isSelected = animation.isForwardOrCompleted;
+          final NavigationDestinationInfo currentInfo =
+              NavigationDestinationInfo.of(context);
+          final bool isSelected =
+              currentInfo.index == currentInfo.selectedIndex;
           final NavigationBarThemeData barTheme =
               NavigationBarTheme.of(context);
           final NavigationBarThemeData defaults = defaultsFor(context);
-          final NavigationDestinationInfo info =
-              NavigationDestinationInfo.of(context);
 
           final Set<WidgetState> widgetState = {
             if (disabled) WidgetState.disabled,
@@ -133,7 +145,7 @@ class NavigationBarDestination extends NavigationDestination {
                   defaults.labelTextStyle!.resolve(widgetState);
 
           return Padding(
-            padding: info.labelPadding ??
+            padding: currentInfo.labelPadding ??
                 barTheme.labelPadding ??
                 defaults.labelPadding ??
                 const EdgeInsets.only(top: 4),

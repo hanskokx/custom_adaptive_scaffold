@@ -19,6 +19,7 @@ class _NavigationDestinationBuilder extends StatefulWidget {
     required this.buildLabel,
     required this.label,
     required this.animation,
+    super.key,
     this.color,
     this.shape,
     this.tooltip,
@@ -81,40 +82,27 @@ class _NavigationDestinationBuilderState
     extends State<_NavigationDestinationBuilder> {
   final GlobalKey itemKey = GlobalKey();
   final GlobalKey iconKey = GlobalKey();
-  late final WidgetStatesController _statesController;
 
   @override
   void initState() {
     super.initState();
-    _statesController = WidgetStatesController();
-    _statesController.addListener(_handleStatesChanged);
   }
 
   @override
   void dispose() {
-    _statesController.removeListener(_handleStatesChanged);
-    _statesController.dispose();
     super.dispose();
-  }
-
-  void _handleStatesChanged() {
-    if (!mounted) {
-      return;
-    }
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
   }
 
   @override
   Widget build(BuildContext context) {
     final NavigationDestinationInfo info =
         NavigationDestinationInfo.of(context);
+    final bool isDisabled = widget.disabled;
+
     final ThemeData theme = Theme.of(context);
     final CustomNavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.of(context);
+        NavigationBarTheme.maybeOf(context) ??
+            const CustomNavigationBarThemeData();
     final CustomNavigationBarThemeData defaults = defaultsFor(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         navigationBarTheme.navigationItemOverlayColor;
@@ -145,7 +133,7 @@ class _NavigationDestinationBuilderState
         : (widget.tooltip!.isNotEmpty ? widget.tooltip : null);
 
     return _NavigationBarDestinationSemantics(
-      enabled: !widget.disabled,
+      enabled: !isDisabled,
       child: _NavigationBarDestinationTooltip(
         message: tooltipMessage,
         child: ClipRect(
@@ -168,24 +156,19 @@ class _NavigationDestinationBuilderState
               hoverColor:
                   disableFullItemInk ? effectiveHoverColor : Colors.transparent,
               customBorder: effectiveNavigationItemIndicatorShape,
-              statesController: _statesController,
-              onTap: widget.disabled ? null : info.onTap,
+              onTap: isDisabled ? null : info.onTap,
               child: Stack(
                 alignment: Alignment.center,
                 children: <Widget>[
-                  _StatusTransitionWidgetBuilder(
+                  AnimatedBuilder(
                     animation: widget.animation,
                     builder: (context, child) => Row(
                       children: <Widget>[
                         Expanded(
                           child: _NavigationBarDestinationLayout(
-                            icon: _NavigationBarIndicatorStates(
-                              states: _statesController.value,
-                              overlayColor: iconOverlayColor,
-                              child: KeyedSubtree(
-                                key: iconKey,
-                                child: widget.buildIcon(context),
-                              ),
+                            icon: KeyedSubtree(
+                              key: iconKey,
+                              child: widget.buildIcon(context),
                             ),
                             itemKey: itemKey,
                             padding: widget.padding,
@@ -212,7 +195,6 @@ class _IndicatorInkWell extends InkResponse {
     required this.labelBehavior,
     required this.disableFullItemInk,
     this.indicatorOverlayColor,
-    super.statesController,
     super.customBorder,
     super.highlightColor,
     super.splashColor,
@@ -246,23 +228,5 @@ class _IndicatorInkWell extends InkResponse {
           targetBox.localToGlobal(Offset.zero) & targetBox.size;
       return referenceBox.globalToLocal(targetRect.topLeft) & targetBox.size;
     };
-  }
-}
-
-class _NavigationBarIndicatorStates extends InheritedWidget {
-  const _NavigationBarIndicatorStates({
-    required this.states,
-    required this.overlayColor,
-    required super.child,
-  });
-
-  final Set<WidgetState> states;
-  final WidgetStateProperty<Color?>? overlayColor;
-
-  @override
-  bool updateShouldNotify(_NavigationBarIndicatorStates oldWidget) {
-    return states.length != oldWidget.states.length ||
-        !states.containsAll(oldWidget.states) ||
-        overlayColor != oldWidget.overlayColor;
   }
 }

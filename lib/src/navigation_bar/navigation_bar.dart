@@ -261,9 +261,9 @@ class NavigationBar extends StatelessWidget {
         child: SizedBox(
           height: effectiveHeight,
           child: Row(
-            children: destinations.map((e) {
-              final int i = destinations.indexOf(e);
-              final NavigationBarDestination destination = e.toBarDestination();
+            children: List<Widget>.generate(destinations.length, (int i) {
+              final NavigationBarDestination destination =
+                  destinations[i].toBarDestination();
 
               return Expanded(
                 child: SelectableAnimatedBuilder(
@@ -287,7 +287,7 @@ class NavigationBar extends StatelessWidget {
                   },
                 ),
               );
-            }).toList(),
+            }),
           ),
         ),
       ),

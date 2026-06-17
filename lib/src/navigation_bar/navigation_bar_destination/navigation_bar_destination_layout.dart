@@ -42,7 +42,7 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return _DestinationLayoutAnimationBuilder(
       builder: (BuildContext context, Animation<double> animation) {
-        return RepaintBoundary(
+        return KeyedSubtree(
           key: itemKey,
           child: Padding(
             padding: padding,

@@ -407,26 +407,21 @@ class AdaptiveScaffold extends StatefulWidget {
     required List<NavigationDestination> destinations,
     int? currentIndex,
     double iconSize = 24,
+    Duration animationDuration = const Duration(milliseconds: 180),
     ValueChanged<int>? onDestinationSelected,
   }) {
     return Builder(
       builder: (BuildContext context) {
-        final NavigationBarThemeData currentNavBarTheme =
-            NavigationBarTheme.of(context);
+        final NavigationBarThemeData resolvedNavBarTheme =
+            NavigationBarTheme.maybeOf(context) ??
+                const NavigationBarThemeData();
+
         return NavigationBarTheme(
-          data: currentNavBarTheme.copyWith(
-            iconTheme: WidgetStateProperty.resolveWith(
-              (Set<WidgetState> states) {
-                return currentNavBarTheme.iconTheme
-                        ?.resolve(states)
-                        ?.copyWith(size: iconSize) ??
-                    IconTheme.of(context).copyWith(size: iconSize);
-              },
-            ),
-          ),
+          data: resolvedNavBarTheme,
           child: MediaQuery(
             data: MediaQuery.of(context).removePadding(removeTop: true),
             child: NavigationBar(
+              animationDuration: animationDuration,
               selectedIndex: currentIndex ?? 0,
               destinations: destinations,
               onDestinationSelected: onDestinationSelected,
