@@ -86,18 +86,21 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
 
   @override
   Widget build(BuildContext context) {
+    final CustomNavigationRailThemeData? maybeExplicitRailTheme =
+        NavigationRailTheme.maybeOf(context);
     final CustomNavigationRailThemeData explicitRailTheme =
-        NavigationRailTheme.maybeOf(context) ??
-            const CustomNavigationRailThemeData();
+        maybeExplicitRailTheme ?? const CustomNavigationRailThemeData();
+    final bool hasExplicitRailTheme = maybeExplicitRailTheme != null;
     final CustomNavigationRailThemeData railTheme =
         NavigationRailTheme.of(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         explicitRailTheme.navigationItemOverlayColor;
     final bool hasExplicitNavigationItemIndicatorShape =
         explicitRailTheme.navigationItemIndicatorShape != null;
-    final bool disableFullItemInk =
-        effectiveNavigationItemOverlayColor == null &&
-            !hasExplicitNavigationItemIndicatorShape;
+    final bool useFrameworkDefaultInk = !hasExplicitRailTheme;
+    final bool disableFullItemInk = useFrameworkDefaultInk ||
+        (effectiveNavigationItemOverlayColor == null &&
+            !hasExplicitNavigationItemIndicatorShape);
     final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
     final WidgetStateProperty<Color?> iconOverlayColor =
         WidgetStateProperty.resolveWith((Set<WidgetState> states) {
@@ -122,16 +125,23 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
       return null;
     });
     final WidgetStateProperty<Color?> effectiveInkOverlayColor =
-        disableFullItemInk
-            ? iconOverlayColor
-            : effectiveNavigationItemOverlayColor ?? fullItemOverlayColor;
+        useFrameworkDefaultInk
+            ? effectiveNavigationItemOverlayColor ?? fullItemOverlayColor
+            : (disableFullItemInk
+                ? iconOverlayColor
+                : effectiveNavigationItemOverlayColor ?? fullItemOverlayColor);
     final ShapeBorder? effectiveNavigationItemIndicatorShape =
-        disableFullItemInk
-            ? null
-            : explicitRailTheme.navigationItemIndicatorShape ??
+        useFrameworkDefaultInk
+            ? (explicitRailTheme.navigationItemIndicatorShape ??
                 explicitRailTheme.indicatorShape ??
                 railTheme.indicatorShape ??
-                const StadiumBorder();
+                const StadiumBorder())
+            : (disableFullItemInk
+                ? null
+                : explicitRailTheme.navigationItemIndicatorShape ??
+                    explicitRailTheme.indicatorShape ??
+                    railTheme.indicatorShape ??
+                    const StadiumBorder());
 
     final Widget iconInteractionIndicator = widget.centerIndicatorHorizontally
         ? Positioned.fill(

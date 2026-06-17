@@ -259,23 +259,29 @@ class _RailDestinationState extends State<RailDestination>
             );
           } else {
             // No label: compact icon-only stack.
-            content = Stack(
-              children: <Widget>[
-                iconPart,
-                // Label maintained at 0×0 for semantics only.
-                SizedBox.shrink(
-                  child: Visibility.maintain(
-                    visible: false,
-                    child: data.styledLabel,
+            content = Padding(
+              padding: widget.padding ?? EdgeInsets.zero,
+              child: Stack(
+                children: <Widget>[
+                  iconPart,
+                  // Label maintained at 0×0 for semantics only.
+                  SizedBox.shrink(
+                    child: Visibility.maintain(
+                      visible: false,
+                      child: data.styledLabel,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             );
           }
         } else {
           final Animation<double> labelFadeAnimation = extendedAnimation.drive(
             CurveTween(curve: const Interval(0.0, 0.25)),
           );
+          final double minWidthTransitionValue = data.material3
+              ? extendedAnimation.value
+              : (extendedAnimation.value == 0.0 ? 0.0 : 1.0);
           applyXOffset = true;
           content = Padding(
             padding: widget.padding ?? EdgeInsets.zero,
@@ -284,7 +290,7 @@ class _RailDestinationState extends State<RailDestination>
                 minWidth: lerpDouble(
                   data.minWidth,
                   data.minExtendedWidth,
-                  _extendedAnimation.value,
+                  minWidthTransitionValue,
                 )!,
               ),
               child: ClipRect(
@@ -427,7 +433,10 @@ class _RailDestinationState extends State<RailDestination>
             minWidth: data.minWidth,
             minHeight: minHeight,
           ),
-          padding: widget.padding,
+          padding: widget.padding ??
+              const EdgeInsets.symmetric(
+                horizontal: _horizontalDestinationPadding,
+              ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[

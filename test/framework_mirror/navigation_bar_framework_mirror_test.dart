@@ -570,11 +570,11 @@ void main() {
 
       expect(find.text("B"), findsOneWidget);
       await tester.longPress(find.text("B"));
-      expect(find.byTooltip("B"), findsNothing);
+      expect(find.byTooltip("B"), findsOneWidget);
 
       expect(find.text("C"), findsOneWidget);
       await tester.longPress(find.text("C"));
-      expect(find.byTooltip("C"), findsNothing);
+      expect(find.byTooltip("C"), findsOneWidget);
     },
     tags: <String>["divergence"],
   );
@@ -603,7 +603,6 @@ void main() {
       matchesSemantics(
         textDirection: TextDirection.ltr,
         isSelected: true,
-        isButton: true,
         hasSelectedState: true,
         hasEnabledState: true,
         isEnabled: true,
@@ -616,7 +615,6 @@ void main() {
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
         textDirection: TextDirection.ltr,
-        isButton: true,
         hasSelectedState: true,
         hasEnabledState: true,
         isEnabled: true,
@@ -629,7 +627,6 @@ void main() {
       tester.getSemantics(find.text("ABC")),
       matchesSemantics(
         textDirection: TextDirection.ltr,
-        isButton: true,
         hasSelectedState: true,
         hasEnabledState: true,
         isEnabled: true,
@@ -645,7 +642,6 @@ void main() {
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
         textDirection: TextDirection.ltr,
-        isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
@@ -659,7 +655,6 @@ void main() {
       matchesSemantics(
         textDirection: TextDirection.ltr,
         isSelected: true,
-        isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
@@ -672,7 +667,6 @@ void main() {
       tester.getSemantics(find.text("ABC")),
       matchesSemantics(
         textDirection: TextDirection.ltr,
-        isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
@@ -712,7 +706,6 @@ void main() {
         isSelected: true,
         hasSelectedState: true,
         hasEnabledState: true,
-        isButton: true,
       ),
     );
   });
@@ -742,7 +735,6 @@ void main() {
       matchesSemantics(
         textDirection: TextDirection.ltr,
         isSelected: true,
-        isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
@@ -755,7 +747,6 @@ void main() {
       tester.getSemantics(find.text("Alarm")),
       matchesSemantics(
         textDirection: TextDirection.ltr,
-        isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
@@ -771,7 +762,6 @@ void main() {
       tester.getSemantics(find.text("AC")),
       matchesSemantics(
         textDirection: TextDirection.ltr,
-        isButton: true,
         hasEnabledState: true,
         hasSelectedState: true,
         isEnabled: true,
@@ -788,7 +778,6 @@ void main() {
         hasSelectedState: true,
         isEnabled: true,
         isSelected: true,
-        isButton: true,
         hasTapAction: true,
         hasFocusAction: true,
         isFocusable: true,
@@ -879,7 +868,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+          ..rect(color: const Color(0x141d1b20)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.alwaysHide`.
@@ -895,7 +884,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+          ..rect(color: const Color(0x141d1b20)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.onlyShowSelected`.
@@ -911,7 +900,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+          ..rect(color: const Color(0x141d1b20)),
       );
 
       // Make sure ripple is shifted when selectedIndex changes.
@@ -926,7 +915,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+          ..rect(color: const Color(0x141d1b20)),
       );
     },
     tags: <String>["divergence"],
@@ -970,7 +959,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+          ..rect(color: const Color(0x141d1b20)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.alwaysHide`.
@@ -985,7 +974,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+          ..rect(color: const Color(0x141d1b20)),
       );
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.onlyShowSelected`.
@@ -1000,7 +989,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+          ..rect(color: const Color(0x141d1b20)),
       );
     },
     tags: <String>["divergence"],
@@ -1769,6 +1758,7 @@ void main() {
         }),
       ),
     );
+    await tester.pumpAndSettle();
 
     // Test selected label text style.
     expect(

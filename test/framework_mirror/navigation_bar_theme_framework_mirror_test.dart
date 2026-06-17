@@ -108,7 +108,7 @@ void main() {
   });
 
   testWidgets(
-    "[DIVERGENCE] CustomNavigationBarTheme wrapper does not override NavigationBar defaults",
+    "[DIVERGENCE] CustomNavigationBarTheme wrapper overrides NavigationBar defaults",
     (WidgetTester tester) async {
       const backgroundColor = Color(0x00000001);
 
@@ -145,19 +145,11 @@ void main() {
         ),
       );
 
-      final ThemeData defaultTheme = ThemeData();
-      expect(_barHeight(tester), 80);
-      expect(
-        _barMaterial(tester).color,
-        defaultTheme.colorScheme.surfaceContainer,
-      );
-      expect(_barMaterial(tester).elevation, 3);
-      expect(
-        _indicator(tester)?.color,
-        defaultTheme.colorScheme.secondaryContainer,
-      );
-      expect(_indicator(tester)?.shape, const StadiumBorder());
-      expect(_barMaterial(tester).color, isNot(backgroundColor));
+      expect(_barHeight(tester), 200);
+      expect(_barMaterial(tester).color, backgroundColor);
+      expect(_barMaterial(tester).elevation, 42);
+      expect(_indicator(tester)?.color, const Color(0x00000002));
+      expect(_indicator(tester)?.shape, const CircleBorder());
     },
     tags: <String>["divergence"],
   );
@@ -249,7 +241,7 @@ void main() {
         inkFeatures,
         paints
           ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+          ..rect(color: const Color(0x141d1b20)),
       );
     },
     tags: <String>["divergence"],

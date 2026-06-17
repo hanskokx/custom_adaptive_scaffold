@@ -2949,9 +2949,8 @@ void main() {
       ),
     );
 
-    final Iterable<Widget> indicatorInkWells = tester.allWidgets.where(
-      (Widget object) => object.runtimeType.toString() == "_IndicatorInkWell",
-    );
+    final Iterable<Widget> indicatorInkWells =
+        tester.widgetList(find.byType(IndicatorInkWell));
     final Padding firstItem = tester.widget<Padding>(
       find.descendant(
         of: find.widgetWithText(
@@ -3019,9 +3018,8 @@ void main() {
         ),
       );
 
-      final Iterable<Widget> indicatorInkWells = tester.allWidgets.where(
-        (Widget object) => object.runtimeType.toString() == "_IndicatorInkWell",
-      );
+      final Iterable<Widget> indicatorInkWells =
+          tester.widgetList(find.byType(IndicatorInkWell));
       final Padding firstItem = tester.widget<Padding>(
         find.descendant(
           of: find.widgetWithText(
@@ -3092,35 +3090,31 @@ void main() {
       ),
     );
 
-    final Iterable<Widget> indicatorInkWells = tester.allWidgets.where(
-      (Widget object) => object.runtimeType.toString() == "_IndicatorInkWell",
-    );
+    final Iterable<Widget> indicatorInkWells =
+        tester.widgetList(find.byType(IndicatorInkWell));
     final Padding firstItem = tester.widget<Padding>(
-      find.descendant(
-        of: find.widgetWithText(
-          indicatorInkWells.elementAt(0).runtimeType,
-          "Abc",
-        ),
-        matching: find.widgetWithText(Padding, "Abc"),
-      ),
+      find
+          .ancestor(
+            of: find.byIcon(Icons.favorite),
+            matching: find.byType(Padding),
+          )
+          .first,
     );
     final Padding secondItem = tester.widget<Padding>(
-      find.descendant(
-        of: find.widgetWithText(
-          indicatorInkWells.elementAt(1).runtimeType,
-          "Def",
-        ),
-        matching: find.widgetWithText(Padding, "Def"),
-      ),
+      find
+          .ancestor(
+            of: find.byIcon(Icons.bookmark_border),
+            matching: find.byType(Padding),
+          )
+          .first,
     );
     final Padding thirdItem = tester.widget<Padding>(
-      find.descendant(
-        of: find.widgetWithText(
-          indicatorInkWells.elementAt(2).runtimeType,
-          "Ghi",
-        ),
-        matching: find.widgetWithText(Padding, "Ghi"),
-      ),
+      find
+          .ancestor(
+            of: find.byIcon(Icons.star_border),
+            matching: find.byType(Padding),
+          )
+          .first,
     );
 
     expect(firstItem.padding, defaultPadding);
@@ -3721,8 +3715,13 @@ void main() {
         )
         ..rect(rect: indicatorRect, color: const Color(0x0a6750a4))
         ..rrect(
-          rrect:
-              RRect.fromLTRBR(0.0, 6.0, 50.0, 38.0, const Radius.circular(16)),
+          rrect: RRect.fromLTRBR(
+            -3.0,
+            6.0,
+            53.0,
+            38.0,
+            const Radius.circular(16),
+          ),
           color: const Color(0xffe8def8),
         ),
     );
@@ -6158,85 +6157,49 @@ void main() {
 TestSemantics _expectedSemantics({bool scrollable = false}) {
   var destinations = <TestSemantics>[
     TestSemantics(
-      actions: <SemanticsAction>[
-        SemanticsAction.tap,
-        SemanticsAction.longPress,
+      flags: <SemanticsFlag>[
+        SemanticsFlag.hasEnabledState,
+        SemanticsFlag.isEnabled,
+        SemanticsFlag.hasSelectedState,
+        SemanticsFlag.isSelected,
+        SemanticsFlag.isFocusable,
       ],
-      children: <TestSemantics>[
-        TestSemantics(
-          flags: <SemanticsFlag>[
-            SemanticsFlag.hasSelectedState,
-            SemanticsFlag.isSelected,
-            SemanticsFlag.isFocusable,
-          ],
-          actions: <SemanticsAction>[
-            SemanticsAction.tap,
-            SemanticsAction.focus,
-          ],
-          label: "Abc\nTab 1 of 4",
-          textDirection: TextDirection.ltr,
-        ),
-      ],
+      actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.focus],
+      label: "Abc\nTab 1 of 4",
+      textDirection: TextDirection.ltr,
     ),
     TestSemantics(
-      actions: <SemanticsAction>[
-        SemanticsAction.tap,
-        SemanticsAction.longPress,
+      flags: <SemanticsFlag>[
+        SemanticsFlag.hasEnabledState,
+        SemanticsFlag.isEnabled,
+        SemanticsFlag.isFocusable,
+        SemanticsFlag.hasSelectedState,
       ],
-      children: <TestSemantics>[
-        TestSemantics(
-          flags: <SemanticsFlag>[
-            SemanticsFlag.isFocusable,
-            SemanticsFlag.hasSelectedState,
-          ],
-          actions: <SemanticsAction>[
-            SemanticsAction.tap,
-            SemanticsAction.focus,
-          ],
-          label: "Def\nTab 2 of 4",
-          textDirection: TextDirection.ltr,
-        ),
-      ],
+      actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.focus],
+      label: "Def\nTab 2 of 4",
+      textDirection: TextDirection.ltr,
     ),
     TestSemantics(
-      actions: <SemanticsAction>[
-        SemanticsAction.tap,
-        SemanticsAction.longPress,
+      flags: <SemanticsFlag>[
+        SemanticsFlag.hasEnabledState,
+        SemanticsFlag.isEnabled,
+        SemanticsFlag.isFocusable,
+        SemanticsFlag.hasSelectedState,
       ],
-      children: <TestSemantics>[
-        TestSemantics(
-          flags: <SemanticsFlag>[
-            SemanticsFlag.isFocusable,
-            SemanticsFlag.hasSelectedState,
-          ],
-          actions: <SemanticsAction>[
-            SemanticsAction.tap,
-            SemanticsAction.focus,
-          ],
-          label: "Ghi\nTab 3 of 4",
-          textDirection: TextDirection.ltr,
-        ),
-      ],
+      actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.focus],
+      label: "Ghi\nTab 3 of 4",
+      textDirection: TextDirection.ltr,
     ),
     TestSemantics(
-      actions: <SemanticsAction>[
-        SemanticsAction.tap,
-        SemanticsAction.longPress,
+      flags: <SemanticsFlag>[
+        SemanticsFlag.hasEnabledState,
+        SemanticsFlag.isEnabled,
+        SemanticsFlag.isFocusable,
+        SemanticsFlag.hasSelectedState,
       ],
-      children: <TestSemantics>[
-        TestSemantics(
-          flags: <SemanticsFlag>[
-            SemanticsFlag.isFocusable,
-            SemanticsFlag.hasSelectedState,
-          ],
-          actions: <SemanticsAction>[
-            SemanticsAction.tap,
-            SemanticsAction.focus,
-          ],
-          label: "Jkl\nTab 4 of 4",
-          textDirection: TextDirection.ltr,
-        ),
-      ],
+      actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.focus],
+      label: "Jkl\nTab 4 of 4",
+      textDirection: TextDirection.ltr,
     ),
   ];
 
@@ -6261,7 +6224,7 @@ TestSemantics _expectedSemantics({bool scrollable = false}) {
                   TestSemantics(
                     flags: <SemanticsFlag>[SemanticsFlag.scopesRoute],
                     children: <TestSemantics>[
-                      TestSemantics(children: destinations),
+                      ...destinations,
                       TestSemantics(
                         label: "body",
                         textDirection: TextDirection.ltr,

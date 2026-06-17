@@ -464,6 +464,7 @@ class NavigationBarThemeData
       DiagnosticsProperty<EdgeInsetsGeometry?>(
         "labelPadding",
         labelPadding,
+        defaultValue: null,
       ),
     );
     properties.add(

@@ -734,7 +734,7 @@ class SemanticsTester {
 
   @override
   String toString() =>
-      "SemanticsTester for ${tester.binding.rootPipelineOwner.semanticsOwner?.rootSemanticsNode}";
+      "SemanticsTester for ${tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode}";
 
   bool _stringAttributesEqual(
     List<StringAttribute> first,
@@ -914,7 +914,7 @@ class SemanticsTester {
 
     visit(
       ancestor ??
-          tester.binding.rootPipelineOwner.semanticsOwner!.rootSemanticsNode!,
+          tester.binding.pipelineOwner.semanticsOwner!.rootSemanticsNode!,
     );
 
     return result;
@@ -972,7 +972,7 @@ class SemanticsTester {
     DebugSemanticsDumpOrder childOrder,
   ) {
     final SemanticsNode? node =
-        tester.binding.rootPipelineOwner.semanticsOwner?.rootSemanticsNode;
+        tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode;
     return _generateSemanticsTestForNode(node, 0, childOrder);
   }
 
@@ -1126,7 +1126,7 @@ class _HasSemantics extends Matcher {
     Map<dynamic, dynamic> matchState,
   ) {
     final bool doesMatch = _semantics._matches(
-      item.tester.binding.rootPipelineOwner.semanticsOwner?.rootSemanticsNode,
+      item.tester.binding.pipelineOwner.semanticsOwner?.rootSemanticsNode,
       matchState,
       ignoreTransform: ignoreTransform,
       ignoreRect: ignoreRect,
@@ -1140,7 +1140,7 @@ class _HasSemantics extends Matcher {
         childOrder,
       );
     }
-    if (item.tester.binding.rootPipelineOwner.semanticsOwner == null) {
+    if (item.tester.binding.pipelineOwner.semanticsOwner == null) {
       matchState["additional-notes"] =
           "(Check that the SemanticsTester has not been disposed early.)";
     }
@@ -1174,7 +1174,7 @@ class _HasSemantics extends Matcher {
         .add(
           _indent(
             RendererBinding
-                .instance.rootPipelineOwner.semanticsOwner?.rootSemanticsNode
+                .instance.pipelineOwner.semanticsOwner?.rootSemanticsNode
                 ?.toStringDeep(childOrder: childOrder),
           ),
         )
