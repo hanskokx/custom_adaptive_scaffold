@@ -517,7 +517,9 @@ class _NavigationRailState extends State<NavigationRail>
     final Widget? trailing = widget.trailing;
 
     Widget mainGroup = Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: widget.mainAxisAlignment == null
+          ? MainAxisSize.min
+          : MainAxisSize.max,
       mainAxisAlignment: effectiveMainAxisAlignment,
       children: <Widget>[
         if (widget.leading != null && !widget.leadingAtTop) ...<Widget>[
