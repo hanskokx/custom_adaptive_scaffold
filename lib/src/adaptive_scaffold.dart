@@ -440,7 +440,11 @@ class AdaptiveScaffold extends StatefulWidget {
                         selectedLabelTextStyle: selectedLabelTextStyle,
                         unselectedLabelTextStyle: unSelectedLabelTextStyle,
                         destinations: destinations
-                            .map((e) => e.toRailDestination())
+                            .map(
+                              (e) => e is! NavigationRailDestination
+                                  ? e.toRailDestination()
+                                  : e,
+                            )
                             .toList(),
                       ),
                     ),
