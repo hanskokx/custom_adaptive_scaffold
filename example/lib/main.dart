@@ -279,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage>
                       child: const _MediumComposeIcon(),
                     ),
                     backgroundColor: const Color.fromARGB(0, 255, 255, 255),
-                    destinations: <NavigationRailDestination>[
+                    destinations: <NavigationDestination>[
                       slideInNavigationItem(
                         begin: -1,
                         controller: _inboxIconSlideController,
@@ -322,10 +322,7 @@ class _MyHomePageState extends State<MyHomePage>
                   selectedIndex: _navigationIndex,
                   trailing: trailingNavRail,
                   extended: true,
-                  destinations:
-                      destinations.map((NavigationDestination destination) {
-                    return AdaptiveScaffold.toRailDestination(destination);
-                  }).toList(),
+                  destinations: destinations,
                 ),
               ),
               Breakpoints.large: SlotLayout.from(
@@ -342,10 +339,7 @@ class _MyHomePageState extends State<MyHomePage>
                   selectedIndex: _navigationIndex,
                   trailing: trailingNavRail,
                   extended: true,
-                  destinations:
-                      destinations.map((NavigationDestination destination) {
-                    return AdaptiveScaffold.toRailDestination(destination);
-                  }).toList(),
+                  destinations: destinations,
                 ),
               ),
               Breakpoints.extraLarge: SlotLayout.from(
@@ -362,10 +356,7 @@ class _MyHomePageState extends State<MyHomePage>
                   selectedIndex: _navigationIndex,
                   trailing: trailingNavRail,
                   extended: true,
-                  destinations:
-                      destinations.map((NavigationDestination destination) {
-                    return AdaptiveScaffold.toRailDestination(destination);
-                  }).toList(),
+                  destinations: destinations,
                 ),
               ),
             },
@@ -423,13 +414,13 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
-  NavigationRailDestination slideInNavigationItem({
+  NavigationDestination slideInNavigationItem({
     required double begin,
     required AnimationController controller,
     required IconData icon,
     required String label,
   }) {
-    return NavigationRailDestination(
+    return NavigationDestination(
       icon: SlideTransition(
         position: Tween<Offset>(
           begin: Offset(begin, 0),
@@ -439,7 +430,7 @@ class _MyHomePageState extends State<MyHomePage>
         ),
         child: Icon(icon),
       ),
-      label: Text(label),
+      label: label,
     );
   }
 }
