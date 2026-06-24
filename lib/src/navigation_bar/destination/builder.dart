@@ -100,26 +100,26 @@ class _NavigationBarDestinationBuilderState
     final bool isDisabled = widget.disabled;
 
     final ThemeData theme = Theme.of(context);
-    final CustomNavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.maybeOf(context) ??
-            const CustomNavigationBarThemeData();
+    final CustomNavigationBarThemeData? navigationBarTheme =
+        NavigationBarTheme.maybeOf(context);
     final CustomNavigationBarThemeData defaults =
         navigationBarDefaultsFor(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
-        navigationBarTheme.navigationItemOverlayColor;
+        navigationBarTheme?.navigationItemOverlayColor ??
+            defaults.navigationItemOverlayColor;
     final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
     final ShapeBorder effectiveNavigationItemIndicatorShape =
-        navigationBarTheme.navigationItemIndicatorShape ??
-            navigationBarTheme.indicatorShape ??
+        navigationBarTheme?.navigationItemIndicatorShape ??
+            navigationBarTheme?.indicatorShape ??
             defaults.indicatorShape ??
             const StadiumBorder();
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
         disableFullItemInk ? null : effectiveNavigationItemOverlayColor;
     final WidgetStateProperty<Color?>? iconOverlayColor = info.overlayColor ??
-        navigationBarTheme.overlayColor ??
+        navigationBarTheme?.overlayColor ??
         defaults.overlayColor;
 
-    final Color splashBase = navigationBarTheme.indicatorColor ??
+    final Color splashBase = navigationBarTheme?.indicatorColor ??
         defaults.indicatorColor ??
         theme.colorScheme.secondaryContainer;
     final bool splashAlphaModified =
@@ -140,12 +140,12 @@ class _NavigationBarDestinationBuilderState
       NavigationDestinationLabelBehavior.alwaysHide => false,
     };
     final Offset effectiveTooltipOffset =
-        navigationBarTheme.tooltipOffset ?? const Offset(0, 42);
+        navigationBarTheme?.tooltipOffset ?? const Offset(0, 42);
     final TooltipTriggerMode? effectiveTooltipTrigger = isLabelVisible
-        ? navigationBarTheme.tooltipTriggerWhenLabelVisible ??
-            navigationBarTheme.tooltipTrigger
-        : navigationBarTheme.tooltipTriggerWhenLabelHidden ??
-            navigationBarTheme.tooltipTrigger;
+        ? navigationBarTheme?.tooltipTriggerWhenLabelVisible ??
+            navigationBarTheme?.tooltipTrigger
+        : navigationBarTheme?.tooltipTriggerWhenLabelHidden ??
+            navigationBarTheme?.tooltipTrigger;
 
     return _NavigationBarDestinationSemantics(
       enabled: !isDisabled,

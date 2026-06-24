@@ -66,7 +66,7 @@ class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
         return _colors.onSurface.withValues(alpha: 0.12);
       }
       if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withValues(alpha: 0.08);
+        return _colors.onSurface.withValues(alpha: 0.04);
       }
       return null;
     });
