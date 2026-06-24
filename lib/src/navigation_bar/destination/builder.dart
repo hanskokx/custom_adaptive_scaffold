@@ -105,8 +105,7 @@ class _NavigationBarDestinationBuilderState
     final CustomNavigationBarThemeData defaults =
         navigationBarDefaultsFor(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
-        navigationBarTheme?.navigationItemOverlayColor ??
-            defaults.navigationItemOverlayColor;
+        navigationBarTheme?.navigationItemOverlayColor;
     final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
     final ShapeBorder effectiveNavigationItemIndicatorShape =
         navigationBarTheme?.navigationItemIndicatorShape ??
