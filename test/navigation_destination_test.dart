@@ -568,8 +568,8 @@ void main() {
         ),
       );
 
-      final IndicatorInkWell inkWell = tester.widget<IndicatorInkWell>(
-        find.byType(IndicatorInkWell).first,
+      final _IndicatorInkWell inkWell = tester.widget<_IndicatorInkWell>(
+        find.byType(_IndicatorInkWell).first,
       );
 
       expect(inkWell.disableFullItemInk, isTrue);
@@ -598,8 +598,8 @@ void main() {
         ),
       );
 
-      final IndicatorInkWell inkWell = tester.widget<IndicatorInkWell>(
-        find.byType(IndicatorInkWell).first,
+      final _IndicatorInkWell inkWell = tester.widget<_IndicatorInkWell>(
+        find.byType(_IndicatorInkWell).first,
       );
 
       expect(inkWell.disableFullItemInk, isFalse);

@@ -181,7 +181,7 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         // so splash/hover renders on top of the pill rather than behind it.
         Material(
           type: MaterialType.transparency,
-          child: IndicatorInkWell(
+          child: _IndicatorInkWell(
             onTap: widget.disabled ? null : widget.onTap,
             borderRadius: BorderRadius.all(
               Radius.circular(widget.minWidth / 2.0),
