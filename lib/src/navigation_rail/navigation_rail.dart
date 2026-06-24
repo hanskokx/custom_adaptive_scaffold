@@ -576,35 +576,38 @@ class _NavigationRailState extends State<NavigationRail>
       mainGroup = SingleChildScrollView(child: mainGroup);
     }
 
-    return ExtendedNavigationRailAnimation(
-      animation: _extendedAnimation,
-      child: Semantics(
-        explicitChildNodes: true,
-        child: Material(
-          elevation: elevation,
-          color: backgroundColor,
-          child: SafeArea(
-            right: isRTLDirection,
-            left: !isRTLDirection,
-            child: Column(
-              children: <Widget>[
-                _verticalSpacer,
-                if (widget.leading != null) ...<Widget>[
-                  if (widget.leadingAtTop) ...<Widget>[
-                    widget.leading!,
-                    _verticalSpacer,
+    return Semantics(
+      container: true,
+      child: ExtendedNavigationRailAnimation(
+        animation: _extendedAnimation,
+        child: Semantics(
+          explicitChildNodes: true,
+          child: Material(
+            elevation: elevation,
+            color: backgroundColor,
+            child: SafeArea(
+              right: isRTLDirection,
+              left: !isRTLDirection,
+              child: Column(
+                children: <Widget>[
+                  _verticalSpacer,
+                  if (widget.leading != null) ...<Widget>[
+                    if (widget.leadingAtTop) ...<Widget>[
+                      widget.leading!,
+                      _verticalSpacer,
+                    ],
                   ],
+                  Expanded(
+                    child: widget.mainAxisAlignment == null
+                        ? Align(
+                            alignment: Alignment(0, groupAlignment),
+                            child: mainGroup,
+                          )
+                        : mainGroup,
+                  ),
+                  if (trailing != null && widget.trailingAtBottom) trailing,
                 ],
-                Expanded(
-                  child: widget.mainAxisAlignment == null
-                      ? Align(
-                          alignment: Alignment(0, groupAlignment),
-                          child: mainGroup,
-                        )
-                      : mainGroup,
-                ),
-                if (trailing != null && widget.trailingAtBottom) trailing,
-              ],
+              ),
             ),
           ),
         ),

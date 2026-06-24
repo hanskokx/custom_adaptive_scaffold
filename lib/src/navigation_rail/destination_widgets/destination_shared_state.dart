@@ -210,7 +210,6 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
     return Semantics(
       container: true,
       selected: widget.selected,
-      enabled: !widget.disabled,
       child: Material(
         type: MaterialType.transparency,
         child: DestinationTooltip(
