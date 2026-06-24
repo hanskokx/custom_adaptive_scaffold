@@ -368,14 +368,17 @@ class _RailDestinationState extends State<RailDestination>
               ),
           child: ClipRect(
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize:
+                  data.material3 ? MainAxisSize.min : MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: data.material3 ? 0 : verticalPadding),
-                SizedBox(
-                  height: _kIndicatorHeight,
-                  child: Center(child: data.themedIcon),
-                ),
+                data.material3
+                    ? SizedBox(
+                        height: _kIndicatorHeight,
+                        child: Center(child: data.themedIcon),
+                      )
+                    : data.themedIcon,
                 SizedBox(
                   height: data.material3
                       ? lerpDouble(
@@ -439,16 +442,18 @@ class _RailDestinationState extends State<RailDestination>
                 horizontal: _horizontalDestinationPadding,
               ),
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: data.material3 ? MainAxisSize.min : MainAxisSize.max,
             children: <Widget>[
               SizedBox(
                 height:
                     data.material3 ? 0 : _verticalDestinationPaddingWithLabel,
               ),
-              SizedBox(
-                height: _kIndicatorHeight,
-                child: Center(child: data.themedIcon),
-              ),
+              data.material3
+                  ? SizedBox(
+                      height: _kIndicatorHeight,
+                      child: Center(child: data.themedIcon),
+                    )
+                  : data.themedIcon,
               SizedBox(
                 height: data.material3 ? _verticalIconLabelSpacingM3 : 0,
               ),
