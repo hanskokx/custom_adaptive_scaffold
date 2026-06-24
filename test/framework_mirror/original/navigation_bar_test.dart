@@ -1935,8 +1935,9 @@ void main() {
       (WidgetTester tester) async {
         // This is a regression test for https://github.com/flutter/flutter/issues/117420.
 
-        Widget buildWidget(
-            {NavigationDestinationLabelBehavior? labelBehavior}) {
+        Widget buildWidget({
+          NavigationDestinationLabelBehavior? labelBehavior,
+        }) {
           return MaterialApp(
             theme: ThemeData(useMaterial3: false),
             home: Scaffold(
