@@ -153,9 +153,6 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     final EdgeInsets destinationPadding =
         (input.padding ?? railTheme.padding ?? EdgeInsets.zero)
             .resolve(textDirection);
-    final EdgeInsets destinationMargin =
-        (input.margin ?? railTheme.margin ?? EdgeInsets.zero)
-            .resolve(textDirection);
     final double minWidth =
         input.minWidth ?? railTheme.minWidth ?? defaults.minWidth!;
     final double rawMinExtendedWidth = input.minExtendedWidth ??
