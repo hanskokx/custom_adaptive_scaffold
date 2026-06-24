@@ -438,6 +438,7 @@ class AdaptiveScaffold extends StatefulWidget {
     TextStyle? unSelectedLabelTextStyle,
     NavigationRailLabelType? labelType = NavigationRailLabelType.none,
     EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
     bool? showLabelsWhenCollapsed,
     bool? leadingAtTop,
     bool? trailingAtBottom,
@@ -447,46 +448,58 @@ class AdaptiveScaffold extends StatefulWidget {
     if (extended && width == 72) {
       width = 192;
     }
+
     return Builder(
       builder: (BuildContext context) {
-        return Padding(
-          padding: padding ?? const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: width,
-            height: MediaQuery.sizeOf(context).height,
-            child: LayoutBuilder(
-              builder: (BuildContext context, BoxConstraints constraints) {
-                return SingleChildScrollView(
-                  child: ConstrainedBox(
-                    constraints:
-                        BoxConstraints(minHeight: constraints.maxHeight),
-                    child: IntrinsicHeight(
-                      child: NavigationRail(
-                        labelType: labelType,
-                        leading: leading,
-                        trailing: trailing,
-                        onDestinationSelected: onDestinationSelected,
-                        groupAlignment: groupAlignment,
-                        backgroundColor: backgroundColor,
-                        extended: extended,
-                        selectedIndex: selectedIndex,
-                        selectedIconTheme: selectedIconTheme,
-                        unselectedIconTheme: unselectedIconTheme,
-                        selectedLabelTextStyle: selectedLabelTextStyle,
-                        unselectedLabelTextStyle: unSelectedLabelTextStyle,
-                        showLabelsWhenCollapsed: showLabelsWhenCollapsed,
-                        leadingAtTop: leadingAtTop ?? true,
-                        trailingAtBottom: trailingAtBottom ?? false,
-                        scrollable: scrollable ?? false,
-                        mainAxisAlignment: mainAxisAlignment,
-                        destinations: destinations
-                            .map((e) => e.toRailDestination())
-                            .toList(),
+        final NavigationRailThemeData resolvedNavRailTheme =
+            NavigationRailTheme.maybeOf(context) ??
+                const NavigationRailThemeData();
+        return NavigationRailTheme(
+          data: resolvedNavRailTheme.copyWith(
+            margin: margin ?? resolvedNavRailTheme.margin,
+            padding: padding ?? resolvedNavRailTheme.padding,
+          ),
+          child: Padding(
+            padding: padding ??
+                resolvedNavRailTheme.padding ??
+                const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: width,
+              height: MediaQuery.sizeOf(context).height,
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minHeight: constraints.maxHeight),
+                      child: IntrinsicHeight(
+                        child: NavigationRail(
+                          labelType: labelType,
+                          leading: leading,
+                          trailing: trailing,
+                          onDestinationSelected: onDestinationSelected,
+                          groupAlignment: groupAlignment,
+                          backgroundColor: backgroundColor,
+                          extended: extended,
+                          selectedIndex: selectedIndex,
+                          selectedIconTheme: selectedIconTheme,
+                          unselectedIconTheme: unselectedIconTheme,
+                          selectedLabelTextStyle: selectedLabelTextStyle,
+                          unselectedLabelTextStyle: unSelectedLabelTextStyle,
+                          showLabelsWhenCollapsed: showLabelsWhenCollapsed,
+                          leadingAtTop: leadingAtTop ?? true,
+                          trailingAtBottom: trailingAtBottom ?? false,
+                          scrollable: scrollable ?? false,
+                          mainAxisAlignment: mainAxisAlignment,
+                          destinations: destinations
+                              .map((e) => e.toRailDestination())
+                              .toList(),
+                        ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         );
@@ -503,6 +516,8 @@ class AdaptiveScaffold extends StatefulWidget {
     Duration animationDuration = const Duration(milliseconds: 180),
     ValueChanged<int>? onDestinationSelected,
     bool? scrollable,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
   }) {
     return Builder(
       builder: (BuildContext context) {
@@ -519,6 +534,8 @@ class AdaptiveScaffold extends StatefulWidget {
                 size: iconSize,
               );
             }),
+            padding: padding ?? resolvedNavBarTheme.padding,
+            margin: margin ?? resolvedNavBarTheme.margin,
           ),
           child: MediaQuery(
             data: MediaQuery.of(context).removePadding(removeTop: true),
