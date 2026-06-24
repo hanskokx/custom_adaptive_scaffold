@@ -200,6 +200,7 @@ class _RailDestinationState extends State<RailDestination>
         );
 
         final Widget iconPart = NavigationIcon(
+          height: data.material3 ? _kRailIconSlotHeight : data.minWidth,
           icon: data.themedIcon,
           minWidth: data.minWidth,
           material3: data.material3,
