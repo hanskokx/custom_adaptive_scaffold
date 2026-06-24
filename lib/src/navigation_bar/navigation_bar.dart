@@ -253,6 +253,14 @@ class NavigationBar extends StatelessWidget {
   final bool maintainBottomViewPadding;
 
   VoidCallback _handleTap(int index) {
+    if (destinations[index] is NavigationDestination) {
+      final NavigationDestination destination =
+          destinations[index] as NavigationDestination;
+      if (!destination.enabled) {
+        return () {};
+      }
+    }
+
     return onDestinationSelected != null
         ? () => onDestinationSelected!(index)
         : () {};
@@ -321,7 +329,7 @@ class NavigationBar extends StatelessWidget {
                       overlayColor: overlayColor,
                       labelTextStyle: labelTextStyle,
                       labelPadding: labelPadding,
-                      onTap: _handleTap.call(i),
+                      onTap: destination.enabled ? _handleTap.call(i) : () {},
                       child: destination,
                     );
                   },
