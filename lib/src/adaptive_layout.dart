@@ -496,6 +496,7 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
           } else {
             beginWidth = remainingWidth * bodyRatio!;
           }
+          // TODO(hans): Investigate this as a bug in layout
           currentBodySize = layoutChild(
             _SlotIds.body.name,
             BoxConstraints.tight(

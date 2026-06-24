@@ -25,8 +25,7 @@ typedef CustomNavigationDestination = NavigationDestination;
 ///
 /// [NavigationDestination] serves as the base class for all navigation
 /// destinations in this package. It can be used directly or subclassed
-/// (see [NavigationBarDestination], [NavigationRailDestination], and
-/// [AdaptiveScaffoldDestination]).
+/// (see [NavigationBarDestination] and [NavigationRailDestination]).
 ///
 /// This widget is a drop-in replacement for Flutter's `NavigationDestination`
 /// with additional properties for [margin], [padding], [indicatorColor],
@@ -58,8 +57,6 @@ typedef CustomNavigationDestination = NavigationDestination;
 ///
 ///  * [NavigationBarDestination], the bar-specific subclass.
 ///  * [NavigationRailDestination], the rail-specific subclass.
-///  * [AdaptiveScaffoldDestination], a convenience subclass that accepts
-///    an [IconData] and a `title` string.
 ///  * [NavigationBar], which displays a row of [NavigationDestination]s.
 ///  * [NavigationRail], which displays a column of [NavigationDestination]s.
 class NavigationDestination extends StatelessWidget {

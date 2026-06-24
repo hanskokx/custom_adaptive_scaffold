@@ -21,7 +21,6 @@ controls, and tooltip configuration.
   - [How Is This Different From Flutter?](#how-is-this-different-from-flutter)
     - [Extended theme data](#extended-theme-data)
     - [Richer `NavigationDestination` base class](#richer-navigationdestination-base-class)
-    - [Convenience destination type](#convenience-destination-type)
     - [New public APIs not present in Flutter](#new-public-apis-not-present-in-flutter)
     - [Extra `NavigationRail` parameters](#extra-navigationrail-parameters)
     - [Collapsed-pane controller](#collapsed-pane-controller)
@@ -112,19 +111,6 @@ everywhere Flutter's types are expected. They add:
 
 The package's `NavigationDestination` is a full base class (not just a wrapper) with `margin`, `padding`, `indicatorColor`, `indicatorShape`, and `disabled`.
 `CustomNavigationDestination` is a typedef alias for it.
-
-### Convenience destination type
-
-`AdaptiveScaffoldDestination` accepts an `IconData` and a `String title` for quick setup, matching the API style of the original Flutter `AdaptiveScaffoldDestination`:
-
-```dart
-AdaptiveScaffold(
-  destinations: const [
-    AdaptiveScaffoldDestination(title: 'Inbox', icon: Icons.inbox),
-    AdaptiveScaffoldDestination(title: 'Articles', icon: Icons.article),
-  ],
-)
-```
 
 ### New public APIs not present in Flutter
 

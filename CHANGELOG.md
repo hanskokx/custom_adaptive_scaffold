@@ -31,8 +31,6 @@ redesigned extension surface described below.
   subclassed. `CustomNavigationDestination` remains as a typedef alias.
 * New `NavigationBarDestination` subclass for bar-specific rendering.
 * New `NavigationRailDestination` subclass for rail-specific rendering.
-* New `AdaptiveScaffoldDestination` convenience class: accepts `IconData` and
-  a `String title`, matching the upstream Flutter API style.
 * `NavigationBarThemeData` and `NavigationRailThemeData` are now
   package-owned classes implementing the Flutter framework interfaces.
   `CustomNavigationBarThemeData`, `CustomNavigationBarTheme`,
@@ -58,8 +56,6 @@ redesigned extension surface described below.
 
 ### Fixes and improvements
 
-* `AdaptiveScaffoldDestination` can be used interchangeably with
-  `NavigationDestination` in any destination list.
 * `AdaptiveScaffold.destinations` is no longer `required` and defaults to
   `const []`, allowing 0 or 1 destinations without assertion errors.
 * Bottom navigation bar is suppressed when fewer than 2 destinations are
