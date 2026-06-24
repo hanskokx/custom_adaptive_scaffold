@@ -492,7 +492,7 @@ class _LargeComposeIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(8.0, 5, 0, 12),
+      padding: const EdgeInsets.fromLTRB(8.0, 5, 8.0, 12),
       child: Column(
         children: <Widget>[
           Container(
