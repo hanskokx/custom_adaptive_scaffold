@@ -1,7 +1,7 @@
 import "package:flutter/foundation.dart" show kIsWeb;
 
+import "../../material.dart";
 import "../../navigation_bar_theme.dart";
-import "../_internal_material.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
 import "../navigation_shared/destination_build_data.dart";

@@ -1,4 +1,4 @@
-import "../_internal_material.dart";
+import "../../material.dart";
 import "../navigation_destination.dart";
 
 /// A typedef alias for [NavigationRailDestination].

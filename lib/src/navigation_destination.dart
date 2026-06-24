@@ -1,4 +1,4 @@
-import "_internal_material.dart";
+import "../material.dart";
 import "navigation_bar/destination.dart";
 import "navigation_rail/destination.dart";
 import "navigation_rail/navigation_rail.dart";
