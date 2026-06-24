@@ -563,7 +563,7 @@ class _NavigationRailState extends State<NavigationRail>
                 tabIndex: i + 1,
                 tabCount: widget.destinations.length,
               ),
-              disabled: widget.destinations[i].enabled,
+              disabled: !widget.destinations[i].enabled,
               showLabelsWhenCollapsed: showLabelsWhenCollapsed,
               tooltip: widget.destinations[i].tooltipLabel,
             ),
