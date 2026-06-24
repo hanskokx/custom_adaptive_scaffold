@@ -393,7 +393,7 @@ class AdaptiveScaffold extends StatefulWidget {
   /// If [labelType] is null, then the default value is
   /// [NavigationRailLabelType.none].
   static Builder standardNavigationRail({
-    required List<NavigationRailDestination> destinations,
+    required List<NavigationDestination> destinations,
     double width = 72,
     int? selectedIndex,
     bool extended = false,
@@ -439,7 +439,9 @@ class AdaptiveScaffold extends StatefulWidget {
                         unselectedIconTheme: unselectedIconTheme,
                         selectedLabelTextStyle: selectedLabelTextStyle,
                         unselectedLabelTextStyle: unSelectedLabelTextStyle,
-                        destinations: destinations,
+                        destinations: destinations
+                            .map((e) => e.toRailDestination())
+                            .toList(),
                       ),
                     ),
                   ),
