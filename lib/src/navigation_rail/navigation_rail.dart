@@ -504,12 +504,6 @@ class _NavigationRailState extends State<NavigationRail>
         navigationRailTheme.margin;
     final EdgeInsetsGeometry? railDestinationPadding =
         navigationRailTheme.padding;
-    final EdgeInsetsGeometry? defaultDestinationPadding =
-        Theme.of(context).useMaterial3 || !widget.extended
-            ? null
-            : const EdgeInsets.symmetric(
-                horizontal: _horizontalDestinationPadding,
-              );
 
     final MainAxisAlignment effectiveMainAxisAlignment =
         widget.mainAxisAlignment ?? MainAxisAlignment.start;
@@ -546,9 +540,7 @@ class _NavigationRailState extends State<NavigationRail>
               labelTextStyle: widget.selectedIndex == i
                   ? selectedLabelTextStyle
                   : unselectedLabelTextStyle,
-              padding: widget.destinations[i].padding ??
-                  railDestinationPadding ??
-                  defaultDestinationPadding,
+              padding: widget.destinations[i].padding ?? railDestinationPadding,
               useIndicator: useIndicator,
               indicatorColor: useIndicator
                   ? (widget.destinations[i].indicatorColor ?? indicatorColor)

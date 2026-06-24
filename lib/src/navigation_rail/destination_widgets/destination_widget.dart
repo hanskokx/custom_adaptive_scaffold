@@ -280,9 +280,7 @@ class _RailDestinationState extends State<RailDestination>
           final Animation<double> labelFadeAnimation = extendedAnimation.drive(
             CurveTween(curve: const Interval(0.0, 0.25)),
           );
-          final double minWidthTransitionValue = data.material3
-              ? extendedAnimation.value
-              : (extendedAnimation.value == 0.0 ? 0.0 : 1.0);
+          final double minWidthTransitionValue = extendedAnimation.value;
           applyXOffset = true;
           content = Padding(
             padding: widget.padding ?? EdgeInsets.zero,
@@ -311,10 +309,7 @@ class _RailDestinationState extends State<RailDestination>
                         ),
                       ),
                     ),
-                    SizedBox(
-                      width: _horizontalDestinationPadding *
-                          extendedAnimation.value,
-                    ),
+                    const SizedBox(width: _horizontalDestinationPadding),
                   ],
                 ),
               ),

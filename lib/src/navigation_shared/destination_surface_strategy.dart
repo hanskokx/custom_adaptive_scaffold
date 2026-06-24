@@ -161,11 +161,7 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     final double rawMinExtendedWidth = input.minExtendedWidth ??
         railTheme.minExtendedWidth ??
         defaults.minExtendedWidth!;
-    final double minExtendedWidth = material3
-        ? rawMinExtendedWidth
-        : rawMinExtendedWidth -
-            destinationPadding.horizontal -
-            destinationMargin.horizontal;
+    final double minExtendedWidth = rawMinExtendedWidth;
 
     // --- Icon and label theming ---
     final IconThemeData unselectedIconTheme =
