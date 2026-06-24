@@ -1609,7 +1609,10 @@ void main() {
       // Test default indicator color and shape.
       expect(
         _getIndicatorDecoration(tester)?.color,
-        theme.colorScheme.secondary.withValues(alpha: 0.24),
+        // Original test value was 0.24.
+        // The actual calcuated value is 0.2392156862745098, which is rounded to
+        // 0.24. Thus, we use 61 / 255 to match the actual value.
+        theme.colorScheme.secondary.withValues(alpha: 61 / 255),
       );
       expect(
         _getIndicatorDecoration(tester)?.shape,
