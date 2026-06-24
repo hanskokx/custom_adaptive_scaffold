@@ -153,19 +153,12 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     final EdgeInsets destinationPadding =
         (input.padding ?? railTheme.padding ?? EdgeInsets.zero)
             .resolve(textDirection);
-    final EdgeInsets destinationMargin =
-        (input.margin ?? railTheme.margin ?? EdgeInsets.zero)
-            .resolve(textDirection);
-
-    final double paddingAndMarginWidth =
-        destinationPadding.horizontal + destinationMargin.horizontal;
-
     final double minWidth =
         input.minWidth ?? railTheme.minWidth ?? defaults.minWidth!;
-    final double minExtendedWidth = (input.minExtendedWidth ??
-            railTheme.minExtendedWidth ??
-            defaults.minExtendedWidth!) -
-        paddingAndMarginWidth;
+    final double rawMinExtendedWidth = input.minExtendedWidth ??
+        railTheme.minExtendedWidth ??
+        defaults.minExtendedWidth!;
+    final double minExtendedWidth = rawMinExtendedWidth;
 
     // --- Icon and label theming ---
     final IconThemeData unselectedIconTheme =
@@ -249,8 +242,7 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
         : null;
 
     // --- Interaction colors ---
-    final Color splashBase =
-        railTheme.indicatorColor ?? theme.colorScheme.primary;
+    final Color splashBase = theme.colorScheme.primary;
     final bool splashAlphaModified =
         (splashBase.a * 255.0).round().clamp(0, 255) < 255;
 

@@ -6,7 +6,7 @@ import "dart:ui";
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
-import "../_internal_material.dart";
+import "../../material.dart";
 import "../navigation_icon.dart";
 import "../navigation_shared/destination_build_data.dart";
 import "../navigation_shared/destination_surface_strategy.dart";
@@ -508,15 +508,12 @@ class _NavigationRailState extends State<NavigationRail>
     final MainAxisAlignment effectiveMainAxisAlignment =
         widget.mainAxisAlignment ?? MainAxisAlignment.start;
 
-    final Widget? trailing = widget.trailing == null
-        ? null
-        : Material(
-            type: MaterialType.transparency,
-            child: widget.trailing!,
-          );
+    final Widget? trailing = widget.trailing;
 
     Widget mainGroup = Column(
-      mainAxisSize: MainAxisSize.min,
+      mainAxisSize: widget.mainAxisAlignment == null
+          ? MainAxisSize.min
+          : MainAxisSize.max,
       mainAxisAlignment: effectiveMainAxisAlignment,
       children: <Widget>[
         if (widget.leading != null && !widget.leadingAtTop) ...<Widget>[
@@ -543,11 +540,7 @@ class _NavigationRailState extends State<NavigationRail>
               labelTextStyle: widget.selectedIndex == i
                   ? selectedLabelTextStyle
                   : unselectedLabelTextStyle,
-              padding: widget.destinations[i].padding ??
-                  railDestinationPadding ??
-                  const EdgeInsets.symmetric(
-                    horizontal: _horizontalDestinationPadding,
-                  ),
+              padding: widget.destinations[i].padding ?? railDestinationPadding,
               useIndicator: useIndicator,
               indicatorColor: useIndicator
                   ? (widget.destinations[i].indicatorColor ?? indicatorColor)
@@ -564,7 +557,7 @@ class _NavigationRailState extends State<NavigationRail>
                 tabIndex: i + 1,
                 tabCount: widget.destinations.length,
               ),
-              disabled: widget.destinations[i].disabled,
+              disabled: !widget.destinations[i].enabled,
               showLabelsWhenCollapsed: showLabelsWhenCollapsed,
               tooltip: widget.destinations[i].tooltipLabel,
             ),
@@ -577,35 +570,38 @@ class _NavigationRailState extends State<NavigationRail>
       mainGroup = SingleChildScrollView(child: mainGroup);
     }
 
-    return ExtendedNavigationRailAnimation(
-      animation: _extendedAnimation,
-      child: Semantics(
-        explicitChildNodes: true,
-        child: Material(
-          elevation: elevation,
-          color: backgroundColor,
-          child: SafeArea(
-            right: isRTLDirection,
-            left: !isRTLDirection,
-            child: Column(
-              children: <Widget>[
-                _verticalSpacer,
-                if (widget.leading != null) ...<Widget>[
-                  if (widget.leadingAtTop) ...<Widget>[
-                    widget.leading!,
-                    _verticalSpacer,
+    return Semantics(
+      container: true,
+      child: ExtendedNavigationRailAnimation(
+        animation: _extendedAnimation,
+        child: Semantics(
+          explicitChildNodes: true,
+          child: Material(
+            elevation: elevation,
+            color: backgroundColor,
+            child: SafeArea(
+              right: isRTLDirection,
+              left: !isRTLDirection,
+              child: Column(
+                children: <Widget>[
+                  _verticalSpacer,
+                  if (widget.leading != null) ...<Widget>[
+                    if (widget.leadingAtTop) ...<Widget>[
+                      widget.leading!,
+                      _verticalSpacer,
+                    ],
                   ],
+                  Expanded(
+                    child: widget.mainAxisAlignment == null
+                        ? Align(
+                            alignment: Alignment(0, groupAlignment),
+                            child: mainGroup,
+                          )
+                        : mainGroup,
+                  ),
+                  if (trailing != null && widget.trailingAtBottom) trailing,
                 ],
-                Expanded(
-                  child: widget.mainAxisAlignment == null
-                      ? Align(
-                          alignment: Alignment(0, groupAlignment),
-                          child: mainGroup,
-                        )
-                      : mainGroup,
-                ),
-                if (trailing != null && widget.trailingAtBottom) trailing,
-              ],
+              ),
             ),
           ),
         ),

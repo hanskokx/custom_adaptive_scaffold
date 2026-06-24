@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "../_internal_material.dart";
+import "../../material.dart";
 import "../navigation_destination.dart";
 
 /// A convenience destination for use with [AdaptiveScaffold] that mirrors the
@@ -52,7 +52,7 @@ class AdaptiveScaffoldDestination extends NavigationDestination {
     super.indicatorShape,
     super.margin,
     super.padding,
-    super.disabled = false,
+    super.enabled = false,
     super.tooltip,
   }) : super(
           label: title,

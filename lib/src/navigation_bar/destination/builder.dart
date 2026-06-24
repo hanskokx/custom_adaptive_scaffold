@@ -100,33 +100,22 @@ class _NavigationBarDestinationBuilderState
     final bool isDisabled = widget.disabled;
 
     final ThemeData theme = Theme.of(context);
-    final CustomNavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.maybeOf(context) ??
-            const CustomNavigationBarThemeData();
+    final CustomNavigationBarThemeData? navigationBarTheme =
+        NavigationBarTheme.maybeOf(context);
     final CustomNavigationBarThemeData defaults =
         navigationBarDefaultsFor(context);
-    final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
-        navigationBarTheme.navigationItemOverlayColor;
-    final bool disableFullItemInk = effectiveNavigationItemOverlayColor == null;
+    final bool useEnhancedItemInk = theme.useMaterial3 &&
+        (navigationBarTheme?.navigationItemOverlayColor != null ||
+            navigationBarTheme?.navigationItemIndicatorShape != null);
     final ShapeBorder effectiveNavigationItemIndicatorShape =
-        navigationBarTheme.navigationItemIndicatorShape ??
-            navigationBarTheme.indicatorShape ??
+        navigationBarTheme?.navigationItemIndicatorShape ??
+            navigationBarTheme?.indicatorShape ??
             defaults.indicatorShape ??
             const StadiumBorder();
-    final WidgetStateProperty<Color?>? fullItemOverlayColor =
-        disableFullItemInk ? null : effectiveNavigationItemOverlayColor;
     final WidgetStateProperty<Color?>? iconOverlayColor =
-        navigationBarTheme.overlayColor ?? defaults.overlayColor;
-
-    final Color splashBase = navigationBarTheme.indicatorColor ??
-        defaults.indicatorColor ??
-        theme.colorScheme.secondaryContainer;
-    final bool splashAlphaModified =
-        (splashBase.a * 255.0).round().clamp(0, 255) < 255;
-    final Color effectiveSplashColor =
-        splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12);
-    final Color effectiveHoverColor =
-        splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04);
+        info.overlayColor ?? navigationBarTheme?.overlayColor;
+    final WidgetStateProperty<Color?>? fullItemOverlayColor =
+        navigationBarTheme?.navigationItemOverlayColor ?? iconOverlayColor;
     final String labelText =
         widget.label is Text ? (widget.label as Text).data ?? "" : "";
     final String? tooltipMessage = widget.tooltip == null
@@ -139,12 +128,12 @@ class _NavigationBarDestinationBuilderState
       NavigationDestinationLabelBehavior.alwaysHide => false,
     };
     final Offset effectiveTooltipOffset =
-        navigationBarTheme.tooltipOffset ?? const Offset(0, 42);
+        navigationBarTheme?.tooltipOffset ?? const Offset(0, 42);
     final TooltipTriggerMode? effectiveTooltipTrigger = isLabelVisible
-        ? navigationBarTheme.tooltipTriggerWhenLabelVisible ??
-            navigationBarTheme.tooltipTrigger
-        : navigationBarTheme.tooltipTriggerWhenLabelHidden ??
-            navigationBarTheme.tooltipTrigger;
+        ? navigationBarTheme?.tooltipTriggerWhenLabelVisible ??
+            navigationBarTheme?.tooltipTrigger
+        : navigationBarTheme?.tooltipTriggerWhenLabelHidden ??
+            navigationBarTheme?.tooltipTrigger;
 
     return _NavigationBarDestinationSemantics(
       enabled: !isDisabled,
@@ -152,94 +141,138 @@ class _NavigationBarDestinationBuilderState
         message: tooltipMessage,
         tooltipOffset: effectiveTooltipOffset,
         tooltipTrigger: effectiveTooltipTrigger,
-        child: ClipRect(
-          // Inner Material provides an ink surface above the indicator fill,
-          // so splash/hover renders on top of the pill rather than behind it.
-          child: Material(
-            type: MaterialType.transparency,
-            child: _IndicatorInkWell(
-              itemKey: itemKey,
-              iconKey: iconKey,
-              labelBehavior: info.labelBehavior,
-              disableFullItemInk: disableFullItemInk,
-              indicatorOverlayColor:
-                  disableFullItemInk ? iconOverlayColor : null,
-              overlayColor: fullItemOverlayColor,
-              highlightColor: disableFullItemInk ? null : Colors.transparent,
-              splashColor: disableFullItemInk
-                  ? effectiveSplashColor
-                  : Colors.transparent,
-              hoverColor:
-                  disableFullItemInk ? effectiveHoverColor : Colors.transparent,
-              customBorder: effectiveNavigationItemIndicatorShape,
-              onTap: isDisabled ? null : info.onTap,
-              child: Stack(
-                alignment: Alignment.center,
-                children: <Widget>[
-                  AnimatedBuilder(
-                    animation: widget.animation,
-                    builder: (context, child) => Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: _NavigationBarDestinationLayout(
-                            icon: KeyedSubtree(
-                              key: iconKey,
-                              child: widget.buildIcon(context),
-                            ),
-                            itemKey: itemKey,
-                            padding: widget.padding,
-                            label: widget.buildLabel(context),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
+        child: (useEnhancedItemInk
+            ? _FullItemIndicatorInkWell(
+                itemKey: itemKey,
+                iconKey: iconKey,
+                labelBehavior: info.labelBehavior,
+                customBorder: effectiveNavigationItemIndicatorShape,
+                overlayColor: fullItemOverlayColor,
+                onTap: isDisabled ? null : info.onTap,
+                child: _DestinationLayout(
+                  buildIcon: widget.buildIcon,
+                  buildLabel: widget.buildLabel,
+                  iconKey: iconKey,
+                  itemKey: itemKey,
+                  padding: widget.padding,
+                  animation: widget.animation,
+                ),
+              )
+            : _FrameworkIndicatorInkWell(
+                iconKey: iconKey,
+                labelBehavior: info.labelBehavior,
+                customBorder: info.indicatorShape ??
+                    navigationBarTheme?.indicatorShape ??
+                    defaults.indicatorShape,
+                overlayColor: iconOverlayColor,
+                onTap: isDisabled ? null : info.onTap,
+                child: _DestinationLayout(
+                  buildIcon: widget.buildIcon,
+                  buildLabel: widget.buildLabel,
+                  iconKey: iconKey,
+                  itemKey: itemKey,
+                  padding: widget.padding,
+                  animation: widget.animation,
+                ),
+              )),
       ),
     );
   }
 }
 
-class _IndicatorInkWell extends InkResponse {
-  const _IndicatorInkWell({
+class _DestinationLayout extends StatelessWidget {
+  const _DestinationLayout({
+    required this.buildIcon,
+    required this.buildLabel,
+    required this.iconKey,
+    required this.itemKey,
+    required this.padding,
+    required this.animation,
+  });
+
+  final Widget Function(BuildContext) buildIcon;
+  final Widget Function(BuildContext) buildLabel;
+  final GlobalKey iconKey;
+  final GlobalKey itemKey;
+  final EdgeInsetsGeometry padding;
+  final Animation<double> animation;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      alignment: Alignment.center,
+      children: <Widget>[
+        AnimatedBuilder(
+          animation: animation,
+          builder: (context, child) => Row(
+            children: <Widget>[
+              Expanded(
+                child: _NavigationBarDestinationLayout(
+                  icon: buildIcon(context),
+                  iconKey: iconKey,
+                  itemKey: itemKey,
+                  padding: padding,
+                  label: buildLabel(context),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FrameworkIndicatorInkWell extends InkResponse {
+  const _FrameworkIndicatorInkWell({
+    required this.iconKey,
+    required this.labelBehavior,
+    super.overlayColor,
+    super.customBorder,
+    super.onTap,
+    super.child,
+  }) : super(
+          containedInkWell: true,
+          highlightColor: Colors.transparent,
+        );
+
+  final GlobalKey iconKey;
+  final NavigationDestinationLabelBehavior labelBehavior;
+
+  @override
+  RectCallback? getRectCallback(RenderBox referenceBox) {
+    return () {
+      final RenderBox iconBox =
+          iconKey.currentContext!.findRenderObject()! as RenderBox;
+      final Rect iconRect = iconBox.localToGlobal(Offset.zero) & iconBox.size;
+      return referenceBox.globalToLocal(iconRect.topLeft) & iconBox.size;
+    };
+  }
+}
+
+class _FullItemIndicatorInkWell extends InkResponse {
+  const _FullItemIndicatorInkWell({
     required this.itemKey,
     required this.iconKey,
     required this.labelBehavior,
-    required this.disableFullItemInk,
-    this.indicatorOverlayColor,
+    super.overlayColor,
     super.customBorder,
-    super.highlightColor,
-    super.splashColor,
-    super.hoverColor,
     super.onTap,
     super.child,
-    WidgetStateProperty<Color?>? overlayColor,
   }) : super(
           containedInkWell: true,
-          highlightShape: BoxShape.rectangle,
-          overlayColor:
-              disableFullItemInk ? indicatorOverlayColor : overlayColor,
+          highlightColor: Colors.transparent,
         );
 
   final GlobalKey itemKey;
   final GlobalKey iconKey;
   final NavigationDestinationLabelBehavior labelBehavior;
-  final bool disableFullItemInk;
-  final WidgetStateProperty<Color?>? indicatorOverlayColor;
 
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
     return () {
-      final GlobalKey targetKey =
-          disableFullItemInk && iconKey.currentContext != null
-              ? iconKey
-              : itemKey;
       final RenderBox targetBox =
-          targetKey.currentContext!.findRenderObject()! as RenderBox;
+          itemKey.currentContext!.findRenderObject()! as RenderBox;
       final Rect targetRect =
           targetBox.localToGlobal(Offset.zero) & targetBox.size;
       return referenceBox.globalToLocal(targetRect.topLeft) & targetBox.size;

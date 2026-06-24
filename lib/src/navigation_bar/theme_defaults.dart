@@ -50,7 +50,7 @@ class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
   }
 
   @override
-  Color? get indicatorColor => _colors.secondary.withValues(alpha: 0.24);
+  Color? get indicatorColor => _colors.secondary.withValues(alpha: 61 / 255);
 
   @override
   WidgetStateProperty<TextStyle?>? get labelTextStyle =>
@@ -66,7 +66,7 @@ class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
         return _colors.onSurface.withValues(alpha: 0.12);
       }
       if (states.contains(WidgetState.hovered)) {
-        return _colors.onSurface.withValues(alpha: 0.08);
+        return _colors.onSurface.withValues(alpha: 0.04);
       }
       return null;
     });

@@ -9,7 +9,7 @@ import "package:flutter/material.dart" as m
     show NavigationRailThemeData, NavigationRailTheme;
 import "package:flutter/rendering.dart";
 
-import "src/_internal_material.dart";
+import "material.dart";
 import "src/navigation_rail/theme_defaults.dart";
 
 /// A typedef alias for [NavigationRailThemeData].

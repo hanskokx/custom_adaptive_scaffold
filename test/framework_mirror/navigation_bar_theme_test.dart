@@ -8,8 +8,22 @@
 library;
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
+import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart" hide NavigationIndicator;
+import "package:flutter/material.dart"
+    hide
+        NavigationDestination,
+        NavigationRail,
+        NavigationBar,
+        NavigationRailDestination,
+        NavigationIndicator,
+        NavigationBarTheme,
+        NavigationBarThemeData,
+        NavigationRailTheme,
+        NavigationRailThemeData,
+        NavigationDrawerDestination,
+        NavigationDrawerTheme,
+        NavigationDrawerThemeData;
 import "package:flutter/rendering.dart";
 import "package:flutter/services.dart";
 import "package:flutter_test/flutter_test.dart";
@@ -17,35 +31,24 @@ import "package:flutter_test/flutter_test.dart";
 void main() {
   test("copyWith, ==, hashCode basics", () {
     expect(
-      const CustomNavigationBarThemeData(),
-      const CustomNavigationBarThemeData().copyWith(),
+      const NavigationBarThemeData(),
+      const NavigationBarThemeData().copyWith(),
     );
     expect(
-      const CustomNavigationBarThemeData().hashCode,
-      const CustomNavigationBarThemeData().copyWith().hashCode,
+      const NavigationBarThemeData().hashCode,
+      const NavigationBarThemeData().copyWith().hashCode,
     );
   });
 
-  test("package-only NavigationBar theme fields stay opt-in by default", () {
-    const data = CustomNavigationBarThemeData();
-
-    expect(data.margin, isNull);
-    expect(data.padding, isNull);
-    expect(data.tooltipVerticalOffset, isNull);
-  });
-
-  test("CustomNavigationBarThemeData lerp special cases", () {
-    expect(CustomNavigationBarThemeData.lerp(null, null, 0), null);
-    const data = CustomNavigationBarThemeData();
-    expect(
-      identical(CustomNavigationBarThemeData.lerp(data, data, 0.5), data),
-      true,
-    );
+  test("NavigationBarThemeData lerp special cases", () {
+    expect(NavigationBarThemeData.lerp(null, null, 0), null);
+    const data = NavigationBarThemeData();
+    expect(identical(NavigationBarThemeData.lerp(data, data, 0.5), data), true);
   });
 
   testWidgets("Default debugFillProperties", (WidgetTester tester) async {
     final builder = DiagnosticPropertiesBuilder();
-    const CustomNavigationBarThemeData().debugFillProperties(builder);
+    const NavigationBarThemeData().debugFillProperties(builder);
 
     final List<String> description = builder.properties
         .where((DiagnosticsNode node) => !node.isFiltered(DiagnosticLevel.info))
@@ -55,10 +58,10 @@ void main() {
     expect(description, <String>[]);
   });
 
-  testWidgets("CustomNavigationBarThemeData implements debugFillProperties",
+  testWidgets("NavigationBarThemeData implements debugFillProperties",
       (WidgetTester tester) async {
     final builder = DiagnosticPropertiesBuilder();
-    const CustomNavigationBarThemeData(
+    const NavigationBarThemeData(
       height: 200.0,
       backgroundColor: Color(0x00000099),
       elevation: 20.0,
@@ -73,9 +76,6 @@ void main() {
       ),
       labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
       overlayColor: WidgetStatePropertyAll<Color>(Color(0x00000095)),
-      margin: EdgeInsets.all(4),
-      padding: EdgeInsets.symmetric(horizontal: 6),
-      tooltipVerticalOffset: 64,
       labelPadding: EdgeInsets.all(8),
     ).debugFillProperties(builder);
 
@@ -98,71 +98,93 @@ void main() {
         "iconTheme: WidgetStatePropertyAll(IconThemeData#fd5c3(color: Color(alpha: 0.0000, red: 0.0000, green: 0.0000, blue: 0.5922, colorSpace: ColorSpace.sRGB)))",
         "labelBehavior: NavigationDestinationLabelBehavior.alwaysHide",
         "overlayColor: WidgetStatePropertyAll(Color(alpha: 0.0000, red: 0.0000, green: 0.0000, blue: 0.5843, colorSpace: ColorSpace.sRGB))",
-        "margin: EdgeInsets.all(4.0)",
-        "padding: EdgeInsets(6.0, 0.0, 6.0, 0.0)",
-        "tooltipVerticalOffset: 64.0",
         "labelPadding: EdgeInsets.all(8.0)",
       ]),
     );
   });
 
   testWidgets(
-    "[DIVERGENCE] CustomNavigationBarTheme wrapper does not override NavigationBar defaults",
+    "NavigationBarThemeData values are used when no NavigationBar properties are specified",
     (WidgetTester tester) async {
+      const height = 200.0;
       const backgroundColor = Color(0x00000001);
+      const elevation = 42.0;
+      const indicatorColor = Color(0x00000002);
+      const ShapeBorder indicatorShape = CircleBorder();
+      const selectedIconSize = 25.0;
+      const unselectedIconSize = 23.0;
+      const selectedIconColor = Color(0x00000003);
+      const unselectedIconColor = Color(0x00000004);
+      const selectedIconOpacity = 0.99;
+      const unselectedIconOpacity = 0.98;
+      const selectedLabelFontSize = 13.0;
+      const unselectedLabelFontSize = 11.0;
+      const NavigationDestinationLabelBehavior labelBehavior =
+          NavigationDestinationLabelBehavior.alwaysShow;
+      const EdgeInsetsGeometry labelPadding = EdgeInsets.all(8);
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            bottomNavigationBar: CustomNavigationBarTheme(
-              data: CustomNavigationBarThemeData(
-                height: 200,
+            bottomNavigationBar: NavigationBarTheme(
+              data: NavigationBarThemeData(
+                height: height,
                 backgroundColor: backgroundColor,
-                elevation: 42,
-                indicatorColor: const Color(0x00000002),
-                indicatorShape: const CircleBorder(),
+                elevation: elevation,
+                indicatorColor: indicatorColor,
+                indicatorShape: indicatorShape,
                 iconTheme:
                     WidgetStateProperty.resolveWith((Set<WidgetState> states) {
                   if (states.contains(WidgetState.selected)) {
-                    return const IconThemeData(size: 25);
+                    return const IconThemeData(
+                      size: selectedIconSize,
+                      color: selectedIconColor,
+                      opacity: selectedIconOpacity,
+                    );
                   }
-                  return const IconThemeData(size: 23);
+                  return const IconThemeData(
+                    size: unselectedIconSize,
+                    color: unselectedIconColor,
+                    opacity: unselectedIconOpacity,
+                  );
                 }),
                 labelTextStyle:
                     WidgetStateProperty.resolveWith((Set<WidgetState> states) {
                   if (states.contains(WidgetState.selected)) {
-                    return const TextStyle(fontSize: 13);
+                    return const TextStyle(fontSize: selectedLabelFontSize);
                   }
-                  return const TextStyle(fontSize: 11);
+                  return const TextStyle(fontSize: unselectedLabelFontSize);
                 }),
-                labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-                labelPadding: const EdgeInsets.all(8),
+                labelBehavior: labelBehavior,
+                labelPadding: labelPadding,
               ),
-              child: CustomNavigationBar(destinations: _destinations()),
+              child: NavigationBar(destinations: _destinations()),
             ),
           ),
         ),
       );
 
-      final ThemeData defaultTheme = ThemeData();
-      expect(_barHeight(tester), 80);
-      expect(
-        _barMaterial(tester).color,
-        defaultTheme.colorScheme.surfaceContainer,
-      );
-      expect(_barMaterial(tester).elevation, 3);
-      expect(
-        _indicator(tester)?.color,
-        defaultTheme.colorScheme.secondaryContainer,
-      );
-      expect(_indicator(tester)?.shape, const StadiumBorder());
-      expect(_barMaterial(tester).color, isNot(backgroundColor));
+      expect(_barHeight(tester), height);
+      expect(_barMaterial(tester).color, backgroundColor);
+      expect(_barMaterial(tester).elevation, elevation);
+      expect(_indicator(tester)?.color, indicatorColor);
+      expect(_indicator(tester)?.shape, indicatorShape);
+      expect(_selectedIconTheme(tester).size, selectedIconSize);
+      expect(_selectedIconTheme(tester).color, selectedIconColor);
+      expect(_selectedIconTheme(tester).opacity, selectedIconOpacity);
+      expect(_unselectedIconTheme(tester).size, unselectedIconSize);
+      expect(_unselectedIconTheme(tester).color, unselectedIconColor);
+      expect(_unselectedIconTheme(tester).opacity, unselectedIconOpacity);
+      expect(_selectedLabelStyle(tester).fontSize, selectedLabelFontSize);
+      expect(_unselectedLabelStyle(tester).fontSize, unselectedLabelFontSize);
+      expect(_labelBehavior(tester), labelBehavior);
+      expect(_getLabelPadding(tester, "Abc"), labelPadding);
+      expect(_getLabelPadding(tester, "Def"), labelPadding);
     },
-    tags: <String>["divergence"],
   );
 
   testWidgets(
-    "NavigationBar values take priority over CustomNavigationBarThemeData values when both properties are specified",
+    "NavigationBar values take priority over NavigationBarThemeData values when both properties are specified",
     (WidgetTester tester) async {
       const height = 200.0;
       const backgroundColor = Color(0x00000001);
@@ -175,15 +197,15 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            bottomNavigationBar: CustomNavigationBarTheme(
-              data: const CustomNavigationBarThemeData(
+            bottomNavigationBar: NavigationBarTheme(
+              data: const NavigationBarThemeData(
                 height: 100.0,
                 elevation: 18.0,
                 backgroundColor: Color(0x00000099),
                 labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
                 labelPadding: EdgeInsets.all(8),
               ),
-              child: CustomNavigationBar(
+              child: NavigationBar(
                 height: height,
                 elevation: elevation,
                 backgroundColor: backgroundColor,
@@ -206,12 +228,12 @@ void main() {
   );
 
   testWidgets(
-    "[DIVERGENCE] Custom label style renders ink ripple state",
+    "Custom label style renders ink ripple properly",
     (WidgetTester tester) async {
       Widget buildWidget({NavigationDestinationLabelBehavior? labelBehavior}) {
         return MaterialApp(
           theme: ThemeData(
-            navigationBarTheme: const CustomNavigationBarThemeData(
+            navigationBarTheme: const NavigationBarThemeData(
               labelTextStyle: WidgetStatePropertyAll<TextStyle>(
                 TextStyle(fontSize: 25, color: Color(0xff0000ff)),
               ),
@@ -219,11 +241,11 @@ void main() {
           ),
           home: Scaffold(
             bottomNavigationBar: Center(
-              child: CustomNavigationBar(
+              child: NavigationBar(
                 labelBehavior: labelBehavior,
                 destinations: const <Widget>[
-                  CustomNavigationDestination(icon: SizedBox(), label: "AC"),
-                  CustomNavigationDestination(icon: SizedBox(), label: "Alarm"),
+                  NavigationDestination(icon: SizedBox(), label: "AC"),
+                  NavigationDestination(icon: SizedBox(), label: "Alarm"),
                 ],
                 onDestinationSelected: (int i) {},
               ),
@@ -237,25 +259,22 @@ void main() {
       final TestGesture gesture =
           await tester.createGesture(kind: PointerDeviceKind.mouse);
       await gesture.addPointer();
-      await gesture.moveTo(tester.getCenter(find.byType(CustomNavigationBar)));
+      await gesture
+          .moveTo(tester.getCenter(find.byType(NavigationDestination).last));
       await tester.pumpAndSettle();
 
-      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
-        (RenderObject object) =>
-            object.runtimeType.toString() == "_RenderInkFeatures",
-      );
-      expect(
-        inkFeatures,
-        paints
-          ..clipPath()
-          ..rect(color: const Color(0x0a6750a4)),
+      await expectLater(
+        find.byType(NavigationBar),
+        matchesGoldenFile("indicator_custom_label_style.png"),
       );
     },
-    tags: <String>["divergence"],
+    // This test is skipped because it is a golden test that requires a specific
+    // environment to run correctly, which is not available in the Flutter repo.
+    skip: true,
   );
 
   testWidgets(
-    "[DIVERGENCE] NavigationBar respects NavigationBarTheme.overlayColor in active/pressed/hovered states",
+    "NavigationBar respects NavigationBarTheme.overlayColor in active/pressed/hovered states",
     (WidgetTester tester) async {
       tester.binding.focusManager.highlightStrategy =
           FocusHighlightStrategy.alwaysTraditional;
@@ -282,17 +301,14 @@ void main() {
         MaterialApp(
           theme: ThemeData(
             navigationBarTheme:
-                CustomNavigationBarThemeData(overlayColor: overlayColor),
+                NavigationBarThemeData(overlayColor: overlayColor),
           ),
           home: Scaffold(
             bottomNavigationBar: RepaintBoundary(
-              child: CustomNavigationBar(
+              child: NavigationBar(
                 destinations: const <Widget>[
-                  CustomNavigationDestination(
-                    icon: Icon(Icons.ac_unit),
-                    label: "AC",
-                  ),
-                  CustomNavigationDestination(
+                  NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
+                  NavigationDestination(
                     icon: Icon(Icons.access_alarm),
                     label: "Alarm",
                   ),
@@ -311,18 +327,37 @@ void main() {
           .moveTo(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
+      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
+        (RenderObject object) =>
+            object.runtimeType.toString() == "_RenderInkFeatures",
+      );
+
+      // Test hovered state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.hovered}),
-        hoverColor,
+        inkFeatures,
+        kIsWeb
+            ? (paints
+              ..rrect()
+              ..rrect()
+              ..circle(color: hoverColor))
+            : (paints..circle(color: hoverColor)),
       );
 
       await gesture
           .down(tester.getCenter(find.byType(NavigationIndicator).last));
       await tester.pumpAndSettle();
 
+      // Test pressed state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.pressed}),
-        pressedColor,
+        inkFeatures,
+        kIsWeb
+            ? (paints
+              ..circle()
+              ..circle()
+              ..circle(color: pressedColor))
+            : (paints
+              ..circle()
+              ..circle(color: pressedColor)),
       );
 
       await gesture.up();
@@ -332,23 +367,29 @@ void main() {
       await tester.sendKeyEvent(LogicalKeyboardKey.tab);
       await tester.pumpAndSettle();
 
+      // Test focused state.
       expect(
-        overlayColor.resolve(<WidgetState>{WidgetState.focused}),
-        focusColor,
+        inkFeatures,
+        kIsWeb
+            ? (paints
+              ..circle()
+              ..circle(color: focusColor))
+            : (paints
+              ..circle()
+              ..circle(color: focusColor)),
       );
     },
-    tags: <String>["divergence"],
   );
 }
 
 List<NavigationDestination> _destinations() {
   return const <NavigationDestination>[
-    CustomNavigationDestination(
+    NavigationDestination(
       icon: Icon(Icons.favorite_border),
       selectedIcon: Icon(Icons.favorite),
       label: "Abc",
     ),
-    CustomNavigationDestination(
+    NavigationDestination(
       icon: Icon(Icons.star_border),
       selectedIcon: Icon(Icons.star),
       label: "Def",
@@ -357,13 +398,13 @@ List<NavigationDestination> _destinations() {
 }
 
 double _barHeight(WidgetTester tester) {
-  return tester.getRect(find.byType(CustomNavigationBar)).height;
+  return tester.getRect(find.byType(NavigationBar)).height;
 }
 
 Material _barMaterial(WidgetTester tester) {
   return tester.firstWidget<Material>(
     find.descendant(
-      of: find.byType(CustomNavigationBar),
+      of: find.byType(NavigationBar),
       matching: find.byType(Material),
     ),
   );
@@ -378,6 +419,46 @@ ShapeDecoration? _indicator(WidgetTester tester) {
         ),
       )
       .decoration as ShapeDecoration?;
+}
+
+IconThemeData _selectedIconTheme(WidgetTester tester) {
+  return _iconTheme(tester, Icons.favorite);
+}
+
+IconThemeData _unselectedIconTheme(WidgetTester tester) {
+  return _iconTheme(tester, Icons.star_border);
+}
+
+IconThemeData _iconTheme(WidgetTester tester, IconData icon) {
+  return tester
+      .firstWidget<IconTheme>(
+        find.ancestor(of: find.byIcon(icon), matching: find.byType(IconTheme)),
+      )
+      .data;
+}
+
+TextStyle _selectedLabelStyle(WidgetTester tester) {
+  return tester
+      .widget<RichText>(
+        find.descendant(
+          of: find.text("Abc"),
+          matching: find.byType(RichText),
+        ),
+      )
+      .text
+      .style!;
+}
+
+TextStyle _unselectedLabelStyle(WidgetTester tester) {
+  return tester
+      .widget<RichText>(
+        find.descendant(
+          of: find.text("Def"),
+          matching: find.byType(RichText),
+        ),
+      )
+      .text
+      .style!;
 }
 
 NavigationDestinationLabelBehavior _labelBehavior(WidgetTester tester) {

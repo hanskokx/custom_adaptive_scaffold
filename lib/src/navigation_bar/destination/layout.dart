@@ -11,6 +11,7 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
   /// 3 [NavigationBar].
   const _NavigationBarDestinationLayout({
     required this.icon,
+    required this.iconKey,
     required this.itemKey,
     required this.label,
     this.padding = EdgeInsets.zero,
@@ -20,6 +21,12 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
   ///
   /// See [NavigationDestination.icon].
   final Widget icon;
+
+  /// The global key for the icon of this destination.
+  ///
+  /// This is used by [_IndicatorInkWell] to resolve icon bounds for
+  /// icon-scoped ink geometry.
+  final GlobalKey iconKey;
 
   /// The global key for the icon of this destination.
   ///
@@ -53,7 +60,9 @@ class _NavigationBarDestinationLayout extends StatelessWidget {
               children: <Widget>[
                 LayoutId(
                   id: _NavigationDestinationLayoutDelegate.iconId,
-                  child: icon,
+                  // The key is used by _IndicatorInkWell to query the icon
+                  // position when painting icon-scoped overlay/ripple.
+                  child: KeyedSubtree(key: iconKey, child: icon),
                 ),
                 LayoutId(
                   id: _NavigationDestinationLayoutDelegate.labelId,

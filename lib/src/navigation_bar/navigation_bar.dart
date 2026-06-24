@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "../../material.dart";
 import "../../navigation_bar_theme.dart";
-import "../_internal_material.dart";
 import "../navigation_destination.dart";
 import "destination.dart";
 import "destination_info.dart";
@@ -111,6 +111,7 @@ class NavigationBar extends StatelessWidget {
     this.height,
     this.labelBehavior,
     this.overlayColor,
+    this.labelTextStyle,
     this.labelPadding,
     this.maintainBottomViewPadding = false,
   })  : assert(destinations.length >= 2),
@@ -134,7 +135,7 @@ class NavigationBar extends StatelessWidget {
   /// the animation is increasing or completed, the destination is considered
   /// selected, when the animation is decreasing or dismissed, the destination
   /// is considered unselected.
-  final List<NavigationDestination> destinations;
+  final List<Widget> destinations;
 
   /// Called when one of the [destinations] is selected.
   ///
@@ -225,6 +226,19 @@ class NavigationBar extends StatelessWidget {
   /// the [NavigationDestination] is focused, hovered, or pressed.
   final WidgetStateProperty<Color?>? overlayColor;
 
+  //// The text style of the label.
+  ///
+  /// If null, [NavigationBarThemeData.labelTextStyle] is used. If that
+  /// is also null, the default text style is [TextTheme.labelMedium] with
+  /// [ColorScheme.onSurface] when the destination is selected, and
+  /// [ColorScheme.onSurfaceVariant] when the destination is unselected, and
+  /// [ColorScheme.onSurfaceVariant] with an opacity of 0.38 when the
+  /// destination is disabled.
+  ///
+  /// If [ThemeData.useMaterial3] is false, then the default text style is
+  /// [TextTheme.labelSmall] with [ColorScheme.onSurface].
+  final WidgetStateProperty<TextStyle?>? labelTextStyle;
+
   /// The padding around the [NavigationDestination.label] widget.
   ///
   /// When [labelPadding] is null, [NavigationBarThemeData.labelPadding]
@@ -239,6 +253,14 @@ class NavigationBar extends StatelessWidget {
   final bool maintainBottomViewPadding;
 
   VoidCallback _handleTap(int index) {
+    if (destinations[index] is NavigationDestination) {
+      final NavigationDestination destination =
+          destinations[index] as NavigationDestination;
+      if (!destination.enabled) {
+        return () {};
+      }
+    }
+
     return onDestinationSelected != null
         ? () => onDestinationSelected!(index)
         : () {};
@@ -277,8 +299,18 @@ class NavigationBar extends StatelessWidget {
           height: effectiveHeight,
           child: Row(
             children: List<Widget>.generate(destinations.length, (int i) {
+              final Widget destinationWidget = destinations[i];
               final NavigationBarDestination destination =
-                  destinations[i].toBarDestination();
+                  destinationWidget is NavigationBarDestination
+                      ? destinationWidget
+                      : destinationWidget is NavigationDestination
+                          ? destinationWidget.toBarDestination()
+                          : NavigationBarDestination(
+                              icon: KeyedSubtree(
+                                key: destinationWidget.key,
+                                child: destinationWidget,
+                              ),
+                            );
 
               return Expanded(
                 child: SelectableAnimatedBuilder(
@@ -295,8 +327,9 @@ class NavigationBar extends StatelessWidget {
                       indicatorColor: indicatorColor,
                       indicatorShape: effectiveIndicatorShape,
                       overlayColor: overlayColor,
+                      labelTextStyle: labelTextStyle,
                       labelPadding: labelPadding,
-                      onTap: _handleTap.call(i),
+                      onTap: destination.enabled ? _handleTap.call(i) : () {},
                       child: destination,
                     );
                   },

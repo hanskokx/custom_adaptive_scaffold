@@ -1,4 +1,4 @@
-import "_internal_material.dart";
+import "../material.dart";
 import "navigation_bar/destination.dart";
 import "navigation_rail/destination.dart";
 import "navigation_rail/navigation_rail.dart";
@@ -30,7 +30,7 @@ typedef CustomNavigationDestination = NavigationDestination;
 ///
 /// This widget is a drop-in replacement for Flutter's `NavigationDestination`
 /// with additional properties for [margin], [padding], [indicatorColor],
-/// [indicatorShape], and [disabled] state, plus conversion helpers
+/// [indicatorShape], and [enabled] state, plus conversion helpers
 /// [toRailDestination] and [toBarDestination].
 ///
 /// {@tool snippet}
@@ -76,18 +76,18 @@ class NavigationDestination extends StatelessWidget {
     this.indicatorShape,
     this.margin,
     this.padding,
-    this.disabled = false,
+    this.enabled = true,
     this.tooltip,
   })  : selectedIcon = selectedIcon ?? icon,
         _labelText = label;
 
-  /// Indicates that this destination is not selectable.
+  /// Indicates that this destination is selectable.
   ///
-  /// Tapping a disabled destination has no effect. The icon and label are
-  /// rendered with a reduced-opacity style to communicate the disabled state.
+  /// Tapping an enabled destination has an effect. The icon and label are
+  /// rendered with a normal-opacity style to communicate the enabled state.
   ///
-  /// Defaults to `false`.
-  final bool disabled;
+  /// Defaults to `true`.
+  final bool enabled;
 
   /// The [Widget] (usually an [Icon]) that is displayed for this destination
   /// when it is not selected.
@@ -169,6 +169,10 @@ class NavigationDestination extends StatelessWidget {
   // Internal: converts to a [NavigationRailDestination].
   // Not part of the public API — use [AdaptiveScaffold.toRailDestination] instead.
   NavigationRailDestination toRailDestination() {
+    // Preserve explicit empty-string tooltips ("") so suppression semantics
+    // are kept, while still forwarding label fallback when tooltip is null.
+    final String? railTooltip = tooltip ?? tooltipMessage;
+
     return NavigationRailDestination(
       icon: icon,
       label: _labelWidget,
@@ -177,8 +181,8 @@ class NavigationDestination extends StatelessWidget {
       indicatorShape: indicatorShape,
       margin: margin,
       padding: padding,
-      disabled: disabled,
-      tooltip: tooltipMessage,
+      disabled: !enabled,
+      tooltip: railTooltip,
     );
   }
 
@@ -186,6 +190,7 @@ class NavigationDestination extends StatelessWidget {
   // Not part of the public API.
   NavigationBarDestination toBarDestination() {
     return NavigationBarDestination(
+      key: key,
       icon: icon,
       label: label,
       selectedIcon: selectedIcon,
@@ -193,8 +198,9 @@ class NavigationDestination extends StatelessWidget {
       indicatorShape: indicatorShape,
       margin: margin,
       padding: padding,
-      disabled: disabled,
-      tooltip: tooltipMessage,
+      enabled: enabled,
+      // Forward raw tooltip so explicit empty-string suppression is preserved.
+      tooltip: tooltip,
     );
   }
 

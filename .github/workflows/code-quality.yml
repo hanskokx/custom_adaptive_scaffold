@@ -1,0 +1,45 @@
+name: Flutter Lint & Test
+run-name: ${{ github.actor }} is checking code quality 🚀
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "**/*.dart"
+      - "**/pubspec.yaml"
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check for linting errors
+        run: flutter analyze
+
+      - name: Check for formatting issues
+        run: dart format --set-exit-if-changed ./
+
+      - name: Run tests
+        run: flutter test

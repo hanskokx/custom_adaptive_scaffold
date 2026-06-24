@@ -1,14 +1,13 @@
 part of "../navigation_rail.dart";
 
-class IndicatorInkWell extends InkResponse {
-  const IndicatorInkWell({
+class _IndicatorInkWell extends InkResponse {
+  const _IndicatorInkWell({
     required this.useMaterial3,
     required this.indicatorOffset,
     required this.applyXOffset,
     required this.textDirection,
     required this.indicatorWidth,
     required this.disableFullItemInk,
-    super.key,
     super.child,
     super.onTap,
     super.statesController,

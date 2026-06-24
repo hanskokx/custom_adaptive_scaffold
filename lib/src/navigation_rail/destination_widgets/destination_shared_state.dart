@@ -86,18 +86,23 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
 
   @override
   Widget build(BuildContext context) {
+    final CustomNavigationRailThemeData? maybeExplicitRailTheme =
+        NavigationRailTheme.maybeOf(context);
     final CustomNavigationRailThemeData explicitRailTheme =
-        NavigationRailTheme.maybeOf(context) ??
-            const CustomNavigationRailThemeData();
+        maybeExplicitRailTheme ?? const CustomNavigationRailThemeData();
     final CustomNavigationRailThemeData railTheme =
         NavigationRailTheme.of(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         explicitRailTheme.navigationItemOverlayColor;
     final bool hasExplicitNavigationItemIndicatorShape =
         explicitRailTheme.navigationItemIndicatorShape != null;
-    final bool disableFullItemInk =
-        effectiveNavigationItemOverlayColor == null &&
-            !hasExplicitNavigationItemIndicatorShape;
+    final bool hasExplicitCustomInkOverride =
+        effectiveNavigationItemOverlayColor != null ||
+            hasExplicitNavigationItemIndicatorShape;
+    final bool useFrameworkDefaultInk = !hasExplicitCustomInkOverride;
+    final bool disableFullItemInk = useFrameworkDefaultInk ||
+        (effectiveNavigationItemOverlayColor == null &&
+            !hasExplicitNavigationItemIndicatorShape);
     final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
     final WidgetStateProperty<Color?> iconOverlayColor =
         WidgetStateProperty.resolveWith((Set<WidgetState> states) {
@@ -122,16 +127,33 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
       return null;
     });
     final WidgetStateProperty<Color?> effectiveInkOverlayColor =
-        disableFullItemInk
-            ? iconOverlayColor
-            : effectiveNavigationItemOverlayColor ?? fullItemOverlayColor;
+        useFrameworkDefaultInk
+            ? effectiveNavigationItemOverlayColor ?? fullItemOverlayColor
+            : (disableFullItemInk
+                ? iconOverlayColor
+                : effectiveNavigationItemOverlayColor ?? fullItemOverlayColor);
     final ShapeBorder? effectiveNavigationItemIndicatorShape =
-        disableFullItemInk
-            ? null
-            : explicitRailTheme.navigationItemIndicatorShape ??
+        useFrameworkDefaultInk
+            ? (explicitRailTheme.navigationItemIndicatorShape ??
                 explicitRailTheme.indicatorShape ??
                 railTheme.indicatorShape ??
-                const StadiumBorder();
+                const StadiumBorder())
+            : (disableFullItemInk
+                ? null
+                : explicitRailTheme.navigationItemIndicatorShape ??
+                    explicitRailTheme.indicatorShape ??
+                    railTheme.indicatorShape ??
+                    const StadiumBorder());
+
+    // M2 uses a circular 56x56 selected indicator; M3 uses the 56x32 pill.
+    // Keep width clamped for narrow rails to match framework paint behavior.
+    final double selectedIndicatorWidth = !widget.material3
+        ? widget.indicatorWidth
+        : (widget.minWidth < widget.indicatorWidth
+            ? widget.minWidth
+            : widget.indicatorWidth);
+    final double selectedIndicatorHeight =
+        widget.material3 ? _kIndicatorHeight : widget.indicatorWidth;
 
     final Widget iconInteractionIndicator = widget.centerIndicatorHorizontally
         ? Positioned.fill(
@@ -144,21 +166,22 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
                 child: NavigationIndicator(
                   animation: widget.selectionAnimation,
                   color: widget.indicatorColor,
-                  width: widget.indicatorWidth,
-                  height: _kIndicatorHeight,
+                  width: selectedIndicatorWidth,
+                  height: selectedIndicatorHeight,
                   shape: widget.indicatorShape,
                 ),
               ),
             ),
           )
-        : Positioned(
-            left: widget.indicatorOffset.dx - widget.indicatorWidth / 2,
+        : Positioned.directional(
+            textDirection: widget.textDirection,
+            start: widget.indicatorOffset.dx - selectedIndicatorWidth / 2,
             top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
             child: NavigationIndicator(
               animation: widget.selectionAnimation,
               color: widget.indicatorColor,
-              width: widget.indicatorWidth,
-              height: _kIndicatorHeight,
+              width: selectedIndicatorWidth,
+              height: selectedIndicatorHeight,
               shape: widget.indicatorShape,
             ),
           );
@@ -171,7 +194,7 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         // so splash/hover renders on top of the pill rather than behind it.
         Material(
           type: MaterialType.transparency,
-          child: IndicatorInkWell(
+          child: _IndicatorInkWell(
             onTap: widget.disabled ? null : widget.onTap,
             borderRadius: BorderRadius.all(
               Radius.circular(widget.minWidth / 2.0),
@@ -200,7 +223,6 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
     return Semantics(
       container: true,
       selected: widget.selected,
-      enabled: !widget.disabled,
       child: Material(
         type: MaterialType.transparency,
         child: DestinationTooltip(

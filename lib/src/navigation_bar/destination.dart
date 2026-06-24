@@ -1,5 +1,7 @@
+import "package:flutter/foundation.dart" show kIsWeb;
+
+import "../../material.dart";
 import "../../navigation_bar_theme.dart";
-import "../_internal_material.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
 import "../navigation_shared/destination_build_data.dart";
@@ -56,7 +58,7 @@ class NavigationBarDestination extends NavigationDestination {
     super.indicatorShape,
     super.margin,
     super.padding,
-    super.disabled,
+    super.enabled,
     super.tooltip,
   });
 
@@ -88,7 +90,7 @@ class NavigationBarDestination extends NavigationDestination {
         ),
         label: Text(label),
         tooltip: tooltip,
-        disabled: disabled,
+        disabled: !enabled,
         animation: animation,
         color: indicatorColor,
         shape: indicatorShape,
@@ -115,7 +117,7 @@ class NavigationBarDestination extends NavigationDestination {
               icon: activeIcon,
               label: Text(label),
               selected: isSelected,
-              disabled: disabled,
+              disabled: !enabled,
               destinationAnimation: animation,
               indicatorShape: indicatorShape,
             ),
@@ -131,20 +133,33 @@ class NavigationBarDestination extends NavigationDestination {
                 width: data.minWidth,
                 height: _kIndicatorHeight,
               ),
-              NavigationIcon(
-                icon: data.themedIcon,
-                minWidth: data.minWidth,
-                material3: data.material3,
-                height: _kIndicatorHeight,
-                addSpacing: false,
-                direction: Axis.vertical,
+              Builder(
+                builder: (BuildContext context) {
+                  final NavigationDestinationInfo destinationInfo =
+                      NavigationDestinationInfo.of(context);
+                  final bool selectedForKey =
+                      destinationInfo.index == destinationInfo.selectedIndex;
+                  return KeyedSubtree(
+                    key: ValueKey<String>(
+                      "bar-ink-icon-${destinationInfo.index}-${selectedForKey ? "selected" : "unselected"}",
+                    ),
+                    child: NavigationIcon(
+                      icon: data.themedIcon,
+                      minWidth: data.minWidth,
+                      material3: data.material3,
+                      height: _kIndicatorHeight,
+                      addSpacing: false,
+                      direction: Axis.vertical,
+                    ),
+                  );
+                },
               ),
             ],
           );
         },
         buildLabel: (BuildContext context) {
           // Label styling is already resolved by the strategy and stored in
-          // data.styledLabel, but the bar label wrapper needs the padding and
+          // [data.styledLabel], but the bar label wrapper needs the padding and
           // text-scale clamping applied here.  We resolve label style directly
           // from the bar theme to avoid calling the strategy twice.
           final NavigationDestinationInfo currentInfo =
@@ -157,12 +172,13 @@ class NavigationBarDestination extends NavigationDestination {
               navigationBarDefaultsFor(context);
 
           final Set<WidgetState> widgetState = {
-            if (disabled) WidgetState.disabled,
-            if (isSelected && !disabled) WidgetState.selected,
+            if (!enabled) WidgetState.disabled,
+            if (isSelected && enabled) WidgetState.selected,
           };
 
           final TextStyle? textStyle =
-              barTheme.labelTextStyle?.resolve(widgetState) ??
+              currentInfo.labelTextStyle?.resolve(widgetState) ??
+                  barTheme.labelTextStyle?.resolve(widgetState) ??
                   defaults.labelTextStyle!.resolve(widgetState);
 
           return Padding(

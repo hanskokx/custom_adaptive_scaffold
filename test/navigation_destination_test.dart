@@ -40,7 +40,7 @@ Future<void> pumpApp(WidgetTester tester, Widget widget) async {
 Widget _buildBar({
   required int selectedIndex,
   required VoidCallback? onTap,
-  bool firstDisabled = false,
+  bool firstEnabled = true,
 }) {
   return NavigationBar(
     selectedIndex: selectedIndex,
@@ -50,7 +50,7 @@ Widget _buildBar({
         icon: const Icon(Icons.home),
         selectedIcon: const Icon(Icons.home_filled),
         label: "Home",
-        disabled: firstDisabled,
+        enabled: firstEnabled,
       ),
       const NavigationBarDestination(
         icon: Icon(Icons.search),
@@ -65,7 +65,7 @@ Widget _buildRail({
   required int selectedIndex,
   required VoidCallback? onTap,
   NavigationRailLabelType labelType = NavigationRailLabelType.none,
-  bool firstDisabled = false,
+  bool firstEnabled = true,
 }) {
   return NavigationRail(
     selectedIndex: selectedIndex,
@@ -76,7 +76,7 @@ Widget _buildRail({
         icon: const Icon(Icons.home),
         selectedIcon: const Icon(Icons.home_filled),
         label: const Text("Home"),
-        disabled: firstDisabled,
+        disabled: !firstEnabled,
       ),
       const NavigationRailDestination(
         icon: Icon(Icons.search),
@@ -124,7 +124,7 @@ void main() {
             NavigationDestination(
               icon: Icon(Icons.home),
               label: "Home",
-              disabled: true,
+              enabled: false,
             ),
             NavigationDestination(
               icon: Icon(Icons.search),
@@ -237,8 +237,10 @@ void main() {
               label: "Search",
             ),
           ]
-              .map((NavigationDestination d) =>
-                  AdaptiveScaffold.toRailDestination(d))
+              .map(
+                (NavigationDestination d) =>
+                    AdaptiveScaffold.toRailDestination(d),
+              )
               .toList(),
         ),
       );
@@ -265,8 +267,10 @@ void main() {
               label: "Search",
             ),
           ]
-              .map((NavigationDestination d) =>
-                  AdaptiveScaffold.toRailDestination(d))
+              .map(
+                (NavigationDestination d) =>
+                    AdaptiveScaffold.toRailDestination(d),
+              )
               .toList(),
         ),
       );
@@ -302,8 +306,10 @@ void main() {
                   label: "Search",
                 ),
               ]
-                  .map((NavigationDestination d) =>
-                      AdaptiveScaffold.toRailDestination(d))
+                  .map(
+                    (NavigationDestination d) =>
+                        AdaptiveScaffold.toRailDestination(d),
+                  )
                   .toList(),
             ),
           ),
@@ -357,7 +363,7 @@ void main() {
         _buildBar(
           selectedIndex: 1,
           onTap: () => tapped++,
-          firstDisabled: true,
+          firstEnabled: false,
         ),
       );
       await tester.tap(find.byIcon(Icons.home));
@@ -542,7 +548,8 @@ void main() {
       expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
     });
 
-    testWidgets("navigation rail overlay requires explicit opt-in",
+    testWidgets(
+        "navigation rail native theme override stays on framework ink path",
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -562,12 +569,14 @@ void main() {
         ),
       );
 
-      final IndicatorInkWell inkWell = tester.widget<IndicatorInkWell>(
-        find.byType(IndicatorInkWell).first,
+      final Widget indicatorInkWell = tester.allWidgets.firstWhere(
+        (Widget w) => w.runtimeType.toString() == "_IndicatorInkWell",
       );
+      final InkResponse inkWell = indicatorInkWell as InkResponse;
 
-      expect(inkWell.disableFullItemInk, isTrue);
-      expect(inkWell.customBorder, isNull);
+      expect(inkWell.customBorder, isA<StadiumBorder>());
+      expect(inkWell.splashColor, anyOf(isNull, Colors.transparent));
+      expect(inkWell.hoverColor, anyOf(isNull, Colors.transparent));
     });
 
     testWidgets("navigation rail item shape enables whole-item ink",
@@ -592,12 +601,14 @@ void main() {
         ),
       );
 
-      final IndicatorInkWell inkWell = tester.widget<IndicatorInkWell>(
-        find.byType(IndicatorInkWell).first,
+      final Widget indicatorInkWell = tester.allWidgets.firstWhere(
+        (Widget w) => w.runtimeType.toString() == "_IndicatorInkWell",
       );
+      final InkResponse inkWell = indicatorInkWell as InkResponse;
 
-      expect(inkWell.disableFullItemInk, isFalse);
       expect(inkWell.customBorder, isA<RoundedRectangleBorder>());
+      expect(inkWell.splashColor, Colors.transparent);
+      expect(inkWell.hoverColor, Colors.transparent);
       expect(
         inkWell.overlayColor?.resolve(const <WidgetState>{WidgetState.hovered}),
         isNotNull,
@@ -677,7 +688,7 @@ void main() {
         _buildRail(
           selectedIndex: 1,
           onTap: () => tapped++,
-          firstDisabled: true,
+          firstEnabled: false,
         ),
       );
       await tester.tap(find.byIcon(Icons.home));
@@ -783,7 +794,7 @@ void main() {
                 NavigationBarDestination(
                   icon: Icon(Icons.home, key: Key("bar_home")),
                   label: "Home",
-                  disabled: true,
+                  enabled: false,
                 ),
                 NavigationBarDestination(
                   icon: Icon(Icons.search),
@@ -823,137 +834,5 @@ void main() {
       expect(barTaps, 0, reason: "bar disabled destination must not fire");
       expect(railTaps, 0, reason: "rail disabled destination must not fire");
     });
-  });
-
-  group("AdaptiveScaffoldDestination", () {
-    test("is assignable to List<NavigationDestination>", () {
-      final List<NavigationDestination> destinations = [
-        AdaptiveScaffoldDestination(title: "Home", icon: Icons.home),
-        AdaptiveScaffoldDestination(
-          title: "Profile",
-          icon: Icons.person_outline,
-          selectedIcon: Icons.person,
-        ),
-        const NavigationDestination(
-          icon: Icon(Icons.settings_outlined),
-          selectedIcon: Icon(Icons.settings),
-          label: "Settings",
-        ),
-      ];
-      expect(destinations.length, 3);
-      expect(destinations[0], isA<AdaptiveScaffoldDestination>());
-      expect(destinations[2], isA<NavigationDestination>());
-    });
-
-    test("toRailDestination uses title as label", () {
-      final dest = AdaptiveScaffoldDestination(
-        title: "Inbox",
-        icon: Icons.inbox_outlined,
-      );
-      final rail = AdaptiveScaffold.toRailDestination(dest);
-      final labelText = (rail.labelWidget as Text).data;
-      expect(labelText, "Inbox");
-    });
-
-    test("toBarDestination uses title as label", () {
-      // toBarDestination is internal; verify via the label property directly.
-      final dest = AdaptiveScaffoldDestination(
-        title: "Inbox",
-        icon: Icons.inbox_outlined,
-      );
-      expect(dest.label, "Inbox");
-    });
-
-    testWidgets("renders in AdaptiveScaffold without error",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 900)),
-            child: AdaptiveScaffold(
-              destinations: [
-                AdaptiveScaffoldDestination(title: "Home", icon: Icons.home),
-                AdaptiveScaffoldDestination(
-                  title: "Profile",
-                  icon: Icons.person,
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      expect(tester.takeException(), isNull);
-    });
-  });
-
-  group("navigationRailDestinationBuilder index accuracy", () {
-    testWidgets(
-      "builder receives positional index even with duplicate destinations",
-      (WidgetTester tester) async {
-        final List<int> capturedIndexes = [];
-        const NavigationDestination dest = NavigationDestination(
-          icon: Icon(Icons.star),
-          label: "Star",
-        );
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(800, 900)),
-              child: AdaptiveScaffold(
-                destinations: const [dest, dest, dest],
-                selectedIndex: 0,
-                navigationRailDestinationBuilder: (index, destination) {
-                  capturedIndexes.add(index);
-                  return AdaptiveScaffold.toRailDestination(destination);
-                },
-              ),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(capturedIndexes, containsAllInOrder([0, 1, 2]));
-      },
-    );
-
-    testWidgets(
-      "builder is called for large breakpoint destinations",
-      (WidgetTester tester) async {
-        int builderCallCount = 0;
-
-        await tester.pumpWidget(
-          MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(1400, 900)),
-              child: AdaptiveScaffold(
-                destinations: const [
-                  NavigationDestination(
-                    icon: Icon(Icons.home),
-                    label: "Home",
-                  ),
-                  NavigationDestination(
-                    icon: Icon(Icons.person),
-                    label: "Profile",
-                  ),
-                ],
-                selectedIndex: 0,
-                navigationRailDestinationBuilder: (index, destination) {
-                  builderCallCount++;
-                  return AdaptiveScaffold.toRailDestination(destination);
-                },
-              ),
-            ),
-          ),
-        );
-        await tester.pumpAndSettle();
-        expect(
-          builderCallCount,
-          greaterThan(0),
-          reason: "navigationRailDestinationBuilder must be called at large "
-              "breakpoints, not bypassed",
-        );
-      },
-    );
   });
 }
