@@ -568,12 +568,14 @@ void main() {
         ),
       );
 
-      final _IndicatorInkWell inkWell = tester.widget<_IndicatorInkWell>(
-        find.byType(_IndicatorInkWell).first,
+      final Widget indicatorInkWell = tester.allWidgets.firstWhere(
+        (Widget w) => w.runtimeType.toString() == "_IndicatorInkWell",
       );
+      final InkResponse inkWell = indicatorInkWell as InkResponse;
 
-      expect(inkWell.disableFullItemInk, isTrue);
       expect(inkWell.customBorder, isNull);
+      expect(inkWell.splashColor, isNull);
+      expect(inkWell.hoverColor, isNull);
     });
 
     testWidgets("navigation rail item shape enables whole-item ink",
@@ -598,12 +600,14 @@ void main() {
         ),
       );
 
-      final _IndicatorInkWell inkWell = tester.widget<_IndicatorInkWell>(
-        find.byType(_IndicatorInkWell).first,
+      final Widget indicatorInkWell = tester.allWidgets.firstWhere(
+        (Widget w) => w.runtimeType.toString() == "_IndicatorInkWell",
       );
+      final InkResponse inkWell = indicatorInkWell as InkResponse;
 
-      expect(inkWell.disableFullItemInk, isFalse);
       expect(inkWell.customBorder, isA<RoundedRectangleBorder>());
+      expect(inkWell.splashColor, Colors.transparent);
+      expect(inkWell.hoverColor, Colors.transparent);
       expect(
         inkWell.overlayColor?.resolve(const <WidgetState>{WidgetState.hovered}),
         isNotNull,
