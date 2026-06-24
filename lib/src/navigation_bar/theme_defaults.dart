@@ -50,7 +50,7 @@ class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
   }
 
   @override
-  Color? get indicatorColor => _colors.secondary.withValues(alpha: 0.24);
+  Color? get indicatorColor => _colors.secondary.withValues(alpha: 61 / 255);
 
   @override
   WidgetStateProperty<TextStyle?>? get labelTextStyle =>
