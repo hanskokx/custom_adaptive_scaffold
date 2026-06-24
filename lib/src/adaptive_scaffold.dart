@@ -408,6 +408,11 @@ class AdaptiveScaffold extends StatefulWidget {
     TextStyle? unSelectedLabelTextStyle,
     NavigationRailLabelType? labelType = NavigationRailLabelType.none,
     EdgeInsetsGeometry? padding,
+    bool? showLabelsWhenCollapsed,
+    bool? leadingAtTop,
+    bool? trailingAtBottom,
+    bool? scrollable,
+    MainAxisAlignment? mainAxisAlignment,
   }) {
     if (extended && width == 72) {
       width = 192;
@@ -439,6 +444,11 @@ class AdaptiveScaffold extends StatefulWidget {
                         unselectedIconTheme: unselectedIconTheme,
                         selectedLabelTextStyle: selectedLabelTextStyle,
                         unselectedLabelTextStyle: unSelectedLabelTextStyle,
+                        showLabelsWhenCollapsed: showLabelsWhenCollapsed,
+                        leadingAtTop: leadingAtTop ?? true,
+                        trailingAtBottom: trailingAtBottom ?? false,
+                        scrollable: scrollable ?? false,
+                        mainAxisAlignment: mainAxisAlignment,
                         destinations: destinations
                             .map((e) => e.toRailDestination())
                             .toList(),
