@@ -177,7 +177,8 @@ class NavigationBarDestination extends NavigationDestination {
           };
 
           final TextStyle? textStyle =
-              barTheme.labelTextStyle?.resolve(widgetState) ??
+              currentInfo.labelTextStyle?.resolve(widgetState) ??
+                  barTheme.labelTextStyle?.resolve(widgetState) ??
                   defaults.labelTextStyle!.resolve(widgetState);
 
           return Padding(
