@@ -15,6 +15,5 @@ export "src/navigation_bar/navigation_bar.dart";
 export "src/navigation_destination.dart";
 export "src/navigation_rail/destination.dart";
 export "src/navigation_rail/navigation_rail.dart";
-export "src/navigation_shared/adaptive_scaffold_destination.dart";
 export "src/navigation_shared/navigation_indicator.dart";
 export "src/slot_layout.dart";
