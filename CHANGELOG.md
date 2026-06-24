@@ -1,82 +1,61 @@
 ## 5.0.0
 
-This release is a near-complete rewrite of the navigation layer. The package
-now more closely mirrors the look, feel, and API of the corresponding Flutter
-framework widgets, while maintaining feature parity with 4.x through a
-redesigned extension surface described below.
+This release is a near-complete rewrite of the navigation layer. The package now more closely mirrors the look, feel, and API of the corresponding Flutter framework widgets, while maintaining feature parity with 4.x through a redesigned extension surface described below.
+
+Furthermore, great care was taken in porting over the latest changes from the Flutter framework to capture any upstream changes which includes bugfixes. In addition to this, the entire suite of upstream tests were brought into this package and now all pass when using the default package configuration.
+
+This release represents a massive milestone in stability and maturity for this package, as I strive to become the de-facto standard replacement for the work that the Flutter team will/has deprecate(d).
+
+The future 6.0.0 release of this package will seek to remove Material 2 support, as it is no longer supported by default in the Material package.
 
 ### Breaking changes
 
-* All 4.x navigation customization APIs have been removed. Feature parity is
-  maintained; see **Migration from 4.x** below for the new equivalents.
+* All 4.x navigation customization APIs have been removed. Feature parity is maintained; see **Migration from 4.x** below for the new equivalents.
 
   Removed APIs:
-  * `NavigationDestinationRegion` enum and `destinationFillRegion` /
-    `destinationHoverRegion` parameters.
-  * `AdaptiveScaffoldNavigationThemeData` and the `navigationTheme` parameter
-    on `AdaptiveScaffold`.
+  * `NavigationDestinationRegion` enum and `destinationFillRegion` / `destinationHoverRegion` parameters.
+  * `AdaptiveScaffoldNavigationThemeData` and the `navigationTheme` parameter on `AdaptiveScaffold`.
   * `destinationFillShape` and `destinationHoverShape` parameters.
-  * `NavigationDestinationAnimation` enum and the `transitionAnimation`,
-    `transitionCurve`, `transitionDuration`, `iconBuilder`,
-    `transitionBuilder`, `iconIndicatorShape`, and `labelIndicatorShape`
-    parameters on `CustomNavigationDestination`.
-  * `NavigationDestinationIconBuilder` and
-    `NavigationDestinationTransitionBuilder` typedefs.
+  * `NavigationDestinationAnimation` enum and the `transitionAnimation`, `transitionCurve`, `transitionDuration`, `iconBuilder`, `transitionBuilder`, `iconIndicatorShape`, and `labelIndicatorShape` parameters on `CustomNavigationDestination`.
+  * `NavigationDestinationIconBuilder` and `NavigationDestinationTransitionBuilder` typedefs.
   * `hideLabel` on destinations.
 
 ### New APIs
 
-* `NavigationDestination` is now the package's own full base class (not a
-  thin wrapper around Flutter's widget). It can be used directly or
+* `NavigationDestination` is now the package's own full base class (not a thin wrapper around Flutter's widget). It can be used directly or
   subclassed. `CustomNavigationDestination` remains as a typedef alias.
 * New `NavigationBarDestination` subclass for bar-specific rendering.
 * New `NavigationRailDestination` subclass for rail-specific rendering.
-* `NavigationBarThemeData` and `NavigationRailThemeData` are now
-  package-owned classes implementing the Flutter framework interfaces.
-  `CustomNavigationBarThemeData`, `CustomNavigationBarTheme`,
-  `CustomNavigationRailThemeData`, and `CustomNavigationRailTheme` are
-  typedef aliases for the package types.
+* `NavigationBarThemeData` and `NavigationRailThemeData` are now package-owned classes implementing the Flutter framework interfaces.
+  `CustomNavigationBarThemeData`, `CustomNavigationBarTheme`, `CustomNavigationRailThemeData`, and `CustomNavigationRailTheme` are typedef aliases for the package types.
 * Both theme types gain the following fields not present in Flutter or 4.x:
-  * `destinationOverlayColor` — overlay colors for the full destination
-    item container by widget state (replaces `destinationFillRegion`).
-  * `navigationItemIndicatorShape` — shape for the full-item ink well
-    (replaces `destinationFillShape` / `destinationHoverShape`).
+  * `destinationOverlayColor` — overlay colors for the full destination item container by widget state (replaces `destinationFillRegion`).
+  * `navigationItemIndicatorShape` — shape for the full-item ink well (replaces `destinationFillShape` / `destinationHoverShape`).
   * `margin` — margin around each navigation item.
   * `padding` — padding inside each navigation item content area.
-  * `tooltipOffset` — x/y offset for tooltip popovers (replaces
-    `tooltipVerticalOffset`).
+  * `tooltipOffset` — x/y offset for tooltip popovers (replaces `tooltipVerticalOffset`).
   * `tooltipTrigger` — gesture that triggers the tooltip.
   * `tooltipTriggerWhenLabelVisible` — override trigger when label is shown.
   * `tooltipTriggerWhenLabelHidden` — override trigger when label is hidden.
-* `NavigationRailThemeData` additionally gains `showLabelsWhenCollapsed` —
-  show labels while the rail is collapsed and `labelType` is
-  `NavigationRailLabelType.none` (new capability not present in 4.x).
-* `NavigationDestination` gains per-destination `indicatorShape` (replaces
-  per-destination `iconIndicatorShape` / `labelIndicatorShape` from 4.x).
+* `NavigationRailThemeData` additionally gains `showLabelsWhenCollapsed` — show labels while the rail is collapsed and `labelType` is `NavigationRailLabelType.none` (new capability not present in 4.x).
+* `NavigationDestination` gains per-destination `indicatorShape` (replaces per-destination `iconIndicatorShape` / `labelIndicatorShape` from 4.x).
 
 ### Fixes and improvements
 
-* `AdaptiveScaffold.destinations` is no longer `required` and defaults to
-  `const []`, allowing 0 or 1 destinations without assertion errors.
-* Bottom navigation bar is suppressed when fewer than 2 destinations are
-  provided, matching the underlying `NavigationBar` widget's constraint.
-* `selectedIndex` is now normalized at the `AdaptiveScaffold` boundary: if
-  the index is out of range or destinations is empty, `null` is passed to
+* `AdaptiveScaffold.destinations` is no longer `required` and defaults to `const []`, allowing 0 or 1 destinations without assertion errors.
+* Bottom navigation bar is suppressed when fewer than 2 destinations are provided, matching the underlying `NavigationBar` widget's constraint.
+* `selectedIndex` is now normalized at the `AdaptiveScaffold` boundary: if the index is out of range or destinations is empty, `null` is passed to
   navigation components to avoid downstream assertion failures.
-* All rail breakpoints (medium, mediumLarge, large, extraLarge) now share a
-  single destination conversion pipeline that consistently applies
-  `navigationRailDestinationBuilder` when provided. Previously, the large and
-  extraLarge breakpoints bypassed the custom builder.
-* Fixed a bug where duplicate destinations in the list caused
-  `navigationRailDestinationBuilder` to receive the first-match index instead
+* All rail breakpoints (medium, mediumLarge, large, extraLarge) now share a single destination conversion pipeline that consistently applies
+  `navigationRailDestinationBuilder` when provided. Previously, the large and extraLarge breakpoints bypassed the custom builder.
+* Fixed a bug where duplicate destinations in the list caused `navigationRailDestinationBuilder` to receive the first-match index instead
   of the positional index.
 
 ### Migration from 4.x
 
 #### Full-item fill / highlight region
 
-The `destinationFillRegion` / `destinationHoverRegion` / `destinationFillShape` /
-`destinationHoverShape` parameters are replaced by theme data properties.
+The `destinationFillRegion` / `destinationHoverRegion` / `destinationFillShape` / `destinationHoverShape` parameters are replaced by theme data properties.
 
 ```dart
 // 4.x — destination fill covering the entire item row:
@@ -100,15 +79,11 @@ theme: ThemeData(
 ),
 ```
 
-To use the default icon-only rendering (equivalent to 4.x's
-`NavigationDestinationRegion.icon`, and the current default when
-`destinationOverlayColor` is `null`), simply omit
-`destinationOverlayColor` from the theme.
+To use the default icon-only rendering (equivalent to 4.x's `NavigationDestinationRegion.icon`, and the current default when `destinationOverlayColor` is `null`), simply omit `destinationOverlayColor` from the theme.
 
 #### Label type per breakpoint
 
-The `AdaptiveScaffoldNavigationThemeData(compactLabelType: ..., expandedLabelType: ...)`
-pattern is replaced by standard `NavigationRailThemeData.labelType`.
+The `AdaptiveScaffoldNavigationThemeData(compactLabelType: ..., expandedLabelType: ...)` pattern is replaced by standard `NavigationRailThemeData.labelType`.
 
 ```dart
 // 4.x:
@@ -185,12 +160,7 @@ NavigationBarThemeData(
 
 #### Destination transition animations
 
-`NavigationDestinationAnimation` (`none`, `fadeSwap`, `scale`) and the related
-`transitionAnimation`, `transitionCurve`, `transitionDuration`, `iconBuilder`,
-and `transitionBuilder` destination parameters are not present in this version.
-The icon/label transition uses the standard Flutter selection animation. Custom
-icon transition logic can be implemented by subclassing [NavigationDestination]
-and overriding `build`.
+`NavigationDestinationAnimation` (`none`, `fadeSwap`, `scale`) and the related `transitionAnimation`, `transitionCurve`, `transitionDuration`, `iconBuilder`, and `transitionBuilder` destination parameters are not present in this version. The icon/label transition uses the standard Flutter selection animation. Custom icon transition logic can be implemented by subclassing [NavigationDestination] and overriding `build`.
 
 ## 4.1.0
 
