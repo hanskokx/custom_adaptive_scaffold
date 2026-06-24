@@ -169,6 +169,10 @@ class NavigationDestination extends StatelessWidget {
   // Internal: converts to a [NavigationRailDestination].
   // Not part of the public API — use [AdaptiveScaffold.toRailDestination] instead.
   NavigationRailDestination toRailDestination() {
+    if (this is NavigationRailDestination) {
+      return this as NavigationRailDestination;
+    }
+
     // Preserve explicit empty-string tooltips ("") so suppression semantics
     // are kept, while still forwarding label fallback when tooltip is null.
     final String? railTooltip = tooltip ?? tooltipMessage;
@@ -189,6 +193,10 @@ class NavigationDestination extends StatelessWidget {
   // Internal: converts to a [NavigationBarDestination].
   // Not part of the public API.
   NavigationBarDestination toBarDestination() {
+    if (this is NavigationBarDestination) {
+      return this as NavigationBarDestination;
+    }
+
     return NavigationBarDestination(
       key: key,
       icon: icon,
