@@ -7,12 +7,17 @@ import "package:flutter/material.dart";
 import "../../navigation_bar_theme.dart" as c;
 
 c.NavigationBarThemeData navigationBarDefaultsFor(BuildContext context) {
+  // TODO(v6.0.0): Remove useMaterial3 check and M2 fallback branch.
   return Theme.of(context).useMaterial3
       ? _NavigationBarDefaultsM3(context)
       : _NavigationBarDefaultsM2(context);
 }
 
 // Hand coded defaults based on Material Design 2.
+@Deprecated(
+  "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+  "Migrate to Material 3 by relying on the default M3 behavior.",
+)
 class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
   _NavigationBarDefaultsM2(BuildContext context)
       : _theme = Theme.of(context),
@@ -73,7 +78,7 @@ class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
   }
 
   @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
+  WidgetStateProperty<Color?>? get destinationOverlayColor {
     return overlayColor;
   }
 }
@@ -156,7 +161,7 @@ class _NavigationBarDefaultsM3 extends c.NavigationBarThemeData {
   }
 
   @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
+  WidgetStateProperty<Color?>? get destinationOverlayColor {
     return overlayColor;
   }
 }

@@ -105,10 +105,10 @@ class _NavigationBarDestinationBuilderState
     final CustomNavigationBarThemeData defaults =
         navigationBarDefaultsFor(context);
     final bool useEnhancedItemInk = theme.useMaterial3 &&
-        (navigationBarTheme?.navigationItemOverlayColor != null ||
-            navigationBarTheme?.navigationItemIndicatorShape != null);
+        (navigationBarTheme?.destinationOverlayColor != null ||
+            navigationBarTheme?.destinationIndicatorShape != null);
     final ShapeBorder effectiveNavigationItemIndicatorShape =
-        navigationBarTheme?.navigationItemIndicatorShape ??
+        navigationBarTheme?.destinationIndicatorShape ??
             navigationBarTheme?.indicatorShape ??
             defaults.indicatorShape ??
             const StadiumBorder();
@@ -116,7 +116,7 @@ class _NavigationBarDestinationBuilderState
     final WidgetStateProperty<Color?>? iconOverlayColor =
         info.overlayColor ?? navigationBarTheme?.overlayColor;
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
-        navigationBarTheme?.navigationItemOverlayColor ?? iconOverlayColor;
+        navigationBarTheme?.destinationOverlayColor ?? iconOverlayColor;
     final String labelText =
         widget.label is Text ? (widget.label as Text).data ?? "" : "";
     final String? tooltipMessage = widget.tooltip == null

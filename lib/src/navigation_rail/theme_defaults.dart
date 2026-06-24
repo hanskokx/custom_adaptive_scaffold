@@ -9,12 +9,17 @@ import "../../navigation_rail_theme.dart" as c;
 const double navigationRailMinWidthM2 = 72.0;
 
 c.NavigationRailThemeData navigationRailDefaultsFor(BuildContext context) {
+  // TODO(v6.0.0): Remove useMaterial3 check and M2 fallback branch.
   return Theme.of(context).useMaterial3
       ? _NavigationRailDefaultsM3(context)
       : _NavigationRailDefaultsM2(context);
 }
 
 // Hand coded defaults based on Material Design 2.
+@Deprecated(
+  "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+  "Migrate to Material 3 by relying on the default M3 behavior.",
+)
 class _NavigationRailDefaultsM2 extends c.NavigationRailThemeData {
   _NavigationRailDefaultsM2(BuildContext context)
       : _theme = Theme.of(context),
@@ -64,7 +69,7 @@ class _NavigationRailDefaultsM2 extends c.NavigationRailThemeData {
   }
 
   @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
+  WidgetStateProperty<Color?>? get destinationOverlayColor {
     return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
       if (states.contains(WidgetState.pressed) ||
           states.contains(WidgetState.focused)) {
@@ -136,7 +141,7 @@ class _NavigationRailDefaultsM3 extends c.NavigationRailThemeData {
   ShapeBorder? get indicatorShape => const StadiumBorder();
 
   @override
-  WidgetStateProperty<Color?>? get navigationItemOverlayColor {
+  WidgetStateProperty<Color?>? get destinationOverlayColor {
     return WidgetStateProperty.resolveWith((Set<WidgetState> states) {
       if (states.contains(WidgetState.pressed) ||
           states.contains(WidgetState.focused)) {

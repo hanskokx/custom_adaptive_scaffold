@@ -432,9 +432,29 @@ class AdaptiveScaffold extends StatefulWidget {
     Widget? trailing,
     void Function(int)? onDestinationSelected,
     double? groupAlignment,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior.",
+    )
     IconThemeData? selectedIconTheme,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior.",
+    )
     IconThemeData? unselectedIconTheme,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior.",
+    )
     TextStyle? selectedLabelTextStyle,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior.",
+    )
     TextStyle? unSelectedLabelTextStyle,
     NavigationRailLabelType? labelType = NavigationRailLabelType.none,
     EdgeInsetsGeometry? padding,

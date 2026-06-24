@@ -492,6 +492,7 @@ class _NavigationRailState extends State<NavigationRail>
     // to be set to the default if it isn't in the given theme. This can be removed
     // when Material 3 is the default.
     final IconThemeData effectiveUnselectedIconTheme =
+        // TODO(v6.0.0): Remove useMaterial3 check and M2 fallback branch.
         Theme.of(context).useMaterial3
             ? unselectedIconTheme
             : unselectedIconTheme.copyWith(

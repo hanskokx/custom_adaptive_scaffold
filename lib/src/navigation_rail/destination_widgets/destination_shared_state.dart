@@ -92,16 +92,16 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         maybeExplicitRailTheme ?? const CustomNavigationRailThemeData();
     final CustomNavigationRailThemeData railTheme =
         NavigationRailTheme.of(context);
-    final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
-        explicitRailTheme.navigationItemOverlayColor;
+    final WidgetStateProperty<Color?>? effectivedestinationOverlayColor =
+        explicitRailTheme.destinationOverlayColor;
     final bool hasExplicitNavigationItemIndicatorShape =
-        explicitRailTheme.navigationItemIndicatorShape != null;
+        explicitRailTheme.destinationIndicatorShape != null;
     final bool hasExplicitCustomInkOverride =
-        effectiveNavigationItemOverlayColor != null ||
+        effectivedestinationOverlayColor != null ||
             hasExplicitNavigationItemIndicatorShape;
     final bool useFrameworkDefaultInk = !hasExplicitCustomInkOverride;
     final bool disableFullItemInk = useFrameworkDefaultInk ||
-        (effectiveNavigationItemOverlayColor == null &&
+        (effectivedestinationOverlayColor == null &&
             !hasExplicitNavigationItemIndicatorShape);
     final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
     final WidgetStateProperty<Color?> iconOverlayColor =
@@ -128,19 +128,19 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
     });
     final WidgetStateProperty<Color?> effectiveInkOverlayColor =
         useFrameworkDefaultInk
-            ? effectiveNavigationItemOverlayColor ?? fullItemOverlayColor
+            ? effectivedestinationOverlayColor ?? fullItemOverlayColor
             : (disableFullItemInk
                 ? iconOverlayColor
-                : effectiveNavigationItemOverlayColor ?? fullItemOverlayColor);
+                : effectivedestinationOverlayColor ?? fullItemOverlayColor);
     final ShapeBorder? effectiveNavigationItemIndicatorShape =
         useFrameworkDefaultInk
-            ? (explicitRailTheme.navigationItemIndicatorShape ??
+            ? (explicitRailTheme.destinationIndicatorShape ??
                 explicitRailTheme.indicatorShape ??
                 railTheme.indicatorShape ??
                 const StadiumBorder())
             : (disableFullItemInk
                 ? null
-                : explicitRailTheme.navigationItemIndicatorShape ??
+                : explicitRailTheme.destinationIndicatorShape ??
                     explicitRailTheme.indicatorShape ??
                     railTheme.indicatorShape ??
                     const StadiumBorder());

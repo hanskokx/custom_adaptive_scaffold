@@ -98,7 +98,7 @@ everywhere Flutter's types are expected. They add:
 | -------------------------------- | -------------- | --------------------------------------------- |
 | `margin`                         | ✓              | Margin around each navigation item            |
 | `padding`                        | ✓              | Padding inside each navigation item           |
-| `navigationItemOverlayColor`     | ✓              | Full-item ink/highlight color by widget state |
+| `destinationOverlayColor`        | ✓              | Full-item ink/highlight color by widget state |
 | `navigationItemIndicatorShape`   | ✓              | Shape for the full-item ink well              |
 | `tooltipOffset`                  | ✓              | X/Y offset for tooltip popovers               |
 | `tooltipTrigger`                 | ✓              | Which gesture triggers the tooltip            |
@@ -697,7 +697,7 @@ navigationTheme: AdaptiveScaffoldNavigationThemeData(
 
 // Current — via NavigationRailThemeData / NavigationBarThemeData:
 NavigationRailThemeData(
-  navigationItemOverlayColor: WidgetStateProperty.resolveWith((states) {
+  destinationOverlayColor: WidgetStateProperty.resolveWith((states) {
     if (states.contains(WidgetState.selected)) {
       return colorScheme.secondaryContainer.withValues(alpha: 0.24);
     }
@@ -710,7 +710,7 @@ NavigationRailThemeData(
 ),
 ```
 
-Omitting `navigationItemOverlayColor` (the default) restores icon-only highlighting — equivalent to the old `NavigationDestinationRegion.icon`.
+Omitting `destinationOverlayColor` (the default) restores icon-only highlighting — equivalent to the old `NavigationDestinationRegion.icon`.
 
 ### Label type per breakpoint (was `AdaptiveScaffoldNavigationThemeData`)
 

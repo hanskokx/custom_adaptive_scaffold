@@ -489,7 +489,7 @@ void main() {
           theme: ThemeData(
             useMaterial3: true,
             navigationBarTheme: const CustomNavigationBarThemeData(
-              navigationItemIndicatorShape: RoundedRectangleBorder(),
+              destinationIndicatorShape: RoundedRectangleBorder(),
             ),
           ),
           home: Scaffold(
@@ -503,8 +503,8 @@ void main() {
         tester.element(find.byType(NavigationBar)),
       );
       expect(explicitTheme, isNotNull);
-      expect(explicitTheme!.navigationItemOverlayColor, isNull);
-      expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
+      expect(explicitTheme!.destinationOverlayColor, isNull);
+      expect(explicitTheme.destinationIndicatorShape, isNotNull);
     });
 
     testWidgets(
@@ -514,7 +514,7 @@ void main() {
         MaterialApp(
           theme: ThemeData(
             navigationBarTheme: const CustomNavigationBarThemeData(
-              navigationItemIndicatorShape: RoundedRectangleBorder(
+              destinationIndicatorShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.zero,
               ),
             ),
@@ -544,8 +544,8 @@ void main() {
           NavigationBarTheme.maybeOf(barContext);
 
       expect(explicitTheme, isNotNull);
-      expect(explicitTheme!.navigationItemOverlayColor, isNull);
-      expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
+      expect(explicitTheme!.destinationOverlayColor, isNull);
+      expect(explicitTheme.destinationIndicatorShape, isNotNull);
     });
 
     testWidgets(
@@ -586,7 +586,7 @@ void main() {
           theme: ThemeData(
             useMaterial3: true,
             navigationRailTheme: const CustomNavigationRailThemeData(
-              navigationItemIndicatorShape: RoundedRectangleBorder(
+              destinationIndicatorShape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.zero,
               ),
             ),

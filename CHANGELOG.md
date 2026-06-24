@@ -37,7 +37,7 @@ redesigned extension surface described below.
   `CustomNavigationRailThemeData`, and `CustomNavigationRailTheme` are
   typedef aliases for the package types.
 * Both theme types gain the following fields not present in Flutter or 4.x:
-  * `navigationItemOverlayColor` — overlay colors for the full destination
+  * `destinationOverlayColor` — overlay colors for the full destination
     item container by widget state (replaces `destinationFillRegion`).
   * `navigationItemIndicatorShape` — shape for the full-item ink well
     (replaces `destinationFillShape` / `destinationHoverShape`).
@@ -88,7 +88,7 @@ navigationTheme: const AdaptiveScaffoldNavigationThemeData(
 // Current — same effect via theme:
 theme: ThemeData(
   navigationRailTheme: NavigationRailThemeData(
-    navigationItemOverlayColor: WidgetStateProperty.resolveWith(
+    destinationOverlayColor: WidgetStateProperty.resolveWith(
       (states) => states.contains(WidgetState.selected)
           ? Theme.of(context).colorScheme.secondaryContainer.withValues(alpha: 0.24)
           : states.contains(WidgetState.hovered)
@@ -102,8 +102,8 @@ theme: ThemeData(
 
 To use the default icon-only rendering (equivalent to 4.x's
 `NavigationDestinationRegion.icon`, and the current default when
-`navigationItemOverlayColor` is `null`), simply omit
-`navigationItemOverlayColor` from the theme.
+`destinationOverlayColor` is `null`), simply omit
+`destinationOverlayColor` from the theme.
 
 #### Label type per breakpoint
 

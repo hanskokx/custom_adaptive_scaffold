@@ -68,8 +68,8 @@ class NavigationBarThemeData
     this.labelPadding,
     this.labelTextStyle,
     this.margin,
-    this.navigationItemIndicatorShape,
-    this.navigationItemOverlayColor,
+    this.destinationIndicatorShape,
+    this.destinationOverlayColor,
     this.overlayColor,
     this.padding,
     this.shadowColor,
@@ -98,6 +98,12 @@ class NavigationBarThemeData
 
   /// Overrides the default value of [NavigationBar.surfaceTintColor].
   @override
+  // TODO(v6.0.0): Remove to deprecate M2.
+  @Deprecated(
+    "Flutter has deprecated surfaceTintColor in modern Material 3 algorithms. "
+    "Use [shadowColor] and [elevation] to cast shadows instead. "
+    "Will be removed in v6.0.0.",
+  )
   final Color? surfaceTintColor;
 
   /// Overrides the default value of [NavigationBar]'s selection indicator.
@@ -131,18 +137,20 @@ class NavigationBarThemeData
   @override
   final WidgetStateProperty<Color?>? overlayColor;
 
+  // TODO(v6.0.0): Update comment when deprecating M2.
   /// Overlay colors for the full navigation item container by widget state.
   ///
   /// This is separate from [overlayColor], which can still be used by custom
   /// indicator visuals.
   ///
   /// This has no effect when [ThemeData.useMaterial3] is false.
-  final WidgetStateProperty<Color?>? navigationItemOverlayColor;
+  final WidgetStateProperty<Color?>? destinationOverlayColor;
 
+  // TODO(v6.0.0): Switch to WidgetStateProperty<ShapeBorder?> when deprecating M2.
   /// Shape of the full navigation item container ink well.
   ///
   /// Defaults to [StadiumBorder] at resolution sites when this is null.
-  final ShapeBorder? navigationItemIndicatorShape;
+  final ShapeBorder? destinationIndicatorShape;
 
   /// Applies a margin around each navigation item in the bar.
   ///
@@ -207,8 +215,8 @@ class NavigationBarThemeData
     WidgetStateProperty<IconThemeData?>? iconTheme,
     NavigationDestinationLabelBehavior? labelBehavior,
     WidgetStateProperty<Color?>? overlayColor,
-    WidgetStateProperty<Color?>? navigationItemOverlayColor,
-    ShapeBorder? navigationItemIndicatorShape,
+    WidgetStateProperty<Color?>? destinationOverlayColor,
+    ShapeBorder? destinationIndicatorShape,
     EdgeInsetsGeometry? margin,
     EdgeInsetsGeometry? padding,
     Offset? tooltipOffset,
@@ -229,10 +237,10 @@ class NavigationBarThemeData
       iconTheme: iconTheme ?? this.iconTheme,
       labelBehavior: labelBehavior ?? this.labelBehavior,
       overlayColor: overlayColor ?? this.overlayColor,
-      navigationItemOverlayColor:
-          navigationItemOverlayColor ?? this.navigationItemOverlayColor,
-      navigationItemIndicatorShape:
-          navigationItemIndicatorShape ?? this.navigationItemIndicatorShape,
+      destinationOverlayColor:
+          destinationOverlayColor ?? this.destinationOverlayColor,
+      destinationIndicatorShape:
+          destinationIndicatorShape ?? this.destinationIndicatorShape,
       margin: margin ?? this.margin,
       padding: padding ?? this.padding,
       tooltipOffset: tooltipOffset ?? this.tooltipOffset,
@@ -285,15 +293,15 @@ class NavigationBarThemeData
         t,
         Color.lerp,
       ),
-      navigationItemOverlayColor: WidgetStateProperty.lerp<Color?>(
-        a?.navigationItemOverlayColor,
-        b?.navigationItemOverlayColor,
+      destinationOverlayColor: WidgetStateProperty.lerp<Color?>(
+        a?.destinationOverlayColor,
+        b?.destinationOverlayColor,
         t,
         Color.lerp,
       ),
-      navigationItemIndicatorShape: ShapeBorder.lerp(
-        a?.navigationItemIndicatorShape,
-        b?.navigationItemIndicatorShape,
+      destinationIndicatorShape: ShapeBorder.lerp(
+        a?.destinationIndicatorShape,
+        b?.destinationIndicatorShape,
         t,
       ),
       margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
@@ -315,7 +323,7 @@ class NavigationBarThemeData
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
         height,
         backgroundColor,
         elevation,
@@ -327,8 +335,8 @@ class NavigationBarThemeData
         iconTheme,
         labelBehavior,
         overlayColor,
-        navigationItemOverlayColor,
-        navigationItemIndicatorShape,
+        destinationOverlayColor,
+        destinationIndicatorShape,
         margin,
         padding,
         tooltipOffset,
@@ -336,7 +344,7 @@ class NavigationBarThemeData
         tooltipTrigger,
         tooltipTriggerWhenLabelVisible,
         tooltipTriggerWhenLabelHidden,
-      );
+      ]);
 
   @override
   bool operator ==(Object other) {
@@ -358,8 +366,8 @@ class NavigationBarThemeData
         other.iconTheme == iconTheme &&
         other.labelBehavior == labelBehavior &&
         other.overlayColor == overlayColor &&
-        other.navigationItemOverlayColor == navigationItemOverlayColor &&
-        other.navigationItemIndicatorShape == navigationItemIndicatorShape &&
+        other.destinationOverlayColor == destinationOverlayColor &&
+        other.destinationIndicatorShape == destinationIndicatorShape &&
         other.margin == margin &&
         other.padding == padding &&
         other.tooltipOffset == tooltipOffset &&
@@ -427,15 +435,15 @@ class NavigationBarThemeData
     );
     properties.add(
       DiagnosticsProperty<WidgetStateProperty<Color?>>(
-        "navigationItemOverlayColor",
-        navigationItemOverlayColor,
+        "destinationOverlayColor",
+        destinationOverlayColor,
         defaultValue: null,
       ),
     );
     properties.add(
       DiagnosticsProperty<ShapeBorder>(
-        "navigationItemIndicatorShape",
-        navigationItemIndicatorShape,
+        "destinationIndicatorShape",
+        destinationIndicatorShape,
         defaultValue: null,
       ),
     );
@@ -508,8 +516,8 @@ class NavigationBarThemeData
       iconTheme: other?.iconTheme,
       labelBehavior: other?.labelBehavior,
       overlayColor: other?.overlayColor,
-      navigationItemOverlayColor: null,
-      navigationItemIndicatorShape: null,
+      destinationOverlayColor: null,
+      destinationIndicatorShape: null,
       margin: null,
       padding: null,
       tooltipOffset: null,
@@ -611,9 +619,8 @@ class NavigationBarTheme extends InheritedTheme
         iconTheme: explicitTheme.iconTheme,
         labelBehavior: explicitTheme.labelBehavior,
         overlayColor: explicitTheme.overlayColor,
-        navigationItemOverlayColor: explicitTheme.navigationItemOverlayColor,
-        navigationItemIndicatorShape:
-            explicitTheme.navigationItemIndicatorShape,
+        destinationOverlayColor: explicitTheme.destinationOverlayColor,
+        destinationIndicatorShape: explicitTheme.destinationIndicatorShape,
         margin: explicitTheme.margin,
         padding: explicitTheme.padding,
         tooltipOffset: explicitTheme.tooltipOffset,

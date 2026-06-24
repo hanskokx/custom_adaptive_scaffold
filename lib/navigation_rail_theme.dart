@@ -65,8 +65,8 @@ class NavigationRailThemeData
     this.margin,
     this.minExtendedWidth,
     this.minWidth,
-    this.navigationItemIndicatorShape,
-    this.navigationItemOverlayColor,
+    this.destinationIndicatorShape,
+    this.destinationOverlayColor,
     this.padding,
     this.selectedIconTheme,
     this.selectedLabelTextStyle,
@@ -91,21 +91,41 @@ class NavigationRailThemeData
   /// The style to merge with the default text style for
   /// [NavigationRailDestination] labels, when the destination is not selected.
   @override
+  // TODO(v6.0.0): Remove to deprecate M2.
+  @Deprecated(
+    "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+    "Migrate to Material 3 by relying on the default M3 behavior.",
+  )
   final TextStyle? unselectedLabelTextStyle;
 
   /// The style to merge with the default text style for
   /// [NavigationRailDestination] labels, when the destination is selected.
   @override
+  // TODO(v6.0.0): Remove to deprecate M2.
+  @Deprecated(
+    "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+    "Migrate to Material 3 by relying on the default M3 behavior.",
+  )
   final TextStyle? selectedLabelTextStyle;
 
   /// The theme to merge with the default icon theme for
   /// [NavigationRailDestination] icons, when the destination is not selected.
   @override
+  // TODO(v6.0.0): Remove to deprecate M2.
+  @Deprecated(
+    "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+    "Migrate to Material 3 by relying on the default M3 behavior.",
+  )
   final IconThemeData? unselectedIconTheme;
 
   /// The theme to merge with the default icon theme for
   /// [NavigationRailDestination] icons, when the destination is selected.
   @override
+  // TODO(v6.0.0): Remove to deprecate M2.
+  @Deprecated(
+    "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+    "Migrate to Material 3 by relying on the default M3 behavior.",
+  )
   final IconThemeData? selectedIconTheme;
 
   /// The alignment for the [NavigationRailDestination]s as they are positioned
@@ -121,6 +141,13 @@ class NavigationRailThemeData
   /// Whether or not the selected [NavigationRailDestination] should include a
   /// [NavigationIndicator].
   @override
+  // TODO(v6.0.0): Remove to deprecate M2.
+  @Deprecated(
+    "Material 3 enforces the use of the selection indicator. To customize its "
+    "appearance, use [indicatorColor] and [indicatorShape] instead of "
+    "disabling it entirely. "
+    "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. ",
+  )
   final bool? useIndicator;
 
   /// Overrides the default value of [NavigationRail]'s selection indicator color,
@@ -132,15 +159,16 @@ class NavigationRailThemeData
   @override
   final ShapeBorder? indicatorShape;
 
+  // TODO(v6.0.0): Update comment when deprecating M2.
   /// Overlay colors for the full navigation item container by widget state.
   ///
   /// This has no effect when [ThemeData.useMaterial3] is false.
-  final WidgetStateProperty<Color?>? navigationItemOverlayColor;
+  final WidgetStateProperty<Color?>? destinationOverlayColor;
 
   /// Shape of the full navigation item container ink well.
   ///
   /// Defaults to [StadiumBorder] at resolution sites when this is null.
-  final ShapeBorder? navigationItemIndicatorShape;
+  final ShapeBorder? destinationIndicatorShape;
 
   /// Whether labels are shown while the rail is collapsed and [labelType] is
   /// [NavigationRailLabelType.none].
@@ -214,8 +242,8 @@ class NavigationRailThemeData
     bool? useIndicator,
     Color? indicatorColor,
     ShapeBorder? indicatorShape,
-    WidgetStateProperty<Color?>? navigationItemOverlayColor,
-    ShapeBorder? navigationItemIndicatorShape,
+    WidgetStateProperty<Color?>? destinationOverlayColor,
+    ShapeBorder? destinationIndicatorShape,
     bool? showLabelsWhenCollapsed,
     double? minWidth,
     double? minExtendedWidth,
@@ -240,10 +268,10 @@ class NavigationRailThemeData
       useIndicator: useIndicator ?? this.useIndicator,
       indicatorColor: indicatorColor ?? this.indicatorColor,
       indicatorShape: indicatorShape ?? this.indicatorShape,
-      navigationItemOverlayColor:
-          navigationItemOverlayColor ?? this.navigationItemOverlayColor,
-      navigationItemIndicatorShape:
-          navigationItemIndicatorShape ?? this.navigationItemIndicatorShape,
+      destinationOverlayColor:
+          destinationOverlayColor ?? this.destinationOverlayColor,
+      destinationIndicatorShape:
+          destinationIndicatorShape ?? this.destinationIndicatorShape,
       showLabelsWhenCollapsed:
           showLabelsWhenCollapsed ?? this.showLabelsWhenCollapsed,
       minWidth: minWidth ?? this.minWidth,
@@ -302,15 +330,15 @@ class NavigationRailThemeData
       useIndicator: t < 0.5 ? a?.useIndicator : b?.useIndicator,
       indicatorColor: Color.lerp(a?.indicatorColor, b?.indicatorColor, t),
       indicatorShape: ShapeBorder.lerp(a?.indicatorShape, b?.indicatorShape, t),
-      navigationItemOverlayColor: WidgetStateProperty.lerp<Color?>(
-        a?.navigationItemOverlayColor,
-        b?.navigationItemOverlayColor,
+      destinationOverlayColor: WidgetStateProperty.lerp<Color?>(
+        a?.destinationOverlayColor,
+        b?.destinationOverlayColor,
         t,
         Color.lerp,
       ),
-      navigationItemIndicatorShape: ShapeBorder.lerp(
-        a?.navigationItemIndicatorShape,
-        b?.navigationItemIndicatorShape,
+      destinationIndicatorShape: ShapeBorder.lerp(
+        a?.destinationIndicatorShape,
+        b?.destinationIndicatorShape,
         t,
       ),
       showLabelsWhenCollapsed:
@@ -343,8 +371,8 @@ class NavigationRailThemeData
         useIndicator,
         indicatorColor,
         indicatorShape,
-        navigationItemOverlayColor,
-        navigationItemIndicatorShape,
+        destinationOverlayColor,
+        destinationIndicatorShape,
         showLabelsWhenCollapsed,
         minWidth,
         minExtendedWidth,
@@ -376,8 +404,8 @@ class NavigationRailThemeData
         other.useIndicator == useIndicator &&
         other.indicatorColor == indicatorColor &&
         other.indicatorShape == indicatorShape &&
-        other.navigationItemOverlayColor == navigationItemOverlayColor &&
-        other.navigationItemIndicatorShape == navigationItemIndicatorShape &&
+        other.destinationOverlayColor == destinationOverlayColor &&
+        other.destinationIndicatorShape == destinationIndicatorShape &&
         other.showLabelsWhenCollapsed == showLabelsWhenCollapsed &&
         other.minWidth == minWidth &&
         other.minExtendedWidth == minExtendedWidth &&
@@ -474,15 +502,15 @@ class NavigationRailThemeData
     );
     properties.add(
       DiagnosticsProperty<WidgetStateProperty<Color?>>(
-        "navigationItemOverlayColor",
-        navigationItemOverlayColor,
+        "destinationOverlayColor",
+        destinationOverlayColor,
         defaultValue: null,
       ),
     );
     properties.add(
       DiagnosticsProperty<ShapeBorder>(
-        "navigationItemIndicatorShape",
-        navigationItemIndicatorShape,
+        "destinationIndicatorShape",
+        destinationIndicatorShape,
         defaultValue: null,
       ),
     );
@@ -569,8 +597,8 @@ class NavigationRailThemeData
       useIndicator: material.useIndicator,
       indicatorColor: material.indicatorColor,
       indicatorShape: material.indicatorShape,
-      navigationItemOverlayColor: null,
-      navigationItemIndicatorShape: null,
+      destinationOverlayColor: null,
+      destinationIndicatorShape: null,
       minWidth: material.minWidth,
       minExtendedWidth: material.minExtendedWidth,
       margin: null,
@@ -669,9 +697,8 @@ class NavigationRailTheme extends InheritedTheme
         useIndicator: explicitTheme.useIndicator,
         indicatorColor: explicitTheme.indicatorColor,
         indicatorShape: explicitTheme.indicatorShape,
-        navigationItemOverlayColor: explicitTheme.navigationItemOverlayColor,
-        navigationItemIndicatorShape:
-            explicitTheme.navigationItemIndicatorShape,
+        destinationOverlayColor: explicitTheme.destinationOverlayColor,
+        destinationIndicatorShape: explicitTheme.destinationIndicatorShape,
         showLabelsWhenCollapsed: explicitTheme.showLabelsWhenCollapsed,
         minWidth: explicitTheme.minWidth,
         minExtendedWidth: explicitTheme.minExtendedWidth,
