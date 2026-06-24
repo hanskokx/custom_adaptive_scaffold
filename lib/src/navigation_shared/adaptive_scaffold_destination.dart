@@ -52,7 +52,7 @@ class AdaptiveScaffoldDestination extends NavigationDestination {
     super.indicatorShape,
     super.margin,
     super.padding,
-    super.disabled = false,
+    super.enabled = false,
     super.tooltip,
   }) : super(
           label: title,

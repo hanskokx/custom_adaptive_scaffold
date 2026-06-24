@@ -50,7 +50,7 @@ Widget _buildBar({
         icon: const Icon(Icons.home),
         selectedIcon: const Icon(Icons.home_filled),
         label: "Home",
-        disabled: firstDisabled,
+        enabled: firstDisabled,
       ),
       const NavigationBarDestination(
         icon: Icon(Icons.search),
@@ -76,7 +76,7 @@ Widget _buildRail({
         icon: const Icon(Icons.home),
         selectedIcon: const Icon(Icons.home_filled),
         label: const Text("Home"),
-        disabled: firstDisabled,
+        enabled: firstDisabled,
       ),
       const NavigationRailDestination(
         icon: Icon(Icons.search),
@@ -124,7 +124,7 @@ void main() {
             NavigationDestination(
               icon: Icon(Icons.home),
               label: "Home",
-              disabled: true,
+              enabled: true,
             ),
             NavigationDestination(
               icon: Icon(Icons.search),
@@ -789,7 +789,7 @@ void main() {
                 NavigationBarDestination(
                   icon: Icon(Icons.home, key: Key("bar_home")),
                   label: "Home",
-                  disabled: true,
+                  enabled: true,
                 ),
                 NavigationBarDestination(
                   icon: Icon(Icons.search),
@@ -806,7 +806,7 @@ void main() {
                     NavigationRailDestination(
                       icon: Icon(Icons.home, key: Key("rail_home")),
                       label: Text("Home"),
-                      disabled: true,
+                      enabled: true,
                     ),
                     NavigationRailDestination(
                       icon: Icon(Icons.search),

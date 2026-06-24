@@ -58,7 +58,7 @@ class NavigationBarDestination extends NavigationDestination {
     super.indicatorShape,
     super.margin,
     super.padding,
-    super.disabled,
+    super.enabled,
     super.tooltip,
   });
 
@@ -90,7 +90,7 @@ class NavigationBarDestination extends NavigationDestination {
         ),
         label: Text(label),
         tooltip: tooltip,
-        disabled: disabled,
+        disabled: !enabled,
         animation: animation,
         color: indicatorColor,
         shape: indicatorShape,
@@ -117,7 +117,7 @@ class NavigationBarDestination extends NavigationDestination {
               icon: activeIcon,
               label: Text(label),
               selected: isSelected,
-              disabled: disabled,
+              disabled: !enabled,
               destinationAnimation: animation,
               indicatorShape: indicatorShape,
             ),
@@ -159,7 +159,7 @@ class NavigationBarDestination extends NavigationDestination {
         },
         buildLabel: (BuildContext context) {
           // Label styling is already resolved by the strategy and stored in
-          // data.styledLabel, but the bar label wrapper needs the padding and
+          // [data.styledLabel], but the bar label wrapper needs the padding and
           // text-scale clamping applied here.  We resolve label style directly
           // from the bar theme to avoid calling the strategy twice.
           final NavigationDestinationInfo currentInfo =
@@ -172,8 +172,8 @@ class NavigationBarDestination extends NavigationDestination {
               navigationBarDefaultsFor(context);
 
           final Set<WidgetState> widgetState = {
-            if (disabled) WidgetState.disabled,
-            if (isSelected && !disabled) WidgetState.selected,
+            if (!enabled) WidgetState.disabled,
+            if (isSelected && enabled) WidgetState.selected,
           };
 
           final TextStyle? textStyle =

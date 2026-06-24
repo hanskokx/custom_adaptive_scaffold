@@ -696,7 +696,7 @@ void main() {
             CustomNavigationDestination(
               icon: Icon(Icons.ac_unit),
               label: "AC",
-              disabled: true,
+              enabled: true,
             ),
             CustomNavigationDestination(
               icon: Icon(Icons.ac_unit),
@@ -1246,7 +1246,7 @@ void main() {
             CustomNavigationDestination(
               icon: Icon(Icons.bookmark),
               label: "Bookmark",
-              disabled: true,
+              enabled: true,
             ),
           ],
           onDestinationSelected: (int i) => selectedIndex = i,
@@ -1759,7 +1759,7 @@ void main() {
                 label: unselectedText,
               ),
               CustomNavigationDestination(
-                disabled: true,
+                enabled: true,
                 icon: Icon(Icons.bookmark),
                 label: disabledText,
               ),

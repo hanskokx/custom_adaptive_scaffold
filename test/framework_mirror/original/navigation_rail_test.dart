@@ -4222,7 +4222,7 @@ void main() {
             icon: Icon(Icons.bookmark_border),
             selectedIcon: Icon(Icons.bookmark),
             label: Text("Cde"),
-            disabled: true,
+            enabled: true,
           ),
         ],
         onDestinationSelected: (int index) {
@@ -4262,7 +4262,7 @@ void main() {
             icon: Icon(Icons.bookmark_border),
             selectedIcon: Icon(Icons.bookmark),
             label: Text("Bcd"),
-            disabled: true,
+            enabled: true,
           ),
         ],
         onDestinationSelected: (int index) {},

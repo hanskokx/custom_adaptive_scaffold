@@ -111,6 +111,7 @@ class NavigationBar extends StatelessWidget {
     this.height,
     this.labelBehavior,
     this.overlayColor,
+    this.labelTextStyle,
     this.labelPadding,
     this.maintainBottomViewPadding = false,
   })  : assert(destinations.length >= 2),
@@ -225,6 +226,19 @@ class NavigationBar extends StatelessWidget {
   /// the [NavigationDestination] is focused, hovered, or pressed.
   final WidgetStateProperty<Color?>? overlayColor;
 
+  //// The text style of the label.
+  ///
+  /// If null, [NavigationBarThemeData.labelTextStyle] is used. If that
+  /// is also null, the default text style is [TextTheme.labelMedium] with
+  /// [ColorScheme.onSurface] when the destination is selected, and
+  /// [ColorScheme.onSurfaceVariant] when the destination is unselected, and
+  /// [ColorScheme.onSurfaceVariant] with an opacity of 0.38 when the
+  /// destination is disabled.
+  ///
+  /// If [ThemeData.useMaterial3] is false, then the default text style is
+  /// [TextTheme.labelSmall] with [ColorScheme.onSurface].
+  final WidgetStateProperty<TextStyle?>? labelTextStyle;
+
   /// The padding around the [NavigationDestination.label] widget.
   ///
   /// When [labelPadding] is null, [NavigationBarThemeData.labelPadding]
@@ -305,6 +319,7 @@ class NavigationBar extends StatelessWidget {
                       indicatorColor: indicatorColor,
                       indicatorShape: effectiveIndicatorShape,
                       overlayColor: overlayColor,
+                      labelTextStyle: labelTextStyle,
                       labelPadding: labelPadding,
                       onTap: _handleTap.call(i),
                       child: destination,

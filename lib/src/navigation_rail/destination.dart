@@ -40,7 +40,7 @@ class NavigationRailDestination extends NavigationDestination {
     super.indicatorShape,
     super.margin,
     super.padding,
-    super.disabled,
+    super.enabled,
     super.tooltip,
   }) : _label = label;
 
