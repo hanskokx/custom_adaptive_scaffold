@@ -90,14 +90,16 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         NavigationRailTheme.maybeOf(context);
     final CustomNavigationRailThemeData explicitRailTheme =
         maybeExplicitRailTheme ?? const CustomNavigationRailThemeData();
-    final bool hasExplicitRailTheme = maybeExplicitRailTheme != null;
     final CustomNavigationRailThemeData railTheme =
         NavigationRailTheme.of(context);
     final WidgetStateProperty<Color?>? effectiveNavigationItemOverlayColor =
         explicitRailTheme.navigationItemOverlayColor;
     final bool hasExplicitNavigationItemIndicatorShape =
         explicitRailTheme.navigationItemIndicatorShape != null;
-    final bool useFrameworkDefaultInk = !hasExplicitRailTheme;
+    final bool hasExplicitCustomInkOverride =
+        effectiveNavigationItemOverlayColor != null ||
+            hasExplicitNavigationItemIndicatorShape;
+    final bool useFrameworkDefaultInk = !hasExplicitCustomInkOverride;
     final bool disableFullItemInk = useFrameworkDefaultInk ||
         (effectiveNavigationItemOverlayColor == null &&
             !hasExplicitNavigationItemIndicatorShape);
@@ -169,8 +171,9 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
               ),
             ),
           )
-        : Positioned(
-            left: widget.indicatorOffset.dx - selectedIndicatorWidth / 2,
+        : Positioned.directional(
+            textDirection: widget.textDirection,
+            start: widget.indicatorOffset.dx - selectedIndicatorWidth / 2,
             top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
             child: NavigationIndicator(
               animation: widget.selectionAnimation,

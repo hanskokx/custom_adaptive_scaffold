@@ -548,7 +548,8 @@ void main() {
       expect(explicitTheme.navigationItemIndicatorShape, isNotNull);
     });
 
-    testWidgets("navigation rail overlay requires explicit opt-in",
+    testWidgets(
+        "navigation rail native theme override stays on framework ink path",
         (WidgetTester tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -573,9 +574,9 @@ void main() {
       );
       final InkResponse inkWell = indicatorInkWell as InkResponse;
 
-      expect(inkWell.customBorder, isNull);
-      expect(inkWell.splashColor, isNull);
-      expect(inkWell.hoverColor, isNull);
+      expect(inkWell.customBorder, isA<StadiumBorder>());
+      expect(inkWell.splashColor, anyOf(isNull, Colors.transparent));
+      expect(inkWell.hoverColor, anyOf(isNull, Colors.transparent));
     });
 
     testWidgets("navigation rail item shape enables whole-item ink",
