@@ -64,8 +64,8 @@ void main() {
         theme.colorScheme.onSurfaceVariant,
       );
       expect(_unselectedIconTheme(tester).opacity, null);
-      expect(_selectedLabelStyle(tester).fontSize, 14.0);
-      expect(_unselectedLabelStyle(tester).fontSize, 14.0);
+      expect(_selectedLabelStyle(tester).fontSize, 12.0);
+      expect(_unselectedLabelStyle(tester).fontSize, 12.0);
       expect(_destinationsAlign(tester).alignment, Alignment.topCenter);
       expect(_labelType(tester), NavigationRailLabelType.none);
       expect(find.byType(NavigationIndicator), findsWidgets);
@@ -109,8 +109,8 @@ void main() {
         ThemeData().colorScheme.onSurface,
       );
       expect(_unselectedIconTheme(tester).opacity, 0.64);
-      expect(_selectedLabelStyle(tester).fontSize, 14.0);
-      expect(_unselectedLabelStyle(tester).fontSize, 14.0);
+      expect(_selectedLabelStyle(tester).fontSize, 16.0);
+      expect(_unselectedLabelStyle(tester).fontSize, 16.0);
       expect(_destinationsAlign(tester).alignment, Alignment.topCenter);
       expect(_labelType(tester), NavigationRailLabelType.none);
       expect(find.byType(NavigationIndicator), findsNothing);
@@ -451,10 +451,17 @@ Size _destinationSize(WidgetTester tester) {
 }
 
 Align _destinationsAlign(WidgetTester tester) {
-  // The first Flexible widget is the one within the main Column for the rail
-  // content.
+  // Find the rail's group alignment wrapper. Its child is either the
+  // destinations column or a scroll view containing it.
   return tester.firstWidget<Align>(
-    find.descendant(of: find.byType(Flexible), matching: find.byType(Align)),
+    find.descendant(
+      of: find.byType(NavigationRail),
+      matching: find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is Align &&
+            (widget.child is Column || widget.child is SingleChildScrollView),
+      ),
+    ),
   );
 }
 
