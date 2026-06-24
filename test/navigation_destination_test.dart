@@ -40,7 +40,7 @@ Future<void> pumpApp(WidgetTester tester, Widget widget) async {
 Widget _buildBar({
   required int selectedIndex,
   required VoidCallback? onTap,
-  bool firstDisabled = false,
+  bool firstEnabled = true,
 }) {
   return NavigationBar(
     selectedIndex: selectedIndex,
@@ -50,7 +50,7 @@ Widget _buildBar({
         icon: const Icon(Icons.home),
         selectedIcon: const Icon(Icons.home_filled),
         label: "Home",
-        enabled: firstDisabled,
+        enabled: firstEnabled,
       ),
       const NavigationBarDestination(
         icon: Icon(Icons.search),
@@ -65,7 +65,7 @@ Widget _buildRail({
   required int selectedIndex,
   required VoidCallback? onTap,
   NavigationRailLabelType labelType = NavigationRailLabelType.none,
-  bool firstDisabled = false,
+  bool firstEnabled = true,
 }) {
   return NavigationRail(
     selectedIndex: selectedIndex,
@@ -76,7 +76,7 @@ Widget _buildRail({
         icon: const Icon(Icons.home),
         selectedIcon: const Icon(Icons.home_filled),
         label: const Text("Home"),
-        enabled: firstDisabled,
+        enabled: firstEnabled,
       ),
       const NavigationRailDestination(
         icon: Icon(Icons.search),
@@ -124,7 +124,7 @@ void main() {
             NavigationDestination(
               icon: Icon(Icons.home),
               label: "Home",
-              enabled: true,
+              enabled: false,
             ),
             NavigationDestination(
               icon: Icon(Icons.search),
@@ -363,7 +363,7 @@ void main() {
         _buildBar(
           selectedIndex: 1,
           onTap: () => tapped++,
-          firstDisabled: true,
+          firstEnabled: false,
         ),
       );
       await tester.tap(find.byIcon(Icons.home));
@@ -683,7 +683,7 @@ void main() {
         _buildRail(
           selectedIndex: 1,
           onTap: () => tapped++,
-          firstDisabled: true,
+          firstEnabled: false,
         ),
       );
       await tester.tap(find.byIcon(Icons.home));
@@ -789,7 +789,7 @@ void main() {
                 NavigationBarDestination(
                   icon: Icon(Icons.home, key: Key("bar_home")),
                   label: "Home",
-                  enabled: true,
+                  enabled: false,
                 ),
                 NavigationBarDestination(
                   icon: Icon(Icons.search),
@@ -806,7 +806,7 @@ void main() {
                     NavigationRailDestination(
                       icon: Icon(Icons.home, key: Key("rail_home")),
                       label: Text("Home"),
-                      enabled: true,
+                      enabled: false,
                     ),
                     NavigationRailDestination(
                       icon: Icon(Icons.search),
