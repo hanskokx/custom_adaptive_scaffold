@@ -309,7 +309,10 @@ class _RailDestinationState extends State<RailDestination>
                         ),
                       ),
                     ),
-                    const SizedBox(width: _horizontalDestinationPadding),
+                    SizedBox(
+                      width: _horizontalDestinationPadding *
+                          extendedAnimation.value,
+                    ),
                   ],
                 ),
               ),

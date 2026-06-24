@@ -145,13 +145,15 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
                     railTheme.indicatorShape ??
                     const StadiumBorder());
 
-    // Match framework paint behavior when the destination is narrower than
-    // the default M3 indicator: hover ink may overflow, but the selected
-    // indicator itself is width-clamped to the destination.
-    final double selectedIndicatorWidth =
-        widget.minWidth < widget.indicatorWidth
+    // M2 uses a circular 56x56 selected indicator; M3 uses the 56x32 pill.
+    // Keep width clamped for narrow rails to match framework paint behavior.
+    final double selectedIndicatorWidth = !widget.material3
+        ? widget.indicatorWidth
+        : (widget.minWidth < widget.indicatorWidth
             ? widget.minWidth
-            : widget.indicatorWidth;
+            : widget.indicatorWidth);
+    final double selectedIndicatorHeight =
+        widget.material3 ? _kIndicatorHeight : widget.indicatorWidth;
 
     final Widget iconInteractionIndicator = widget.centerIndicatorHorizontally
         ? Positioned.fill(
@@ -165,7 +167,7 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
                   animation: widget.selectionAnimation,
                   color: widget.indicatorColor,
                   width: selectedIndicatorWidth,
-                  height: _kIndicatorHeight,
+                  height: selectedIndicatorHeight,
                   shape: widget.indicatorShape,
                 ),
               ),
@@ -179,7 +181,7 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
               animation: widget.selectionAnimation,
               color: widget.indicatorColor,
               width: selectedIndicatorWidth,
-              height: _kIndicatorHeight,
+              height: selectedIndicatorHeight,
               shape: widget.indicatorShape,
             ),
           );
