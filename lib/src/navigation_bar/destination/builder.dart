@@ -112,6 +112,7 @@ class _NavigationBarDestinationBuilderState
             navigationBarTheme?.indicatorShape ??
             defaults.indicatorShape ??
             const StadiumBorder();
+
     final WidgetStateProperty<Color?>? iconOverlayColor =
         info.overlayColor ?? navigationBarTheme?.overlayColor;
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
@@ -143,12 +144,14 @@ class _NavigationBarDestinationBuilderState
         tooltipTrigger: effectiveTooltipTrigger,
         child: (useEnhancedItemInk
             ? _FullItemIndicatorInkWell(
-                itemKey: itemKey,
+                effectiveNavigationItemIndicatorShape:
+                    effectiveNavigationItemIndicatorShape,
+                fullItemOverlayColor: fullItemOverlayColor,
+                isDisabled: isDisabled,
+                info: info,
+                isSelected: isSelected,
                 iconKey: iconKey,
-                labelBehavior: info.labelBehavior,
-                customBorder: effectiveNavigationItemIndicatorShape,
-                overlayColor: fullItemOverlayColor,
-                onTap: isDisabled ? null : info.onTap,
+                itemKey: itemKey,
                 child: _DestinationLayout(
                   buildIcon: widget.buildIcon,
                   buildLabel: widget.buildLabel,
@@ -177,6 +180,77 @@ class _NavigationBarDestinationBuilderState
               )),
       ),
     );
+  }
+}
+
+class _FullItemIndicatorInkWell extends StatelessWidget {
+  const _FullItemIndicatorInkWell({
+    required this.effectiveNavigationItemIndicatorShape,
+    required this.fullItemOverlayColor,
+    required this.isDisabled,
+    required this.info,
+    required this.isSelected,
+    required this.iconKey,
+    required this.itemKey,
+    required this.child,
+  });
+
+  final ShapeBorder effectiveNavigationItemIndicatorShape;
+  final WidgetStateProperty<Color?>? fullItemOverlayColor;
+  final bool isDisabled;
+  final NavigationDestinationInfo info;
+  final bool isSelected;
+  final GlobalKey<State<StatefulWidget>> iconKey;
+  final GlobalKey<State<StatefulWidget>> itemKey;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipPath(
+      clipper: _DestinationClipper(
+        shape: effectiveNavigationItemIndicatorShape,
+      ),
+      child: Material(
+        child: InkResponse(
+          containedInkWell: true,
+          highlightShape: BoxShape.rectangle,
+          overlayColor: fullItemOverlayColor,
+          hoverColor: fullItemOverlayColor?.resolve({
+            WidgetState.hovered,
+          }),
+          focusColor: fullItemOverlayColor?.resolve({
+            WidgetState.focused,
+          }),
+          splashColor: fullItemOverlayColor?.resolve({
+            WidgetState.pressed,
+          }),
+          onTap: isDisabled ? null : info.onTap,
+          child: ColoredBox(
+            color: isSelected
+                ? fullItemOverlayColor?.resolve({WidgetState.selected}) ??
+                    Colors.transparent
+                : Colors.transparent,
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DestinationClipper extends CustomClipper<Path> {
+  const _DestinationClipper({required this.shape});
+
+  final ShapeBorder shape;
+
+  @override
+  Path getClip(Size size) {
+    return shape.getOuterPath(Offset.zero & size);
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) {
+    return oldClipper != this;
   }
 }
 
@@ -246,36 +320,6 @@ class _FrameworkIndicatorInkWell extends InkResponse {
           iconKey.currentContext!.findRenderObject()! as RenderBox;
       final Rect iconRect = iconBox.localToGlobal(Offset.zero) & iconBox.size;
       return referenceBox.globalToLocal(iconRect.topLeft) & iconBox.size;
-    };
-  }
-}
-
-class _FullItemIndicatorInkWell extends InkResponse {
-  const _FullItemIndicatorInkWell({
-    required this.itemKey,
-    required this.iconKey,
-    required this.labelBehavior,
-    super.overlayColor,
-    super.customBorder,
-    super.onTap,
-    super.child,
-  }) : super(
-          containedInkWell: true,
-          highlightColor: Colors.transparent,
-        );
-
-  final GlobalKey itemKey;
-  final GlobalKey iconKey;
-  final NavigationDestinationLabelBehavior labelBehavior;
-
-  @override
-  RectCallback? getRectCallback(RenderBox referenceBox) {
-    return () {
-      final RenderBox targetBox =
-          itemKey.currentContext!.findRenderObject()! as RenderBox;
-      final Rect targetRect =
-          targetBox.localToGlobal(Offset.zero) & targetBox.size;
-      return referenceBox.globalToLocal(targetRect.topLeft) & targetBox.size;
     };
   }
 }
