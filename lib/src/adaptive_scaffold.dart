@@ -173,7 +173,37 @@ class AdaptiveScaffold extends StatefulWidget {
     this.groupAlignment,
     this.padding,
     this.controller,
+    this.leadingAtTop = true,
+    this.trailingAtBottom = false,
+    this.scrollable = false,
+    this.mainAxisAlignment,
+    this.showLabelsWhenCollapsed,
   });
+
+  /// Whether labels are shown while the rail is collapsed and [labelType] is
+  /// [NavigationRailLabelType.none].
+  ///
+  /// Defaults to [NavigationRailThemeData.showLabelsWhenCollapsed], and if
+  /// that is null, defaults to false.
+  ///
+  /// Only applies to the [NavigationRail].
+  final bool? showLabelsWhenCollapsed;
+
+  /// Pin the [leading] widget to the top. Only applies to the [NavigationRail].
+  final bool leadingAtTop;
+
+  /// Pin the [trailing] widget to the bottom. Only applies to the [NavigationRail].
+  final bool trailingAtBottom;
+
+  /// Whether the [NavigationDestination]s should scroll when space is tight.
+  final bool scrollable;
+
+  /// How destinations should be placed along the main axis.
+  ///
+  /// When non-null, [groupAlignment] is ignored.
+  ///
+  /// Only applies to the [NavigationRail].
+  final MainAxisAlignment? mainAxisAlignment;
 
   /// The destinations to be used in navigation items. These are converted to
   /// [NavigationRailDestination]s and [BottomNavigationBarItem]s and inserted
@@ -472,6 +502,7 @@ class AdaptiveScaffold extends StatefulWidget {
     double iconSize = 24,
     Duration animationDuration = const Duration(milliseconds: 180),
     ValueChanged<int>? onDestinationSelected,
+    bool? scrollable,
   }) {
     return Builder(
       builder: (BuildContext context) {
@@ -496,6 +527,7 @@ class AdaptiveScaffold extends StatefulWidget {
               selectedIndex: currentIndex ?? 0,
               destinations: destinations,
               onDestinationSelected: onDestinationSelected,
+              scrollable: scrollable ?? false,
             ),
           ),
         );
@@ -722,6 +754,11 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               labelType: navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
+              showLabelsWhenCollapsed: widget.showLabelsWhenCollapsed,
+              leadingAtTop: widget.leadingAtTop,
+              trailingAtBottom: widget.trailingAtBottom,
+              scrollable: widget.scrollable,
+              mainAxisAlignment: widget.mainAxisAlignment,
             ),
           ),
           widget.mediumLargeBreakpoint: SlotLayout.from(
@@ -742,6 +779,11 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               labelType: navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
+              showLabelsWhenCollapsed: widget.showLabelsWhenCollapsed,
+              leadingAtTop: widget.leadingAtTop,
+              trailingAtBottom: widget.trailingAtBottom,
+              scrollable: widget.scrollable,
+              mainAxisAlignment: widget.mainAxisAlignment,
             ),
           ),
           widget.largeBreakpoint: SlotLayout.from(
@@ -760,6 +802,11 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
               padding: widget.padding,
+              showLabelsWhenCollapsed: widget.showLabelsWhenCollapsed,
+              leadingAtTop: widget.leadingAtTop,
+              trailingAtBottom: widget.trailingAtBottom,
+              scrollable: widget.scrollable,
+              mainAxisAlignment: widget.mainAxisAlignment,
             ),
           ),
           widget.extraLargeBreakpoint: SlotLayout.from(
@@ -778,6 +825,11 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
               padding: widget.padding,
+              showLabelsWhenCollapsed: widget.showLabelsWhenCollapsed,
+              leadingAtTop: widget.leadingAtTop,
+              trailingAtBottom: widget.trailingAtBottom,
+              scrollable: widget.scrollable,
+              mainAxisAlignment: widget.mainAxisAlignment,
             ),
           ),
         },
@@ -793,6 +845,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                           currentIndex: safeSelectedIndex,
                           destinations: widget.destinations,
                           onDestinationSelected: widget.onSelectedIndexChange,
+                          scrollable: widget.scrollable,
                         )
                       : const SizedBox.shrink(),
                 ),

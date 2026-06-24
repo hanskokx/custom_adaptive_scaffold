@@ -114,8 +114,12 @@ class NavigationBar extends StatelessWidget {
     this.labelTextStyle,
     this.labelPadding,
     this.maintainBottomViewPadding = false,
+    this.scrollable = false,
   })  : assert(destinations.length >= 2),
         assert(0 <= selectedIndex && selectedIndex < destinations.length);
+
+  /// Whether the main group of items should scroll when vertical space is tight.
+  final bool scrollable;
 
   /// Determines the transition time for each destination as it goes between
   /// selected and unselected.
@@ -282,6 +286,50 @@ class NavigationBar extends StatelessWidget {
         navigationBarTheme.indicatorShape ??
         defaults.indicatorShape!;
 
+    Widget mainGroup = Row(
+      children: List<Widget>.generate(destinations.length, (int i) {
+        final Widget destinationWidget = destinations[i];
+        final NavigationBarDestination destination =
+            destinationWidget is NavigationBarDestination
+                ? destinationWidget
+                : destinationWidget is NavigationDestination
+                    ? destinationWidget.toBarDestination()
+                    : NavigationBarDestination(
+                        icon: KeyedSubtree(
+                          key: destinationWidget.key,
+                          child: destinationWidget,
+                        ),
+                      );
+
+        return Expanded(
+          child: SelectableAnimatedBuilder(
+            duration: animationDuration ?? const Duration(milliseconds: 500),
+            isSelected: i == selectedIndex,
+            builder: (BuildContext context, Animation<double> animation) {
+              return NavigationDestinationInfo(
+                index: i,
+                selectedIndex: selectedIndex,
+                totalNumberOfDestinations: destinations.length,
+                selectedAnimation: animation,
+                labelBehavior: effectiveLabelBehavior,
+                indicatorColor: indicatorColor,
+                indicatorShape: effectiveIndicatorShape,
+                overlayColor: overlayColor,
+                labelTextStyle: labelTextStyle,
+                labelPadding: labelPadding,
+                onTap: destination.enabled ? _handleTap.call(i) : () {},
+                child: destination,
+              );
+            },
+          ),
+        );
+      }),
+    );
+
+    if (scrollable) {
+      mainGroup = SingleChildScrollView(child: mainGroup);
+    }
+
     return Material(
       color: backgroundColor ??
           navigationBarTheme.backgroundColor ??
@@ -297,46 +345,7 @@ class NavigationBar extends StatelessWidget {
         maintainBottomViewPadding: maintainBottomViewPadding,
         child: SizedBox(
           height: effectiveHeight,
-          child: Row(
-            children: List<Widget>.generate(destinations.length, (int i) {
-              final Widget destinationWidget = destinations[i];
-              final NavigationBarDestination destination =
-                  destinationWidget is NavigationBarDestination
-                      ? destinationWidget
-                      : destinationWidget is NavigationDestination
-                          ? destinationWidget.toBarDestination()
-                          : NavigationBarDestination(
-                              icon: KeyedSubtree(
-                                key: destinationWidget.key,
-                                child: destinationWidget,
-                              ),
-                            );
-
-              return Expanded(
-                child: SelectableAnimatedBuilder(
-                  duration:
-                      animationDuration ?? const Duration(milliseconds: 500),
-                  isSelected: i == selectedIndex,
-                  builder: (BuildContext context, Animation<double> animation) {
-                    return NavigationDestinationInfo(
-                      index: i,
-                      selectedIndex: selectedIndex,
-                      totalNumberOfDestinations: destinations.length,
-                      selectedAnimation: animation,
-                      labelBehavior: effectiveLabelBehavior,
-                      indicatorColor: indicatorColor,
-                      indicatorShape: effectiveIndicatorShape,
-                      overlayColor: overlayColor,
-                      labelTextStyle: labelTextStyle,
-                      labelPadding: labelPadding,
-                      onTap: destination.enabled ? _handleTap.call(i) : () {},
-                      child: destination,
-                    );
-                  },
-                ),
-              );
-            }),
-          ),
+          child: mainGroup,
         ),
       ),
     );

@@ -3,8 +3,7 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart"
-    hide NavigationDestination, NavigationRailDestination;
+import "package:custom_adaptive_scaffold/material.dart";
 
 /// A more functional demo of the usage of the adaptive layout helper widgets.
 /// Specifically, it is built using an [AdaptiveLayout] and uses static helpers

@@ -48,12 +48,18 @@ controls, and tooltip configuration.
 
 ## Drop-in Replacement
 
-This package is designed to function as a **drop-in replacement** for the
-corresponding Flutter framework widgets. Because the package exports widgets
-under the same names (`NavigationBar`, `NavigationRail`, `NavigationDestination`,
-etc.), you must resolve the name conflict with one of two approaches:
+This package is designed to function as a **drop-in replacement** for the corresponding Flutter framework widgets. Because the package exports widgets
+under the same names (`NavigationBar`, `NavigationRail`, `NavigationDestination`, etc.), you must resolve the name conflict with one of three approaches:
 
-**Option 1 — Hide the Flutter originals** (recommended):
+**Option 1 — Use the package's re-exported Material** (recommended):
+
+```dart
+// Replace `import 'package:flutter/material.dart'; with:
+import "package:custom_adaptive_scaffold/material.dart";
+import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
+```
+
+**Option 2 — Hide the Flutter originals**:
 
 ```dart
 import 'package:flutter/material.dart' hide
@@ -69,14 +75,9 @@ import 'package:flutter/material.dart' hide
 import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
 ```
 
-**Option 2 — Use the `Custom*` aliases**:
+**Option 3 — Use the `Custom*` aliases**:
 
-Every package widget that shadows a Flutter name also exports a `Custom*`
-typedef (e.g. `CustomNavigationBar`, `CustomNavigationRail`,
-`CustomNavigationDestination`, `CustomNavigationBarThemeData`,
-`CustomNavigationRailThemeData`, `CustomNavigationIndicator`). Rename your
-existing usages with the `Custom` prefix and import both packages without
-hiding:
+Every package widget that shadows a Flutter name also exports a `Custom*` typedef (e.g. `CustomNavigationBar`, `CustomNavigationRail`, `CustomNavigationDestination`, `CustomNavigationBarThemeData`, `CustomNavigationRailThemeData`, `CustomNavigationIndicator`). Rename your existing usages with the `Custom` prefix and import both packages without hiding:
 
 ```dart
 import 'package:flutter/material.dart';
@@ -87,13 +88,11 @@ import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
 
 ## How Is This Different From Flutter?
 
-This package keeps Flutter's default look and feel but exposes opt-in
-customisation points that the framework does not provide.
+This package keeps Flutter's default look and feel but exposes opt-in customization points that the framework does not provide.
 
 ### Extended theme data
 
-Both `NavigationBarThemeData` and `NavigationRailThemeData` are package-owned
-classes that implement the Flutter framework interfaces, so they are usable
+Both `NavigationBarThemeData` and `NavigationRailThemeData` are package-owned classes that implement the Flutter framework interfaces, so they are usable
 everywhere Flutter's types are expected. They add:
 
 | Property                         | New vs Flutter | Description                                   |
@@ -107,20 +106,16 @@ everywhere Flutter's types are expected. They add:
 | `tooltipTriggerWhenLabelVisible` | ✓              | Override trigger when label is shown          |
 | `tooltipTriggerWhenLabelHidden`  | ✓              | Override trigger when label is hidden         |
 
-`NavigationRailThemeData` additionally provides `showLabelsWhenCollapsed`
-(show labels while the rail is collapsed and `labelType` is `none`).
+`NavigationRailThemeData` additionally provides `showLabelsWhenCollapsed` (show labels while the rail is collapsed and `labelType` is `none`).
 
 ### Richer `NavigationDestination` base class
 
-The package's `NavigationDestination` is a full base class (not just a wrapper)
-with `margin`, `padding`, `indicatorColor`, `indicatorShape`, and `disabled`.
+The package's `NavigationDestination` is a full base class (not just a wrapper) with `margin`, `padding`, `indicatorColor`, `indicatorShape`, and `disabled`.
 `CustomNavigationDestination` is a typedef alias for it.
 
 ### Convenience destination type
 
-`AdaptiveScaffoldDestination` accepts an `IconData` and a `String title` for
-quick setup, matching the API style of the original Flutter
-`AdaptiveScaffoldDestination`:
+`AdaptiveScaffoldDestination` accepts an `IconData` and a `String title` for quick setup, matching the API style of the original Flutter `AdaptiveScaffoldDestination`:
 
 ```dart
 AdaptiveScaffold(
@@ -153,44 +148,33 @@ AdaptiveScaffold(
 
 ### Collapsed-pane controller
 
-`AdaptiveScaffoldController`, `PanelFocus`, `AdaptiveScaffoldScope`, and
-`AdaptiveBody` provide an opt-in API for controlling which pane is visible on
-narrow layouts. See the [Panel Primary/Secondary Behavior](#panel-primarysecondary-behavior)
-section below for full documentation.
+`AdaptiveScaffoldController`, `PanelFocus`, `AdaptiveScaffoldScope`, and `AdaptiveBody` provide an opt-in API for controlling which pane is visible on
+narrow layouts. See the [Panel Primary/Secondary Behavior](#panel-primarysecondary-behavior) section below for full documentation.
 
-To see examples of using these widgets to make a simple but common adaptive
-layout:
+To see examples of using these widgets to make a simple but common adaptive layout:
 
 ```bash
 cd example/
-flutter run --release
+flutter run
 ```
 
 ## AdaptiveScaffold
 
-`AdaptiveScaffold` implements the basic visual layout structure for Material
-Design 3 that adapts to a variety of screens. It provides a preset of layout,
-including positions and animations, by handling macro changes in navigational
-elements and bodies based on the current features of the screen, namely screen
-width and platform. For example, the navigational elements would be a
-`BottomNavigationBar` on a small mobile device and a `NavigationRail` on larger
-devices. The body is the primary screen that takes up the space left by the
-navigational elements. The secondaryBody acts as an option to split the space
-between two panes for purposes such as having a detail view. There is some
-automatic functionality with foldables to handle the split between panels
-properly. `AdaptiveScaffold` is much simpler to use but is not the best if you
-would like high customizability. Apps that would like more refined layout and/or
+`AdaptiveScaffold` implements the basic visual layout structure for Material Design 3 that adapts to a variety of screens. It provides a preset of layout,
+including positions and animations, by handling macro changes in navigational elements and bodies based on the current features of the screen, namely screen
+width and platform. For example, the navigational elements would be a `BottomNavigationBar` on a small mobile device and a `NavigationRail` on larger
+devices. The body is the primary screen that takes up the space left by the navigational elements. The secondaryBody acts as an option to split the space
+between two panes for purposes such as having a detail view. There is some automatic functionality with foldables to handle the split between panels
+properly. `AdaptiveScaffold` is much simpler to use but is not the best if you would like high customizability. Apps that would like more refined layout and/or
 animation should use `AdaptiveLayout`.
 
 ### Panel Primary/Secondary Behavior
 
-`AdaptiveScaffold` now supports an optional pane-intent controller for
-primary/secondary style flows:
+`AdaptiveScaffold` now supports an optional pane-intent controller for primary/secondary style flows:
 
 - `controller: AdaptiveScaffoldController?`
 
-When a controller is provided, pane visibility on collapsed layouts can be
-controlled explicitly:
+When a controller is provided, pane visibility on collapsed layouts can be controlled explicitly:
 
 - On the `smallBreakpoint`:
   - `PanelFocus.body` shows the body/list pane.
@@ -201,34 +185,27 @@ controlled explicitly:
 
 Important behavior details:
 
-- This is fully opt-in. If `controller` is not supplied, behavior
-  remains unchanged.
+- This is fully opt-in. If `controller` is not supplied, behavior remains unchanged.
 - The collapsed pane switch is only active when both
-  `controller != null`, `secondaryBody != null`, and the controller has an
-  explicit pane intent.
-- `AdaptiveScaffoldController()` starts with no explicit pane intent, so
-  collapsed layouts preserve legacy dual-pane behavior until
-  `showBody()` or `showSecondaryBody()` is called.
+  `controller != null`, `secondaryBody != null`, and the controller has an explicit pane intent.
+- `AdaptiveScaffoldController()` starts with no explicit pane intent, so collapsed layouts preserve legacy dual-pane behavior until `showBody()` or `showSecondaryBody()` is called.
 - Pass `initialIntent` to opt into immediate collapsed single-pane behavior:
   - `AdaptiveScaffoldController(initialIntent: PanelFocus.body)`
   - `AdaptiveScaffoldController(initialIntent: PanelFocus.secondaryBody)`
 - `AdaptiveScaffold` listens to controller updates and rebuilds automatically.
 - `AdaptiveScaffoldScope` is inserted only when a controller is provided.
 
-This design keeps routing concerns outside the package. The package controls
-pane intent and layout visibility only.
+This design keeps routing concerns outside the package. The package controls pane intent and layout visibility only.
 
 ### AdaptiveBody Context
 
-`AdaptiveScaffold` now wraps active body and secondaryBody slot content in
-`AdaptiveBody`, which exposes whether the current layout is collapsed:
+`AdaptiveScaffold` now wraps active body and secondaryBody slot content in `AdaptiveBody`, which exposes whether the current layout is collapsed:
 
 ```dart
 final bool isCollapsed = AdaptiveBody.of(context)?.viewIsCollapsed ?? false;
 ```
 
-This allows descendants to adapt UI behavior (for example, showing an inline
-back affordance only on collapsed layouts) without coupling to route state.
+This allows descendants to adapt UI behavior (for example, showing an inline back affordance only on collapsed layouts) without coupling to route state.
 
 ### Primary/Secondary API Summary
 
@@ -385,8 +362,7 @@ Widget build(BuildContext context) {
 
 ## The Background Widget Suite
 
-These are the set of widgets that are used on a lower level and offer more
-customizability at a cost of more lines of code.
+These are the set of widgets that are used on a lower level and offer more customizability at a cost of more lines of code.
 
 ### Breakpoint
 
@@ -512,24 +488,16 @@ bool between(Breakpoint lower, Breakpoint upper)
 
 ### AdaptiveLayout
 
-!["AdaptiveLayout's Assigned Slots Displayed on Screen"](example/demo_files/screenSlots.png)
-`AdaptiveLayout` is the top-level widget class that arranges the layout of the
-slots and their animation, similar to Scaffold. It takes in several LayoutSlots
-and returns an appropriate layout based on the diagram above. `AdaptiveScaffold`
-is built upon `AdaptiveLayout` internally but abstracts some of the complexity
-with presets based on the Material 3 Design specification.
+!["AdaptiveLayout's Assigned Slots Displayed on Screen"](example/demo_files/screenSlots.png) `AdaptiveLayout` is the top-level widget class that arranges the layout of the slots and their animation, similar to Scaffold. It takes in several LayoutSlots and returns an appropriate layout based on the diagram above. `AdaptiveScaffold` is built upon `AdaptiveLayout` internally but abstracts some of the complexity with presets based on the Material 3 Design specification.
 
 ### SlotLayout
 
-`SlotLayout` handles the adaptivity or the changes between widgets at certain
-`Breakpoints`. It also holds the logic for animating between breakpoints. It takes
-SlotLayoutConfigs mapped to Breakpoints in a config and displays a widget based
-on that information.
+`SlotLayout` handles the adaptivity or the changes between widgets at certain `Breakpoints`. It also holds the logic for animating between breakpoints. It takes
+SlotLayoutConfigs mapped to Breakpoints in a config and displays a widget based on that information.
 
 ### SlotLayout.from
 
-SlotLayout.from creates a SlotLayoutConfig holds the actual widget to be
-displayed and the entrance animation and exit animation.
+SlotLayout.from creates a SlotLayoutConfig holds the actual widget to be displayed and the entrance animation and exit animation.
 
 ### Example Usage
 
@@ -730,8 +698,7 @@ Both of the examples shown here produce the same output:
 
 ## Migrating from 4.x
 
-Feature parity with 4.x is maintained via a redesigned API. The mapping below
-covers the most common 4.x patterns.
+Feature parity with 4.x is maintained via a redesigned API. The mapping below covers the most common 4.x patterns.
 
 ### Full-item fill / highlight (was `destinationFillRegion`)
 
@@ -757,8 +724,7 @@ NavigationRailThemeData(
 ),
 ```
 
-Omitting `navigationItemOverlayColor` (the default) restores icon-only
-highlighting — equivalent to the old `NavigationDestinationRegion.icon`.
+Omitting `navigationItemOverlayColor` (the default) restores icon-only highlighting — equivalent to the old `NavigationDestinationRegion.icon`.
 
 ### Label type per breakpoint (was `AdaptiveScaffoldNavigationThemeData`)
 
@@ -826,9 +792,6 @@ NavigationBarThemeData(tooltipOffset: Offset(0, 48)),
 
 ### Destination transition animations (was `NavigationDestinationAnimation`)
 
-`NavigationDestinationAnimation` (`none`, `fadeSwap`, `scale`) and the related
-`transitionAnimation`, `transitionCurve`, `transitionDuration`, `iconBuilder`,
-and `transitionBuilder` parameters are not present in this version. The
-selection transition uses the standard Flutter animation. Custom icon
-transition logic can be implemented by subclassing `NavigationDestination` and
-overriding `build`.
+`NavigationDestinationAnimation` (`none`, `fadeSwap`, `scale`) and the related `transitionAnimation`, `transitionCurve`, `transitionDuration`, `iconBuilder`,
+and `transitionBuilder` parameters are not present in this version. The selection transition uses the standard Flutter animation. Custom icon
+transition logic can be implemented by subclassing `NavigationDestination` and overriding `build`.
