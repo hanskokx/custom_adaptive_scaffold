@@ -76,7 +76,7 @@ Widget _buildRail({
         icon: const Icon(Icons.home),
         selectedIcon: const Icon(Icons.home_filled),
         label: const Text("Home"),
-        enabled: firstEnabled,
+        disabled: !firstEnabled,
       ),
       const NavigationRailDestination(
         icon: Icon(Icons.search),
@@ -806,7 +806,7 @@ void main() {
                     NavigationRailDestination(
                       icon: Icon(Icons.home, key: Key("rail_home")),
                       label: Text("Home"),
-                      enabled: false,
+                      disabled: true,
                     ),
                     NavigationRailDestination(
                       icon: Icon(Icons.search),

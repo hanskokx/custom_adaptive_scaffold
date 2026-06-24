@@ -40,11 +40,20 @@ class NavigationRailDestination extends NavigationDestination {
     super.indicatorShape,
     super.margin,
     super.padding,
-    super.enabled,
+    this.disabled = false,
     super.tooltip,
   }) : _label = label;
 
   final Widget _label;
+
+  /// The effective enabled state for this destination.
+  ///
+  /// Returns `true` if the destination is enabled, or `false` if it is disabled. If [disabled] is `null`, this will return `true` by default.
+  @override
+  bool get enabled => !(disabled ?? false);
+
+  /// Indicates that this destination is inaccessible.
+  final bool? disabled;
 
   /// The effective tooltip text for this destination.
   ///

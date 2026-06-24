@@ -181,7 +181,7 @@ class NavigationDestination extends StatelessWidget {
       indicatorShape: indicatorShape,
       margin: margin,
       padding: padding,
-      enabled: enabled,
+      disabled: !enabled,
       tooltip: railTooltip,
     );
   }
