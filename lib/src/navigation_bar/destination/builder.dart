@@ -112,9 +112,8 @@ class _NavigationBarDestinationBuilderState
             navigationBarTheme?.indicatorShape ??
             defaults.indicatorShape ??
             const StadiumBorder();
-    final WidgetStateProperty<Color?>? iconOverlayColor = info.overlayColor ??
-        navigationBarTheme?.overlayColor ??
-        defaults.overlayColor;
+    final WidgetStateProperty<Color?>? iconOverlayColor =
+        info.overlayColor ?? navigationBarTheme?.overlayColor;
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
         navigationBarTheme?.navigationItemOverlayColor ?? iconOverlayColor;
     final String labelText =
