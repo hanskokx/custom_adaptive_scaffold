@@ -15,6 +15,7 @@ dependencies:
   go_router: ^17.2.0
 
 dev_dependencies:
+  arcane_analysis: ^1.0.3
   build_runner: ^2.4.12
   flutter_test:
     sdk: flutter
