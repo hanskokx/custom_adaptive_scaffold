@@ -2,10 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "dart:async";
-
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:custom_adaptive_scaffold/material.dart";
 
 /// A more functional demo of the usage of the adaptive layout helper widgets.
 /// Specifically, it is built using an [AdaptiveLayout] and uses static helpers
@@ -69,14 +67,6 @@ class _MyHomePageState extends State<MyHomePage>
   // The index of the navigation screen. Only impacts body/secondaryBody
   int _navigationIndex = 0;
 
-  // Whether the large navigation rail is shown in its extended state.
-  bool _isLargeRailExtended = true;
-
-  // Delay rendering expanded-only rail content until width animation settles.
-  bool _showExpandedRailContent = true;
-
-  Timer? _expandedRailContentTimer;
-
   // The controllers used for the staggered animation of the navigation elements.
   late AnimationController _inboxIconSlideController;
   late AnimationController _articleIconSlideController;
@@ -124,37 +114,11 @@ class _MyHomePageState extends State<MyHomePage>
 
   @override
   void dispose() {
-    _expandedRailContentTimer?.cancel();
     _inboxIconSlideController.dispose();
     _articleIconSlideController.dispose();
     _chatIconSlideController.dispose();
     _videoIconSlideController.dispose();
     super.dispose();
-  }
-
-  void _collapseRail() {
-    _expandedRailContentTimer?.cancel();
-    setState(() {
-      _showExpandedRailContent = false;
-      _isLargeRailExtended = false;
-    });
-  }
-
-  void _expandRail() {
-    _expandedRailContentTimer?.cancel();
-    setState(() {
-      _isLargeRailExtended = true;
-      _showExpandedRailContent = false;
-    });
-
-    _expandedRailContentTimer = Timer(const Duration(milliseconds: 220), () {
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        _showExpandedRailContent = true;
-      });
-    });
   }
 
   @override
@@ -259,21 +223,20 @@ class _MyHomePageState extends State<MyHomePage>
 
     // These are the destinations used within the AdaptiveScaffold navigation
     // builders.
-    const List<CustomNavigationDestination> destinations =
-        <CustomNavigationDestination>[
-      CustomNavigationDestination(
+    const List<NavigationDestination> destinations = <NavigationDestination>[
+      NavigationDestination(
         label: "Inbox",
         icon: Icon(Icons.inbox),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Articles",
         icon: Icon(Icons.article_outlined),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Chat",
         icon: Icon(Icons.chat_bubble_outline),
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         label: "Video",
         icon: Icon(Icons.video_call_outlined),
       ),
@@ -315,7 +278,7 @@ class _MyHomePageState extends State<MyHomePage>
                       child: const _MediumComposeIcon(),
                     ),
                     backgroundColor: const Color.fromARGB(0, 255, 255, 255),
-                    destinations: <NavigationRailDestination>[
+                    destinations: <NavigationDestination>[
                       slideInNavigationItem(
                         begin: -1,
                         controller: _inboxIconSlideController,
@@ -349,25 +312,16 @@ class _MyHomePageState extends State<MyHomePage>
                 // The AdaptiveScaffold builder here greatly simplifies
                 // navigational elements.
                 builder: (_) => AdaptiveScaffold.standardNavigationRail(
-                  leading: _showExpandedRailContent
-                      ? _LargeComposeIcon(
-                          onCollapsePressed: _collapseRail,
-                        )
-                      : _MediumComposeIcon(
-                          onMenuPressed: _expandRail,
-                        ),
+                  leading: const _LargeComposeIcon(),
                   onDestinationSelected: (int index) {
                     setState(() {
                       _navigationIndex = index;
                     });
                   },
                   selectedIndex: _navigationIndex,
-                  trailing: _showExpandedRailContent ? trailingNavRail : null,
-                  extended: _isLargeRailExtended,
-                  destinations:
-                      destinations.map((NavigationDestination destination) {
-                    return AdaptiveScaffold.toRailDestination(destination);
-                  }).toList(),
+                  trailing: trailingNavRail,
+                  extended: true,
+                  destinations: destinations,
                 ),
               ),
               Breakpoints.large: SlotLayout.from(
@@ -375,25 +329,16 @@ class _MyHomePageState extends State<MyHomePage>
                 // The AdaptiveScaffold builder here greatly simplifies
                 // navigational elements.
                 builder: (_) => AdaptiveScaffold.standardNavigationRail(
-                  leading: _showExpandedRailContent
-                      ? _LargeComposeIcon(
-                          onCollapsePressed: _collapseRail,
-                        )
-                      : _MediumComposeIcon(
-                          onMenuPressed: _expandRail,
-                        ),
+                  leading: const _LargeComposeIcon(),
                   onDestinationSelected: (int index) {
                     setState(() {
                       _navigationIndex = index;
                     });
                   },
                   selectedIndex: _navigationIndex,
-                  trailing: _showExpandedRailContent ? trailingNavRail : null,
-                  extended: _isLargeRailExtended,
-                  destinations:
-                      destinations.map((NavigationDestination destination) {
-                    return AdaptiveScaffold.toRailDestination(destination);
-                  }).toList(),
+                  trailing: trailingNavRail,
+                  extended: true,
+                  destinations: destinations,
                 ),
               ),
               Breakpoints.extraLarge: SlotLayout.from(
@@ -401,25 +346,16 @@ class _MyHomePageState extends State<MyHomePage>
                 // The AdaptiveScaffold builder here greatly simplifies
                 // navigational elements.
                 builder: (_) => AdaptiveScaffold.standardNavigationRail(
-                  leading: _showExpandedRailContent
-                      ? _LargeComposeIcon(
-                          onCollapsePressed: _collapseRail,
-                        )
-                      : _MediumComposeIcon(
-                          onMenuPressed: _expandRail,
-                        ),
+                  leading: const _LargeComposeIcon(),
                   onDestinationSelected: (int index) {
                     setState(() {
                       _navigationIndex = index;
                     });
                   },
                   selectedIndex: _navigationIndex,
-                  trailing: _showExpandedRailContent ? trailingNavRail : null,
-                  extended: _isLargeRailExtended,
-                  destinations:
-                      destinations.map((NavigationDestination destination) {
-                    return AdaptiveScaffold.toRailDestination(destination);
-                  }).toList(),
+                  trailing: trailingNavRail,
+                  extended: true,
+                  destinations: destinations,
                 ),
               ),
             },
@@ -477,13 +413,13 @@ class _MyHomePageState extends State<MyHomePage>
     );
   }
 
-  NavigationRailDestination slideInNavigationItem({
+  NavigationDestination slideInNavigationItem({
     required double begin,
     required AnimationController controller,
     required IconData icon,
     required String label,
   }) {
-    return NavigationRailDestination(
+    return NavigationDestination(
       icon: SlideTransition(
         position: Tween<Offset>(
           begin: Offset(begin, 0),
@@ -493,7 +429,7 @@ class _MyHomePageState extends State<MyHomePage>
         ),
         child: Icon(icon),
       ),
-      label: Text(label),
+      label: label,
     );
   }
 }
@@ -524,9 +460,7 @@ class _SmallComposeIcon extends StatelessWidget {
 }
 
 class _MediumComposeIcon extends StatelessWidget {
-  const _MediumComposeIcon({this.onMenuPressed});
-
-  final VoidCallback? onMenuPressed;
+  const _MediumComposeIcon();
 
   @override
   Widget build(BuildContext context) {
@@ -534,11 +468,7 @@ class _MediumComposeIcon extends StatelessWidget {
       children: <Widget>[
         Container(
           padding: const EdgeInsets.fromLTRB(0, 10, 0, 18),
-          child: IconButton(
-            onPressed: onMenuPressed,
-            tooltip: "Expand navigation rail",
-            icon: const Icon(Icons.menu),
-          ),
+          child: const Icon(Icons.menu),
         ),
         const _SmallComposeIcon(),
       ],
@@ -547,31 +477,24 @@ class _MediumComposeIcon extends StatelessWidget {
 }
 
 class _LargeComposeIcon extends StatelessWidget {
-  const _LargeComposeIcon({required this.onCollapsePressed});
-
-  final VoidCallback onCollapsePressed;
+  const _LargeComposeIcon();
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      // Keep the leading header and compose pill inset from both rail edges.
-      padding: const EdgeInsets.fromLTRB(12.0, 5, 12, 12),
+      padding: const EdgeInsets.fromLTRB(8.0, 5, 8.0, 12),
       child: Column(
         children: <Widget>[
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            child: Row(
+            padding: const EdgeInsets.fromLTRB(6, 0, 0, 0),
+            child: const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                const Text(
+                Text(
                   "REPLY",
                   style: TextStyle(color: Colors.deepPurple, fontSize: 15),
                 ),
-                IconButton(
-                  onPressed: onCollapsePressed,
-                  tooltip: "Collapse navigation rail",
-                  icon: const Icon(Icons.menu_open, size: 22),
-                ),
+                Icon(Icons.menu_open, size: 22),
               ],
             ),
           ),

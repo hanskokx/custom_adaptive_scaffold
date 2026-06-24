@@ -2,33 +2,38 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
-    hide NavigationIndicator;
-import "package:flutter/material.dart";
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
+import "package:flutter/material.dart"
+    hide
+        NavigationDestination,
+        NavigationRail,
+        NavigationBar,
+        NavigationRailDestination,
+        NavigationIndicator,
+        NavigationBarTheme,
+        NavigationBarThemeData,
+        NavigationRailTheme,
+        NavigationRailThemeData,
+        NavigationDrawerDestination,
+        NavigationDrawerTheme,
+        NavigationDrawerThemeData;
 import "package:flutter/rendering.dart";
 import "package:flutter_test/flutter_test.dart";
 
 void main() {
   test("copyWith, ==, hashCode basics", () {
     expect(
-      const CustomNavigationRailThemeData(),
-      const CustomNavigationRailThemeData().copyWith(),
+      const NavigationRailThemeData(),
+      const NavigationRailThemeData().copyWith(),
     );
     expect(
-      const CustomNavigationRailThemeData().hashCode,
-      const CustomNavigationRailThemeData().copyWith().hashCode,
+      const NavigationRailThemeData().hashCode,
+      const NavigationRailThemeData().copyWith().hashCode,
     );
-  });
-
-  test("package-only NavigationRail theme fields stay opt-in by default", () {
-    const data = CustomNavigationRailThemeData();
-
-    expect(data.margin, isNull);
-    expect(data.padding, isNull);
   });
 
   testWidgets(
-    "Material3 - Default values are used when no NavigationRail or CustomNavigationRailThemeData properties are specified",
+    "Material3 - Default values are used when no NavigationRail or NavigationRailThemeData properties are specified",
     (WidgetTester tester) async {
       final theme = ThemeData();
       // Material 3 defaults
@@ -36,7 +41,7 @@ void main() {
         MaterialApp(
           theme: theme,
           home: Scaffold(
-            body: CustomNavigationRail(
+            body: NavigationRail(
               selectedIndex: 0,
               destinations: _destinations(),
             ),
@@ -59,8 +64,8 @@ void main() {
         theme.colorScheme.onSurfaceVariant,
       );
       expect(_unselectedIconTheme(tester).opacity, null);
-      expect(_selectedLabelStyle(tester).fontSize, 14.0);
-      expect(_unselectedLabelStyle(tester).fontSize, 14.0);
+      expect(_selectedLabelStyle(tester).fontSize, 12.0);
+      expect(_unselectedLabelStyle(tester).fontSize, 12.0);
       expect(_destinationsAlign(tester).alignment, Alignment.topCenter);
       expect(_labelType(tester), NavigationRailLabelType.none);
       expect(find.byType(NavigationIndicator), findsWidgets);
@@ -77,15 +82,15 @@ void main() {
   );
 
   testWidgets(
-    "Material2 - Default values are used when no NavigationRail or CustomNavigationRailThemeData properties are specified",
+    "Material2 - Default values are used when no NavigationRail or NavigationRailThemeData properties are specified",
     (WidgetTester tester) async {
       // This test can be removed when `useMaterial3` is deprecated.
-      final ThemeData material2Theme = ThemeData(useMaterial3: false);
       await tester.pumpWidget(
         MaterialApp(
-          theme: material2Theme,
+          // ignore: deprecated_member_use
+          theme: ThemeData.light().copyWith(useMaterial3: false),
           home: Scaffold(
-            body: CustomNavigationRail(
+            body: NavigationRail(
               selectedIndex: 0,
               destinations: _destinations(),
             ),
@@ -93,23 +98,20 @@ void main() {
         ),
       );
 
-      expect(_railMaterial(tester).color, material2Theme.colorScheme.surface);
+      expect(_railMaterial(tester).color, ThemeData().colorScheme.surface);
       expect(_railMaterial(tester).elevation, 0);
       expect(_destinationSize(tester).width, 72.0);
       expect(_selectedIconTheme(tester).size, 24.0);
-      expect(
-        _selectedIconTheme(tester).color,
-        material2Theme.colorScheme.primary,
-      );
+      expect(_selectedIconTheme(tester).color, ThemeData().colorScheme.primary);
       expect(_selectedIconTheme(tester).opacity, 1.0);
       expect(_unselectedIconTheme(tester).size, 24.0);
       expect(
         _unselectedIconTheme(tester).color,
-        material2Theme.colorScheme.onSurface,
+        ThemeData().colorScheme.onSurface,
       );
       expect(_unselectedIconTheme(tester).opacity, 0.64);
-      expect(_selectedLabelStyle(tester).fontSize, 14.0);
-      expect(_unselectedLabelStyle(tester).fontSize, 14.0);
+      expect(_selectedLabelStyle(tester).fontSize, 16.0);
+      expect(_unselectedLabelStyle(tester).fontSize, 16.0);
       expect(_destinationsAlign(tester).alignment, Alignment.topCenter);
       expect(_labelType(tester), NavigationRailLabelType.none);
       expect(find.byType(NavigationIndicator), findsNothing);
@@ -117,7 +119,7 @@ void main() {
   );
 
   testWidgets(
-    "CustomNavigationRailThemeData values are used when no NavigationRail properties are specified",
+    "NavigationRailThemeData values are used when no NavigationRail properties are specified",
     (WidgetTester tester) async {
       const backgroundColor = Color(0x00000001);
       const elevation = 7.0;
@@ -138,8 +140,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: CustomNavigationRailTheme(
-              data: const CustomNavigationRailThemeData(
+            body: NavigationRailTheme(
+              data: const NavigationRailThemeData(
                 backgroundColor: backgroundColor,
                 elevation: elevation,
                 selectedIconTheme: IconThemeData(
@@ -162,7 +164,7 @@ void main() {
                 indicatorColor: indicatorColor,
                 indicatorShape: indicatorShape,
               ),
-              child: CustomNavigationRail(
+              child: NavigationRail(
                 selectedIndex: 0,
                 destinations: _destinations(),
               ),
@@ -190,7 +192,7 @@ void main() {
   );
 
   testWidgets(
-    "NavigationRail values take priority over CustomNavigationRailThemeData values when both properties are specified",
+    "NavigationRail values take priority over NavigationRailThemeData values when both properties are specified",
     (WidgetTester tester) async {
       const backgroundColor = Color(0x00000001);
       const elevation = 7.0;
@@ -210,8 +212,8 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: CustomNavigationRailTheme(
-              data: const CustomNavigationRailThemeData(
+            body: NavigationRailTheme(
+              data: const NavigationRailThemeData(
                 backgroundColor: Color(0x00000099),
                 elevation: 5,
                 selectedIconTheme: IconThemeData(
@@ -231,7 +233,7 @@ void main() {
                 useIndicator: false,
                 indicatorColor: Color(0x00000096),
               ),
-              child: CustomNavigationRail(
+              child: NavigationRail(
                 selectedIndex: 0,
                 destinations: _destinations(),
                 backgroundColor: backgroundColor,
@@ -278,14 +280,12 @@ void main() {
   );
 
   // Regression test for https://github.com/flutter/flutter/issues/118618.
-  testWidgets(
-      "CustomNavigationRailThemeData lerps correctly with null iconThemes", (
+  testWidgets("NavigationRailThemeData lerps correctly with null iconThemes", (
     WidgetTester tester,
   ) async {
-    final CustomNavigationRailThemeData lerp =
-        CustomNavigationRailThemeData.lerp(
-      const CustomNavigationRailThemeData(),
-      const CustomNavigationRailThemeData(),
+    final NavigationRailThemeData lerp = NavigationRailThemeData.lerp(
+      const NavigationRailThemeData(),
+      const NavigationRailThemeData(),
       0.5,
     )!;
 
@@ -295,7 +295,7 @@ void main() {
 
   testWidgets("Default debugFillProperties", (WidgetTester tester) async {
     final builder = DiagnosticPropertiesBuilder();
-    const CustomNavigationRailThemeData().debugFillProperties(builder);
+    const NavigationRailThemeData().debugFillProperties(builder);
 
     final List<String> description = builder.properties
         .where((DiagnosticsNode node) => !node.isFiltered(DiagnosticLevel.info))
@@ -307,7 +307,7 @@ void main() {
 
   testWidgets("Custom debugFillProperties", (WidgetTester tester) async {
     final builder = DiagnosticPropertiesBuilder();
-    const CustomNavigationRailThemeData(
+    const NavigationRailThemeData(
       backgroundColor: Color(0x00000099),
       elevation: 5,
       selectedIconTheme: IconThemeData(color: Color(0x00000098)),
@@ -319,8 +319,6 @@ void main() {
       useIndicator: true,
       indicatorColor: Color(0x00000096),
       indicatorShape: CircleBorder(),
-      margin: EdgeInsets.all(4),
-      padding: EdgeInsets.symmetric(horizontal: 6),
     ).debugFillProperties(builder);
 
     final List<String> description = builder.properties
@@ -362,8 +360,6 @@ void main() {
       description[10],
       "indicatorShape: CircleBorder(BorderSide(width: 0.0, style: none))",
     );
-    expect(description[11], "margin: EdgeInsets.all(4.0)");
-    expect(description[12], "padding: EdgeInsets(6.0, 0.0, 6.0, 0.0)");
   });
 }
 
@@ -386,7 +382,7 @@ Material _railMaterial(WidgetTester tester) {
   // The first material is for the rail, and the rest are for the destinations.
   return tester.firstWidget<Material>(
     find.descendant(
-      of: find.byType(CustomNavigationRail),
+      of: find.byType(NavigationRail),
       matching: find.byType(Material),
     ),
   );
@@ -456,10 +452,17 @@ Size _destinationSize(WidgetTester tester) {
 }
 
 Align _destinationsAlign(WidgetTester tester) {
-  // The first Flexible widget is the one within the main Column for the rail
-  // content.
+  // Find the rail's group alignment wrapper. Its child is either the
+  // destinations column or a scroll view containing it.
   return tester.firstWidget<Align>(
-    find.descendant(of: find.byType(Flexible), matching: find.byType(Align)),
+    find.descendant(
+      of: find.byType(NavigationRail),
+      matching: find.byWidgetPredicate(
+        (Widget widget) =>
+            widget is Align &&
+            (widget.child is Column || widget.child is SingleChildScrollView),
+      ),
+    ),
   );
 }
 

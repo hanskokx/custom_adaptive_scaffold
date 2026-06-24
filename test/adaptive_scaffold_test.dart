@@ -3,7 +3,13 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide
+        NavigationDestination,
+        NavigationRailDestination,
+        NavigationRail,
+        NavigationRailThemeData,
+        NavigationBar;
 import "package:flutter_test/flutter_test.dart";
 
 import "simulated_layout.dart";
@@ -301,47 +307,15 @@ void main() {
   );
 
   testWidgets(
-    "standardBottomNavigationBar normalizes plain NavigationDestination widgets",
+    "when destinations passed with all data, it shall not be null",
     (WidgetTester tester) async {
       const List<NavigationDestination> destinations = <NavigationDestination>[
         NavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          selectedIcon: Icon(Icons.home),
-          label: "Home",
-        ),
-        NavigationDestination(
-          icon: Icon(Icons.person_outline),
-          selectedIcon: Icon(Icons.person),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            bottomNavigationBar: AdaptiveScaffold.standardBottomNavigationBar(
-              destinations: destinations,
-            ),
-          ),
-        ),
-      );
-
-      expect(tester.takeException(), isNull);
-      expect(find.byType(CustomNavigationDestination), findsNWidgets(2));
-    },
-  );
-
-  testWidgets(
-    "when destinations passed with all data, it shall not be null",
-    (WidgetTester tester) async {
-      const List<CustomNavigationDestination> destinations =
-          <CustomNavigationDestination>[
-        CustomNavigationDestination(
           icon: Icon(Icons.inbox_outlined),
           selectedIcon: Icon(Icons.inbox),
           label: "Inbox",
         ),
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.video_call_outlined),
           selectedIcon: Icon(Icons.video_call),
           label: "Video",
@@ -349,9 +323,9 @@ void main() {
       ];
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: MediaQuery(
-            data: const MediaQueryData(size: Size(700, 900)),
+            data: MediaQueryData(size: Size(700, 900)),
             child: AdaptiveScaffold(
               destinations: destinations,
             ),
@@ -361,10 +335,9 @@ void main() {
 
       final Finder fNavigationRail = find.descendant(
         of: find.byType(AdaptiveScaffold),
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
-      final CustomNavigationRail navigationRail =
-          tester.firstWidget(fNavigationRail);
+      final NavigationRail navigationRail = tester.firstWidget(fNavigationRail);
       expect(
         navigationRail.destinations,
         isA<List<NavigationRailDestination>>(),
@@ -383,7 +356,7 @@ void main() {
         expect(destination.selectedIcon, isNotNull);
       }
 
-      final CustomNavigationDestination firstDestinationFromListPassed =
+      final NavigationDestination firstDestinationFromListPassed =
           destinations.first;
       final NavigationRailDestination firstDestinationFromFinderView =
           navigationRail.destinations.first;
@@ -518,11 +491,11 @@ void main() {
 
       final Finder navigationRailFinder = find.descendant(
         of: primaryNavigationMedium,
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final CustomNavigationRail navigationRailView = tester.firstWidget(
+      final NavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -564,11 +537,11 @@ void main() {
 
       final Finder navigationRailFinder = find.descendant(
         of: primaryNavigationMediumLarge,
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final CustomNavigationRail navigationRailView = tester.firstWidget(
+      final NavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -747,8 +720,8 @@ void main() {
           ),
         ),
       );
-      final CustomNavigationRail rail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
+      final NavigationRail rail =
+          tester.widget<NavigationRail>(find.byType(NavigationRail));
       expect(rail.groupAlignment, equals(groupAlignment));
     },
   );
@@ -818,29 +791,67 @@ void main() {
   );
 
   testWidgets(
-    "When only one destination passed, shall throw assertion error",
+    "When only one destination passed, renders without error",
     (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        NavigationDestination(
-          icon: Icon(Icons.inbox_outlined),
-          selectedIcon: Icon(Icons.inbox),
-          label: "Inbox",
-        ),
-      ];
-
-      expect(
-        () => tester.pumpWidget(
-          MaterialApp(
-            home: MediaQuery(
-              data: const MediaQueryData(size: Size(700, 900)),
-              child: AdaptiveScaffold(
-                destinations: destinations,
-              ),
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(700, 900)),
+            child: AdaptiveScaffold(
+              destinations: <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  selectedIcon: Icon(Icons.inbox),
+                  label: "Inbox",
+                ),
+              ],
             ),
           ),
         ),
-        throwsA(isA<AssertionError>()),
       );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    "When zero destinations passed, renders without error",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(700, 900)),
+            child: AdaptiveScaffold(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    "When fewer than 2 destinations at compact width, bottom nav is not shown",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const MaterialApp(
+          home: MediaQuery(
+            data: MediaQueryData(size: Size(400, 800)),
+            child: AdaptiveScaffold(
+              useDrawer: false,
+              destinations: <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  label: "Inbox",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(NavigationBar), findsNothing);
+      expect(tester.takeException(), isNull);
     },
   );
 
@@ -884,16 +895,16 @@ void main() {
     expect(find.text("Custom Profile"), findsOneWidget);
   });
 
-  // Compact rail should continue honoring the theme by default.
+  // Test for labelType setting through the navigation rail theme.
   testWidgets(
     "adaptive scaffold respects NavigationRailLabelType from theme",
     (WidgetTester tester) async {
       const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.home),
           label: "Home",
         ),
-        CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.account_circle),
           label: "Profile",
         ),
@@ -906,8 +917,8 @@ void main() {
               labelType: NavigationRailLabelType.all,
             ),
           ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
+          home: const MediaQuery(
+            data: MediaQueryData(size: Size(800, 600)),
             child: AdaptiveScaffold(
               destinations: destinations,
             ),
@@ -915,160 +926,9 @@ void main() {
         ),
       );
 
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(compactRail.labelType, NavigationRailLabelType.all);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold navigationTheme can hide compact rail labels",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            navigationRailTheme: const NavigationRailThemeData(
-              labelType: NavigationRailLabelType.all,
-            ),
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 600)),
-            child: AdaptiveScaffold(
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-                compactLabelType: NavigationRailLabelType.none,
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail compactRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(compactRail.labelType, NavigationRailLabelType.none);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold navigationTheme can set expanded rail label type",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            navigationRailTheme: const NavigationRailThemeData(
-              labelType: NavigationRailLabelType.all,
-            ),
-          ),
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(1300, 600)),
-            child: AdaptiveScaffold(
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-                expandedLabelType: NavigationRailLabelType.none,
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail expandedRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(expandedRail.labelType, NavigationRailLabelType.none);
-      // Extended rails always show labels, matching Flutter NavigationRail.
-      expect(find.text("Home"), findsOneWidget);
-      expect(find.text("Profile"), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold expanded rail defaults to all labels",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(1300, 600)),
-            child: AdaptiveScaffold(
-              destinations: destinations,
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail expandedRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(expandedRail.labelType, NavigationRailLabelType.all);
-      expect(find.text("Home"), findsOneWidget);
-      expect(find.text("Profile"), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "adaptive scaffold expanded rail selected mode shows selected label only",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.account_circle),
-          label: "Profile",
-        ),
-      ];
-
-      await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(1300, 600)),
-            child: AdaptiveScaffold(
-              selectedIndex: 0,
-              destinations: destinations,
-              navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-                expandedLabelType: NavigationRailLabelType.selected,
-              ),
-            ),
-          ),
-        ),
-      );
-
-      final CustomNavigationRail expandedRail = tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail));
-      expect(expandedRail.labelType, NavigationRailLabelType.selected);
-      expect(find.text("Home"), findsOneWidget);
-      expect(find.text("Profile"), findsNothing);
+      final NavigationRail rail =
+          tester.widget<NavigationRail>(find.byType(NavigationRail));
+      expect(rail.labelType, NavigationRailLabelType.all);
     },
   );
 
@@ -1226,262 +1086,11 @@ void main() {
       controller.dispose();
     },
   );
-
-  _phaseTests();
 }
 
 /// An empty widget that implements [PreferredSizeWidget] to ensure that
 /// [PreferredSizeWidget] is used as [AdaptiveScaffold.appBar] parameter instead
 /// of [AppBar].
-// ─── Phase 1 / 2 / 3 regression tests ───────────────────────────────────────
-
-/// Pumps a small-screen scaffold with the given [destinations] and
-/// [selectedIndex], settles, then calls [verify].
-Future<void> _pumpBottomBar(
-  WidgetTester tester, {
-  required List<NavigationDestination> destinations,
-  int selectedIndex = 0,
-}) async {
-  await tester.binding.setSurfaceSize(const Size(400, 800));
-  await tester.pumpWidget(
-    MaterialApp(
-      home: Scaffold(
-        bottomNavigationBar: AdaptiveScaffold.standardBottomNavigationBar(
-          destinations: destinations,
-          currentIndex: selectedIndex,
-        ),
-      ),
-    ),
-  );
-  await tester.pumpAndSettle();
-}
-
-void _phaseTests() {
-  // ── Phase 1: hideLabel ────────────────────────────────────────────────────
-
-  testWidgets(
-    "hideLabel: true suppresses only that destination's label",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          label: "Home",
-          hideLabel: true,
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      expect(find.text("Home"), findsNothing);
-      expect(find.text("Profile"), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "hideLabel: false (default) shows the label",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      expect(find.text("Home"), findsOneWidget);
-      expect(find.text("Profile"), findsOneWidget);
-    },
-  );
-
-  // ── Phase 2: animated icon transitions ────────────────────────────────────
-
-  testWidgets(
-    "transitionAnimation.none produces no AnimatedSwitcher",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          label: "Home",
-          transitionAnimation: NavigationDestinationAnimation.none,
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-          transitionAnimation: NavigationDestinationAnimation.none,
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      expect(find.byType(AnimatedSwitcher), findsNothing);
-    },
-  );
-
-  testWidgets(
-    "transitionAnimation.fadeSwap produces FadeTransition widgets",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          label: "Home",
-          transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-          transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      // Each destination inserts an AnimatedSwitcher with FadeTransition.
-      expect(find.byType(AnimatedSwitcher), findsNWidgets(2));
-      expect(find.byType(FadeTransition), findsWidgets);
-    },
-  );
-
-  testWidgets(
-    "transitionAnimation.scale produces ScaleTransition widgets",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          label: "Home",
-          transitionAnimation: NavigationDestinationAnimation.scale,
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-          transitionAnimation: NavigationDestinationAnimation.scale,
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      expect(find.byType(AnimatedSwitcher), findsNWidgets(2));
-      expect(find.byType(ScaleTransition), findsWidgets);
-    },
-  );
-
-  testWidgets(
-    "iconBuilder overrides transitionAnimation and is called per destination",
-    (WidgetTester tester) async {
-      const Key customIconKey = ValueKey<String>("custom_icon_output");
-
-      Widget customBuilder(
-        BuildContext context,
-        Animation<double> animation,
-        bool isSelecting,
-        Widget unselected,
-        Widget selected,
-      ) {
-        return SizedBox(key: customIconKey, child: unselected);
-      }
-
-      final List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: const Icon(Icons.home_outlined),
-          label: "Home",
-          transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-          iconBuilder: customBuilder,
-        ),
-        const CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      // Custom builder widget should appear; no AnimatedSwitcher on first destination.
-      expect(find.byKey(customIconKey), findsOneWidget);
-    },
-  );
-
-  // ── Phase 3: indicator placement ──────────────────────────────────────────
-
-  testWidgets(
-    "no scoped shape: NavigationIndicator fills full item (default)",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          label: "Home",
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      expect(tester.takeException(), isNull);
-      expect(find.text("Home"), findsOneWidget);
-      expect(find.text("Profile"), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "iconIndicatorShape: full-item indicator is suppressed; scoped indicator shown",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          label: "Home",
-          iconIndicatorShape: CircleBorder(),
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      // No exception; both destinations render normally.
-      expect(tester.takeException(), isNull);
-      expect(find.text("Home"), findsOneWidget);
-      expect(find.text("Profile"), findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "both iconIndicatorShape and labelIndicatorShape: two scoped indicators per destination",
-    (WidgetTester tester) async {
-      const List<NavigationDestination> destinations = <NavigationDestination>[
-        CustomNavigationDestination(
-          icon: Icon(Icons.home_outlined),
-          label: "Home",
-          iconIndicatorShape: CircleBorder(),
-          labelIndicatorShape: StadiumBorder(),
-        ),
-        CustomNavigationDestination(
-          icon: Icon(Icons.person_outline),
-          label: "Profile",
-        ),
-      ];
-
-      await _pumpBottomBar(tester, destinations: destinations);
-
-      // No exception; all destinations render normally.
-      expect(tester.takeException(), isNull);
-      expect(find.text("Home"), findsOneWidget);
-      expect(find.text("Profile"), findsOneWidget);
-    },
-  );
-}
-
 class PreferredSizeWidgetImpl extends StatelessWidget
     implements PreferredSizeWidget {
   const PreferredSizeWidgetImpl({super.key});

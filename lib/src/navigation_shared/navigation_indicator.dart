@@ -1,0 +1,129 @@
+import "package:flutter/material.dart";
+
+/// Default indicator dimensions matching the Material 3 spec.
+const double _kCircularIndicatorDiameter = 56.0;
+const double _kIndicatorHeight = 32.0;
+
+/// Identifies which navigation surface owns this indicator.
+///
+/// Used internally to apply surface-appropriate sizing defaults when building
+/// a [NavigationIndicator] for a rail vs. bar destination.
+enum NavigationIndicatorType {
+  /// The indicator is used inside a [NavigationRail] destination.
+  navigationRail,
+
+  /// The indicator is used inside a [NavigationBar] destination.
+  navigationBar,
+}
+
+/// A typedef alias for [NavigationIndicator].
+///
+/// Use this name when you need to import both this package and
+/// `package:flutter/material.dart` without hiding Flutter's
+/// [NavigationIndicator].
+typedef CustomNavigationIndicator = NavigationIndicator;
+
+/// Animated selection indicator pill used by both [NavigationBar] and
+/// [NavigationRail] destinations.
+///
+/// When [animation] is 0 the indicator is absent. As [animation] grows from
+/// 0 to 1, the indicator scales in on the x-axis using
+/// [Curves.easeInOutCubicEmphasized] and fades in.
+///
+/// The indicator is placed behind the destination icon in a [Stack] and is
+/// driven by the destination's selection animation so it appears/disappears
+/// as the destination gains or loses selection.
+///
+/// See also:
+///
+///  * [NavigationBar], which uses this widget behind each destination icon.
+///  * [NavigationRail], which uses this widget behind each destination icon.
+///  * [CustomNavigationIndicator], a typedef alias for this class.
+class NavigationIndicator extends StatelessWidget {
+  const NavigationIndicator({
+    required this.animation,
+    super.key,
+    this.color,
+    this.width = _kCircularIndicatorDiameter,
+    this.height = _kIndicatorHeight,
+    this.borderRadius = const BorderRadius.all(Radius.circular(16)),
+    this.shape,
+  });
+
+  /// Determines the scale of the indicator.
+  ///
+  /// When [animation] is 0, the indicator is not present. The indicator scales
+  /// in as [animation] grows from 0 to 1.
+  final Animation<double> animation;
+
+  /// The fill color of this indicator.
+  ///
+  /// If null, defaults to [ColorScheme.secondary].
+  final Color? color;
+
+  /// The width of this indicator.
+  ///
+  /// Defaults to `56`.
+  final double width;
+
+  /// The height of this indicator.
+  ///
+  /// Defaults to `32`.
+  final double height;
+
+  /// The border radius of the shape of the indicator.
+  ///
+  /// This is used to create a [RoundedRectangleBorder] shape for the indicator.
+  /// This is ignored if [shape] is non-null.
+  ///
+  /// Defaults to `BorderRadius.circular(16)`.
+  final BorderRadius borderRadius;
+
+  /// The shape of the indicator.
+  ///
+  /// If non-null this is used as the shape used to draw the background
+  /// of the indicator. If null then a [RoundedRectangleBorder] with the
+  /// [borderRadius] is used.
+  final ShapeBorder? shape;
+
+  @override
+  Widget build(BuildContext context) {
+    final Color resolvedColor =
+        color ?? Theme.of(context).colorScheme.secondary;
+
+    return AnimatedBuilder(
+      animation: animation,
+      builder: (BuildContext context, Widget? child) {
+        // Drive both scale and opacity from the current animation value so the
+        // indicator always settles visually even if the controller stops just
+        // above 0.0 and never hits an exact dismissed status.
+        final double t = animation.value.clamp(0.0, 1.0);
+        final double emphasized =
+            CurveTween(curve: Curves.easeInOutCubicEmphasized).transform(t);
+        final double scale = t == 0.0
+            ? 0.0
+            : Tween<double>(begin: 0.4, end: 1.0).transform(emphasized);
+        final double opacity = CurveTween(curve: Curves.easeInOut).transform(t);
+
+        return Transform(
+          alignment: Alignment.center,
+          transform: Matrix4.diagonal3Values(scale, 1.0, 1.0),
+          child: Opacity(
+            opacity: opacity,
+            child: child,
+          ),
+        );
+      },
+      child: SizedBox(
+        width: width,
+        height: height,
+        child: Ink(
+          decoration: ShapeDecoration(
+            shape: shape ?? RoundedRectangleBorder(borderRadius: borderRadius),
+            color: resolvedColor,
+          ),
+        ),
+      ),
+    );
+  }
+}

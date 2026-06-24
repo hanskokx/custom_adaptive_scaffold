@@ -41,7 +41,7 @@ class TestSemantics {
   /// The [rect] field is required and has no default. Convenient values are
   /// available:
   ///
-  ///  * [TestSemantics.rootRect]: 2400x1800, the test screen's size in physical
+  ///  * [TestSemantics.rootRect]: 2400x1600, the test screen's size in physical
   ///    pixels, useful for the node with id zero.
   ///
   ///  * [TestSemantics.fullScreen] 800x600, the test screen's size in logical
@@ -248,7 +248,7 @@ class TestSemantics {
   ///
   /// Convenient values are available:
   ///
-  ///  * [TestSemantics.rootRect]: 2400x1800, the test screen's size in physical
+  ///  * [TestSemantics.rootRect]: 2400x1600, the test screen's size in physical
   ///    pixels, useful for the node with id zero.
   ///
   ///  * [TestSemantics.fullScreen] 800x600, the test screen's size in logical
@@ -532,10 +532,10 @@ class TestSemantics {
       );
     }
 
-    if (controlsNodes != null &&
+    if (controlsNodes != controlsNodes &&
         !setEquals(controlsNodes, node.controlsNodes)) {
       return fail(
-        "expected node id $id to control nodes $controlsNodes but found controlling nodes ${node.controlsNodes}",
+        "expected node id $id to controls nodes $controlsNodes but found controlling nodes ${node.controlsNodes}",
       );
     }
 
@@ -721,18 +721,6 @@ class SemanticsTester {
   final WidgetTester tester;
   SemanticsHandle? _semanticsHandle;
 
-  SemanticsOwner? get _semanticsOwner {
-    for (final RenderView renderView in RendererBinding.instance.renderViews) {
-      final SemanticsOwner? owner = renderView.owner?.semanticsOwner;
-      if (owner != null) {
-        return owner;
-      }
-    }
-    return null;
-  }
-
-  SemanticsNode? get _rootSemanticsNode => _semanticsOwner?.rootSemanticsNode;
-
   /// Release resources held by this semantics tester.
   ///
   /// Call this function at the end of any test that uses a semantics tester. It
@@ -745,7 +733,8 @@ class SemanticsTester {
   }
 
   @override
-  String toString() => "SemanticsTester for $_rootSemanticsNode";
+  String toString() =>
+      "SemanticsTester for ${tester.binding.renderViews.first.owner?.semanticsOwner?.rootSemanticsNode}";
 
   bool _stringAttributesEqual(
     List<StringAttribute> first,
@@ -763,19 +752,12 @@ class SemanticsTester {
       if (first[i] is LocaleStringAttribute &&
           (second[i] is! LocaleStringAttribute ||
               second[i].range != first[i].range ||
-              (first[i] as LocaleStringAttribute).locale !=
+              (second[i] as LocaleStringAttribute).locale !=
                   (second[i] as LocaleStringAttribute).locale)) {
         return false;
       }
     }
     return true;
-  }
-
-  Set<SemanticsFlag> _semanticsFlagsToSet(SemanticsFlags flagsCollection) {
-    final Set<String> activeNames = flagsCollection.toStrings().toSet();
-    return SemanticsFlag.values
-        .where((SemanticsFlag flag) => activeNames.contains(flag.name))
-        .toSet();
   }
 
   /// Returns all semantics nodes in the current semantics tree whose properties
@@ -874,10 +856,13 @@ class SemanticsTester {
       }
       // `flags` are deprecated and only support the first 31 flags.
       else if (flags != null) {
-        final Set<SemanticsFlag> expectedFlags = flags.toSet();
-        final Set<SemanticsFlag> actualFlags =
-            _semanticsFlagsToSet(node.getSemanticsData().flagsCollection);
-        if (!setEquals<SemanticsFlag>(expectedFlags, actualFlags)) {
+        final Iterable<SemanticsFlag> expectedFlagValues = flags;
+        final Set<String> expectedFlags =
+            expectedFlagValues.map((SemanticsFlag flag) => flag.name).toSet();
+        final Set<String> actualFlags =
+            node.getSemanticsData().flagsCollection.toStrings().toSet();
+        if (expectedFlags.difference(actualFlags).isNotEmpty ||
+            actualFlags.difference(expectedFlags).isNotEmpty) {
           return false;
         }
       }
@@ -928,7 +913,9 @@ class SemanticsTester {
     }
 
     visit(
-      ancestor ?? _rootSemanticsNode!,
+      ancestor ??
+          tester.binding.renderViews.first.owner!.semanticsOwner!
+              .rootSemanticsNode!,
     );
 
     return result;
@@ -985,7 +972,8 @@ class SemanticsTester {
   String generateTestSemanticsExpressionForCurrentSemanticsTree(
     DebugSemanticsDumpOrder childOrder,
   ) {
-    final SemanticsNode? node = _rootSemanticsNode;
+    final SemanticsNode? node = tester
+        .binding.renderViews.first.owner?.semanticsOwner?.rootSemanticsNode;
     return _generateSemanticsTestForNode(node, 0, childOrder);
   }
 
@@ -1139,7 +1127,8 @@ class _HasSemantics extends Matcher {
     Map<dynamic, dynamic> matchState,
   ) {
     final bool doesMatch = _semantics._matches(
-      item._rootSemanticsNode,
+      item.tester.binding.renderViews.first.owner?.semanticsOwner
+          ?.rootSemanticsNode,
       matchState,
       ignoreTransform: ignoreTransform,
       ignoreRect: ignoreRect,
@@ -1153,7 +1142,7 @@ class _HasSemantics extends Matcher {
         childOrder,
       );
     }
-    if (item._semanticsOwner == null) {
+    if (item.tester.binding.renderViews.first.owner?.semanticsOwner == null) {
       matchState["additional-notes"] =
           "(Check that the SemanticsTester has not been disposed early.)";
     }
@@ -1181,19 +1170,14 @@ class _HasSemantics extends Matcher {
     Map<dynamic, dynamic> matchState,
     bool verbose,
   ) {
-    final RenderView? primaryRenderView =
-        RendererBinding.instance.renderViews.isEmpty
-            ? null
-            : RendererBinding.instance.renderViews.first;
-
     Description result = mismatchDescription
         .add("${matchState[TestSemantics]}\n")
         .add("Current SemanticsNode tree:\n")
         .add(
           _indent(
-            primaryRenderView?.debugSemantics?.toStringDeep(
-              childOrder: childOrder,
-            ),
+            RendererBinding.instance.renderViews.first.owner?.semanticsOwner
+                ?.rootSemanticsNode
+                ?.toStringDeep(childOrder: childOrder),
           ),
         )
         .add("\n")

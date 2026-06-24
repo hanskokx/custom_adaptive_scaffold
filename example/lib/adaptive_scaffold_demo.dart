@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide NavigationDestination, NavigationRailThemeData;
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       theme: ThemeData.light().copyWith(
-        navigationRailTheme: const CustomNavigationRailThemeData(
+        navigationRailTheme: const NavigationRailThemeData(
           selectedIconTheme: IconThemeData(
             color: Colors.red,
             size: 28,
@@ -31,14 +32,6 @@ class MyApp extends StatelessWidget {
             fontSize: 14,
             color: Colors.black,
           ),
-          margin: EdgeInsets.symmetric(vertical: 4),
-          padding: EdgeInsets.symmetric(horizontal: 6),
-        ),
-        navigationBarTheme: const CustomNavigationBarThemeData(
-          tooltipVerticalOffset: 56,
-          margin: EdgeInsets.symmetric(horizontal: 4),
-          padding: EdgeInsets.symmetric(vertical: 2),
-          labelPadding: EdgeInsets.only(top: 6),
         ),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           type: BottomNavigationBarType.fixed,
@@ -100,14 +93,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return AdaptiveScaffold(
       // An option to override the default transition duration.
       transitionDuration: Duration(milliseconds: _transitionDuration),
-      navigationTheme: const AdaptiveScaffoldNavigationThemeData(
-        compactLabelType: NavigationRailLabelType.selected,
-        transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-        transitionCurve: Curves.easeOutCubic,
-        transitionDuration: Duration(milliseconds: 220),
-        destinationFillRegion: NavigationDestinationRegion.content,
-        destinationFillShape: StadiumBorder(),
-      ),
       // An option to override the default breakpoints used for small, medium,
       // mediumLarge, large, and extraLarge.
       smallBreakpoint: const Breakpoint(endWidth: 700),
@@ -122,66 +107,31 @@ class _MyHomePageState extends State<MyHomePage> {
           _selectedTab = index;
         });
       },
-      destinations: <CustomNavigationDestination>[
-        // Default: no animation, full-item indicator.
-        const CustomNavigationDestination(
+      destinations: const <NavigationDestination>[
+        NavigationDestination(
           icon: Icon(Icons.inbox_outlined),
           selectedIcon: Icon(Icons.inbox),
           label: "Inbox",
         ),
-        // Built-in fade-swap transition between icons.
-        const CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.article_outlined),
           selectedIcon: Icon(Icons.article),
           label: "Articles",
-          transitionAnimation: NavigationDestinationAnimation.fadeSwap,
-          transitionCurve: Curves.easeInOut,
         ),
-        // Label hidden; indicator scoped to icon only.
-        const CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.chat_outlined),
           selectedIcon: Icon(Icons.chat),
           label: "Chat",
-          hideLabel: true,
-          iconIndicatorShape: CircleBorder(),
         ),
-        CustomNavigationDestination(
-          icon: const Icon(Icons.video_call_outlined),
-          selectedIcon: const Icon(Icons.video_call),
+        NavigationDestination(
+          icon: Icon(Icons.video_call_outlined),
+          selectedIcon: Icon(Icons.video_call),
           label: "Video",
-          transitionBuilder: (
-            BuildContext context,
-            Animation<double> animation,
-            bool isSelecting,
-            Widget unselectedIcon,
-            Widget selectedIcon,
-            Widget unselectedLabel,
-            Widget selectedLabel,
-          ) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                FadeTransition(
-                  opacity: animation,
-                  child: animation.isForwardOrCompleted
-                      ? selectedIcon
-                      : unselectedIcon,
-                ),
-                const SizedBox(height: 4),
-                FadeTransition(
-                  opacity: animation,
-                  child: animation.isForwardOrCompleted
-                      ? selectedLabel
-                      : unselectedLabel,
-                ),
-              ],
-            );
-          },
         ),
-        const CustomNavigationDestination(
+        NavigationDestination(
           icon: Icon(Icons.home_outlined),
           selectedIcon: Icon(Icons.home),
-          label: "Home",
+          label: "Inbox",
         ),
       ],
       controller: _scaffoldController,

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart" hide NavigationDestination;
 import "package:go_router/go_router.dart";
 
 import "pages/pages.dart";

@@ -5,7 +5,8 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:custom_adaptive_scaffold_example/adaptive_layout_demo.dart"
     as example;
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide NavigationRail, NavigationRailThemeData;
 import "package:flutter_test/flutter_test.dart";
 
 void main() {
@@ -162,21 +163,11 @@ void main() {
       final WidgetBuilder? widgetBuilder = slotLayoutConfig.builder;
       final Widget Function(BuildContext) widgetFunction =
           (widgetBuilder ?? () => Container()) as Widget Function(BuildContext);
-      final Widget railContainer =
-          ((widgetFunction(context) as Builder).builder(context) as Padding)
+      final SizedBox sizedBox =
+          (((widgetFunction(context) as Builder).builder(context) as Padding)
                   .child ??
-              const SizedBox();
-
-      if (railContainer is SizedBox) {
-        expect(railContainer.width, 72);
-      } else if (railContainer is TweenAnimationBuilder<double>) {
-        expect(railContainer.tween.end, 72);
-      } else {
-        fail(
-          "Expected rail container to be SizedBox or TweenAnimationBuilder<double>, "
-          "but found ${railContainer.runtimeType}",
-        );
-      }
+              () => const SizedBox()) as SizedBox;
+      expect(sizedBox.width, 72);
     },
   );
 
@@ -213,11 +204,11 @@ void main() {
 
       final Finder navigationRailFinder = find.descendant(
         of: primaryNavigationMedium,
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final CustomNavigationRail navigationRailView = tester.firstWidget(
+      final NavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -255,11 +246,11 @@ void main() {
 
       final Finder navigationRailFinder = find.descendant(
         of: primaryNavigationMediumLarge,
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final CustomNavigationRail navigationRailView = tester.firstWidget(
+      final NavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -297,11 +288,11 @@ void main() {
 
       final Finder navigationRailFinder = find.descendant(
         of: primaryNavigationLarge,
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final CustomNavigationRail navigationRailView = tester.firstWidget(
+      final NavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);
@@ -339,11 +330,11 @@ void main() {
 
       final Finder navigationRailFinder = find.descendant(
         of: primaryNavigationExtraLarge,
-        matching: find.byType(CustomNavigationRail),
+        matching: find.byType(NavigationRail),
       );
       expect(navigationRailFinder, findsOneWidget);
 
-      final CustomNavigationRail navigationRailView = tester.firstWidget(
+      final NavigationRail navigationRailView = tester.firstWidget(
         navigationRailFinder,
       );
       expect(navigationRailView, isNotNull);

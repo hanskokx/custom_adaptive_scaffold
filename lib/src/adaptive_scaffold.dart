@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+
+import "../material.dart";
 
 /// Spacing value of the compact breakpoint according to
 /// the material 3 design spec.
@@ -32,96 +33,56 @@ typedef NavigationRailDestinationBuilder = NavigationRailDestination Function(
   NavigationDestination destination,
 );
 
-NavigationDestinationLabelBehavior? _labelBehaviorFromType(
-  NavigationRailLabelType? labelBehavior,
-) {
-  return switch (labelBehavior) {
-    null => null,
-    NavigationRailLabelType.none =>
-      NavigationDestinationLabelBehavior.alwaysHide,
-    NavigationRailLabelType.selected =>
-      NavigationDestinationLabelBehavior.onlyShowSelected,
-    NavigationRailLabelType.all =>
-      NavigationDestinationLabelBehavior.alwaysShow,
-  };
-}
-
-/// Optional, adaptive-navigation-specific overrides for [AdaptiveScaffold].
+/// Implements the basic visual layout structure for
+/// [Material Design 3](https://m3.material.io/foundations/adaptive-design/overview)
+/// that adapts to a variety of screens.
 ///
-/// All fields are opt-in. When left null/default, [AdaptiveScaffold] keeps
-/// its legacy behavior and defers to the existing Material themes.
-class AdaptiveScaffoldNavigationThemeData {
-  const AdaptiveScaffoldNavigationThemeData({
-    this.compactLabelType,
-    this.expandedLabelType,
-    this.transitionAnimation = NavigationDestinationAnimation.none,
-    this.transitionCurve = Curves.easeInOut,
-    this.transitionDuration,
-    this.destinationFillRegion,
-    this.destinationHoverRegion,
-    this.destinationFillShape,
-    this.destinationHoverShape,
-  });
-
-  /// Optional label behavior for compact rail and small navigation bar.
-  ///
-  /// For rail, this is passed as [NavigationRail.labelType].
-  /// For bar, it is mapped as:
-  /// [NavigationRailLabelType.none] ->
-  /// [NavigationDestinationLabelBehavior.alwaysHide],
-  /// [NavigationRailLabelType.selected] ->
-  /// [NavigationDestinationLabelBehavior.onlyShowSelected],
-  /// [NavigationRailLabelType.all] ->
-  /// [NavigationDestinationLabelBehavior.alwaysShow].
-  ///
-  /// When null, rail and bar each use their theme defaults.
-  final NavigationRailLabelType? compactLabelType;
-
-  /// Optional label behavior for expanded navigation rail breakpoints.
-  ///
-  /// This only applies to the extended rail used on medium-large and up
-  /// breakpoints.
-  ///
-  /// When null, defaults to [NavigationRailLabelType.all].
-  final NavigationRailLabelType? expandedLabelType;
-
-  /// Icon transition preset used by small breakpoint navigation bar and
-  /// compact (medium breakpoint) navigation rail destinations.
-  ///
-  /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
-  final NavigationDestinationAnimation transitionAnimation;
-
-  /// Curve used by compact rail icon transitions.
-  final Curve transitionCurve;
-
-  /// Optional duration used by compact rail icon transitions.
-  final Duration? transitionDuration;
-
-  /// Controls where destination selected fill/highlight is painted.
-  ///
-  /// When null, uses Flutter's default indicator path.
-  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
-  final NavigationDestinationRegion? destinationFillRegion;
-
-  /// Controls where destination hover/ink effects are painted.
-  ///
-  /// When null, this follows [destinationFillRegion].
-  final NavigationDestinationRegion? destinationHoverRegion;
-
-  /// Optional shape for destination fill/highlight.
-  ///
-  /// If null, the resolved navigation rail indicator shape is used.
-  final ShapeBorder? destinationFillShape;
-
-  /// Optional shape for hover/ink interaction.
-  ///
-  /// Note: this is only applied when [ThemeData.useMaterial3] is true. In
-  /// Material 2, hover/ink interaction continues using the default border
-  /// radius behavior.
-  ///
-  /// If null, falls back to [destinationFillShape].
-  final ShapeBorder? destinationHoverShape;
-}
+/// !["Example of a display made with AdaptiveScaffold"](../../example/demo_files/adaptiveScaffold.gif)
+///
+/// [AdaptiveScaffold] provides a preset of layout, including positions and
+/// animations, by handling macro changes in navigational elements and bodies
+/// based on the current features of the screen, namely screen width and platform.
+/// For example, the navigational elements would be a [BottomNavigationBar] on a
+/// small mobile device or a [Drawer] on a small desktop device and a
+/// [NavigationRail] on larger devices. When the app's size changes, for example
+/// because its window is resized, the corresponding layout transition is animated.
+/// The layout and navigation changes are dictated by "breakpoints" which can be
+/// customized or overridden.
+///
+/// Also provides a variety of helper methods for navigational elements,
+/// animations, and more.
+///
+/// [AdaptiveScaffold] is based on [AdaptiveLayout] but is easier to use at the
+/// cost of being less customizable. Apps that would like more refined layout
+/// and/or animation should use [AdaptiveLayout].
+///
+/// ```dart
+/// AdaptiveScaffold(
+///  destinations: const [
+///    NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox'),
+///    NavigationDestination(icon: Icon(Icons.article), label: 'Articles'),
+///    NavigationDestination(icon: Icon(Icons.chat), label: 'Chat'),
+///    NavigationDestination(icon: Icon(Icons.video_call), label: 'Video'),
+///  ],
+///  smallBody: (_) => ListView.builder(
+///    itemCount: children.length,
+///    itemBuilder: (_, idx) => children[idx]
+///  ),
+///  body: (_) => GridView.count(crossAxisCount: 2, children: children),
+/// ),
+/// ```
+///
+/// See also:
+///
+///  * [AdaptiveLayout], which is what this widget is built upon internally and
+///   acts as a more customizable alternative.
+///  * [SlotLayout], which handles switching and animations between elements
+///   based on [Breakpoint]s.
+///  * [SlotLayout.from], which holds information regarding Widgets and the
+///   desired way to animate between switches. Often used within [SlotLayout].
+///  * [Design Doc](https://flutter.dev/go/adaptive-layout-foldables).
+///  * [Material Design 3 Specifications] (https://m3.material.io/foundations/adaptive-design/overview).
+typedef CustomAdaptiveScaffold = AdaptiveScaffold;
 
 /// Implements the basic visual layout structure for
 /// [Material Design 3](https://m3.material.io/foundations/adaptive-design/overview)
@@ -176,7 +137,7 @@ class AdaptiveScaffold extends StatefulWidget {
   /// Returns a const [AdaptiveScaffold] by passing information down to an
   /// [AdaptiveLayout].
   const AdaptiveScaffold({
-    required this.destinations,
+    this.destinations = const <NavigationDestination>[],
     super.key,
     this.selectedIndex = 0,
     this.leadingUnextendedNavRail,
@@ -212,11 +173,37 @@ class AdaptiveScaffold extends StatefulWidget {
     this.groupAlignment,
     this.padding,
     this.controller,
-    this.navigationTheme = const AdaptiveScaffoldNavigationThemeData(),
-  }) : assert(
-          destinations.length >= 2,
-          "At least two destinations are required",
-        );
+    this.leadingAtTop = true,
+    this.trailingAtBottom = false,
+    this.scrollable = false,
+    this.mainAxisAlignment,
+    this.showLabelsWhenCollapsed,
+  });
+
+  /// Whether labels are shown while the rail is collapsed and [labelType] is
+  /// [NavigationRailLabelType.none].
+  ///
+  /// Defaults to [NavigationRailThemeData.showLabelsWhenCollapsed], and if
+  /// that is null, defaults to false.
+  ///
+  /// Only applies to the [NavigationRail].
+  final bool? showLabelsWhenCollapsed;
+
+  /// Pin the [leading] widget to the top. Only applies to the [NavigationRail].
+  final bool leadingAtTop;
+
+  /// Pin the [trailing] widget to the bottom. Only applies to the [NavigationRail].
+  final bool trailingAtBottom;
+
+  /// Whether the [NavigationDestination]s should scroll when space is tight.
+  final bool scrollable;
+
+  /// How destinations should be placed along the main axis.
+  ///
+  /// When non-null, [groupAlignment] is ignored.
+  ///
+  /// Only applies to the [NavigationRail].
+  final MainAxisAlignment? mainAxisAlignment;
 
   /// The destinations to be used in navigation items. These are converted to
   /// [NavigationRailDestination]s and [BottomNavigationBarItem]s and inserted
@@ -415,9 +402,6 @@ class AdaptiveScaffold extends StatefulWidget {
   /// visible according to the existing slot behavior.
   final AdaptiveScaffoldController? controller;
 
-  /// Optional adaptive-navigation-specific behavior overrides.
-  final AdaptiveScaffoldNavigationThemeData? navigationTheme;
-
   /// Callback function for when the index of a [NavigationRail] changes.
   static WidgetBuilder emptyBuilder = (_) => const SizedBox();
 
@@ -426,13 +410,7 @@ class AdaptiveScaffold extends StatefulWidget {
   static NavigationRailDestination toRailDestination(
     NavigationDestination destination,
   ) {
-    return CustomNavigationRailDestination(
-      label: Text(destination.label),
-      icon: destination.icon,
-      selectedIcon: destination.selectedIcon,
-      tooltip: destination.tooltip,
-      disabled: !destination.enabled,
-    );
+    return destination.toRailDestination();
   }
 
   /// Creates a Material 3 Design Spec abiding [NavigationRail] from a
@@ -445,7 +423,7 @@ class AdaptiveScaffold extends StatefulWidget {
   /// If [labelType] is null, then the default value is
   /// [NavigationRailLabelType.none].
   static Builder standardNavigationRail({
-    required List<NavigationRailDestination> destinations,
+    required List<NavigationDestination> destinations,
     double width = 72,
     int? selectedIndex,
     bool extended = false,
@@ -454,88 +432,95 @@ class AdaptiveScaffold extends StatefulWidget {
     Widget? trailing,
     void Function(int)? onDestinationSelected,
     double? groupAlignment,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior.",
+    )
     IconThemeData? selectedIconTheme,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior.",
+    )
     IconThemeData? unselectedIconTheme,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior.",
+    )
     TextStyle? selectedLabelTextStyle,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior.",
+    )
     TextStyle? unSelectedLabelTextStyle,
     NavigationRailLabelType? labelType = NavigationRailLabelType.none,
     EdgeInsetsGeometry? padding,
-    NavigationDestinationAnimation iconTransitionAnimation =
-        NavigationDestinationAnimation.none,
-    Curve iconTransitionCurve = Curves.easeInOut,
-    Duration? iconTransitionDuration,
-    NavigationDestinationRegion? destinationFillRegion,
-    NavigationDestinationRegion? destinationHoverRegion,
-    ShapeBorder? destinationFillShape,
-    ShapeBorder? destinationHoverShape,
+    EdgeInsetsGeometry? margin,
+    bool? showLabelsWhenCollapsed,
+    bool? leadingAtTop,
+    bool? trailingAtBottom,
+    bool? scrollable,
+    MainAxisAlignment? mainAxisAlignment,
   }) {
     if (extended && width == 72) {
       width = 192;
     }
+
     return Builder(
       builder: (BuildContext context) {
-        final TextDirection textDirection = Directionality.of(context);
-        final EdgeInsets resolvedOuterPadding =
-            (padding ?? const EdgeInsets.all(8.0)).resolve(textDirection);
-        final bool fullFillRail =
-            destinationFillRegion == NavigationDestinationRegion.full;
-        final EdgeInsetsGeometry effectiveOuterPadding = fullFillRail
-            ? EdgeInsets.only(
-                top: resolvedOuterPadding.top,
-                bottom: resolvedOuterPadding.bottom,
-              )
-            : resolvedOuterPadding;
-
-        final List<NavigationRailDestination> effectiveDestinations =
-            destinations;
-
-        return Padding(
-          padding: effectiveOuterPadding,
-          child: TweenAnimationBuilder<double>(
-            tween: Tween<double>(end: width),
-            duration: const Duration(milliseconds: 220),
-            curve: Curves.easeInOutCubic,
-            builder: (BuildContext context, double animatedWidth, Widget? _) {
-              final bool effectiveExtended = extended && animatedWidth >= 80.0;
-              return SizedBox(
-                width: animatedWidth,
-                height: MediaQuery.sizeOf(context).height,
-                child: LayoutBuilder(
-                  builder: (BuildContext context, BoxConstraints constraints) {
-                    return SingleChildScrollView(
-                      child: ConstrainedBox(
-                        constraints:
-                            BoxConstraints(minHeight: constraints.maxHeight),
-                        child: IntrinsicHeight(
-                          child: CustomNavigationRail(
-                            labelType: labelType,
-                            leading: leading,
-                            trailing: trailing,
-                            onDestinationSelected: onDestinationSelected,
-                            groupAlignment: groupAlignment,
-                            backgroundColor: backgroundColor,
-                            extended: effectiveExtended,
-                            selectedIndex: selectedIndex,
-                            selectedIconTheme: selectedIconTheme,
-                            unselectedIconTheme: unselectedIconTheme,
-                            selectedLabelTextStyle: selectedLabelTextStyle,
-                            unselectedLabelTextStyle: unSelectedLabelTextStyle,
-                            destinations: effectiveDestinations,
-                            iconTransitionAnimation: iconTransitionAnimation,
-                            iconTransitionCurve: iconTransitionCurve,
-                            iconTransitionDuration: iconTransitionDuration,
-                            destinationFillRegion: destinationFillRegion,
-                            destinationHoverRegion: destinationHoverRegion,
-                            destinationFillShape: destinationFillShape,
-                            destinationHoverShape: destinationHoverShape,
-                          ),
+        final NavigationRailThemeData resolvedNavRailTheme =
+            NavigationRailTheme.maybeOf(context) ??
+                const NavigationRailThemeData();
+        return NavigationRailTheme(
+          data: resolvedNavRailTheme.copyWith(
+            margin: margin ?? resolvedNavRailTheme.margin,
+            padding: padding ?? resolvedNavRailTheme.padding,
+          ),
+          child: Padding(
+            padding: padding ??
+                resolvedNavRailTheme.padding ??
+                const EdgeInsets.all(8.0),
+            child: SizedBox(
+              width: width,
+              height: MediaQuery.sizeOf(context).height,
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints:
+                          BoxConstraints(minHeight: constraints.maxHeight),
+                      child: IntrinsicHeight(
+                        child: NavigationRail(
+                          labelType: labelType,
+                          leading: leading,
+                          trailing: trailing,
+                          onDestinationSelected: onDestinationSelected,
+                          groupAlignment: groupAlignment,
+                          backgroundColor: backgroundColor,
+                          extended: extended,
+                          selectedIndex: selectedIndex,
+                          selectedIconTheme: selectedIconTheme,
+                          unselectedIconTheme: unselectedIconTheme,
+                          selectedLabelTextStyle: selectedLabelTextStyle,
+                          unselectedLabelTextStyle: unSelectedLabelTextStyle,
+                          showLabelsWhenCollapsed: showLabelsWhenCollapsed,
+                          leadingAtTop: leadingAtTop ?? true,
+                          trailingAtBottom: trailingAtBottom ?? false,
+                          scrollable: scrollable ?? false,
+                          mainAxisAlignment: mainAxisAlignment,
+                          destinations: destinations
+                              .map((e) => e.toRailDestination())
+                              .toList(),
                         ),
                       ),
-                    );
-                  },
-                ),
-              );
-            },
+                    ),
+                  );
+                },
+              ),
+            ),
           ),
         );
       },
@@ -548,57 +533,38 @@ class AdaptiveScaffold extends StatefulWidget {
     required List<NavigationDestination> destinations,
     int? currentIndex,
     double iconSize = 24,
+    Duration animationDuration = const Duration(milliseconds: 180),
     ValueChanged<int>? onDestinationSelected,
-    NavigationRailLabelType? labelBehavior,
-    NavigationDestinationAnimation transitionAnimation =
-        NavigationDestinationAnimation.none,
-    NavigationDestinationRegion? destinationFillRegion,
-    NavigationDestinationRegion? destinationHoverRegion,
-    ShapeBorder? destinationFillShape,
-    ShapeBorder? destinationHoverShape,
+    bool? scrollable,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
   }) {
     return Builder(
       builder: (BuildContext context) {
-        final List<NavigationDestination> bottomBarDestinations =
-            destinations.map((NavigationDestination destination) {
-          if (destination is CustomNavigationDestination) {
-            return destination;
-          }
+        final NavigationBarThemeData resolvedNavBarTheme =
+            NavigationBarTheme.maybeOf(context) ??
+                const NavigationBarThemeData();
 
-          return CustomNavigationDestination(
-            key: destination.key,
-            icon: destination.icon,
-            label: destination.label,
-            selectedIcon: destination.selectedIcon,
-            tooltip: destination.tooltip,
-            enabled: destination.enabled,
-            transitionAnimation: transitionAnimation,
-          );
-        }).toList(growable: false);
-        final NavigationBarThemeData currentNavBarTheme =
-            NavigationBarTheme.of(context);
         return NavigationBarTheme(
-          data: currentNavBarTheme.copyWith(
-            iconTheme: WidgetStateProperty.resolveWith(
-              (Set<WidgetState> states) {
-                return currentNavBarTheme.iconTheme
-                        ?.resolve(states)
-                        ?.copyWith(size: iconSize) ??
-                    IconTheme.of(context).copyWith(size: iconSize);
-              },
-            ),
+          data: resolvedNavBarTheme.copyWith(
+            iconTheme: WidgetStateProperty.resolveWith((states) {
+              final IconThemeData? existing =
+                  resolvedNavBarTheme.iconTheme?.resolve(states);
+              return (existing ?? const IconThemeData()).copyWith(
+                size: iconSize,
+              );
+            }),
+            padding: padding ?? resolvedNavBarTheme.padding,
+            margin: margin ?? resolvedNavBarTheme.margin,
           ),
           child: MediaQuery(
             data: MediaQuery.of(context).removePadding(removeTop: true),
-            child: CustomNavigationBar(
+            child: NavigationBar(
+              animationDuration: animationDuration,
               selectedIndex: currentIndex ?? 0,
-              destinations: bottomBarDestinations,
+              destinations: destinations,
               onDestinationSelected: onDestinationSelected,
-              labelBehavior: _labelBehaviorFromType(labelBehavior),
-              destinationFillRegion: destinationFillRegion,
-              destinationHoverRegion: destinationHoverRegion,
-              destinationFillShape: destinationFillShape,
-              destinationHoverShape: destinationHoverShape,
+              scrollable: scrollable ?? false,
             ),
           ),
         );
@@ -775,22 +741,22 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
   @override
   Widget build(BuildContext context) {
     final NavigationRailThemeData navRailTheme =
-        Theme.of(context).navigationRailTheme;
-    final AdaptiveScaffoldNavigationThemeData? navigationTheme =
-        widget.navigationTheme;
-    final AdaptiveScaffoldNavigationThemeData effectiveNavigationTheme =
-        navigationTheme ?? const AdaptiveScaffoldNavigationThemeData();
+        NavigationRailTheme.of(context);
 
-    final List<NavigationRailDestination> destinations = widget.destinations
-        .map(
-          (NavigationDestination destination) =>
-              widget.navigationRailDestinationBuilder?.call(
-                widget.destinations.indexOf(destination),
-                destination,
-              ) ??
-              AdaptiveScaffold.toRailDestination(destination),
-        )
-        .toList();
+    final List<NavigationRailDestination> destinations = [
+      for (int i = 0; i < widget.destinations.length; i++)
+        widget.navigationRailDestinationBuilder?.call(
+              i,
+              widget.destinations[i],
+            ) ??
+            AdaptiveScaffold.toRailDestination(widget.destinations[i]),
+    ];
+    final int? safeSelectedIndex = (widget.selectedIndex != null &&
+            widget.destinations.isNotEmpty &&
+            widget.selectedIndex! >= 0 &&
+            widget.selectedIndex! < widget.destinations.length)
+        ? widget.selectedIndex
+        : null;
 
     final bool viewIsCollapsed = widget.smallBreakpoint.isActive(context);
     final bool hasCollapsiblePrimarySecondary = widget.controller != null &&
@@ -814,7 +780,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               width: widget.navigationRailWidth,
               leading: widget.leadingUnextendedNavRail,
               trailing: widget.trailingNavRail,
-              selectedIndex: widget.selectedIndex,
+              selectedIndex: safeSelectedIndex,
               destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor: navRailTheme.backgroundColor,
@@ -822,23 +788,14 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.compactLabelType ??
-                  navRailTheme.labelType,
+              labelType: navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
-              iconTransitionAnimation:
-                  effectiveNavigationTheme.transitionAnimation,
-              iconTransitionCurve: effectiveNavigationTheme.transitionCurve,
-              iconTransitionDuration:
-                  effectiveNavigationTheme.transitionDuration,
-              destinationFillRegion:
-                  effectiveNavigationTheme.destinationFillRegion,
-              destinationHoverRegion:
-                  effectiveNavigationTheme.destinationHoverRegion,
-              destinationFillShape:
-                  effectiveNavigationTheme.destinationFillShape,
-              destinationHoverShape:
-                  effectiveNavigationTheme.destinationHoverShape,
+              showLabelsWhenCollapsed: widget.showLabelsWhenCollapsed,
+              leadingAtTop: widget.leadingAtTop,
+              trailingAtBottom: widget.trailingAtBottom,
+              scrollable: widget.scrollable,
+              mainAxisAlignment: widget.mainAxisAlignment,
             ),
           ),
           widget.mediumLargeBreakpoint: SlotLayout.from(
@@ -848,7 +805,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
-              selectedIndex: widget.selectedIndex,
+              selectedIndex: safeSelectedIndex,
               destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor: navRailTheme.backgroundColor,
@@ -856,18 +813,14 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelType ??
-                  NavigationRailLabelType.all,
+              labelType: navRailTheme.labelType,
               groupAlignment: widget.groupAlignment,
               padding: widget.padding,
-              destinationFillRegion:
-                  effectiveNavigationTheme.destinationFillRegion,
-              destinationHoverRegion:
-                  effectiveNavigationTheme.destinationHoverRegion,
-              destinationFillShape:
-                  effectiveNavigationTheme.destinationFillShape,
-              destinationHoverShape:
-                  effectiveNavigationTheme.destinationHoverShape,
+              showLabelsWhenCollapsed: widget.showLabelsWhenCollapsed,
+              leadingAtTop: widget.leadingAtTop,
+              trailingAtBottom: widget.trailingAtBottom,
+              scrollable: widget.scrollable,
+              mainAxisAlignment: widget.mainAxisAlignment,
             ),
           ),
           widget.largeBreakpoint: SlotLayout.from(
@@ -877,30 +830,20 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
-              selectedIndex: widget.selectedIndex,
-              destinations: widget.destinations
-                  .map(
-                    (NavigationDestination destination) =>
-                        AdaptiveScaffold.toRailDestination(destination),
-                  )
-                  .toList(),
+              selectedIndex: safeSelectedIndex,
+              destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor: navRailTheme.backgroundColor,
               selectedIconTheme: navRailTheme.selectedIconTheme,
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelType ??
-                  NavigationRailLabelType.all,
               padding: widget.padding,
-              destinationFillRegion:
-                  effectiveNavigationTheme.destinationFillRegion,
-              destinationHoverRegion:
-                  effectiveNavigationTheme.destinationHoverRegion,
-              destinationFillShape:
-                  effectiveNavigationTheme.destinationFillShape,
-              destinationHoverShape:
-                  effectiveNavigationTheme.destinationHoverShape,
+              showLabelsWhenCollapsed: widget.showLabelsWhenCollapsed,
+              leadingAtTop: widget.leadingAtTop,
+              trailingAtBottom: widget.trailingAtBottom,
+              scrollable: widget.scrollable,
+              mainAxisAlignment: widget.mainAxisAlignment,
             ),
           ),
           widget.extraLargeBreakpoint: SlotLayout.from(
@@ -910,30 +853,20 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               extended: true,
               leading: widget.leadingExtendedNavRail,
               trailing: widget.trailingNavRail,
-              selectedIndex: widget.selectedIndex,
-              destinations: widget.destinations
-                  .map(
-                    (NavigationDestination destination) =>
-                        AdaptiveScaffold.toRailDestination(destination),
-                  )
-                  .toList(),
+              selectedIndex: safeSelectedIndex,
+              destinations: destinations,
               onDestinationSelected: widget.onSelectedIndexChange,
               backgroundColor: navRailTheme.backgroundColor,
               selectedIconTheme: navRailTheme.selectedIconTheme,
               unselectedIconTheme: navRailTheme.unselectedIconTheme,
               selectedLabelTextStyle: navRailTheme.selectedLabelTextStyle,
               unSelectedLabelTextStyle: navRailTheme.unselectedLabelTextStyle,
-              labelType: effectiveNavigationTheme.expandedLabelType ??
-                  NavigationRailLabelType.all,
               padding: widget.padding,
-              destinationFillRegion:
-                  effectiveNavigationTheme.destinationFillRegion,
-              destinationHoverRegion:
-                  effectiveNavigationTheme.destinationHoverRegion,
-              destinationFillShape:
-                  effectiveNavigationTheme.destinationFillShape,
-              destinationHoverShape:
-                  effectiveNavigationTheme.destinationHoverShape,
+              showLabelsWhenCollapsed: widget.showLabelsWhenCollapsed,
+              leadingAtTop: widget.leadingAtTop,
+              trailingAtBottom: widget.trailingAtBottom,
+              scrollable: widget.scrollable,
+              mainAxisAlignment: widget.mainAxisAlignment,
             ),
           ),
         },
@@ -944,22 +877,14 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
               config: <Breakpoint, SlotLayoutConfig>{
                 widget.smallBreakpoint: SlotLayout.from(
                   key: const Key("bottomNavigation"),
-                  builder: (_) => AdaptiveScaffold.standardBottomNavigationBar(
-                    currentIndex: widget.selectedIndex,
-                    destinations: widget.destinations,
-                    onDestinationSelected: widget.onSelectedIndexChange,
-                    labelBehavior: effectiveNavigationTheme.compactLabelType,
-                    transitionAnimation:
-                        effectiveNavigationTheme.transitionAnimation,
-                    destinationFillRegion:
-                        effectiveNavigationTheme.destinationFillRegion,
-                    destinationHoverRegion:
-                        effectiveNavigationTheme.destinationHoverRegion,
-                    destinationFillShape:
-                        effectiveNavigationTheme.destinationFillShape,
-                    destinationHoverShape:
-                        effectiveNavigationTheme.destinationHoverShape,
-                  ),
+                  builder: (_) => widget.destinations.length >= 2
+                      ? AdaptiveScaffold.standardBottomNavigationBar(
+                          currentIndex: safeSelectedIndex,
+                          destinations: widget.destinations,
+                          onDestinationSelected: widget.onSelectedIndexChange,
+                          scrollable: widget.scrollable,
+                        )
+                      : const SizedBox.shrink(),
                 ),
               },
             )
@@ -1141,7 +1066,7 @@ class _AdaptiveScaffoldState extends State<AdaptiveScaffold> {
                 extended: true,
                 leading: widget.leadingExtendedNavRail,
                 trailing: widget.trailingNavRail,
-                selectedIndex: widget.selectedIndex,
+                selectedIndex: safeSelectedIndex,
                 destinations: destinations,
                 onDestinationSelected: _onDrawerDestinationSelected,
                 backgroundColor: navRailTheme.backgroundColor,

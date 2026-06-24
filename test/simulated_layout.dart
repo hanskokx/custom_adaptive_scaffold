@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide NavigationDestination, NavigationRailThemeData;
 import "package:flutter_test/flutter_test.dart";
 
 import "test_breakpoints.dart";
@@ -44,17 +45,17 @@ class TestScaffold extends StatefulWidget {
 
   static const List<NavigationDestination> destinations =
       <NavigationDestination>[
-    CustomNavigationDestination(
+    NavigationDestination(
       key: Key("Inbox"),
       icon: Icon(Icons.inbox),
       label: "Inbox",
     ),
-    CustomNavigationDestination(
+    NavigationDestination(
       key: Key("Articles"),
       icon: Icon(Icons.article),
       label: "Articles",
     ),
-    CustomNavigationDestination(
+    NavigationDestination(
       key: Key("Chat"),
       icon: Icon(Icons.chat),
       label: "Chat",

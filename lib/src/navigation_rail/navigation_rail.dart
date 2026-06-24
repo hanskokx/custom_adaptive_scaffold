@@ -2,36 +2,36 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "dart:async";
 import "dart:ui";
 
-import "package:flutter/material.dart";
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
-import "breakpoints.dart";
-import "custom_navigation_rail_theme.dart";
-import "destination_region_boundary.dart";
-import "navigation_destination_types.dart";
+import "../../material.dart";
+import "../navigation_icon.dart";
+import "../navigation_shared/destination_build_data.dart";
+import "../navigation_shared/destination_surface_strategy.dart";
+import "../navigation_shared/navigation_destination_tooltip.dart";
+import "destination_widgets/animation.dart";
+import "theme_defaults.dart";
 
-part "rail_destination.dart";
+part "destination_layout/destination.dart";
+part "destination_widgets/destination_shared_state.dart";
+part "destination_widgets/destination_widget.dart";
+part "destination_widgets/indicator_ink_well.dart";
 
-/// A [NavigationRailDestination] with explicit tooltip text support.
+/// A deprecated typedef alias for [NavigationRail].
 ///
-/// When [tooltip] is null, the rail falls back to the text label when
-/// possible. When it is an empty string, the tooltip is suppressed.
-class CustomNavigationRailDestination extends NavigationRailDestination {
-  const CustomNavigationRailDestination({
-    required super.icon,
-    required super.label,
-    super.selectedIcon,
-    super.indicatorColor,
-    super.indicatorShape,
-    super.padding,
-    super.disabled = false,
-    this.tooltip,
-  });
-
-  final String? tooltip;
-}
+/// Migrate by either hiding Flutter's `NavigationRail` in your import and
+/// using `NavigationRail` directly, or continuing to use `CustomNavigationRail`
+/// until the next major version.
+///
+/// ```dart
+/// // Preferred migration:
+/// import 'package:flutter/material.dart' hide NavigationRail;
+/// import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
+/// // Then use NavigationRail directly.
+/// ```
+typedef CustomNavigationRail = NavigationRail;
 
 /// A Material Design widget that is meant to be displayed at the left or right of an
 /// app to navigate between a small number of views, typically between three and
@@ -46,7 +46,7 @@ class CustomNavigationRailDestination extends NavigationRailDestination {
 /// A navigation rail is usually used as the first or last element of a [Row]
 /// which defines the app's [Scaffold] body.
 ///
-/// The appearance of all of the [CustomNavigationRail]s within an app can be
+/// The appearance of all of the [NavigationRail]s within an app can be
 /// specified with [NavigationRailTheme]. The default values for null theme
 /// properties are based on the [Theme]'s [ThemeData.textTheme],
 /// [ThemeData.iconTheme], and [ThemeData.colorScheme].
@@ -58,7 +58,7 @@ class CustomNavigationRailDestination extends NavigationRailDestination {
 /// for an example.
 ///
 /// {@tool dartpad}
-/// This example shows a [CustomNavigationRail] used within a Scaffold with 3
+/// This example shows a [NavigationRail] used within a Scaffold with 3
 /// [NavigationRailDestination]s. The main content is separated by a divider
 /// (although elevation on the navigation rail can be used instead). The
 /// `_selectedIndex` is updated by the `onDestinationSelected` callback.
@@ -67,7 +67,7 @@ class CustomNavigationRailDestination extends NavigationRailDestination {
 /// {@end-tool}
 ///
 /// {@tool dartpad}
-/// This sample shows the creation of [CustomNavigationRail] widget used within a Scaffold with 3
+/// This sample shows the creation of [NavigationRail] widget used within a Scaffold with 3
 /// [NavigationRailDestination]s, as described in: https://m3.material.io/components/navigation-rail/overview
 ///
 /// ** See code in examples/api/lib/material/navigation_rail/navigation_rail.1.dart **
@@ -83,7 +83,7 @@ class CustomNavigationRailDestination extends NavigationRailDestination {
 ///     out horizontally.
 ///  * <https://material.io/components/navigation-rail/>
 ///  * <https://m3.material.io/components/navigation-rail>
-class CustomNavigationRail extends StatefulWidget {
+class NavigationRail extends StatefulWidget {
   /// Creates a Material Design navigation rail.
   ///
   /// The value of [destinations] must be a list of two or more
@@ -106,7 +106,7 @@ class CustomNavigationRail extends StatefulWidget {
   /// defaults are used. See the individual properties for more information.
   ///
   /// Typically used within a [Row] that defines the [Scaffold.body] property.
-  const CustomNavigationRail({
+  const NavigationRail({
     required this.destinations,
     required this.selectedIndex,
     super.key,
@@ -127,18 +127,11 @@ class CustomNavigationRail extends StatefulWidget {
     this.useIndicator,
     this.indicatorColor,
     this.indicatorShape,
-    this.destinationFillRegion,
-    this.destinationHoverRegion,
-    this.destinationFillShape,
-    this.destinationHoverShape,
     this.leadingAtTop = true,
     this.trailingAtBottom = false,
     this.scrollable = false,
     this.mainAxisAlignment,
-    this.iconTransitionAnimation = NavigationDestinationAnimation.none,
-    this.iconTransitionCurve = Curves.easeInOut,
-    this.iconTransitionDuration,
-    this.destinationTransitionBuilder,
+    this.showLabelsWhenCollapsed,
   })  : assert(
           selectedIndex == null ||
               (0 <= selectedIndex && selectedIndex < destinations.length),
@@ -149,9 +142,13 @@ class CustomNavigationRail extends StatefulWidget {
         assert(
           (minWidth == null || minExtendedWidth == null) ||
               minExtendedWidth >= minWidth,
+        ),
+        assert(
+          !extended ||
+              (labelType == null || labelType == NavigationRailLabelType.none),
         );
 
-  /// Sets the color of the Container that holds all of the [CustomNavigationRail]'s
+  /// Sets the color of the Container that holds all of the [NavigationRail]'s
   /// contents.
   ///
   /// The default value is [NavigationRailThemeData.backgroundColor]. If
@@ -159,7 +156,7 @@ class CustomNavigationRail extends StatefulWidget {
   /// is based on [ColorScheme.surface] of [ThemeData.colorScheme].
   final Color? backgroundColor;
 
-  /// Indicates that the [CustomNavigationRail] should be in the extended state.
+  /// Indicates that the [NavigationRail] should be in the extended state.
   ///
   /// The extended state has a wider rail container, and the labels are
   /// positioned next to the icons. [minExtendedWidth] can be used to set the
@@ -198,7 +195,7 @@ class CustomNavigationRail extends StatefulWidget {
   /// Defines the appearance of the button items that are arrayed within the
   /// navigation rail.
   ///
-  /// The value must be a list of two or more [NavigationRailDestination]
+  /// The value must be a list of zero or more [NavigationRailDestination]
   /// values.
   final List<NavigationRailDestination> destinations;
 
@@ -241,7 +238,7 @@ class CustomNavigationRail extends StatefulWidget {
   final double? groupAlignment;
 
   /// Defines the layout and behavior of the labels for the default, unextended
-  /// [CustomNavigationRail].
+  /// [NavigationRail].
   ///
   /// When a navigation rail is [extended], the labels are always shown.
   ///
@@ -285,7 +282,7 @@ class CustomNavigationRail extends StatefulWidget {
   /// The visual properties of the icon in the unselected destination.
   ///
   /// If this field is not provided, or provided with any null properties, then
-  /// a copy of the [IconThemeData.fallback] with a custom [CustomNavigationRail]
+  /// a copy of the [IconThemeData.fallback] with a custom [NavigationRail]
   /// specific color will be used.
   ///
   /// The default value is the [Theme]'s [ThemeData.iconTheme] with a color
@@ -336,93 +333,42 @@ class CustomNavigationRail extends StatefulWidget {
   /// `null`, defaults to [ThemeData.useMaterial3].
   final bool? useIndicator;
 
-  /// Overrides the default value of [CustomNavigationRail]'s selection indicator color,
+  /// Overrides the default value of [NavigationRail]'s selection indicator color,
   /// when [useIndicator] is true.
   ///
   /// If this is null, [NavigationRailThemeData.indicatorColor] is used. If
   /// that is null, defaults to [ColorScheme.secondaryContainer].
   final Color? indicatorColor;
 
-  /// Overrides the default value of [CustomNavigationRail]'s selection indicator shape,
+  /// Overrides the default value of [NavigationRail]'s selection indicator shape,
   /// when [useIndicator] is true.
   ///
   /// If this is null, [NavigationRailThemeData.indicatorShape] is used. If
   /// that is null, defaults to [StadiumBorder].
   final ShapeBorder? indicatorShape;
 
-  /// Controls where destination fill/highlight is painted.
-  ///
-  /// When null, this widget follows Flutter's default indicator path.
-  /// Passing [NavigationDestinationRegion.icon] behaves the same as null.
-  ///
-  /// Pass [NavigationDestinationRegion.none] to explicitly disable custom
-  /// fill/highlight behavior.
-  final NavigationDestinationRegion? destinationFillRegion;
-
-  /// Controls where destination hover and pressed interaction effects are
-  /// painted.
-  ///
-  /// When null, this follows [destinationFillRegion].
-  final NavigationDestinationRegion? destinationHoverRegion;
-
-  /// Optional shape used for destination fill/highlight when
-  /// [destinationFillRegion] is configured.
-  ///
-  /// If null, [indicatorShape] / theme indicator shape is used, then
-  /// [StadiumBorder].
-  final ShapeBorder? destinationFillShape;
-
-  /// Optional shape used for hover/ink interaction when
-  /// [destinationHoverRegion] is configured.
-  ///
-  /// Note: this is only applied when [ThemeData.useMaterial3] is true. In
-  /// Material 2, hover/ink interaction continues using the default border
-  /// radius behavior.
-  ///
-  /// If null, falls back to [destinationFillShape].
-  final ShapeBorder? destinationHoverShape;
-
-  /// Icon transition preset for destination icon swaps.
-  ///
-  /// Defaults to [NavigationDestinationAnimation.none] to preserve legacy behavior.
-  final NavigationDestinationAnimation iconTransitionAnimation;
-
-  /// Curve used by destination icon transitions.
-  final Curve iconTransitionCurve;
-
-  /// Optional duration used by destination icon transitions.
-  final Duration? iconTransitionDuration;
-
-  /// Optional builder that receives icon and label widgets for both states.
-  ///
-  /// When provided, it takes precedence over [iconTransitionAnimation]
-  /// for each destination, allowing coordinated icon+label animations.
-  final NavigationDestinationTransitionBuilder? destinationTransitionBuilder;
-
   /// Pin the [leading] widget to the top.
-  ///
-  /// If `true`, [leading] stays above the main destination group.
-  /// If `false`, [leading] participates in the main destination group layout.
   final bool leadingAtTop;
 
   /// Pin the [trailing] widget to the bottom.
-  ///
-  /// If `true`, [trailing] stays below the main destination group.
-  /// If `false`, [trailing] participates in the main destination group layout.
   final bool trailingAtBottom;
 
-  /// Whether the main destination group should be scrollable.
-  ///
-  /// This is useful when there is not enough vertical space to show all
-  /// destinations (and any non-pinned leading/trailing content).
+  /// Whether the main group of items should scroll when vertical space is tight.
   final bool scrollable;
 
-  /// How destinations are placed along the vertical axis.
+  /// How destinations should be placed along the vertical axis.
   ///
-  /// When non-null, [groupAlignment] is ignored for main-group placement.
+  /// When non-null, [groupAlignment] is ignored.
   final MainAxisAlignment? mainAxisAlignment;
 
-  /// Returns the animation that controls the [CustomNavigationRail.extended] state.
+  /// Whether labels are shown while the rail is collapsed and [labelType] is
+  /// [NavigationRailLabelType.none].
+  ///
+  /// Defaults to [NavigationRailThemeData.showLabelsWhenCollapsed], and if
+  /// that is null, defaults to false.
+  final bool? showLabelsWhenCollapsed;
+
+  /// Returns the animation that controls the [NavigationRail.extended] state.
   ///
   /// This can be used to synchronize animations in the [leading] or [trailing]
   /// widget, such as an animated menu or a [FloatingActionButton] animation.
@@ -430,24 +376,24 @@ class CustomNavigationRail extends StatefulWidget {
   /// {@tool dartpad}
   /// This example shows how to use this animation to create a [FloatingActionButton]
   /// that animates itself between the normal and extended states of the
-  /// [CustomNavigationRail].
+  /// [NavigationRail].
   ///
-  /// An instance of `MyNavigationRailFab` is created for [CustomNavigationRail.leading].
-  /// Pressing the FAB button toggles the "extended" state of the [CustomNavigationRail].
+  /// An instance of `MyNavigationRailFab` is created for [NavigationRail.leading].
+  /// Pressing the FAB button toggles the "extended" state of the [NavigationRail].
   ///
   /// ** See code in examples/api/lib/material/navigation_rail/navigation_rail.extended_animation.0.dart **
   /// {@end-tool}
   static Animation<double> extendedAnimation(BuildContext context) {
     return context
-        .dependOnInheritedWidgetOfExactType<_ExtendedNavigationRailAnimation>()!
+        .dependOnInheritedWidgetOfExactType<ExtendedNavigationRailAnimation>()!
         .animation;
   }
 
   @override
-  State<CustomNavigationRail> createState() => _CustomNavigationRailState();
+  State<NavigationRail> createState() => _NavigationRailState();
 }
 
-class _CustomNavigationRailState extends State<CustomNavigationRail>
+class _NavigationRailState extends State<NavigationRail>
     with TickerProviderStateMixin {
   late List<AnimationController> _destinationControllers;
   late List<Animation<double>> _destinationAnimations;
@@ -467,7 +413,7 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
   }
 
   @override
-  void didUpdateWidget(CustomNavigationRail oldWidget) {
+  void didUpdateWidget(NavigationRail oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     if (widget.extended != oldWidget.extended) {
@@ -498,10 +444,8 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
   @override
   Widget build(BuildContext context) {
     final NavigationRailThemeData navigationRailTheme =
-        CustomNavigationRailTheme.of(context);
-    final NavigationRailThemeData defaults = Theme.of(context).useMaterial3
-        ? _NavigationRailDefaultsM3(context)
-        : _NavigationRailDefaultsM2(context);
+        NavigationRailTheme.of(context);
+    final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
 
@@ -528,11 +472,6 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     final double groupAlignment = widget.groupAlignment ??
         navigationRailTheme.groupAlignment ??
         defaults.groupAlignment!;
-    final double minWidth =
-        widget.minWidth ?? navigationRailTheme.minWidth ?? defaults.minWidth!;
-    final double minExtendedWidth = widget.minExtendedWidth ??
-        navigationRailTheme.minExtendedWidth ??
-        defaults.minExtendedWidth!;
     final NavigationRailLabelType labelType = widget.labelType ??
         navigationRailTheme.labelType ??
         defaults.labelType!;
@@ -545,11 +484,15 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     final ShapeBorder? indicatorShape = widget.indicatorShape ??
         navigationRailTheme.indicatorShape ??
         defaults.indicatorShape;
+    final bool showLabelsWhenCollapsed = widget.showLabelsWhenCollapsed ??
+        navigationRailTheme.showLabelsWhenCollapsed ??
+        false;
 
     // For backwards compatibility, in M2 the opacity of the unselected icons needs
     // to be set to the default if it isn't in the given theme. This can be removed
     // when Material 3 is the default.
     final IconThemeData effectiveUnselectedIconTheme =
+        // TODO(v6.0.0): Remove useMaterial3 check and M2 fallback branch.
         Theme.of(context).useMaterial3
             ? unselectedIconTheme
             : unselectedIconTheme.copyWith(
@@ -557,110 +500,70 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
                     defaults.unselectedIconTheme!.opacity,
               );
 
-    final TextDirection textDirection = Directionality.of(context);
-    final bool isRTLDirection = textDirection == TextDirection.rtl;
-    final bool isCustom = navigationRailTheme is CustomNavigationRailThemeData;
-    EdgeInsetsGeometry? railDestinationMargin =
-        isCustom ? navigationRailTheme.margin : null;
+    final bool isRTLDirection = Directionality.of(context) == TextDirection.rtl;
+    final EdgeInsetsGeometry? railDestinationMargin =
+        navigationRailTheme.margin;
     final EdgeInsetsGeometry? railDestinationPadding =
-        isCustom ? navigationRailTheme.padding : null;
-    EdgeInsets? fullFillHorizontalMargin;
+        navigationRailTheme.padding;
 
-    if (widget.destinationFillRegion == NavigationDestinationRegion.full &&
-        railDestinationMargin != null) {
-      final EdgeInsets resolvedMargin = railDestinationMargin.resolve(
-        textDirection,
-      );
-      fullFillHorizontalMargin = resolvedMargin;
-      railDestinationMargin = EdgeInsets.only(
-        top: resolvedMargin.top,
-        bottom: resolvedMargin.bottom,
-      );
-    }
+    final MainAxisAlignment effectiveMainAxisAlignment =
+        widget.mainAxisAlignment ?? MainAxisAlignment.start;
+
+    final Widget? trailing = widget.trailing;
 
     Widget mainGroup = Column(
-      mainAxisSize: widget.mainAxisAlignment != null
-          ? MainAxisSize.max
-          : MainAxisSize.min,
-      mainAxisAlignment: widget.mainAxisAlignment ?? MainAxisAlignment.start,
+      mainAxisSize: widget.mainAxisAlignment == null
+          ? MainAxisSize.min
+          : MainAxisSize.max,
+      mainAxisAlignment: effectiveMainAxisAlignment,
       children: <Widget>[
-        if (!widget.leadingAtTop && widget.leading != null) ...<Widget>[
+        if (widget.leading != null && !widget.leadingAtTop) ...<Widget>[
           widget.leading!,
           _verticalSpacer,
         ],
         for (int i = 0; i < widget.destinations.length; i += 1)
           Container(
-            width: widget.extended &&
-                    widget.destinationFillRegion ==
-                        NavigationDestinationRegion.full
-                ? double.infinity
-                : null,
-            margin: railDestinationMargin,
-            child: _NavigationRailDestinationTooltip(
-              message: _tooltipMessageForDestination(widget.destinations[i]),
-              child: RailDestination(
-                minWidth: minWidth,
-                minExtendedWidth: minExtendedWidth,
-                extendedTransitionAnimation: _extendedAnimation,
-                selected: widget.selectedIndex == i,
-                icon: widget.destinations[i].icon,
-                selectedIcon: widget.destinations[i].selectedIcon,
-                label: widget.destinations[i].label,
-                destinationAnimation: _destinationAnimations[i],
-                labelType: labelType,
-                iconTheme: widget.selectedIndex == i
-                    ? selectedIconTheme
-                    : effectiveUnselectedIconTheme,
-                labelTextStyle: widget.selectedIndex == i
-                    ? selectedLabelTextStyle
-                    : unselectedLabelTextStyle,
-                padding: () {
-                  EdgeInsetsGeometry? effectivePadding =
-                      railDestinationPadding ?? widget.destinations[i].padding;
-
-                  if (fullFillHorizontalMargin != null) {
-                    final EdgeInsets resolvedPadding =
-                        (effectivePadding ?? EdgeInsets.zero).resolve(
-                      textDirection,
-                    );
-                    effectivePadding = EdgeInsets.fromLTRB(
-                      resolvedPadding.left + fullFillHorizontalMargin.left,
-                      resolvedPadding.top,
-                      resolvedPadding.right + fullFillHorizontalMargin.right,
-                      resolvedPadding.bottom,
-                    );
-                  }
-
-                  return effectivePadding;
-                }(),
-                useIndicator: useIndicator,
-                indicatorColor: indicatorColor,
-                indicatorShape: indicatorShape,
-                destinationFillRegion: widget.destinationFillRegion,
-                destinationHoverRegion: widget.destinationHoverRegion,
-                destinationFillShape: widget.destinationFillShape,
-                destinationHoverShape: widget.destinationHoverShape,
-                onTap: () {
-                  if (widget.onDestinationSelected != null) {
-                    widget.onDestinationSelected!(i);
-                  }
-                },
-                indexLabel: localizations.tabLabel(
-                  tabIndex: i + 1,
-                  tabCount: widget.destinations.length,
-                ),
-                disabled: widget.destinations[i].disabled,
-                extended: widget.extended,
-                iconTransitionAnimation: widget.iconTransitionAnimation,
-                iconTransitionCurve: widget.iconTransitionCurve,
-                iconTransitionDuration: widget.iconTransitionDuration,
-                destinationTransitionBuilder:
-                    widget.destinationTransitionBuilder,
+            margin: widget.destinations[i].margin ?? railDestinationMargin,
+            child: RailDestination(
+              labelType: labelType,
+              minWidth: widget.minWidth,
+              minExtendedWidth: widget.minExtendedWidth,
+              extendedTransitionAnimation: _extendedAnimation,
+              selected: widget.selectedIndex == i,
+              icon: widget.selectedIndex == i
+                  ? widget.destinations[i].selectedIcon
+                  : widget.destinations[i].icon,
+              label: widget.destinations[i].labelWidget,
+              destinationAnimation: _destinationAnimations[i],
+              iconTheme: widget.selectedIndex == i
+                  ? selectedIconTheme
+                  : effectiveUnselectedIconTheme,
+              labelTextStyle: widget.selectedIndex == i
+                  ? selectedLabelTextStyle
+                  : unselectedLabelTextStyle,
+              padding: widget.destinations[i].padding ?? railDestinationPadding,
+              useIndicator: useIndicator,
+              indicatorColor: useIndicator
+                  ? (widget.destinations[i].indicatorColor ?? indicatorColor)
+                  : null,
+              indicatorShape: useIndicator
+                  ? (widget.destinations[i].indicatorShape ?? indicatorShape)
+                  : null,
+              onTap: () {
+                if (widget.onDestinationSelected != null) {
+                  widget.onDestinationSelected!(i);
+                }
+              },
+              indexLabel: localizations.tabLabel(
+                tabIndex: i + 1,
+                tabCount: widget.destinations.length,
               ),
+              disabled: !widget.destinations[i].enabled,
+              showLabelsWhenCollapsed: showLabelsWhenCollapsed,
+              tooltip: widget.destinations[i].tooltipLabel,
             ),
           ),
-        if (!widget.trailingAtBottom && widget.trailing != null)
-          widget.trailing!,
+        if (trailing != null && !widget.trailingAtBottom) trailing,
       ],
     );
 
@@ -670,7 +573,7 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
 
     return Semantics(
       container: true,
-      child: _ExtendedNavigationRailAnimation(
+      child: ExtendedNavigationRailAnimation(
         animation: _extendedAnimation,
         child: Semantics(
           explicitChildNodes: true,
@@ -683,19 +586,21 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
               child: Column(
                 children: <Widget>[
                   _verticalSpacer,
-                  if (widget.leadingAtTop &&
-                      widget.leading != null) ...<Widget>[
-                    widget.leading!,
-                    _verticalSpacer,
+                  if (widget.leading != null) ...<Widget>[
+                    if (widget.leadingAtTop) ...<Widget>[
+                      widget.leading!,
+                      _verticalSpacer,
+                    ],
                   ],
-                  Flexible(
-                    child: Align(
-                      alignment: Alignment(0, groupAlignment),
-                      child: mainGroup,
-                    ),
+                  Expanded(
+                    child: widget.mainAxisAlignment == null
+                        ? Align(
+                            alignment: Alignment(0, groupAlignment),
+                            child: mainGroup,
+                          )
+                        : mainGroup,
                   ),
-                  if (widget.trailingAtBottom && widget.trailing != null)
-                    widget.trailing!,
+                  if (trailing != null && widget.trailingAtBottom) trailing,
                 ],
               ),
             ),
@@ -746,111 +651,10 @@ class _CustomNavigationRailState extends State<CustomNavigationRail>
     _initControllers();
   }
 
-  String? _tooltipMessageForDestination(
-    NavigationRailDestination destination,
-  ) {
-    if (destination is CustomNavigationRailDestination) {
-      final String? explicitTooltip = destination.tooltip;
-      if (explicitTooltip != null) {
-        return explicitTooltip.isEmpty ? null : explicitTooltip;
-      }
-    }
-
-    final Widget label = destination.label;
-    if (label is Text) {
-      final String? text = label.data ?? label.textSpan?.toPlainText();
-      if (text != null && text.isNotEmpty) {
-        return text;
-      }
-    }
-    return null;
-  }
-
   void _rebuild() {
     setState(() {
       // Rebuilding when any of the controllers tick, i.e. when the items are
       // animating.
     });
-  }
-}
-
-class _NavigationRailDestinationTooltip extends StatefulWidget {
-  const _NavigationRailDestinationTooltip({
-    required this.message,
-    required this.child,
-  });
-
-  final String? message;
-  final Widget child;
-
-  @override
-  State<_NavigationRailDestinationTooltip> createState() =>
-      _NavigationRailDestinationTooltipState();
-}
-
-class _NavigationRailDestinationTooltipState
-    extends State<_NavigationRailDestinationTooltip> {
-  static const Duration _manualTooltipShowDuration = Duration(seconds: 2);
-
-  final GlobalKey<TooltipState> _tooltipKey = GlobalKey<TooltipState>();
-  Timer? _hideTimer;
-  bool _tooltipVisible = false;
-
-  void _showTooltip() {
-    _hideTimer?.cancel();
-
-    if (!_tooltipVisible && mounted) {
-      setState(() {
-        _tooltipVisible = true;
-      });
-    }
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) {
-        return;
-      }
-      _tooltipKey.currentState?.ensureTooltipVisible();
-    });
-
-    _hideTimer = Timer(_manualTooltipShowDuration, () {
-      if (!mounted) {
-        return;
-      }
-      setState(() {
-        _tooltipVisible = false;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _hideTimer?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.message == null || widget.message!.isEmpty) {
-      return widget.child;
-    }
-
-    return TooltipVisibility(
-      visible: _tooltipVisible,
-      child: Tooltip(
-        key: _tooltipKey,
-        message: widget.message!,
-        triggerMode: TooltipTriggerMode.manual,
-        verticalOffset: 12,
-        showDuration: _manualTooltipShowDuration,
-        excludeFromSemantics: true,
-        preferBelow: false,
-        child: GestureDetector(
-          behavior: HitTestBehavior.translucent,
-          onLongPress: _showTooltip,
-          onSecondaryTapDown: (_) => _showTooltip(),
-          child: widget.child,
-        ),
-      ),
-    );
   }
 }

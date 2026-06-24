@@ -2,11 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
-    hide NavigationIndicator;
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart";
+import "package:flutter/material.dart"
+    hide
+        NavigationDestination,
+        NavigationRail,
+        NavigationBar,
+        NavigationRailDestination,
+        NavigationIndicator,
+        NavigationBarTheme,
+        NavigationBarThemeData,
+        NavigationRailTheme,
+        NavigationRailThemeData,
+        NavigationDrawerDestination,
+        NavigationDrawerTheme,
+        NavigationDrawerThemeData;
 import "package:flutter/rendering.dart";
 import "package:flutter_test/flutter_test.dart";
 
@@ -20,9 +32,9 @@ void main() {
     const unselectedTextStyle =
         TextStyle(fontWeight: FontWeight.w800, fontSize: 11.0);
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -59,9 +71,9 @@ void main() {
     const unselectedIconTheme =
         IconThemeData(size: 18, color: Color(0x00000002));
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -85,12 +97,10 @@ void main() {
 
   testWidgets("No selected destination when selectedIndex is null",
       (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
-        selectedIndex: null,
-        destinations: _destinations(),
-      ),
+      navigationRail:
+          NavigationRail(selectedIndex: null, destinations: _destinations()),
     );
 
     final Iterable<Semantics> semantics =
@@ -102,9 +112,9 @@ void main() {
   });
 
   testWidgets("backgroundColor can be changed", (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -116,9 +126,9 @@ void main() {
       equals(const Color(0xfffef7ff)),
     ); // default surface color in M3 colorScheme
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -130,9 +140,9 @@ void main() {
   });
 
   testWidgets("elevation can be changed", (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -141,9 +151,9 @@ void main() {
 
     expect(_railMaterial(tester).elevation, equals(0));
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -158,23 +168,23 @@ void main() {
       "Renders at the correct default width - [labelType]=none (default)", (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
       navigationRail:
-          CustomNavigationRail(selectedIndex: 0, destinations: _destinations()),
+          NavigationRail(selectedIndex: 0, destinations: _destinations()),
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, 80.0);
   });
 
   testWidgets("Renders at the correct default width - [labelType]=selected", (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         labelType: NavigationRailLabelType.selected,
         destinations: _destinations(),
@@ -182,16 +192,16 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, 80.0);
   });
 
   testWidgets("Renders at the correct default width - [labelType]=all", (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         labelType: NavigationRailLabelType.all,
         destinations: _destinations(),
@@ -199,7 +209,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, 80.0);
   });
 
@@ -245,7 +255,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     destinations: destinations,
                     selectedIndex: null,
                     leading: leadingWidget,
@@ -430,7 +440,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     selectedIndex: selectedIndex,
                     destinations: destinations,
                   ),
@@ -445,15 +455,13 @@ void main() {
 
     expect(
       tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+          .widget<NavigationRail>(find.byType(NavigationRail))
           .destinations
           .length,
       0,
     );
     expect(
-      tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
-          .selectedIndex,
+      tester.widget<NavigationRail>(find.byType(NavigationRail)).selectedIndex,
       isNull,
     );
 
@@ -476,15 +484,13 @@ void main() {
 
     expect(
       tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+          .widget<NavigationRail>(find.byType(NavigationRail))
           .destinations
           .length,
       2,
     );
     expect(
-      tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
-          .selectedIndex,
+      tester.widget<NavigationRail>(find.byType(NavigationRail)).selectedIndex,
       isNull,
     );
 
@@ -496,15 +502,13 @@ void main() {
 
     expect(
       tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+          .widget<NavigationRail>(find.byType(NavigationRail))
           .destinations
           .length,
       2,
     );
     expect(
-      tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
-          .selectedIndex,
+      tester.widget<NavigationRail>(find.byType(NavigationRail)).selectedIndex,
       0,
     );
 
@@ -522,15 +526,13 @@ void main() {
 
     expect(
       tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+          .widget<NavigationRail>(find.byType(NavigationRail))
           .destinations
           .length,
       1,
     );
     expect(
-      tester
-          .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
-          .selectedIndex,
+      tester.widget<NavigationRail>(find.byType(NavigationRail)).selectedIndex,
       0,
     );
   });
@@ -539,9 +541,9 @@ void main() {
       "Renders wider for a destination with a long label - [labelType]=all", (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         labelType: NavigationRailLabelType.all,
         destinations: const <NavigationRailDestination>[
@@ -560,7 +562,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     // Total padding is 16 (8 on each side).
     expect(
       renderBox.size.width,
@@ -570,10 +572,10 @@ void main() {
 
   testWidgets("Renders only icons - [labelType]=none (default)",
       (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
       navigationRail:
-          CustomNavigationRail(selectedIndex: 0, destinations: _destinations()),
+          NavigationRail(selectedIndex: 0, destinations: _destinations()),
     );
 
     expect(find.byIcon(Icons.favorite), findsOneWidget);
@@ -590,9 +592,9 @@ void main() {
 
   testWidgets("Renders icons and labels - [labelType]=all",
       (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -619,9 +621,9 @@ void main() {
   testWidgets("Renders icons and selected label - [labelType]=selected", (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.selected,
@@ -652,16 +654,14 @@ void main() {
       // Space between destinations.
       const destinationPadding = 12.0;
 
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
-        navigationRail: CustomNavigationRail(
-          selectedIndex: 0,
-          destinations: _destinations(),
-        ),
+        navigationRail:
+            NavigationRail(selectedIndex: 0, destinations: _destinations()),
       );
 
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, destinationWidth);
 
       // The first destination below the rail top by some padding.
@@ -740,17 +740,15 @@ void main() {
       // Space between destinations.
       const destinationPadding = 12.0;
 
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         textScaleFactor: 3.0,
-        navigationRail: CustomNavigationRail(
-          selectedIndex: 0,
-          destinations: _destinations(),
-        ),
+        navigationRail:
+            NavigationRail(selectedIndex: 0, destinations: _destinations()),
       );
 
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, destinationWidth);
 
       // The first destination below the rail top by some padding.
@@ -829,17 +827,15 @@ void main() {
       // Space between destinations.
       const destinationPadding = 12.0;
 
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         textScaleFactor: 0.75,
-        navigationRail: CustomNavigationRail(
-          selectedIndex: 0,
-          destinations: _destinations(),
-        ),
+        navigationRail:
+            NavigationRail(selectedIndex: 0, destinations: _destinations()),
       );
 
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, destinationWidth);
 
       // The first destination below the rail top by some padding.
@@ -922,9 +918,9 @@ void main() {
       // Space between destinations.
       const destinationSpacing = 12.0;
 
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           destinations: _destinations(),
           labelType: NavigationRailLabelType.selected,
@@ -932,7 +928,7 @@ void main() {
       );
 
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, destinationWidth);
 
       // The first destination is topPadding below the rail top.
@@ -1027,10 +1023,10 @@ void main() {
     // Space between destinations.
     const destinationSpacing = 12.0;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
       textScaleFactor: 3.0,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.selected,
@@ -1038,7 +1034,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, destinationWidth);
 
     // The first destination topPadding below the rail top.
@@ -1131,10 +1127,10 @@ void main() {
     // Space between destinations.
     const destinationSpacing = 12.0;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
       textScaleFactor: 0.75,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.selected,
@@ -1142,7 +1138,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, destinationWidth);
 
     // The first destination topPadding below the rail top.
@@ -1235,9 +1231,9 @@ void main() {
     // Space between destinations.
     const destinationSpacing = 12.0;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -1245,7 +1241,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, destinationWidth);
 
     // The first destination topPadding below the rail top.
@@ -1338,10 +1334,10 @@ void main() {
     // Space between destinations.
     const destinationSpacing = 12.0;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
       textScaleFactor: 3.0,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -1349,7 +1345,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, destinationWidth);
 
     // The first destination topPadding below the rail top.
@@ -1442,10 +1438,10 @@ void main() {
     // Space between destinations.
     const destinationSpacing = 12.0;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
       textScaleFactor: 0.75,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -1453,7 +1449,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, destinationWidth);
 
     // The first destination topPadding below the rail top.
@@ -1537,9 +1533,9 @@ void main() {
       // Space between destinations.
       const destinationSpacing = 12.0;
 
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           minWidth: 56.0,
           destinations: _destinations(),
@@ -1547,7 +1543,7 @@ void main() {
       );
 
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, 56.0);
 
       // The first destination below the rail top by some padding.
@@ -1623,10 +1619,10 @@ void main() {
       // Space between destinations.
       const destinationSpacing = 12.0;
 
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         textScaleFactor: 3.0,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           minWidth: 56.0,
           destinations: _destinations(),
@@ -1636,7 +1632,7 @@ void main() {
       // Since the rail is icon only, its preferred width should not be affected
       // by textScaleFactor.
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, compactWidth);
 
       // The first destination below the rail top by some padding.
@@ -1712,10 +1708,10 @@ void main() {
       // Space between destinations.
       const destinationSpacing = 12.0;
 
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         textScaleFactor: 0.75,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           minWidth: 56.0,
           destinations: _destinations(),
@@ -1725,7 +1721,7 @@ void main() {
       // Since the rail is icon only, its preferred width should not be affected
       // by textScaleFactor.
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, compactWidth);
 
       // The first destination below the rail top by some padding.
@@ -1801,14 +1797,14 @@ void main() {
     // Space between destinations.
     const destinationPadding = 12.0;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
       navigationRail:
-          CustomNavigationRail(selectedIndex: 0, destinations: _destinations()),
+          NavigationRail(selectedIndex: 0, destinations: _destinations()),
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, destinationWidth);
 
     // The first destination below the rail top by some padding.
@@ -1881,9 +1877,9 @@ void main() {
     // Space between destinations.
     const destinationPadding = 12.0;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         groupAlignment: 0.0,
         destinations: _destinations(),
@@ -1891,7 +1887,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, destinationWidth);
 
     // The first destination below the rail top by some padding with an offset for the alignment.
@@ -1964,9 +1960,9 @@ void main() {
     // Space between destinations.
     const destinationPadding = 12.0;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         groupAlignment: 1.0,
         destinations: _destinations(),
@@ -1974,7 +1970,7 @@ void main() {
     );
 
     final RenderBox renderBox =
-        tester.renderObject(find.byType(CustomNavigationRail));
+        tester.renderObject(find.byType(NavigationRail));
     expect(renderBox.size.width, destinationWidth);
 
     // The first destination below the rail top by some padding with an offset for the alignment.
@@ -2038,9 +2034,9 @@ void main() {
 
   testWidgets("Leading and trailing appear in the correct places",
       (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         leading: FloatingActionButton(onPressed: () {}),
         trailing: FloatingActionButton(onPressed: () {}),
@@ -2089,7 +2085,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     selectedIndex: 0,
                     destinations: _destinations(),
                     extended: extended,
@@ -2104,7 +2100,7 @@ void main() {
     );
 
     final RenderBox rail =
-        tester.firstRenderObject<RenderBox>(find.byType(CustomNavigationRail));
+        tester.firstRenderObject<RenderBox>(find.byType(NavigationRail));
 
     expect(rail.size.width, destinationWidth);
 
@@ -2250,7 +2246,7 @@ void main() {
                 body: Row(
                   textDirection: TextDirection.rtl,
                   children: <Widget>[
-                    CustomNavigationRail(
+                    NavigationRail(
                       selectedIndex: 0,
                       destinations: _destinations(),
                       extended: extended,
@@ -2266,7 +2262,7 @@ void main() {
     );
 
     final RenderBox rail =
-        tester.firstRenderObject<RenderBox>(find.byType(CustomNavigationRail));
+        tester.firstRenderObject<RenderBox>(find.byType(NavigationRail));
 
     expect(rail.size.width, equals(destinationWidth));
     expect(rail.localToGlobal(Offset.zero), equals(const Offset(720.0, 0.0)));
@@ -2405,7 +2401,7 @@ void main() {
                   MediaQuery.withClampedTextScaling(
                     minScaleFactor: 3.0,
                     maxScaleFactor: 3.0,
-                    child: CustomNavigationRail(
+                    child: NavigationRail(
                       selectedIndex: 0,
                       destinations: const <NavigationRailDestination>[
                         NavigationRailDestination(
@@ -2432,7 +2428,7 @@ void main() {
     );
 
     final RenderBox rail =
-        tester.firstRenderObject<RenderBox>(find.byType(CustomNavigationRail));
+        tester.firstRenderObject<RenderBox>(find.byType(NavigationRail));
 
     expect(rail.size.width, equals(80.0));
 
@@ -2461,7 +2457,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     selectedIndex: 0,
                     minExtendedWidth: 300,
                     destinations: _destinations(),
@@ -2477,7 +2473,7 @@ void main() {
     );
 
     final RenderBox rail =
-        tester.firstRenderObject<RenderBox>(find.byType(CustomNavigationRail));
+        tester.firstRenderObject<RenderBox>(find.byType(NavigationRail));
 
     expect(rail.size.width, equals(80.0));
 
@@ -2504,7 +2500,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     selectedIndex: 0,
                     destinations: const <NavigationRailDestination>[
                       NavigationRailDestination(
@@ -2529,7 +2525,7 @@ void main() {
       ),
     );
 
-    final Finder rail = find.byType(CustomNavigationRail);
+    final Finder rail = find.byType(NavigationRail);
 
     // Before starting the animation, the rail has a width of 80.
     expect(tester.getSize(rail).width, 80.0);
@@ -2562,13 +2558,11 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     selectedIndex: 0,
                     leading: Builder(
                       builder: (BuildContext context) {
-                        animation = CustomNavigationRail.extendedAnimation(
-                          context,
-                        );
+                        animation = NavigationRail.extendedAnimation(context);
                         return FloatingActionButton(onPressed: () {});
                       },
                     ),
@@ -2597,9 +2591,9 @@ void main() {
   testWidgets("onDestinationSelected is called", (WidgetTester tester) async {
     late int selectedIndex;
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: _destinations(),
         onDestinationSelected: (int index) {
@@ -2622,9 +2616,9 @@ void main() {
   testWidgets("onDestinationSelected is not called if null",
       (WidgetTester tester) async {
     const selectedIndex = 0;
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: selectedIndex,
         destinations: _destinations(),
         labelType: NavigationRailLabelType.all,
@@ -2650,7 +2644,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     destinations: _destinations(),
                     selectedIndex: selectedIndex,
                     labelType: NavigationRailLabelType.selected,
@@ -2716,7 +2710,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     destinations: _destinations(),
                     selectedIndex: selectedIndex,
                     labelType: NavigationRailLabelType.selected,
@@ -2773,7 +2767,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     destinations: _destinations(),
                     selectedIndex: selectedIndex,
                     labelType: NavigationRailLabelType.selected,
@@ -2922,9 +2916,9 @@ void main() {
     const secondItemPadding = EdgeInsets.symmetric(vertical: 30.0);
     const thirdItemPadding = EdgeInsets.symmetric(horizontal: 10.0);
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         labelType: NavigationRailLabelType.all,
         selectedIndex: 0,
         destinations: const <NavigationRailDestination>[
@@ -2992,9 +2986,9 @@ void main() {
       const secondItemPadding = EdgeInsets.symmetric(vertical: 30.0);
       const thirdItemPadding = EdgeInsets.symmetric(horizontal: 10.0);
 
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           labelType: NavigationRailLabelType.selected,
           selectedIndex: 0,
           destinations: const <NavigationRailDestination>[
@@ -3065,9 +3059,9 @@ void main() {
     const secondItemPadding = EdgeInsets.symmetric(vertical: 30.0);
     const thirdItemPadding = EdgeInsets.symmetric(horizontal: 10.0);
 
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         labelType: NavigationRailLabelType.none,
         selectedIndex: 0,
         destinations: const <NavigationRailDestination>[
@@ -3131,9 +3125,9 @@ void main() {
   testWidgets(
     "NavigationRailDestination adds indicator by default when ThemeData.useMaterial3 is true",
     (WidgetTester tester) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           labelType: NavigationRailLabelType.selected,
           selectedIndex: 0,
           destinations: const <NavigationRailDestination>[
@@ -3164,9 +3158,9 @@ void main() {
       "NavigationRailDestination adds indicator when useIndicator is true", (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         useIndicator: true,
         labelType: NavigationRailLabelType.selected,
         selectedIndex: 0,
@@ -3198,9 +3192,9 @@ void main() {
       (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         useIndicator: false,
         labelType: NavigationRailLabelType.selected,
         selectedIndex: 0,
@@ -3232,9 +3226,9 @@ void main() {
       (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         useIndicator: true,
         labelType: NavigationRailLabelType.none,
         selectedIndex: 0,
@@ -3271,9 +3265,9 @@ void main() {
       (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         useIndicator: true,
         labelType: NavigationRailLabelType.selected,
         selectedIndex: 0,
@@ -3310,9 +3304,9 @@ void main() {
       (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         useIndicator: true,
         labelType: NavigationRailLabelType.all,
         selectedIndex: 0,
@@ -3351,9 +3345,9 @@ void main() {
   ) async {
     // This is a regression test for
     // https://github.com/flutter/flutter/issues/97753
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         labelType: NavigationRailLabelType.none,
         selectedIndex: 0,
         destinations: const <NavigationRailDestination>[
@@ -3399,8 +3393,8 @@ void main() {
     WidgetTester tester,
   ) async {
     const safeAreaPadding = 40.0;
-    CustomNavigationRail navigationRail() {
-      return CustomNavigationRail(
+    NavigationRail navigationRail() {
+      return NavigationRail(
         selectedIndex: 0,
         destinations: const <NavigationRailDestination>[
           NavigationRailDestination(
@@ -3419,7 +3413,7 @@ void main() {
 
     await tester.pumpWidget(_buildWidget(navigationRail()));
     final double defaultWidth =
-        tester.getSize(find.byType(CustomNavigationRail)).width;
+        tester.getSize(find.byType(NavigationRail)).width;
     expect(defaultWidth, 80);
 
     await tester.pumpWidget(
@@ -3433,7 +3427,7 @@ void main() {
       ),
     );
     final double updatedWidth =
-        tester.getSize(find.byType(CustomNavigationRail)).width;
+        tester.getSize(find.byType(NavigationRail)).width;
     expect(updatedWidth, defaultWidth + safeAreaPadding);
 
     // test width when text direction is RTL.
@@ -3449,15 +3443,15 @@ void main() {
       ),
     );
     final double updatedWidthRTL =
-        tester.getSize(find.byType(CustomNavigationRail)).width;
+        tester.getSize(find.byType(NavigationRail)).width;
     expect(updatedWidthRTL, defaultWidth + safeAreaPadding);
   });
 
   testWidgets("NavigationRail indicator renders ripple",
       (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 1,
         destinations: const <NavigationRailDestination>[
           NavigationRailDestination(
@@ -3520,9 +3514,9 @@ void main() {
   testWidgets("NavigationRail indicator renders ripple - extended",
       (WidgetTester tester) async {
     // This is a regression test for https://github.com/flutter/flutter/issues/117126
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 1,
         extended: true,
         destinations: const <NavigationRailDestination>[
@@ -3588,9 +3582,9 @@ void main() {
     WidgetTester tester,
   ) async {
     // This is a regression test for https://github.com/flutter/flutter/issues/117126
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 1,
         extended: true,
         destinations: const <NavigationRailDestination>[
@@ -3664,9 +3658,9 @@ void main() {
     WidgetTester tester,
   ) async {
     // This is a regression test for https://github.com/flutter/flutter/issues/117126
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         minWidth: 50,
         selectedIndex: 1,
         extended: true,
@@ -3734,9 +3728,9 @@ void main() {
     WidgetTester tester,
   ) async {
     // This is a regression test for https://github.com/flutter/flutter/issues/117126
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         minWidth: 300,
         selectedIndex: 1,
         extended: true,
@@ -3809,9 +3803,9 @@ void main() {
     WidgetTester tester,
   ) async {
     // This is a regression test for https://github.com/flutter/flutter/issues/128005.
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 1,
         destinations: const <NavigationRailDestination>[
           NavigationRailDestination(
@@ -3849,8 +3843,7 @@ void main() {
         destinationWidth - 2 * destinationHorizontalPadding; // 56.0
 
     // The navigation rail width is larger than default because of the first destination long label.
-    final double railWidth =
-        tester.getSize(find.byType(CustomNavigationRail)).width;
+    final double railWidth = tester.getSize(find.byType(NavigationRail)).width;
 
     // Expected indicator position.
     final double indicatorLeft = (railWidth - indicatorWidth) / 2;
@@ -3900,13 +3893,13 @@ void main() {
   ) async {
     // This is a regression test for https://github.com/flutter/flutter/issues/133799.
     const double iconSize = 50;
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRailTheme: const CustomNavigationRailThemeData(
+      navigationRailTheme: const NavigationRailThemeData(
         selectedIconTheme: IconThemeData(size: iconSize),
         unselectedIconTheme: IconThemeData(size: iconSize),
       ),
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 1,
         destinations: const <NavigationRailDestination>[
           NavigationRailDestination(
@@ -3945,8 +3938,7 @@ void main() {
         destinationWidth - 2 * destinationHorizontalPadding; // 56.0
 
     // The navigation rail width is the default one because labels are short.
-    final double railWidth =
-        tester.getSize(find.byType(CustomNavigationRail)).width;
+    final double railWidth = tester.getSize(find.byType(NavigationRail)).width;
     expect(railWidth, railMinWidth);
 
     // Expected indicator position.
@@ -4009,7 +4001,7 @@ void main() {
     // This is a regression test for https://github.com/flutter/flutter/issues/134361.
     await tester.pumpWidget(
       _buildWidget(
-        CustomNavigationRail(
+        NavigationRail(
           selectedIndex: 1,
           extended: true,
           destinations: const <NavigationRailDestination>[
@@ -4051,8 +4043,7 @@ void main() {
     const verticalDestinationSpacingM3 = 12.0;
 
     // The navigation rail width is the default one because labels are short.
-    final double railWidth =
-        tester.getSize(find.byType(CustomNavigationRail)).width;
+    final double railWidth = tester.getSize(find.byType(NavigationRail)).width;
     expect(railWidth, railMinExtendedWidth);
 
     // Expected indicator position.
@@ -4111,9 +4102,9 @@ void main() {
       (WidgetTester tester) async {
     var selectedIndex = 0;
     Future<void> buildWidget() async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: selectedIndex,
           destinations: const <NavigationRailDestination>[
             NavigationRailDestination(
@@ -4164,7 +4155,7 @@ void main() {
     const color = Color(0xff0000ff);
     const ShapeBorder shape = RoundedRectangleBorder();
 
-    Widget buildCustomNavigationRail({
+    Widget buildNavigationRail({
       Color? indicatorColor,
       ShapeBorder? indicatorShape,
     }) {
@@ -4175,7 +4166,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     useIndicator: true,
                     indicatorColor: indicatorColor,
                     indicatorShape: indicatorShape,
@@ -4191,7 +4182,7 @@ void main() {
       );
     }
 
-    await tester.pumpWidget(buildCustomNavigationRail());
+    await tester.pumpWidget(buildNavigationRail());
 
     // Test default indicator color and shape.
     expect(
@@ -4201,10 +4192,7 @@ void main() {
     expect(_getIndicatorDecoration(tester)?.shape, const StadiumBorder());
 
     await tester.pumpWidget(
-      buildCustomNavigationRail(
-        indicatorColor: color,
-        indicatorShape: shape,
-      ),
+      buildNavigationRail(indicatorColor: color, indicatorShape: shape),
     );
 
     // Test custom indicator color and shape.
@@ -4215,9 +4203,9 @@ void main() {
   testWidgets("Destination's respect their disabled state",
       (WidgetTester tester) async {
     late int selectedIndex;
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: const <NavigationRailDestination>[
           NavigationRailDestination(
@@ -4260,9 +4248,9 @@ void main() {
   testWidgets("Destination's label with the right opacity while disabled", (
     WidgetTester tester,
   ) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: const <NavigationRailDestination>[
           NavigationRailDestination(
@@ -4323,7 +4311,7 @@ void main() {
             return Scaffold(
               body: Row(
                 children: <Widget>[
-                  CustomNavigationRail(
+                  NavigationRail(
                     selectedIndex: 1,
                     destinations: const <NavigationRailDestination>[
                       NavigationRailDestination(
@@ -4370,19 +4358,14 @@ void main() {
       (RenderObject object) =>
           object.runtimeType.toString() == "_RenderInkFeatures",
     );
-    expect(
-      inkFeatures,
-      paints
-        ..clipPath()
-        ..rect(color: Colors.transparent),
-    );
+    expect(inkFeatures, paints..circle(color: Colors.transparent));
   });
 
   testWidgets("Navigation rail can have expanded widgets inside",
       (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         selectedIndex: 0,
         destinations: const <NavigationRailDestination>[
           NavigationRailDestination(
@@ -4421,7 +4404,7 @@ void main() {
                 children: <Widget>[
                   SizedBox(
                     width: 140.0,
-                    child: CustomNavigationRail(
+                    child: NavigationRail(
                       selectedIndex: 1,
                       extended: true,
                       destinations: const <NavigationRailDestination>[
@@ -4447,7 +4430,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(CustomNavigationRail), findsOneWidget);
+    expect(find.byType(NavigationRail), findsOneWidget);
     expect(find.text(normalLabel), findsOneWidget);
     expect(find.text(longLabel), findsOneWidget);
 
@@ -4471,7 +4454,7 @@ void main() {
                     // Set NavigationRail height with 100
                     SizedBox(
                       height: 100,
-                      child: CustomNavigationRail(
+                      child: NavigationRail(
                         selectedIndex: 0,
                         scrollable: true,
                         destinations: const <NavigationRailDestination>[
@@ -4525,7 +4508,7 @@ void main() {
                   children: <Widget>[
                     SizedBox(
                       width: 140.0,
-                      child: CustomNavigationRail(
+                      child: NavigationRail(
                         selectedIndex: 0,
                         extended: true,
                         groupAlignment: 0.0,
@@ -4600,7 +4583,7 @@ void main() {
                 children: <Widget>[
                   SizedBox(
                     width: 140.0,
-                    child: CustomNavigationRail(
+                    child: NavigationRail(
                       selectedIndex: 0,
                       extended: true,
                       groupAlignment: 0.0,
@@ -4667,27 +4650,25 @@ void main() {
         "Renders at the correct default width - [labelType]=none (default)", (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
-          selectedIndex: 0,
-          destinations: _destinations(),
-        ),
+        navigationRail:
+            NavigationRail(selectedIndex: 0, destinations: _destinations()),
       );
 
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, 72.0);
     });
 
     testWidgets("Renders at the correct default width - [labelType]=selected", (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           labelType: NavigationRailLabelType.selected,
           destinations: _destinations(),
@@ -4695,17 +4676,17 @@ void main() {
       );
 
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, 72.0);
     });
 
     testWidgets("Renders at the correct default width - [labelType]=all", (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           labelType: NavigationRailLabelType.all,
           destinations: _destinations(),
@@ -4713,7 +4694,7 @@ void main() {
       );
 
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, 72.0);
     });
 
@@ -4738,7 +4719,7 @@ void main() {
               return Scaffold(
                 body: Row(
                   children: <Widget>[
-                    CustomNavigationRail(
+                    NavigationRail(
                       destinations: destinations,
                       selectedIndex: null,
                       leading: leadingWidget,
@@ -4935,7 +4916,7 @@ void main() {
               return Scaffold(
                 body: Row(
                   children: <Widget>[
-                    CustomNavigationRail(
+                    NavigationRail(
                       selectedIndex: selectedIndex,
                       destinations: destinations,
                     ),
@@ -4950,14 +4931,14 @@ void main() {
 
       expect(
         tester
-            .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+            .widget<NavigationRail>(find.byType(NavigationRail))
             .destinations
             .length,
         0,
       );
       expect(
         tester
-            .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+            .widget<NavigationRail>(find.byType(NavigationRail))
             .selectedIndex,
         isNull,
       );
@@ -4981,14 +4962,14 @@ void main() {
 
       expect(
         tester
-            .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+            .widget<NavigationRail>(find.byType(NavigationRail))
             .destinations
             .length,
         2,
       );
       expect(
         tester
-            .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+            .widget<NavigationRail>(find.byType(NavigationRail))
             .selectedIndex,
         isNull,
       );
@@ -5001,14 +4982,14 @@ void main() {
 
       expect(
         tester
-            .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+            .widget<NavigationRail>(find.byType(NavigationRail))
             .destinations
             .length,
         2,
       );
       expect(
         tester
-            .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+            .widget<NavigationRail>(find.byType(NavigationRail))
             .selectedIndex,
         0,
       );
@@ -5027,14 +5008,14 @@ void main() {
 
       expect(
         tester
-            .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+            .widget<NavigationRail>(find.byType(NavigationRail))
             .destinations
             .length,
         1,
       );
       expect(
         tester
-            .widget<CustomNavigationRail>(find.byType(CustomNavigationRail))
+            .widget<NavigationRail>(find.byType(NavigationRail))
             .selectedIndex,
         0,
       );
@@ -5043,17 +5024,15 @@ void main() {
     testWidgets(
       "Destination spacing is correct - [labelType]=none (default), [textScaleFactor]=1.0 (default)",
       (WidgetTester tester) async {
-        await _pumpCustomNavigationRail(
+        await _pumpNavigationRail(
           tester,
           useMaterial3: false,
-          navigationRail: CustomNavigationRail(
-            selectedIndex: 0,
-            destinations: _destinations(),
-          ),
+          navigationRail:
+              NavigationRail(selectedIndex: 0, destinations: _destinations()),
         );
 
         final RenderBox renderBox =
-            tester.renderObject(find.byType(CustomNavigationRail));
+            tester.renderObject(find.byType(NavigationRail));
         expect(renderBox.size.width, 72.0);
 
         // The first destination is 8 from the top because of the default vertical
@@ -5120,18 +5099,16 @@ void main() {
       (WidgetTester tester) async {
         // Since the rail is icon only, its destinations should not be affected by
         // textScaleFactor.
-        await _pumpCustomNavigationRail(
+        await _pumpNavigationRail(
           tester,
           useMaterial3: false,
           textScaleFactor: 3.0,
-          navigationRail: CustomNavigationRail(
-            selectedIndex: 0,
-            destinations: _destinations(),
-          ),
+          navigationRail:
+              NavigationRail(selectedIndex: 0, destinations: _destinations()),
         );
 
         final RenderBox renderBox =
-            tester.renderObject(find.byType(CustomNavigationRail));
+            tester.renderObject(find.byType(NavigationRail));
         expect(renderBox.size.width, 72.0);
 
         // The first destination is 8 from the top because of the default vertical
@@ -5198,18 +5175,16 @@ void main() {
       (WidgetTester tester) async {
         // Since the rail is icon only, its destinations should not be affected by
         // textScaleFactor.
-        await _pumpCustomNavigationRail(
+        await _pumpNavigationRail(
           tester,
           useMaterial3: false,
           textScaleFactor: 0.75,
-          navigationRail: CustomNavigationRail(
-            selectedIndex: 0,
-            destinations: _destinations(),
-          ),
+          navigationRail:
+              NavigationRail(selectedIndex: 0, destinations: _destinations()),
         );
 
         final RenderBox renderBox =
-            tester.renderObject(find.byType(CustomNavigationRail));
+            tester.renderObject(find.byType(NavigationRail));
         expect(renderBox.size.width, 72.0);
 
         // The first destination is 8 from the top because of the default vertical
@@ -5274,10 +5249,10 @@ void main() {
     testWidgets(
       "Destination spacing is correct - [labelType]=selected, [textScaleFactor]=1.0 (default)",
       (WidgetTester tester) async {
-        await _pumpCustomNavigationRail(
+        await _pumpNavigationRail(
           tester,
           useMaterial3: false,
-          navigationRail: CustomNavigationRail(
+          navigationRail: NavigationRail(
             selectedIndex: 0,
             destinations: _destinations(),
             labelType: NavigationRailLabelType.selected,
@@ -5285,7 +5260,7 @@ void main() {
         );
 
         final RenderBox renderBox =
-            tester.renderObject(find.byType(CustomNavigationRail));
+            tester.renderObject(find.byType(NavigationRail));
         expect(renderBox.size.width, 72.0);
 
         // The first destination is 8 from the top because of the default vertical
@@ -5370,11 +5345,11 @@ void main() {
         (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
         textScaleFactor: 3.0,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           destinations: _destinations(),
           labelType: NavigationRailLabelType.selected,
@@ -5383,7 +5358,7 @@ void main() {
 
       // The rail and destinations sizes grow to fit the larger text labels.
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, 142.0);
 
       // The first destination is 8 from the top because of the default vertical
@@ -5460,11 +5435,11 @@ void main() {
         (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
         textScaleFactor: 0.75,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           destinations: _destinations(),
           labelType: NavigationRailLabelType.selected,
@@ -5474,7 +5449,7 @@ void main() {
       // A smaller textScaleFactor will not reduce the default width of the rail
       // since there is a minWidth.
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, 72.0);
 
       // The first destination is 8 from the top because of the default vertical
@@ -5555,10 +5530,10 @@ void main() {
     testWidgets(
       "Destination spacing is correct - [labelType]=all, [textScaleFactor]=1.0 (default)",
       (WidgetTester tester) async {
-        await _pumpCustomNavigationRail(
+        await _pumpNavigationRail(
           tester,
           useMaterial3: false,
-          navigationRail: CustomNavigationRail(
+          navigationRail: NavigationRail(
             selectedIndex: 0,
             destinations: _destinations(),
             labelType: NavigationRailLabelType.all,
@@ -5566,7 +5541,7 @@ void main() {
         );
 
         final RenderBox renderBox =
-            tester.renderObject(find.byType(CustomNavigationRail));
+            tester.renderObject(find.byType(NavigationRail));
         expect(renderBox.size.width, 72.0);
 
         // The first destination is 8 from the top because of the default vertical
@@ -5673,11 +5648,11 @@ void main() {
         (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
         textScaleFactor: 3.0,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           destinations: _destinations(),
           labelType: NavigationRailLabelType.all,
@@ -5686,7 +5661,7 @@ void main() {
 
       // The rail and destinations sizes grow to fit the larger text labels.
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, 142.0);
 
       // The first destination is 8 from the top because of the default vertical
@@ -5797,11 +5772,11 @@ void main() {
         (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
         textScaleFactor: 0.75,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           destinations: _destinations(),
           labelType: NavigationRailLabelType.all,
@@ -5810,7 +5785,7 @@ void main() {
 
       // A smaller textScaleFactor will not reduce the default size of the rail.
       final RenderBox renderBox =
-          tester.renderObject(find.byType(CustomNavigationRail));
+          tester.renderObject(find.byType(NavigationRail));
       expect(renderBox.size.width, 72.0);
 
       // The first destination is 8 from the top because of the default vertical
@@ -5913,10 +5888,10 @@ void main() {
     testWidgets(
       "Destination spacing is correct for a compact rail - [preferredWidth]=56, [textScaleFactor]=1.0 (default)",
       (WidgetTester tester) async {
-        await _pumpCustomNavigationRail(
+        await _pumpNavigationRail(
           tester,
           useMaterial3: false,
-          navigationRail: CustomNavigationRail(
+          navigationRail: NavigationRail(
             selectedIndex: 0,
             minWidth: 56.0,
             destinations: _destinations(),
@@ -5924,7 +5899,7 @@ void main() {
         );
 
         final RenderBox renderBox =
-            tester.renderObject(find.byType(CustomNavigationRail));
+            tester.renderObject(find.byType(NavigationRail));
         expect(renderBox.size.width, 56.0);
 
         // The first destination is 8 from the top because of the default vertical
@@ -5989,11 +5964,11 @@ void main() {
     testWidgets(
       "Destination spacing is correct for a compact rail - [preferredWidth]=56, [textScaleFactor]=3.0",
       (WidgetTester tester) async {
-        await _pumpCustomNavigationRail(
+        await _pumpNavigationRail(
           tester,
           useMaterial3: false,
           textScaleFactor: 3.0,
-          navigationRail: CustomNavigationRail(
+          navigationRail: NavigationRail(
             selectedIndex: 0,
             minWidth: 56.0,
             destinations: _destinations(),
@@ -6003,7 +5978,7 @@ void main() {
         // Since the rail is icon only, its preferred width should not be affected
         // by textScaleFactor.
         final RenderBox renderBox =
-            tester.renderObject(find.byType(CustomNavigationRail));
+            tester.renderObject(find.byType(NavigationRail));
         expect(renderBox.size.width, 56.0);
 
         // The first destination is 8 from the top because of the default vertical
@@ -6068,11 +6043,11 @@ void main() {
     testWidgets(
       "Destination spacing is correct for a compact rail - [preferredWidth]=56, [textScaleFactor]=0.75",
       (WidgetTester tester) async {
-        await _pumpCustomNavigationRail(
+        await _pumpNavigationRail(
           tester,
           useMaterial3: false,
           textScaleFactor: 3.0,
-          navigationRail: CustomNavigationRail(
+          navigationRail: NavigationRail(
             selectedIndex: 0,
             minWidth: 56.0,
             destinations: _destinations(),
@@ -6082,7 +6057,7 @@ void main() {
         // Since the rail is icon only, its preferred width should not be affected
         // by textScaleFactor.
         final RenderBox renderBox =
-            tester.renderObject(find.byType(CustomNavigationRail));
+            tester.renderObject(find.byType(NavigationRail));
         expect(renderBox.size.width, 56.0);
 
         // The first destination is 8 from the top because of the default vertical
@@ -6147,13 +6122,11 @@ void main() {
     testWidgets("Group alignment works - [groupAlignment]=-1.0 (default)", (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
-          selectedIndex: 0,
-          destinations: _destinations(),
-        ),
+        navigationRail:
+            NavigationRail(selectedIndex: 0, destinations: _destinations()),
       );
 
       // The first destination is 8 from the top because of the default vertical
@@ -6215,10 +6188,10 @@ void main() {
 
     testWidgets("Group alignment works - [groupAlignment]=0.0",
         (WidgetTester tester) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           groupAlignment: 0.0,
           destinations: _destinations(),
@@ -6282,10 +6255,10 @@ void main() {
 
     testWidgets("Group alignment works - [groupAlignment]=1.0",
         (WidgetTester tester) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           groupAlignment: 1.0,
           destinations: _destinations(),
@@ -6349,10 +6322,10 @@ void main() {
 
     testWidgets("Leading and trailing appear in the correct places",
         (WidgetTester tester) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           selectedIndex: 0,
           leading: FloatingActionButton(onPressed: () {}),
           trailing: FloatingActionButton(onPressed: () {}),
@@ -6393,7 +6366,7 @@ void main() {
               return Scaffold(
                 body: Row(
                   children: <Widget>[
-                    CustomNavigationRail(
+                    NavigationRail(
                       selectedIndex: 0,
                       destinations: _destinations(),
                       extended: extended,
@@ -6407,8 +6380,8 @@ void main() {
         ),
       );
 
-      final RenderBox rail = tester
-          .firstRenderObject<RenderBox>(find.byType(CustomNavigationRail));
+      final RenderBox rail =
+          tester.firstRenderObject<RenderBox>(find.byType(NavigationRail));
 
       expect(rail.size.width, equals(72.0));
 
@@ -6540,7 +6513,7 @@ void main() {
                   body: Row(
                     textDirection: TextDirection.rtl,
                     children: <Widget>[
-                      CustomNavigationRail(
+                      NavigationRail(
                         selectedIndex: 0,
                         destinations: _destinations(),
                         extended: extended,
@@ -6555,8 +6528,8 @@ void main() {
         ),
       );
 
-      final RenderBox rail = tester
-          .firstRenderObject<RenderBox>(find.byType(CustomNavigationRail));
+      final RenderBox rail =
+          tester.firstRenderObject<RenderBox>(find.byType(NavigationRail));
 
       expect(rail.size.width, equals(72.0));
       expect(rail.localToGlobal(Offset.zero), equals(const Offset(728.0, 0.0)));
@@ -6690,7 +6663,7 @@ void main() {
                     MediaQuery.withClampedTextScaling(
                       minScaleFactor: 3.0,
                       maxScaleFactor: 3.0,
-                      child: CustomNavigationRail(
+                      child: NavigationRail(
                         selectedIndex: 0,
                         destinations: const <NavigationRailDestination>[
                           NavigationRailDestination(
@@ -6716,8 +6689,8 @@ void main() {
         ),
       );
 
-      final RenderBox rail = tester
-          .firstRenderObject<RenderBox>(find.byType(CustomNavigationRail));
+      final RenderBox rail =
+          tester.firstRenderObject<RenderBox>(find.byType(NavigationRail));
 
       expect(rail.size.width, equals(72.0));
 
@@ -6747,7 +6720,7 @@ void main() {
               return Scaffold(
                 body: Row(
                   children: <Widget>[
-                    CustomNavigationRail(
+                    NavigationRail(
                       selectedIndex: 0,
                       minExtendedWidth: 300,
                       destinations: _destinations(),
@@ -6762,8 +6735,8 @@ void main() {
         ),
       );
 
-      final RenderBox rail = tester
-          .firstRenderObject<RenderBox>(find.byType(CustomNavigationRail));
+      final RenderBox rail =
+          tester.firstRenderObject<RenderBox>(find.byType(NavigationRail));
 
       expect(rail.size.width, equals(72.0));
 
@@ -6791,7 +6764,7 @@ void main() {
               return Scaffold(
                 body: Row(
                   children: <Widget>[
-                    CustomNavigationRail(
+                    NavigationRail(
                       selectedIndex: 0,
                       destinations: const <NavigationRailDestination>[
                         NavigationRailDestination(
@@ -6816,7 +6789,7 @@ void main() {
         ),
       );
 
-      final Finder rail = find.byType(CustomNavigationRail);
+      final Finder rail = find.byType(NavigationRail);
 
       // Before starting the animation, the rail has a width of 72.
       expect(tester.getSize(rail).width, 72.0);
@@ -6840,10 +6813,10 @@ void main() {
         (
       WidgetTester tester,
     ) async {
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           useIndicator: true,
           labelType: NavigationRailLabelType.none,
           selectedIndex: 0,
@@ -6882,10 +6855,10 @@ void main() {
     ) async {
       // This is a regression test for
       // https://github.com/flutter/flutter/issues/97753
-      await _pumpCustomNavigationRail(
+      await _pumpNavigationRail(
         tester,
         useMaterial3: false,
-        navigationRail: CustomNavigationRail(
+        navigationRail: NavigationRail(
           labelType: NavigationRailLabelType.none,
           selectedIndex: 0,
           destinations: const <NavigationRailDestination>[
@@ -6932,8 +6905,8 @@ void main() {
       WidgetTester tester,
     ) async {
       const safeAreaPadding = 40.0;
-      CustomNavigationRail navigationRail() {
-        return CustomNavigationRail(
+      NavigationRail navigationRail() {
+        return NavigationRail(
           selectedIndex: 0,
           destinations: const <NavigationRailDestination>[
             NavigationRailDestination(
@@ -6953,7 +6926,7 @@ void main() {
       await tester
           .pumpWidget(_buildWidget(navigationRail(), useMaterial3: false));
       final double defaultWidth =
-          tester.getSize(find.byType(CustomNavigationRail)).width;
+          tester.getSize(find.byType(NavigationRail)).width;
       expect(defaultWidth, 72);
 
       await tester.pumpWidget(
@@ -6968,7 +6941,7 @@ void main() {
         ),
       );
       final double updatedWidth =
-          tester.getSize(find.byType(CustomNavigationRail)).width;
+          tester.getSize(find.byType(NavigationRail)).width;
       expect(updatedWidth, defaultWidth + safeAreaPadding);
 
       // test width when text direction is RTL.
@@ -6985,7 +6958,7 @@ void main() {
         ),
       );
       final double updatedWidthRTL =
-          tester.getSize(find.byType(CustomNavigationRail)).width;
+          tester.getSize(find.byType(NavigationRail)).width;
       expect(updatedWidthRTL, defaultWidth + safeAreaPadding);
     });
   }); // End Material 2 group
@@ -6996,7 +6969,7 @@ void main() {
       MaterialApp(
         home: Center(
           child: SizedBox.shrink(
-            child: CustomNavigationRail(
+            child: NavigationRail(
               destinations: const <NavigationRailDestination>[
                 NavigationRailDestination(
                   icon: Icon(Icons.abc),
@@ -7009,14 +6982,14 @@ void main() {
         ),
       ),
     );
-    expect(tester.getSize(find.byType(CustomNavigationRail)), Size.zero);
+    expect(tester.getSize(find.byType(NavigationRail)), Size.zero);
   });
 
   testWidgets("NavigationRail respects mainAxisAlignment",
       (WidgetTester tester) async {
-    await _pumpCustomNavigationRail(
+    await _pumpNavigationRail(
       tester,
-      navigationRail: CustomNavigationRail(
+      navigationRail: NavigationRail(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         selectedIndex: 0,
         destinations: _destinations(),
@@ -7038,85 +7011,41 @@ void main() {
 TestSemantics _expectedSemantics({bool scrollable = false}) {
   var destinations = <TestSemantics>[
     TestSemantics(
-      actions: <SemanticsAction>[
-        SemanticsAction.tap,
-        SemanticsAction.longPress,
+      flags: <SemanticsFlag>[
+        SemanticsFlag.hasSelectedState,
+        SemanticsFlag.isSelected,
+        SemanticsFlag.isFocusable,
       ],
-      children: <TestSemantics>[
-        TestSemantics(
-          flags: <SemanticsFlag>[
-            SemanticsFlag.hasSelectedState,
-            SemanticsFlag.isSelected,
-            SemanticsFlag.isFocusable,
-          ],
-          actions: <SemanticsAction>[
-            SemanticsAction.tap,
-            SemanticsAction.focus,
-          ],
-          label: "Abc\nTab 1 of 4",
-          textDirection: TextDirection.ltr,
-        ),
-      ],
+      actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.focus],
+      label: "Abc\nTab 1 of 4",
+      textDirection: TextDirection.ltr,
     ),
     TestSemantics(
-      actions: <SemanticsAction>[
-        SemanticsAction.tap,
-        SemanticsAction.longPress,
+      flags: <SemanticsFlag>[
+        SemanticsFlag.isFocusable,
+        SemanticsFlag.hasSelectedState,
       ],
-      children: <TestSemantics>[
-        TestSemantics(
-          flags: <SemanticsFlag>[
-            SemanticsFlag.isFocusable,
-            SemanticsFlag.hasSelectedState,
-          ],
-          actions: <SemanticsAction>[
-            SemanticsAction.tap,
-            SemanticsAction.focus,
-          ],
-          label: "Def\nTab 2 of 4",
-          textDirection: TextDirection.ltr,
-        ),
-      ],
+      actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.focus],
+      label: "Def\nTab 2 of 4",
+      textDirection: TextDirection.ltr,
     ),
     TestSemantics(
-      actions: <SemanticsAction>[
-        SemanticsAction.tap,
-        SemanticsAction.longPress,
+      flags: <SemanticsFlag>[
+        SemanticsFlag.isFocusable,
+        SemanticsFlag.hasSelectedState,
       ],
-      children: <TestSemantics>[
-        TestSemantics(
-          flags: <SemanticsFlag>[
-            SemanticsFlag.isFocusable,
-            SemanticsFlag.hasSelectedState,
-          ],
-          actions: <SemanticsAction>[
-            SemanticsAction.tap,
-            SemanticsAction.focus,
-          ],
-          label: "Ghi\nTab 3 of 4",
-          textDirection: TextDirection.ltr,
-        ),
-      ],
+      actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.focus],
+      label: "Ghi\nTab 3 of 4",
+      textDirection: TextDirection.ltr,
     ),
     TestSemantics(
-      actions: <SemanticsAction>[
-        SemanticsAction.tap,
-        SemanticsAction.longPress,
+      flags: <SemanticsFlag>[
+        SemanticsFlag.isFocusable,
+        SemanticsFlag.hasSelectedState,
       ],
-      children: <TestSemantics>[
-        TestSemantics(
-          flags: <SemanticsFlag>[
-            SemanticsFlag.isFocusable,
-            SemanticsFlag.hasSelectedState,
-          ],
-          actions: <SemanticsAction>[
-            SemanticsAction.tap,
-            SemanticsAction.focus,
-          ],
-          label: "Jkl\nTab 4 of 4",
-          textDirection: TextDirection.ltr,
-        ),
-      ],
+      actions: <SemanticsAction>[SemanticsAction.tap, SemanticsAction.focus],
+      label: "Jkl\nTab 4 of 4",
+      textDirection: TextDirection.ltr,
     ),
   ];
 
@@ -7183,12 +7112,12 @@ List<NavigationRailDestination> _destinations() {
   ];
 }
 
-Future<void> _pumpCustomNavigationRail(
+Future<void> _pumpNavigationRail(
   WidgetTester tester, {
-  required CustomNavigationRail navigationRail,
+  required NavigationRail navigationRail,
   double textScaleFactor = 1.0,
   bool useMaterial3 = true,
-  CustomNavigationRailThemeData? navigationRailTheme,
+  NavigationRailThemeData? navigationRailTheme,
 }) async {
   await tester.pumpWidget(
     MaterialApp(
@@ -7233,7 +7162,7 @@ Future<void> _pumpLocalizedTestRail(
         home: Scaffold(
           body: Row(
             children: <Widget>[
-              CustomNavigationRail(
+              NavigationRail(
                 selectedIndex: 0,
                 extended: extended,
                 destinations: _destinations(),
@@ -7300,7 +7229,7 @@ Material _railMaterial(WidgetTester tester) {
   // The first material is for the rail, and the rest are for the destinations.
   return tester.firstWidget<Material>(
     find.descendant(
-      of: find.byType(CustomNavigationRail),
+      of: find.byType(NavigationRail),
       matching: find.byType(Material),
     ),
   );
