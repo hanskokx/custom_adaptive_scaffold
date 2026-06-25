@@ -150,8 +150,9 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
             ? widget.minWidth
             : widget.indicatorWidth);
 
+    const double kDefaultIconSize = 24.0;
     final double largeIconIndicatorCompensation =
-        ((railTheme.iconTheme?.resolve({})?.size ?? 0) - _kIndicatorHeight)
+        ((railTheme.iconTheme?.resolve({})?.size ?? 0) - kDefaultIconSize)
             .clamp(0.0, double.infinity);
 
     final double selectedIndicatorHeight = widget.material3

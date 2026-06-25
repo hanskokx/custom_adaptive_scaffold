@@ -12,6 +12,7 @@ const double _verticalDestinationSpacingM3 = 12.0;
 const double _horizontalDestinationSpacingM3 = 12.0;
 const double _kRailIndicatorWidth = 56.0;
 const double _kRailIconSlotHeight = 44.0;
+const double _kDefaultIconSize = 24.0;
 
 class RailDestination extends StatefulWidget {
   const RailDestination({
@@ -156,6 +157,8 @@ class _RailDestinationState extends State<RailDestination>
     );
 
     // Label type is a layout-level concern, resolved here after theming.
+    final NavigationRailThemeData? maybeExplicitRailTheme =
+        NavigationRailTheme.maybeOf(context);
     final NavigationRailThemeData railTheme = NavigationRailTheme.of(context);
     final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
     final NavigationRailLabelType labelType =
@@ -175,14 +178,19 @@ class _RailDestinationState extends State<RailDestination>
 
     // Indicator vertical centering when icon exceeds indicator height.
     final double largeIconIndicatorCompensation =
-        (data.resolvedIconSize! - _kIndicatorHeight)
+        (data.resolvedIconSize! - _kDefaultIconSize)
             .clamp(0.0, double.infinity);
-
+    final bool alignIndicatorToCustomLargeIconCenter =
+        maybeExplicitRailTheme?.iconTheme != null;
+    final double indicatorOffsetBaseline = alignIndicatorToCustomLargeIconCenter
+        ? _kDefaultIconSize
+        : _kIndicatorHeight;
     final bool isLargeIconSize = data.resolvedIconSize != null &&
-        data.resolvedIconSize! > _kIndicatorHeight;
+        data.resolvedIconSize! > indicatorOffsetBaseline;
 
-    final double indicatorVerticalOffset =
-        isLargeIconSize ? (data.resolvedIconSize! - _kIndicatorHeight) / 2 : 0;
+    final double indicatorVerticalOffset = isLargeIconSize
+        ? (data.resolvedIconSize! - indicatorOffsetBaseline) / 2
+        : 0;
 
     Offset indicatorOffset = data.indicatorOffset;
 
