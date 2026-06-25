@@ -178,7 +178,7 @@ class _RailDestinationState extends State<RailDestination>
 
     // Indicator vertical centering when icon exceeds indicator height.
     final double largeIconIndicatorCompensation =
-        (data.resolvedIconSize! - _kDefaultIconSize)
+        ((data.resolvedIconSize ?? _kDefaultIconSize) - _kDefaultIconSize)
             .clamp(0.0, double.infinity);
     final bool alignIndicatorToCustomLargeIconCenter =
         maybeExplicitRailTheme?.iconTheme != null;

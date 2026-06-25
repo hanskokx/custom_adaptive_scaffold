@@ -14,7 +14,7 @@
 
 ## 5.0.1
 
-- No package cha
+- No package changes
 - Documentation has been updated
 
 ## 5.0.0
