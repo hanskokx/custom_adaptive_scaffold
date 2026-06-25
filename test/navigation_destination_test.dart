@@ -1449,6 +1449,41 @@ void main() {
       );
     });
 
+    testWidgets(
+        "NavigationRailThemeData.badgeThemeData null preserves ambient BadgeTheme",
+        (WidgetTester tester) async {
+      const Color ambientBadgeColor = Color(0xFF00FF00);
+      await pumpApp(
+        tester,
+        BadgeTheme(
+          data: const BadgeThemeData(backgroundColor: ambientBadgeColor),
+          child: NavigationRailTheme(
+            data: const NavigationRailThemeData(
+              badgeThemeData: null,
+            ),
+            child: NavigationRail(
+              selectedIndex: 0,
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  badge: 1,
+                ).toRailDestination(),
+                const NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ).toRailDestination(),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Badge badge = tester.widget<Badge>(find.byType(Badge));
+      final BuildContext badgeContext = tester.element(find.byWidget(badge));
+      expect(BadgeTheme.of(badgeContext).backgroundColor, ambientBadgeColor);
+    });
+
     // --- Bar rendering ---
 
     testWidgets("badge: null renders no Badge widget in bar",
@@ -1632,6 +1667,40 @@ void main() {
         ),
         findsOneWidget,
       );
+    });
+
+    testWidgets(
+        "NavigationBarThemeData.badgeThemeData null preserves ambient BadgeTheme",
+        (WidgetTester tester) async {
+      const Color ambientBadgeColor = Color(0xFF00AA00);
+      await pumpApp(
+        tester,
+        BadgeTheme(
+          data: const BadgeThemeData(backgroundColor: ambientBadgeColor),
+          child: NavigationBarTheme(
+            data: const NavigationBarThemeData(
+              badgeThemeData: null,
+            ),
+            child: NavigationBar(
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  badge: 1,
+                ).toBarDestination(),
+                const NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ).toBarDestination(),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final Badge badge = tester.widget<Badge>(find.byType(Badge));
+      final BuildContext badgeContext = tester.element(find.byWidget(badge));
+      expect(BadgeTheme.of(badgeContext).backgroundColor, ambientBadgeColor);
     });
 
     testWidgets("multiple destinations each render their own badge in bar",

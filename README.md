@@ -138,10 +138,10 @@ The package's `NavigationDestination` is a full base class (not just a wrapper) 
 
 `NavigationDestination` supports M3-compliant small (dot) and large (labeled) badges via two properties:
 
-| Property     | Type                   | Description                                                                                                                                   |
-| ------------ | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
-| `badge`      | `int?`                 | Badge count. `null` = no badge. Values > `99` display as `"99+"`. Must be > 0.                                                                |
-| `badgeStyle` | `NavigationBadgeStyle` | `count` (default) shows the number; `dot` shows a small indicator; `hidden` suppresses the visual while keeping the count in the widget tree. |
+| Property     | Type                   | Description                                                                                                                                |
+| ------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `badge`      | `int?`                 | Badge count. `null` = no badge. Values > `99` display as `"99+"`. Must be > 0.                                                             |
+| `badgeStyle` | `NavigationBadgeStyle` | `count` (default) shows the number; `dot` shows a small indicator; `hidden` suppresses the visual while keeping the count in widget state. |
 
 ```dart
 // Large badge — shows "5":

@@ -205,12 +205,15 @@ class _RailDestinationState extends State<RailDestination>
         showBadge && widget.badgeStyle == NavigationBadgeStyle.count
             ? Text(widget.badge! > 99 ? "99+" : "${widget.badge}")
             : null;
-    final Widget effectiveBadgedIcon = showBadge
-        ? BadgeTheme(
-            data: railTheme.badgeThemeData ?? const BadgeThemeData(),
-            child: Badge(label: badgeLabel, child: data.themedIcon),
-          )
+    final Widget badgedIcon = showBadge
+        ? Badge(label: badgeLabel, child: data.themedIcon)
         : data.themedIcon;
+    // Only inject a local BadgeTheme when explicitly configured on the rail.
+    // Otherwise, preserve any ambient BadgeTheme from above in the tree.
+    final Widget effectiveBadgedIcon =
+        showBadge && railTheme.badgeThemeData != null
+            ? BadgeTheme(data: railTheme.badgeThemeData!, child: badgedIcon)
+            : badgedIcon;
 
     bool applyXOffset = false;
 

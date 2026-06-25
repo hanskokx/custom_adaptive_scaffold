@@ -163,13 +163,18 @@ class NavigationBarDestination extends NavigationDestination {
               showBadge && badgeStyle == NavigationBadgeStyle.count
                   ? Text(badge! > 99 ? "99+" : "$badge")
                   : null;
-          final Widget badgedIcon = showBadge
-              ? BadgeTheme(
-                  data: navigationBarTheme.badgeThemeData ??
-                      const BadgeThemeData(),
-                  child: Badge(label: badgeLabel, child: data.themedIcon),
-                )
+          final Widget barBadgedIcon = showBadge
+              ? Badge(label: badgeLabel, child: data.themedIcon)
               : data.themedIcon;
+          // Only apply a local BadgeTheme when explicitly configured.
+          // Otherwise, preserve any ambient BadgeTheme from ancestor widgets.
+          final Widget badgedIcon =
+              showBadge && navigationBarTheme.badgeThemeData != null
+                  ? BadgeTheme(
+                      data: navigationBarTheme.badgeThemeData!,
+                      child: barBadgedIcon,
+                    )
+                  : barBadgedIcon;
 
           return Stack(
             alignment: Alignment.center,
