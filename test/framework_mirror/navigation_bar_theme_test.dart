@@ -21,6 +21,8 @@ import "package:flutter/material.dart"
         NavigationDrawerDestination,
         NavigationDrawerTheme,
         NavigationDrawerThemeData;
+import "package:flutter/material.dart" as m
+    show NavigationBarTheme, NavigationBarThemeData;
 import "package:flutter/rendering.dart";
 import "package:flutter/services.dart";
 import "package:flutter_test/flutter_test.dart";
@@ -268,6 +270,33 @@ void main() {
     // This test is skipped because it is a golden test that requires a specific
     // environment to run correctly, which is not available in the Flutter repo.
     skip: true,
+  );
+
+  testWidgets(
+    "maybeOf picks up in-scope Flutter m.NavigationBarTheme inherited widget",
+    (WidgetTester tester) async {
+      const height = 200.0;
+      NavigationBarThemeData? captured;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: m.NavigationBarTheme(
+              data: const m.NavigationBarThemeData(height: height),
+              child: Builder(
+                builder: (BuildContext context) {
+                  captured = NavigationBarTheme.maybeOf(context);
+                  return NavigationBar(destinations: _destinations());
+                },
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(captured, isNotNull);
+      expect(captured!.height, height);
+    },
   );
 
   testWidgets(
