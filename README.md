@@ -102,6 +102,7 @@ import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
 ## How Is This Different From Flutter?
 
 This package keeps Flutter's default look and feel but exposes opt-in customization points that the framework does not provide.
+When package-specific extension properties are not set, bar/rail behavior follows Flutter framework-mirror defaults.
 
 ### Extended theme data
 
@@ -119,7 +120,12 @@ everywhere Flutter's types are expected. They add:
 | `tooltipTriggerWhenLabelVisible` | ✓              | Override trigger when label is shown          |
 | `tooltipTriggerWhenLabelHidden`  | ✓              | Override trigger when label is hidden         |
 
-`NavigationRailThemeData` additionally provides `showLabelsWhenCollapsed` (show labels while the rail is collapsed and `labelType` is `none`).
+`NavigationRailThemeData` additionally provides:
+
+- `showLabelsWhenCollapsed` (show labels while the rail is collapsed and `labelType` is `none`)
+- `iconTheme` (state-aware icon theming for rail destinations, including explicit large icon sizing)
+  - The maximum supported icon size for the `NavigationRail` is `72.0`.
+  - The maximum supported icon size for the `NavigationBar` is `60.0`.
 
 ### Richer `NavigationDestination` base class
 

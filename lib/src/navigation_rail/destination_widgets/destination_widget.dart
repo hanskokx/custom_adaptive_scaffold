@@ -12,6 +12,7 @@ const double _verticalDestinationSpacingM3 = 12.0;
 const double _horizontalDestinationSpacingM3 = 12.0;
 const double _kRailIndicatorWidth = 56.0;
 const double _kRailIconSlotHeight = 44.0;
+const double _kDefaultIconSize = 24.0;
 
 class RailDestination extends StatefulWidget {
   const RailDestination({
@@ -156,6 +157,8 @@ class _RailDestinationState extends State<RailDestination>
     );
 
     // Label type is a layout-level concern, resolved here after theming.
+    final NavigationRailThemeData? maybeExplicitRailTheme =
+        NavigationRailTheme.maybeOf(context);
     final NavigationRailThemeData railTheme = NavigationRailTheme.of(context);
     final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
     final NavigationRailLabelType labelType =
@@ -174,12 +177,23 @@ class _RailDestinationState extends State<RailDestination>
         : railTheme.tooltipTriggerWhenLabelHidden ?? railTheme.tooltipTrigger;
 
     // Indicator vertical centering when icon exceeds indicator height.
+    final double largeIconIndicatorCompensation =
+        (data.resolvedIconSize! - _kDefaultIconSize)
+            .clamp(0.0, double.infinity);
+    final bool alignIndicatorToCustomLargeIconCenter =
+        maybeExplicitRailTheme?.iconTheme != null;
+    final double indicatorOffsetBaseline = alignIndicatorToCustomLargeIconCenter
+        ? _kDefaultIconSize
+        : _kIndicatorHeight;
     final bool isLargeIconSize = data.resolvedIconSize != null &&
-        data.resolvedIconSize! > _kIndicatorHeight;
-    final double indicatorVerticalOffset =
-        isLargeIconSize ? (data.resolvedIconSize! - _kIndicatorHeight) / 2 : 0;
+        data.resolvedIconSize! > indicatorOffsetBaseline;
+
+    final double indicatorVerticalOffset = isLargeIconSize
+        ? (data.resolvedIconSize! - indicatorOffsetBaseline) / 2
+        : 0;
 
     Offset indicatorOffset = data.indicatorOffset;
+
     bool applyXOffset = false;
 
     Widget content;
@@ -200,7 +214,8 @@ class _RailDestinationState extends State<RailDestination>
         );
 
         final Widget iconPart = NavigationIcon(
-          height: data.material3 ? _kRailIconSlotHeight : data.minWidth,
+          height: (data.material3 ? _kRailIconSlotHeight : data.minWidth) +
+              largeIconIndicatorCompensation,
           icon: data.themedIcon,
           minWidth: data.minWidth,
           material3: data.material3,
@@ -232,7 +247,9 @@ class _RailDestinationState extends State<RailDestination>
               );
             }
             content = Container(
-              constraints: BoxConstraints(minWidth: data.minWidth),
+              constraints: BoxConstraints(
+                minWidth: data.minWidth,
+              ),
               padding: widget.padding,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -243,7 +260,7 @@ class _RailDestinationState extends State<RailDestination>
                         : _verticalDestinationPaddingWithLabel,
                   ),
                   SizedBox(
-                    height: _kIndicatorHeight,
+                    height: _kIndicatorHeight + largeIconIndicatorCompensation,
                     child: Center(child: data.themedIcon),
                   ),
                   SizedBox(
@@ -373,7 +390,8 @@ class _RailDestinationState extends State<RailDestination>
                 SizedBox(height: data.material3 ? 0 : verticalPadding),
                 data.material3
                     ? SizedBox(
-                        height: _kIndicatorHeight,
+                        height:
+                            _kIndicatorHeight + largeIconIndicatorCompensation,
                         child: Center(child: data.themedIcon),
                       )
                     : data.themedIcon,
@@ -448,7 +466,8 @@ class _RailDestinationState extends State<RailDestination>
               ),
               data.material3
                   ? SizedBox(
-                      height: _kIndicatorHeight,
+                      height:
+                          _kIndicatorHeight + largeIconIndicatorCompensation,
                       child: Center(child: data.themedIcon),
                     )
                   : data.themedIcon,

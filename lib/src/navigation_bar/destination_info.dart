@@ -19,6 +19,7 @@ class NavigationDestinationInfo extends InheritedWidget {
     required this.overlayColor,
     required this.onTap,
     required super.child,
+    this.iconTheme,
     this.labelTextStyle,
     this.labelPadding,
     super.key,
@@ -95,6 +96,9 @@ class NavigationDestinationInfo extends InheritedWidget {
   /// The text style of the label.
   final WidgetStateProperty<TextStyle?>? labelTextStyle;
 
+  /// The icon theme of the destination.
+  final WidgetStateProperty<IconThemeData?>? iconTheme;
+
   /// The padding around the destination label.
   final EdgeInsetsGeometry? labelPadding;
 
@@ -133,6 +137,7 @@ class NavigationDestinationInfo extends InheritedWidget {
         indicatorShape != oldWidget.indicatorShape ||
         overlayColor != oldWidget.overlayColor ||
         labelTextStyle != oldWidget.labelTextStyle ||
+        iconTheme != oldWidget.iconTheme ||
         labelPadding != oldWidget.labelPadding ||
         onTap != oldWidget.onTap;
   }

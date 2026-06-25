@@ -88,14 +88,13 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
   Widget build(BuildContext context) {
     final CustomNavigationRailThemeData? maybeExplicitRailTheme =
         NavigationRailTheme.maybeOf(context);
-    final CustomNavigationRailThemeData explicitRailTheme =
-        maybeExplicitRailTheme ?? const CustomNavigationRailThemeData();
     final CustomNavigationRailThemeData railTheme =
-        NavigationRailTheme.of(context);
+        maybeExplicitRailTheme ?? const CustomNavigationRailThemeData();
+
     final WidgetStateProperty<Color?>? effectivedestinationOverlayColor =
-        explicitRailTheme.destinationOverlayColor;
+        railTheme.destinationOverlayColor;
     final bool hasExplicitNavigationItemIndicatorShape =
-        explicitRailTheme.destinationIndicatorShape != null;
+        railTheme.destinationIndicatorShape != null;
     final bool hasExplicitCustomInkOverride =
         effectivedestinationOverlayColor != null ||
             hasExplicitNavigationItemIndicatorShape;
@@ -134,14 +133,12 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
                 : effectivedestinationOverlayColor ?? fullItemOverlayColor);
     final ShapeBorder? effectiveNavigationItemIndicatorShape =
         useFrameworkDefaultInk
-            ? (explicitRailTheme.destinationIndicatorShape ??
-                explicitRailTheme.indicatorShape ??
+            ? (railTheme.destinationIndicatorShape ??
                 railTheme.indicatorShape ??
                 const StadiumBorder())
             : (disableFullItemInk
                 ? null
-                : explicitRailTheme.destinationIndicatorShape ??
-                    explicitRailTheme.indicatorShape ??
+                : railTheme.destinationIndicatorShape ??
                     railTheme.indicatorShape ??
                     const StadiumBorder());
 
@@ -152,8 +149,17 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         : (widget.minWidth < widget.indicatorWidth
             ? widget.minWidth
             : widget.indicatorWidth);
-    final double selectedIndicatorHeight =
-        widget.material3 ? _kIndicatorHeight : widget.indicatorWidth;
+
+    const double kDefaultIconSize = 24.0;
+    final double largeIconIndicatorCompensation =
+        ((railTheme.iconTheme?.resolve({})?.size ?? 0) - kDefaultIconSize)
+            .clamp(0.0, double.infinity);
+
+    final double selectedIndicatorHeight = widget.material3
+        ? _kIndicatorHeight + largeIconIndicatorCompensation
+        : widget.indicatorWidth;
+    final double indicatorCenteringHeight =
+        widget.material3 ? selectedIndicatorHeight : _kIndicatorHeight;
 
     final Widget iconInteractionIndicator = widget.centerIndicatorHorizontally
         ? Positioned.fill(
@@ -161,7 +167,8 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
               alignment: Alignment.topCenter,
               child: Padding(
                 padding: EdgeInsets.only(
-                  top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
+                  top: widget.indicatorOffset.dy -
+                      (indicatorCenteringHeight / 2),
                 ),
                 child: NavigationIndicator(
                   animation: widget.selectionAnimation,
@@ -176,7 +183,7 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         : Positioned.directional(
             textDirection: widget.textDirection,
             start: widget.indicatorOffset.dx - selectedIndicatorWidth / 2,
-            top: widget.indicatorOffset.dy - _kIndicatorHeight / 2,
+            top: widget.indicatorOffset.dy - (indicatorCenteringHeight / 2),
             child: NavigationIndicator(
               animation: widget.selectionAnimation,
               color: widget.indicatorColor,
@@ -211,6 +218,8 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
             applyXOffset: widget.applyXOffset,
             textDirection: widget.textDirection,
             statesController: _statesController,
+            indicatorHeight:
+                widget.material3 ? selectedIndicatorHeight : _kIndicatorHeight,
             child: widget.child,
           ),
         ),

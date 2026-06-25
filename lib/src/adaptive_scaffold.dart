@@ -474,6 +474,7 @@ class AdaptiveScaffold extends StatefulWidget {
         final NavigationRailThemeData resolvedNavRailTheme =
             NavigationRailTheme.maybeOf(context) ??
                 const NavigationRailThemeData();
+
         return NavigationRailTheme(
           data: resolvedNavRailTheme.copyWith(
             margin: margin ?? resolvedNavRailTheme.margin,
@@ -532,11 +533,29 @@ class AdaptiveScaffold extends StatefulWidget {
   static Builder standardBottomNavigationBar({
     required List<NavigationDestination> destinations,
     int? currentIndex,
-    double iconSize = 24,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior. "
+      "To override this property, instead use NavigationBarThemeData.iconTheme.",
+    )
+    double? iconSize,
     Duration animationDuration = const Duration(milliseconds: 180),
     ValueChanged<int>? onDestinationSelected,
     bool? scrollable,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior. "
+      "To override this property, instead use NavigationBarThemeData.padding.",
+    )
     EdgeInsetsGeometry? padding,
+    // TODO(v6.0.0): Remove to deprecate M2.
+    @Deprecated(
+      "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
+      "Migrate to Material 3 by relying on the default M3 behavior. "
+      "To override this property, instead use NavigationBarThemeData.margin.",
+    )
     EdgeInsetsGeometry? margin,
   }) {
     return Builder(
@@ -545,13 +564,17 @@ class AdaptiveScaffold extends StatefulWidget {
             NavigationBarTheme.maybeOf(context) ??
                 const NavigationBarThemeData();
 
+        const double kDefaultIconSize = 24.0;
+
         return NavigationBarTheme(
           data: resolvedNavBarTheme.copyWith(
             iconTheme: WidgetStateProperty.resolveWith((states) {
               final IconThemeData? existing =
                   resolvedNavBarTheme.iconTheme?.resolve(states);
               return (existing ?? const IconThemeData()).copyWith(
-                size: iconSize,
+                size: iconSize ??
+                    resolvedNavBarTheme.iconTheme?.resolve(states)?.size ??
+                    kDefaultIconSize,
               );
             }),
             padding: padding ?? resolvedNavBarTheme.padding,

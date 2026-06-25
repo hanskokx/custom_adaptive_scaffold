@@ -170,6 +170,19 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
             railTheme.selectedIconTheme ??
             defaults.selectedIconTheme!;
 
+    final double railIconSize = railTheme.iconTheme
+            ?.resolve(
+              input.selected ? {WidgetState.selected} : {},
+            )
+            ?.size ??
+        railTheme.iconTheme?.resolve({WidgetState.selected})?.size ??
+        navigationRailDefaultsFor(context).unselectedIconTheme!.size!;
+
+    assert(
+      railIconSize <= 72.0,
+      "NavigationRailThemeData.iconTheme size must be <= 72.0.",
+    );
+
     // In M2 with indicator enabled, selected icon color should contrast with
     // the indicator fill. Keep explicit widget/theme icon overrides intact.
     final bool hasSelectedIconOverride =
@@ -201,6 +214,7 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
       data: input.disabled
           ? iconTheme.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.38),
+              size: railIconSize,
             )
           : iconTheme,
       child: input.icon,
@@ -297,6 +311,15 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
     final IconThemeData iconTheme = barTheme.iconTheme?.resolve(widgetState) ??
         defaults.iconTheme!.resolve(widgetState)!;
 
+    final double barIconSize = barTheme.iconTheme?.resolve(widgetState)?.size ??
+        barTheme.iconTheme?.resolve({WidgetState.selected})?.size ??
+        defaults.iconTheme!.resolve(widgetState)!.size!;
+
+    assert(
+      barIconSize <= 60.0,
+      "NavigationBarThemeData.iconTheme size must be <= 60.0.",
+    );
+
     final Widget themedIcon = IconTheme.merge(
       data: iconTheme,
       child: input.icon,
@@ -319,13 +342,38 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
         barTheme.indicatorShape ??
         defaults.indicatorShape!;
 
-    // --- Interaction colors ---
-    // Bar uses the indicator color (or primary) as the base for ripple/hover.
-    final Color splashBase = barTheme.indicatorColor ??
-        defaults.indicatorColor ??
-        theme.colorScheme.secondaryContainer;
-    final bool splashAlphaModified =
-        (splashBase.a * 255.0).round().clamp(0, 255) < 255;
+// --- Interaction colors ---
+    // Define the states combining selection with user interactions
+    final Set<WidgetState> hoverStates = {
+      if (input.disabled) WidgetState.disabled,
+      if (input.selected && !input.disabled) WidgetState.selected,
+      WidgetState.hovered,
+    };
+
+    final Set<WidgetState> pressedStates = {
+      if (input.disabled) WidgetState.disabled,
+      if (input.selected && !input.disabled) WidgetState.selected,
+      WidgetState.pressed,
+    };
+
+    // Resolve custom overlay colors from the theme if provided
+    Color? hoverColor = barTheme.overlayColor?.resolve(hoverStates);
+    Color? splashColor = barTheme.overlayColor?.resolve(pressedStates) ??
+        barTheme.overlayColor?.resolve({...pressedStates, WidgetState.focused});
+
+    // Fallback to default indicator-based behavior if no overlayColor is defined
+    if (hoverColor == null || splashColor == null) {
+      final Color splashBase = barTheme.indicatorColor ??
+          defaults.indicatorColor ??
+          theme.colorScheme.secondaryContainer;
+      final bool splashAlphaModified =
+          (splashBase.a * 255.0).round().clamp(0, 255) < 255;
+
+      hoverColor ??=
+          splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04);
+      splashColor ??=
+          splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12);
+    }
 
     return DestinationBuildData(
       themedIcon: themedIcon,
@@ -341,10 +389,9 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
       extendedAnimation:
           input.extendedTransitionAnimation ?? kAlwaysCompleteAnimation,
       indicatorOffset: const Offset(_kBarIndicatorWidth / 2, 0),
-      splashColor:
-          splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12),
-      hoverColor:
-          splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04),
+      splashColor: splashColor,
+      hoverColor: hoverColor,
+      resolvedIconSize: iconTheme.size,
     );
   }
 }

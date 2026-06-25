@@ -2,23 +2,13 @@ part of "../destination.dart";
 
 /// Widget that handles the semantics and layout of a navigation bar
 /// destination.
-///
-/// Prefer [NavigationDestination] over this widget, as it is a simpler
-/// (although less customizable) way to get navigation bar destinations.
-///
-/// The icon and label of this destination are built with [buildIcon] and
-/// [buildLabel]. They should build the unselected and selected icon and label
-/// according to [NavigationDestinationInfo.selectedAnimation], where an
-/// animation value of 0 is unselected and 1 is selected.
-///
-/// See [NavigationDestination] for an example.
 class _NavigationBarDestinationBuilder extends StatefulWidget {
-  /// Builds a destination (icon + label) to use in a Material 3 [NavigationBar].
   const _NavigationBarDestinationBuilder({
     required this.buildIcon,
     required this.buildLabel,
     required this.label,
     required this.animation,
+    required this.indicatorHeight,
     super.key,
     this.color,
     this.shape,
@@ -27,47 +17,12 @@ class _NavigationBarDestinationBuilder extends StatefulWidget {
     this.padding = EdgeInsets.zero,
   });
 
-  /// Builds the icon for a destination in a [NavigationBar].
-  ///
-  /// To animate between unselected and selected, build the icon based on
-  /// [NavigationDestinationInfo.selectedAnimation]. When the animation is 0,
-  /// the destination is unselected, when the animation is 1, the destination is
-  /// selected.
-  ///
-  /// The destination is considered selected as soon as the animation is
-  /// increasing or completed, and it is considered unselected as soon as the
-  /// animation is decreasing or dismissed.
+  final double indicatorHeight;
   final WidgetBuilder buildIcon;
-
-  /// Builds the label for a destination in a [NavigationBar].
-  ///
-  /// To animate between unselected and selected, build the icon based on
-  /// [NavigationDestinationInfo.selectedAnimation]. When the animation is
-  /// 0, the destination is unselected, when the animation is 1, the destination
-  /// is selected.
-  ///
-  /// The destination is considered selected as soon as the animation is
-  /// increasing or completed, and it is considered unselected as soon as the
-  /// animation is decreasing or dismissed.
   final WidgetBuilder buildLabel;
-
-  /// The text value of what is in the label widget, this is required for
-  /// semantics so that screen readers and tooltips can read the proper label.
   final Widget label;
-
-  /// The text to display in the tooltip for this [NavigationDestination], when
-  /// the user long presses the destination.
-  ///
-  /// If [tooltip] is an empty string, no tooltip will be used.
-  ///
-  /// Defaults to null, in which case the [label] text will be used.
   final String? tooltip;
-
-  /// Indicates that this destination is unselectable.
-  ///
-  /// Defaults to false.
   final bool disabled;
-
   final Animation<double> animation;
   final Color? color;
   final ShapeBorder? shape;
@@ -82,14 +37,12 @@ class _NavigationBarDestinationBuilderState
     extends State<_NavigationBarDestinationBuilder> {
   final GlobalKey itemKey = GlobalKey();
   final GlobalKey iconKey = GlobalKey();
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  late final WidgetStatesController _statesController =
+      WidgetStatesController();
 
   @override
   void dispose() {
+    _statesController.dispose();
     super.dispose();
   }
 
@@ -100,41 +53,70 @@ class _NavigationBarDestinationBuilderState
     final bool isDisabled = widget.disabled;
 
     final ThemeData theme = Theme.of(context);
-    final CustomNavigationBarThemeData? navigationBarTheme =
+    final CustomNavigationBarThemeData? maybeNavigationBarTheme =
         NavigationBarTheme.maybeOf(context);
+    final CustomNavigationBarThemeData navigationBarTheme =
+        NavigationBarTheme.of(context);
     final CustomNavigationBarThemeData defaults =
         navigationBarDefaultsFor(context);
+
+    final bool hasExplicitPackageDestinationOverlay =
+        maybeNavigationBarTheme?.destinationOverlayColor != null;
+    final bool hasExplicitPackageDestinationShape =
+        maybeNavigationBarTheme?.destinationIndicatorShape != null;
+
     final bool useEnhancedItemInk = theme.useMaterial3 &&
-        (navigationBarTheme?.destinationOverlayColor != null ||
-            navigationBarTheme?.destinationIndicatorShape != null);
+        (hasExplicitPackageDestinationOverlay ||
+            hasExplicitPackageDestinationShape);
+
     final ShapeBorder effectiveNavigationItemIndicatorShape =
-        navigationBarTheme?.destinationIndicatorShape ??
-            navigationBarTheme?.indicatorShape ??
+        navigationBarTheme.destinationIndicatorShape ??
+            navigationBarTheme.indicatorShape ??
             defaults.indicatorShape ??
             const StadiumBorder();
 
     final WidgetStateProperty<Color?>? iconOverlayColor =
-        info.overlayColor ?? navigationBarTheme?.overlayColor;
+        info.overlayColor ?? maybeNavigationBarTheme?.overlayColor;
     final WidgetStateProperty<Color?>? fullItemOverlayColor =
-        navigationBarTheme?.destinationOverlayColor ?? iconOverlayColor;
+        maybeNavigationBarTheme?.overlayColor ??
+            maybeNavigationBarTheme?.destinationOverlayColor ??
+            iconOverlayColor;
+
     final String labelText =
         widget.label is Text ? (widget.label as Text).data ?? "" : "";
     final String? tooltipMessage = widget.tooltip == null
         ? (labelText.isNotEmpty ? labelText : null)
         : (widget.tooltip!.isNotEmpty ? widget.tooltip : null);
+
     final bool isSelected = info.index == info.selectedIndex;
+
+// Retain WidgetState.selected for default Flutter behavior when custom properties aren't in use
+    _statesController.value = {
+      if (isDisabled) WidgetState.disabled,
+      if (isSelected && widget.indicatorHeight == 32.0) WidgetState.selected,
+    };
+
+    final WidgetStateProperty<Color?> effectiveFrameworkOverlayColor =
+        WidgetStateProperty.resolveWith<Color?>((Set<WidgetState> states) {
+      final Set<WidgetState> resolvedStates = {
+        ...states,
+        if (isDisabled) WidgetState.disabled,
+      };
+      return iconOverlayColor?.resolve(resolvedStates);
+    });
+
     final bool isLabelVisible = switch (info.labelBehavior) {
       NavigationDestinationLabelBehavior.alwaysShow => true,
       NavigationDestinationLabelBehavior.onlyShowSelected => isSelected,
       NavigationDestinationLabelBehavior.alwaysHide => false,
     };
     final Offset effectiveTooltipOffset =
-        navigationBarTheme?.tooltipOffset ?? const Offset(0, 42);
+        navigationBarTheme.tooltipOffset ?? const Offset(0, 42);
     final TooltipTriggerMode? effectiveTooltipTrigger = isLabelVisible
-        ? navigationBarTheme?.tooltipTriggerWhenLabelVisible ??
-            navigationBarTheme?.tooltipTrigger
-        : navigationBarTheme?.tooltipTriggerWhenLabelHidden ??
-            navigationBarTheme?.tooltipTrigger;
+        ? navigationBarTheme.tooltipTriggerWhenLabelVisible ??
+            navigationBarTheme.tooltipTrigger
+        : navigationBarTheme.tooltipTriggerWhenLabelHidden ??
+            navigationBarTheme.tooltipTrigger;
 
     return _NavigationBarDestinationSemantics(
       enabled: !isDisabled,
@@ -152,6 +134,8 @@ class _NavigationBarDestinationBuilderState
                 isSelected: isSelected,
                 iconKey: iconKey,
                 itemKey: itemKey,
+                height: widget.indicatorHeight,
+                statesController: _statesController,
                 child: _DestinationLayout(
                   buildIcon: widget.buildIcon,
                   buildLabel: widget.buildLabel,
@@ -164,10 +148,12 @@ class _NavigationBarDestinationBuilderState
             : _FrameworkIndicatorInkWell(
                 iconKey: iconKey,
                 labelBehavior: info.labelBehavior,
+                indicatorHeight: widget.indicatorHeight,
+                statesController: _statesController,
                 customBorder: info.indicatorShape ??
-                    navigationBarTheme?.indicatorShape ??
+                    navigationBarTheme.indicatorShape ??
                     defaults.indicatorShape,
-                overlayColor: iconOverlayColor,
+                overlayColor: effectiveFrameworkOverlayColor,
                 onTap: isDisabled ? null : info.onTap,
                 child: _DestinationLayout(
                   buildIcon: widget.buildIcon,
@@ -193,6 +179,8 @@ class _FullItemIndicatorInkWell extends StatelessWidget {
     required this.iconKey,
     required this.itemKey,
     required this.child,
+    required this.height,
+    required this.statesController,
   });
 
   final ShapeBorder effectiveNavigationItemIndicatorShape;
@@ -203,6 +191,8 @@ class _FullItemIndicatorInkWell extends StatelessWidget {
   final GlobalKey<State<StatefulWidget>> iconKey;
   final GlobalKey<State<StatefulWidget>> itemKey;
   final Widget child;
+  final double height;
+  final WidgetStatesController statesController;
 
   @override
   Widget build(BuildContext context) {
@@ -212,16 +202,20 @@ class _FullItemIndicatorInkWell extends StatelessWidget {
       ),
       child: Material(
         child: InkResponse(
+          statesController: statesController,
           containedInkWell: true,
           highlightShape: BoxShape.rectangle,
           overlayColor: fullItemOverlayColor,
           hoverColor: fullItemOverlayColor?.resolve({
+            if (isSelected) WidgetState.selected,
             WidgetState.hovered,
           }),
           focusColor: fullItemOverlayColor?.resolve({
+            if (isSelected) WidgetState.selected,
             WidgetState.focused,
           }),
           splashColor: fullItemOverlayColor?.resolve({
+            if (isSelected) WidgetState.selected,
             WidgetState.pressed,
           }),
           onTap: isDisabled ? null : info.onTap,
@@ -301,6 +295,8 @@ class _FrameworkIndicatorInkWell extends InkResponse {
   const _FrameworkIndicatorInkWell({
     required this.iconKey,
     required this.labelBehavior,
+    required this.indicatorHeight,
+    super.statesController,
     super.overlayColor,
     super.customBorder,
     super.onTap,
@@ -312,6 +308,7 @@ class _FrameworkIndicatorInkWell extends InkResponse {
 
   final GlobalKey iconKey;
   final NavigationDestinationLabelBehavior labelBehavior;
+  final double indicatorHeight;
 
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
@@ -319,7 +316,22 @@ class _FrameworkIndicatorInkWell extends InkResponse {
       final RenderBox iconBox =
           iconKey.currentContext!.findRenderObject()! as RenderBox;
       final Rect iconRect = iconBox.localToGlobal(Offset.zero) & iconBox.size;
-      return referenceBox.globalToLocal(iconRect.topLeft) & iconBox.size;
+
+      // Preserve standard Flutter behavior when custom properties aren't in use
+      if (indicatorHeight == 32.0) {
+        return referenceBox.globalToLocal(iconRect.topLeft) & iconBox.size;
+      }
+
+      final Rect localIconRect =
+          referenceBox.globalToLocal(iconRect.topLeft) & iconBox.size;
+
+      const double indicatorWidth = 64.0;
+
+      return Rect.fromCenter(
+        center: localIconRect.center,
+        width: indicatorWidth,
+        height: indicatorHeight,
+      );
     };
   }
 }

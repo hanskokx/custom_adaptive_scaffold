@@ -8,6 +8,7 @@ class _IndicatorInkWell extends InkResponse {
     required this.textDirection,
     required this.indicatorWidth,
     required this.disableFullItemInk,
+    this.indicatorHeight = 32.0,
     super.child,
     super.onTap,
     super.statesController,
@@ -29,9 +30,8 @@ class _IndicatorInkWell extends InkResponse {
   final bool applyXOffset;
   final TextDirection textDirection;
   final double indicatorWidth;
+  final double indicatorHeight;
   final bool disableFullItemInk;
-
-  static const double _indicatorHeight = 32.0;
 
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
@@ -45,7 +45,7 @@ class _IndicatorInkWell extends InkResponse {
       return () => Rect.fromCenter(
             center: Offset(indicatorHorizontalCenter, indicatorOffset.dy),
             width: indicatorWidth,
-            height: _indicatorHeight,
+            height: indicatorHeight,
           );
     }
     return () => Rect.fromLTRB(

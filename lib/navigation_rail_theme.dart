@@ -61,6 +61,7 @@ class NavigationRailThemeData
     this.groupAlignment,
     this.indicatorColor,
     this.indicatorShape,
+    this.iconTheme,
     this.labelType,
     this.margin,
     this.minExtendedWidth,
@@ -127,6 +128,10 @@ class NavigationRailThemeData
     "Migrate to Material 3 by relying on the default M3 behavior.",
   )
   final IconThemeData? selectedIconTheme;
+
+  /// The theme to merge with the default icon theme for
+  /// [NavigationRailDestination] icons.
+  final WidgetStateProperty<IconThemeData?>? iconTheme;
 
   /// The alignment for the [NavigationRailDestination]s as they are positioned
   /// within the [NavigationRail].
@@ -253,6 +258,7 @@ class NavigationRailThemeData
     TooltipTriggerMode? tooltipTrigger,
     TooltipTriggerMode? tooltipTriggerWhenLabelVisible,
     TooltipTriggerMode? tooltipTriggerWhenLabelHidden,
+    WidgetStateProperty<IconThemeData?>? iconTheme,
   }) {
     return NavigationRailThemeData(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -284,6 +290,7 @@ class NavigationRailThemeData
           tooltipTriggerWhenLabelVisible ?? this.tooltipTriggerWhenLabelVisible,
       tooltipTriggerWhenLabelHidden:
           tooltipTriggerWhenLabelHidden ?? this.tooltipTriggerWhenLabelHidden,
+      iconTheme: iconTheme ?? this.iconTheme,
     );
   }
 
@@ -355,6 +362,12 @@ class NavigationRailThemeData
       tooltipTriggerWhenLabelHidden: t < 0.5
           ? a?.tooltipTriggerWhenLabelHidden
           : b?.tooltipTriggerWhenLabelHidden,
+      iconTheme: WidgetStateProperty.lerp<IconThemeData?>(
+        a?.iconTheme,
+        b?.iconTheme,
+        t,
+        IconThemeData.lerp,
+      ),
     );
   }
 
@@ -382,6 +395,7 @@ class NavigationRailThemeData
         tooltipTrigger,
         tooltipTriggerWhenLabelVisible,
         tooltipTriggerWhenLabelHidden,
+        iconTheme,
       ]);
 
   @override
@@ -415,7 +429,8 @@ class NavigationRailThemeData
         other.tooltipTrigger == tooltipTrigger &&
         other.tooltipTriggerWhenLabelVisible ==
             tooltipTriggerWhenLabelVisible &&
-        other.tooltipTriggerWhenLabelHidden == tooltipTriggerWhenLabelHidden;
+        other.tooltipTriggerWhenLabelHidden == tooltipTriggerWhenLabelHidden &&
+        other.iconTheme == iconTheme;
   }
 
   @override
@@ -577,6 +592,13 @@ class NavigationRailThemeData
         defaultValue: null,
       ),
     );
+    properties.add(
+      DiagnosticsProperty<WidgetStateProperty<IconThemeData?>?>(
+        "iconTheme",
+        iconTheme,
+        defaultValue: null,
+      ),
+    );
   }
 
   factory NavigationRailThemeData.fromMaterial(
@@ -607,6 +629,7 @@ class NavigationRailThemeData
       tooltipTrigger: null,
       tooltipTriggerWhenLabelVisible: null,
       tooltipTriggerWhenLabelHidden: null,
+      iconTheme: null,
     );
   }
 }
@@ -653,6 +676,7 @@ class NavigationRailTheme extends InheritedTheme
     final m.NavigationRailThemeData materialNavigationRailTheme =
         m.NavigationRailTheme.of(context);
 
+    // This is the package's custom implementation
     if (materialNavigationRailTheme is NavigationRailThemeData) {
       return materialNavigationRailTheme;
     }
@@ -710,6 +734,7 @@ class NavigationRailTheme extends InheritedTheme
             explicitTheme.tooltipTriggerWhenLabelVisible,
         tooltipTriggerWhenLabelHidden:
             explicitTheme.tooltipTriggerWhenLabelHidden,
+        iconTheme: explicitTheme.iconTheme,
       );
     }
 

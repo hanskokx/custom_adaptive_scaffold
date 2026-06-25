@@ -10,6 +10,8 @@
 //     structurally parity outputs (both resolve a themed icon + styled label).
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
+import "package:custom_adaptive_scaffold/src/navigation_shared/destination_surface_strategy.dart";
+import "package:flutter/gestures.dart";
 import "package:flutter/material.dart"
     hide
         NavigationBar,
@@ -17,7 +19,8 @@ import "package:flutter/material.dart"
         NavigationDestination,
         NavigationRailDestination,
         NavigationRail,
-        NavigationRailThemeData;
+        NavigationRailThemeData,
+        NavigationBarThemeData;
 import "package:flutter_test/flutter_test.dart";
 
 // ---------------------------------------------------------------------------
@@ -834,5 +837,221 @@ void main() {
       expect(barTaps, 0, reason: "bar disabled destination must not fire");
       expect(railTaps, 0, reason: "rail disabled destination must not fire");
     });
+
+    testWidgets(
+        "rail explicit iconTheme keeps indicator centered on large icon",
+        (WidgetTester tester) async {
+      const double iconSize = 40.0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationRailTheme: const NavigationRailThemeData(
+              iconTheme: WidgetStatePropertyAll<IconThemeData>(
+                IconThemeData(size: iconSize),
+              ),
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: [
+                NavigationRail(
+                  selectedIndex: 0,
+                  destinations: const [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text("Home"),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.search),
+                      label: Text("Search"),
+                    ),
+                  ],
+                ),
+                const Expanded(child: SizedBox()),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final TestGesture gesture =
+          await tester.createGesture(kind: PointerDeviceKind.mouse);
+      await gesture.addPointer();
+      await gesture.moveTo(tester.getCenter(find.byIcon(Icons.home)));
+      await tester.pumpAndSettle();
+
+      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
+        (RenderObject object) =>
+            object.runtimeType.toString() == "_RenderInkFeatures",
+      );
+
+      const Rect expectedRect = Rect.fromLTRB(12.0, 6.0, 68.0, 54.0);
+      final Offset iconCenter = tester.getCenter(find.byIcon(Icons.home));
+      final Offset indicatorCenter = Offset(
+        expectedRect.center.dx,
+        expectedRect.center.dy + 8.0,
+      );
+
+      expect(
+        inkFeatures,
+        paints..rect(rect: expectedRect),
+      );
+      expect(
+        (iconCenter.dx - indicatorCenter.dx).abs(),
+        lessThanOrEqualTo(0.5),
+      );
+      expect(
+        (iconCenter.dy - indicatorCenter.dy).abs(),
+        lessThanOrEqualTo(0.5),
+      );
+    });
+
+    testWidgets("bar explicit iconTheme expands indicator slot for large icons",
+        (WidgetTester tester) async {
+      const double iconSize = 40.0;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              iconTheme: WidgetStatePropertyAll<IconThemeData>(
+                IconThemeData(size: iconSize),
+              ),
+            ),
+          ),
+          home: Scaffold(
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: 0,
+              destinations: const [
+                NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Finder iconContainer = find.ancestor(
+        of: find.byIcon(Icons.home),
+        matching: find.byType(SizedBox),
+      );
+
+      final Iterable<SizedBox> sizedBoxes =
+          tester.widgetList<SizedBox>(iconContainer);
+      final bool hasExpandedIndicatorSlot = sizedBoxes.any(
+        (SizedBox box) => box.height != null && box.height! > 32.0,
+      );
+
+      expect(
+        hasExpandedIndicatorSlot,
+        isTrue,
+        reason:
+            "explicit large icon theme should expand bar indicator/icon slot",
+      );
+    });
+
+    testWidgets(
+      "bar theme iconTheme size above 60 throws assertion",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationBarTheme: const CustomNavigationBarThemeData(
+                iconTheme: WidgetStatePropertyAll<IconThemeData>(
+                  IconThemeData(size: 61.0),
+                ),
+              ),
+            ),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const BarDestinationStrategy strategy = BarDestinationStrategy();
+
+        expect(
+          () => strategy.resolve(
+            context,
+            const DestinationResolveInput(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+              selected: true,
+              disabled: false,
+              destinationAnimation: kAlwaysCompleteAnimation,
+            ),
+          ),
+          throwsA(
+            isA<AssertionError>().having(
+              (AssertionError e) => e.message.toString(),
+              "message",
+              contains("iconTheme size must be <= 60.0"),
+            ),
+          ),
+        );
+      },
+    );
+
+    testWidgets(
+      "rail theme iconTheme size above 72 throws assertion",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationRailTheme: const NavigationRailThemeData(
+                iconTheme: WidgetStatePropertyAll<IconThemeData>(
+                  IconThemeData(size: 73.0),
+                ),
+              ),
+            ),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const RailDestinationStrategy strategy = RailDestinationStrategy();
+
+        expect(
+          () => strategy.resolve(
+            context,
+            const DestinationResolveInput(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+              selected: true,
+              disabled: false,
+              destinationAnimation: kAlwaysCompleteAnimation,
+            ),
+          ),
+          throwsA(
+            isA<AssertionError>().having(
+              (AssertionError e) => e.message.toString(),
+              "message",
+              contains("iconTheme size must be <= 72.0"),
+            ),
+          ),
+        );
+      },
+    );
   });
 }

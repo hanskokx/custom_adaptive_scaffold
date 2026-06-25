@@ -572,10 +572,10 @@ class NavigationBarTheme extends InheritedTheme
       return navigationBarTheme.data;
     }
 
-    // The user is using Flutter's Material NavigationBarThemeData, so we
-    // convert it to our own NavigationBarThemeData.
+    // Read the raw ThemeData field so we only consider explicitly provided
+    // values, not merged defaults from Flutter's NavigationBarTheme.of.
     final m.NavigationBarThemeData materialNavigationBarTheme =
-        m.NavigationBarTheme.of(context);
+        Theme.of(context).navigationBarTheme;
 
     if (materialNavigationBarTheme is NavigationBarThemeData) {
       return materialNavigationBarTheme;
@@ -606,6 +606,7 @@ class NavigationBarTheme extends InheritedTheme
     final NavigationBarThemeData defaults = navigationBarDefaultsFor(context);
 
     final NavigationBarThemeData? explicitTheme = maybeOf(context);
+
     if (explicitTheme != null) {
       return defaults.copyWith(
         height: explicitTheme.height,

@@ -464,11 +464,14 @@ class _NavigationRailState extends State<NavigationRail>
         navigationRailTheme.selectedLabelTextStyle ??
         defaults.selectedLabelTextStyle!;
     final IconThemeData unselectedIconTheme = widget.unselectedIconTheme ??
+        navigationRailTheme.iconTheme?.resolve({}) ??
         navigationRailTheme.unselectedIconTheme ??
         defaults.unselectedIconTheme!;
     final IconThemeData selectedIconTheme = widget.selectedIconTheme ??
+        navigationRailTheme.iconTheme?.resolve({WidgetState.selected}) ??
         navigationRailTheme.selectedIconTheme ??
         defaults.selectedIconTheme!;
+
     final double groupAlignment = widget.groupAlignment ??
         navigationRailTheme.groupAlignment ??
         defaults.groupAlignment!;

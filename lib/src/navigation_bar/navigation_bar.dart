@@ -315,6 +315,7 @@ class NavigationBar extends StatelessWidget {
                 indicatorColor: indicatorColor,
                 indicatorShape: effectiveIndicatorShape,
                 overlayColor: overlayColor,
+                iconTheme: navigationBarTheme.iconTheme,
                 labelTextStyle: labelTextStyle,
                 labelPadding: labelPadding,
                 onTap: destination.enabled ? _handleTap.call(i) : () {},

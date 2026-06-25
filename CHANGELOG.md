@@ -1,6 +1,20 @@
+## 5.1.0
+
+- **[FEAT]** Improved large icon support for `NavigationBar` and `NavigationRail`.
+  - Indicator and icon-slot sizing now scale correctly for explicit large icon theme overrides.
+  - Rail destination spacing and indicator alignment were refined for large icon use cases.
+  - The maximum allowed sizes are `72` for the `NavigationRail` and `60` for the `NavigationBar`.
+- **[FEAT]** Added `NavigationRailThemeData.iconTheme` support to the package-owned rail theme data.
+  - This brings the `NavigationRailThemeData.iconTheme` into parity with the pre-existing `NavigationBarThemeData.iconTheme`
+- **[IMPROVEMENT]** `NavigationBarTheme.maybeOf(context)` now resolves explicit theme intent more accurately.
+- **[IMPROVEMENT]** `AdaptiveScaffold.standardBottomNavigationBar` now better respects existing themed icon sizes.
+  - `iconSize` is now optional and falls back to themed icon size before defaulting to `24.0` (the Material 3 default).
+  - Legacy `iconSize`, `padding`, and `margin` overrides are marked deprecated in favor of theme-driven configuration.
+    - This is in preparation for the upcoming 6.0.0 release, wherein Material 2 support is planned to be removed.
+
 ## 5.0.1
 
-- No package changes
+- No package cha
 - Documentation has been updated
 
 ## 5.0.0
