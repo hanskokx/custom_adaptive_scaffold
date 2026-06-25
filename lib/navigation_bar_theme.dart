@@ -78,6 +78,7 @@ class NavigationBarThemeData
     this.tooltipTrigger,
     this.tooltipTriggerWhenLabelHidden,
     this.tooltipTriggerWhenLabelVisible,
+    this.badgeThemeData,
   });
 
   /// Overrides the default value of [NavigationBar.height].
@@ -200,6 +201,15 @@ class NavigationBarThemeData
   @override
   final EdgeInsetsGeometry? labelPadding;
 
+  /// The theme applied to badges on [NavigationBar] destinations.
+  ///
+  /// Use this to customise badge colors, text style, and size at the
+  /// navigation-bar level without affecting badges elsewhere in the app.
+  ///
+  /// When null, the ambient [BadgeTheme] (if any) or Flutter's default
+  /// [BadgeThemeData] is used.
+  final BadgeThemeData? badgeThemeData;
+
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
   @override
@@ -224,6 +234,7 @@ class NavigationBarThemeData
     TooltipTriggerMode? tooltipTrigger,
     TooltipTriggerMode? tooltipTriggerWhenLabelVisible,
     TooltipTriggerMode? tooltipTriggerWhenLabelHidden,
+    BadgeThemeData? badgeThemeData,
   }) {
     return NavigationBarThemeData(
       height: height ?? this.height,
@@ -250,6 +261,7 @@ class NavigationBarThemeData
           tooltipTriggerWhenLabelVisible ?? this.tooltipTriggerWhenLabelVisible,
       tooltipTriggerWhenLabelHidden:
           tooltipTriggerWhenLabelHidden ?? this.tooltipTriggerWhenLabelHidden,
+      badgeThemeData: badgeThemeData ?? this.badgeThemeData,
     );
   }
 
@@ -319,6 +331,8 @@ class NavigationBarThemeData
       tooltipTriggerWhenLabelHidden: t < 0.5
           ? a?.tooltipTriggerWhenLabelHidden
           : b?.tooltipTriggerWhenLabelHidden,
+      badgeThemeData:
+          BadgeThemeData.lerp(a?.badgeThemeData, b?.badgeThemeData, t),
     );
   }
 
@@ -344,6 +358,7 @@ class NavigationBarThemeData
         tooltipTrigger,
         tooltipTriggerWhenLabelVisible,
         tooltipTriggerWhenLabelHidden,
+        badgeThemeData,
       ]);
 
   @override
@@ -375,7 +390,8 @@ class NavigationBarThemeData
         other.tooltipTriggerWhenLabelVisible ==
             tooltipTriggerWhenLabelVisible &&
         other.tooltipTriggerWhenLabelHidden == tooltipTriggerWhenLabelHidden &&
-        other.labelPadding == labelPadding;
+        other.labelPadding == labelPadding &&
+        other.badgeThemeData == badgeThemeData;
   }
 
   @override
@@ -496,6 +512,13 @@ class NavigationBarThemeData
         defaultValue: null,
       ),
     );
+    properties.add(
+      DiagnosticsProperty<BadgeThemeData?>(
+        "badgeThemeData",
+        badgeThemeData,
+        defaultValue: null,
+      ),
+    );
   }
 
   factory NavigationBarThemeData.fromMaterial(
@@ -525,6 +548,7 @@ class NavigationBarThemeData
       tooltipTrigger: null,
       tooltipTriggerWhenLabelVisible: null,
       tooltipTriggerWhenLabelHidden: null,
+      badgeThemeData: null,
     );
   }
 }
@@ -636,6 +660,7 @@ class NavigationBarTheme extends InheritedTheme
             explicitTheme.tooltipTriggerWhenLabelVisible,
         tooltipTriggerWhenLabelHidden:
             explicitTheme.tooltipTriggerWhenLabelHidden,
+        badgeThemeData: explicitTheme.badgeThemeData,
       );
     }
 

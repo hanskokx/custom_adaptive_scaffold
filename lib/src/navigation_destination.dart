@@ -3,6 +3,31 @@ import "navigation_bar/destination.dart";
 import "navigation_rail/destination.dart";
 import "navigation_rail/navigation_rail.dart";
 
+/// Controls how a badge is displayed on a [NavigationDestination] icon.
+///
+/// See also:
+///
+///  * [NavigationDestination.badge], which is the numeric count the badge
+///    represents.
+///  * [NavigationDestination.badgeStyle], which uses this enum.
+enum NavigationBadgeStyle {
+  /// Displays the numeric [NavigationDestination.badge] value as a label.
+  ///
+  /// Values greater than 99 are capped and shown as `"99+"`.
+  count,
+
+  /// Displays a small dot indicator regardless of the numeric value.
+  dot,
+
+  /// Suppresses the badge entirely, even when [NavigationDestination.badge]
+  /// is non-null.
+  ///
+  /// This is useful when you want to retain the badge count in widget state
+  /// without showing a visual indicator — for example, while an in-app
+  /// notification banner is already visible.
+  hidden,
+}
+
 /// A typedef alias for [NavigationDestination].
 ///
 /// Use this name when you need to import both this package and
@@ -73,9 +98,15 @@ class NavigationDestination extends StatelessWidget {
     this.indicatorShape,
     this.margin,
     this.padding,
+    this.badge,
+    this.badgeStyle = NavigationBadgeStyle.count,
     this.enabled = true,
     this.tooltip,
-  })  : selectedIcon = selectedIcon ?? icon,
+  })  : assert(
+          badge == null || badge > 0,
+          "NavigationDestination.badge must be a positive integer.",
+        ),
+        selectedIcon = selectedIcon ?? icon,
         _labelText = label;
 
   /// Indicates that this destination is selectable.
@@ -131,6 +162,28 @@ class NavigationDestination extends StatelessWidget {
     return tooltip!.isNotEmpty ? tooltip : null;
   }
 
+  /// An optional badge count displayed on the destination icon.
+  ///
+  /// When non-null, a badge is rendered over the top-right corner of the icon.
+  /// The visual appearance is controlled by [badgeStyle]:
+  ///
+  ///  * A value of `1`–`99` renders as its string equivalent (e.g. `"3"`).
+  ///  * A value greater than `99` renders as `"99+"`.
+  ///  * Set [badgeStyle] to [NavigationBadgeStyle.dot] to show a small dot
+  ///    regardless of the count.
+  ///  * Set [badgeStyle] to [NavigationBadgeStyle.hidden] to suppress the
+  ///    badge visual while retaining the count value.
+  ///
+  /// Must be `null` or a positive integer (> 0). Defaults to `null`.
+  final int? badge;
+
+  /// Controls the visual presentation of [badge].
+  ///
+  /// Defaults to [NavigationBadgeStyle.count].
+  ///
+  /// Has no effect when [badge] is null.
+  final NavigationBadgeStyle badgeStyle;
+
   /// The color of the selection indicator shown behind the icon.
   ///
   /// If null, [NavigationBarThemeData.indicatorColor] or
@@ -184,6 +237,8 @@ class NavigationDestination extends StatelessWidget {
       padding: padding,
       disabled: !enabled,
       tooltip: railTooltip,
+      badge: badge,
+      badgeStyle: badgeStyle,
     );
   }
 
@@ -206,6 +261,8 @@ class NavigationDestination extends StatelessWidget {
       enabled: enabled,
       // Forward raw tooltip so explicit empty-string suppression is preserved.
       tooltip: tooltip,
+      badge: badge,
+      badgeStyle: badgeStyle,
     );
   }
 

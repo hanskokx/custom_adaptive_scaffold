@@ -227,14 +227,18 @@ class _MyHomePageState extends State<MyHomePage>
       NavigationDestination(
         label: "Inbox",
         icon: Icon(Icons.inbox),
+        badge: 150,
       ),
       NavigationDestination(
         label: "Articles",
         icon: Icon(Icons.article_outlined),
+        badge: 1,
       ),
       NavigationDestination(
         label: "Chat",
         icon: Icon(Icons.chat_bubble_outline),
+        badge: 1,
+        badgeStyle: NavigationBadgeStyle.dot,
       ),
       NavigationDestination(
         label: "Video",

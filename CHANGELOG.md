@@ -1,3 +1,13 @@
+## 5.2.0
+
+- **[FEAT]** Added M3 small and large badge support to `NavigationDestination`, `NavigationBar`, and `NavigationRail`.
+  - `NavigationDestination.badge` (`int?`): set to a positive integer to show a badge. Values greater than `99` automatically display as `"99+"`. Must be `null` or greater than `0`.
+  - `NavigationDestination.badgeStyle` (`NavigationBadgeStyle`): controls the badge presentation.
+    - `count` (default) — shows the numeric value.
+    - `dot` — shows a small dot indicator regardless of the count.
+    - `hidden` — suppresses the badge entirely while retaining the count value in the widget tree.
+  - `NavigationRailThemeData.badgeThemeData` and `NavigationBarThemeData.badgeThemeData` (`BadgeThemeData?`): theme-level badge styling (color, text style, size) scoped to navigation destinations.
+
 ## 5.1.0
 
 - **[FEAT]** Improved large icon support for `NavigationBar` and `NavigationRail`.

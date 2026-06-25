@@ -19,6 +19,7 @@ import "package:flutter/material.dart"
         NavigationDestination,
         NavigationRailDestination,
         NavigationRail,
+        NavigationRailTheme,
         NavigationRailThemeData,
         NavigationBarThemeData;
 import "package:flutter_test/flutter_test.dart";
@@ -1053,5 +1054,618 @@ void main() {
         );
       },
     );
+  });
+
+  // ---------------------------------------------------------------------------
+  // Badge
+  // ---------------------------------------------------------------------------
+
+  group("NavigationDestination badge", () {
+    // --- Assertion ---
+
+    test("badge: 0 throws AssertionError", () {
+      expect(
+        () => NavigationDestination(
+          icon: const Icon(Icons.home),
+          label: "Home",
+          badge: 0,
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test("badge: -1 throws AssertionError", () {
+      expect(
+        () => NavigationDestination(
+          icon: const Icon(Icons.home),
+          label: "Home",
+          badge: -1,
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test("badge: null does not throw", () {
+      expect(
+        () => const NavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        returnsNormally,
+      );
+    });
+
+    // --- Conversion: toRailDestination ---
+
+    test("toRailDestination forwards badge value", () {
+      const dest = NavigationDestination(
+        icon: Icon(Icons.home),
+        label: "Home",
+        badge: 5,
+      );
+      expect(dest.toRailDestination().badge, 5);
+    });
+
+    test("toRailDestination forwards badgeStyle: dot", () {
+      const dest = NavigationDestination(
+        icon: Icon(Icons.home),
+        label: "Home",
+        badge: 3,
+        badgeStyle: NavigationBadgeStyle.dot,
+      );
+      expect(dest.toRailDestination().badgeStyle, NavigationBadgeStyle.dot);
+    });
+
+    test("toRailDestination forwards badgeStyle: hidden", () {
+      const dest = NavigationDestination(
+        icon: Icon(Icons.home),
+        label: "Home",
+        badge: 3,
+        badgeStyle: NavigationBadgeStyle.hidden,
+      );
+      expect(dest.toRailDestination().badgeStyle, NavigationBadgeStyle.hidden);
+    });
+
+    test(
+        "toRailDestination preserves badge on NavigationRailDestination passthrough",
+        () {
+      // When the destination is already a NavigationRailDestination the
+      // early-return guard must not lose the badge.
+      const original = NavigationRailDestination(
+        icon: Icon(Icons.home),
+        label: Text("Home"),
+        badge: 42,
+        badgeStyle: NavigationBadgeStyle.dot,
+      );
+      final result = original.toRailDestination();
+      expect(result.badge, 42);
+      expect(result.badgeStyle, NavigationBadgeStyle.dot);
+    });
+
+    test("badgeStyle defaults to count", () {
+      const dest = NavigationDestination(
+        icon: Icon(Icons.home),
+        label: "Home",
+        badge: 1,
+      );
+      expect(dest.badgeStyle, NavigationBadgeStyle.count);
+      expect(dest.toRailDestination().badgeStyle, NavigationBadgeStyle.count);
+      expect(dest.toBarDestination().badgeStyle, NavigationBadgeStyle.count);
+    });
+
+    // --- Conversion: toBarDestination ---
+
+    test("toBarDestination forwards badge value", () {
+      const dest = NavigationDestination(
+        icon: Icon(Icons.home),
+        label: "Home",
+        badge: 7,
+      );
+      expect(dest.toBarDestination().badge, 7);
+    });
+
+    test("toBarDestination forwards badgeStyle: dot", () {
+      const dest = NavigationDestination(
+        icon: Icon(Icons.home),
+        label: "Home",
+        badge: 3,
+        badgeStyle: NavigationBadgeStyle.dot,
+      );
+      expect(dest.toBarDestination().badgeStyle, NavigationBadgeStyle.dot);
+    });
+
+    // --- Rail rendering ---
+
+    testWidgets("badge: null renders no Badge widget in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsNothing);
+    });
+
+    testWidgets("badge: 5 renders Badge with label '5' in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 5,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("5"), findsOneWidget);
+    });
+
+    testWidgets("badge: 99 renders '99' (boundary — not capped) in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 99,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.text("99"), findsOneWidget);
+      expect(find.text("99+"), findsNothing);
+    });
+
+    testWidgets("badge: 100 renders '99+' (cap) in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 100,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.text("99+"), findsOneWidget);
+    });
+
+    testWidgets("badge: 150 renders '99+' in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 150,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.text("99+"), findsOneWidget);
+    });
+
+    testWidgets("badgeStyle: dot renders Badge without label in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 3,
+              badgeStyle: NavigationBadgeStyle.dot,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("3"), findsNothing);
+    });
+
+    testWidgets("badgeStyle: hidden suppresses Badge in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 3,
+              badgeStyle: NavigationBadgeStyle.hidden,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsNothing);
+    });
+
+    testWidgets("badge renders in extended rail (labelType.none, extended)",
+        (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1200, 800);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+
+      await pumpApp(
+        tester,
+        Row(
+          children: [
+            NavigationRail(
+              selectedIndex: 0,
+              extended: true,
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  badge: 5,
+                ).toRailDestination(),
+                const NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ).toRailDestination(),
+              ],
+            ),
+            const Expanded(child: SizedBox()),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("5"), findsOneWidget);
+    });
+
+    testWidgets("badge renders in rail with labelType.all",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          labelType: NavigationRailLabelType.all,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 5,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("5"), findsOneWidget);
+    });
+
+    testWidgets("badge renders in rail with labelType.selected",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          labelType: NavigationRailLabelType.selected,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 5,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsOneWidget);
+    });
+
+    testWidgets(
+        "NavigationRailThemeData.badgeThemeData wraps badge with BadgeTheme",
+        (WidgetTester tester) async {
+      const Color badgeColor = Color(0xFF0000FF);
+      await pumpApp(
+        tester,
+        NavigationRailTheme(
+          data: const NavigationRailThemeData(
+            badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
+          ),
+          child: NavigationRail(
+            selectedIndex: 0,
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.home),
+                label: "Home",
+                badge: 1,
+              ).toRailDestination(),
+              const NavigationDestination(
+                icon: Icon(Icons.search),
+                label: "Search",
+              ).toRailDestination(),
+            ],
+          ),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (Widget w) => w is BadgeTheme && w.data.backgroundColor == badgeColor,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    // --- Bar rendering ---
+
+    testWidgets("badge: null renders no Badge widget in bar",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: const [
+            NavigationBarDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+            ),
+            NavigationBarDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsNothing);
+    });
+
+    testWidgets("badge: 5 renders Badge with label '5' in bar",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 5,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toBarDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("5"), findsOneWidget);
+    });
+
+    testWidgets("badge: 99 renders '99' (boundary — not capped) in bar",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 99,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toBarDestination(),
+          ],
+        ),
+      );
+      expect(find.text("99"), findsOneWidget);
+      expect(find.text("99+"), findsNothing);
+    });
+
+    testWidgets("badge: 100 renders '99+' (cap) in bar",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 100,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toBarDestination(),
+          ],
+        ),
+      );
+      expect(find.text("99+"), findsOneWidget);
+    });
+
+    testWidgets("badge: 150 renders '99+' in bar", (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 150,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toBarDestination(),
+          ],
+        ),
+      );
+      expect(find.text("99+"), findsOneWidget);
+    });
+
+    testWidgets("badgeStyle: dot renders Badge without label in bar",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 3,
+              badgeStyle: NavigationBadgeStyle.dot,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toBarDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("3"), findsNothing);
+    });
+
+    testWidgets("badgeStyle: hidden suppresses Badge in bar",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 3,
+              badgeStyle: NavigationBadgeStyle.hidden,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toBarDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsNothing);
+    });
+
+    testWidgets(
+        "NavigationBarThemeData.badgeThemeData wraps badge with BadgeTheme",
+        (WidgetTester tester) async {
+      const Color badgeColor = Color(0xFFFF0000);
+      await pumpApp(
+        tester,
+        NavigationBarTheme(
+          data: const NavigationBarThemeData(
+            badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
+          ),
+          child: NavigationBar(
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.home),
+                label: "Home",
+                badge: 1,
+              ).toBarDestination(),
+              const NavigationDestination(
+                icon: Icon(Icons.search),
+                label: "Search",
+              ).toBarDestination(),
+            ],
+          ),
+        ),
+      );
+      expect(
+        find.byWidgetPredicate(
+          (Widget w) => w is BadgeTheme && w.data.backgroundColor == badgeColor,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets("multiple destinations each render their own badge in bar",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 150,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+              badge: 1,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.settings),
+              label: "Settings",
+              badge: 1,
+              badgeStyle: NavigationBadgeStyle.dot,
+            ).toBarDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.person),
+              label: "Profile",
+            ).toBarDestination(),
+          ],
+        ),
+      );
+      expect(find.byType(Badge), findsNWidgets(3));
+      expect(find.text("99+"), findsOneWidget);
+      expect(find.text("1"), findsOneWidget);
+    });
   });
 }

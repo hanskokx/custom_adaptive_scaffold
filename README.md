@@ -35,6 +35,7 @@ Modifications have been made to the original source code that provide some addit
   - [How Is This Different From Flutter?](#how-is-this-different-from-flutter)
     - [Extended theme data](#extended-theme-data)
     - [Richer `NavigationDestination` base class](#richer-navigationdestination-base-class)
+    - [Badges](#badges)
     - [New public APIs not present in Flutter](#new-public-apis-not-present-in-flutter)
     - [Extra `NavigationRail` parameters](#extra-navigationrail-parameters)
     - [Collapsed-pane controller](#collapsed-pane-controller)
@@ -109,16 +110,17 @@ When package-specific extension properties are not set, bar/rail behavior follow
 Both `NavigationBarThemeData` and `NavigationRailThemeData` are package-owned classes that implement the Flutter framework interfaces, so they are usable
 everywhere Flutter's types are expected. They add:
 
-| Property                         | New vs Flutter | Description                                   |
-| -------------------------------- | -------------- | --------------------------------------------- |
-| `margin`                         | ✓              | Margin around each navigation item            |
-| `padding`                        | ✓              | Padding inside each navigation item           |
-| `destinationOverlayColor`        | ✓              | Full-item ink/highlight color by widget state |
-| `navigationItemIndicatorShape`   | ✓              | Shape for the full-item ink well              |
-| `tooltipOffset`                  | ✓              | X/Y offset for tooltip popovers               |
-| `tooltipTrigger`                 | ✓              | Which gesture triggers the tooltip            |
-| `tooltipTriggerWhenLabelVisible` | ✓              | Override trigger when label is shown          |
-| `tooltipTriggerWhenLabelHidden`  | ✓              | Override trigger when label is hidden         |
+| Property                         | New vs Flutter | Description                                                    |
+| -------------------------------- | -------------- | -------------------------------------------------------------- |
+| `margin`                         | ✓              | Margin around each navigation item                             |
+| `padding`                        | ✓              | Padding inside each navigation item                            |
+| `destinationOverlayColor`        | ✓              | Full-item ink/highlight color by widget state                  |
+| `navigationItemIndicatorShape`   | ✓              | Shape for the full-item ink well                               |
+| `tooltipOffset`                  | ✓              | X/Y offset for tooltip popovers                                |
+| `tooltipTrigger`                 | ✓              | Which gesture triggers the tooltip                             |
+| `tooltipTriggerWhenLabelVisible` | ✓              | Override trigger when label is shown                           |
+| `tooltipTriggerWhenLabelHidden`  | ✓              | Override trigger when label is hidden                          |
+| `badgeThemeData`                 | ✓              | Badge colors, text style, and size for navigation destinations |
 
 `NavigationRailThemeData` additionally provides:
 
@@ -129,8 +131,44 @@ everywhere Flutter's types are expected. They add:
 
 ### Richer `NavigationDestination` base class
 
-The package's `NavigationDestination` is a full base class (not just a wrapper) with `margin`, `padding`, `indicatorColor`, `indicatorShape`, and `disabled`.
+The package's `NavigationDestination` is a full base class (not just a wrapper) with `margin`, `padding`, `indicatorColor`, `indicatorShape`, `disabled`, `badge`, and `badgeStyle`.
 `CustomNavigationDestination` is a typedef alias for it.
+
+### Badges
+
+`NavigationDestination` supports M3-compliant small (dot) and large (labeled) badges via two properties:
+
+| Property     | Type                   | Description                                                                                                                                   |
+| ------------ | ---------------------- | --------------------------------------------------------------------------------------------------------------------------------------------- |
+| `badge`      | `int?`                 | Badge count. `null` = no badge. Values > `99` display as `"99+"`. Must be > 0.                                                                |
+| `badgeStyle` | `NavigationBadgeStyle` | `count` (default) shows the number; `dot` shows a small indicator; `hidden` suppresses the visual while keeping the count in the widget tree. |
+
+```dart
+// Large badge — shows "5":
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 5)
+
+// Automatically capped — shows "99+":
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 150)
+
+// Small dot badge:
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox',
+  badge: 1, badgeStyle: NavigationBadgeStyle.dot)
+
+// Hidden — retains the count in widget state, suppresses the visual:
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox',
+  badge: 3, badgeStyle: NavigationBadgeStyle.hidden)
+```
+
+Badge appearance can be themed per navigation surface via `badgeThemeData` on `NavigationRailThemeData` or `NavigationBarThemeData`. This wraps the badge in a [`BadgeTheme`](https://api.flutter.dev/flutter/material/BadgeTheme-class.html), so all `BadgeThemeData` fields (background color, text style, size, alignment) are available:
+
+```dart
+NavigationRailTheme(
+  data: NavigationRailThemeData(
+    badgeThemeData: BadgeThemeData(backgroundColor: Colors.red[700]),
+  ),
+  child: NavigationRail(/* … */),
+)
+```
 
 ### New public APIs not present in Flutter
 

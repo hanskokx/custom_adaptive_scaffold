@@ -60,6 +60,8 @@ class NavigationBarDestination extends NavigationDestination {
     super.padding,
     super.enabled,
     super.tooltip,
+    super.badge,
+    super.badgeStyle,
   });
 
   @override
@@ -154,6 +156,21 @@ class NavigationBarDestination extends NavigationDestination {
             ),
           );
 
+          // --- Badge ---
+          final bool showBadge =
+              badge != null && badgeStyle != NavigationBadgeStyle.hidden;
+          final Widget? badgeLabel =
+              showBadge && badgeStyle == NavigationBadgeStyle.count
+                  ? Text(badge! > 99 ? "99+" : "$badge")
+                  : null;
+          final Widget badgedIcon = showBadge
+              ? BadgeTheme(
+                  data: navigationBarTheme.badgeThemeData ??
+                      const BadgeThemeData(),
+                  child: Badge(label: badgeLabel, child: data.themedIcon),
+                )
+              : data.themedIcon;
+
           return Stack(
             alignment: Alignment.center,
             children: <Widget>[
@@ -175,7 +192,7 @@ class NavigationBarDestination extends NavigationDestination {
                       "bar-ink-icon-${destinationInfo.index}-${selectedForKey ? "selected" : "unselected"}",
                     ),
                     child: NavigationIcon(
-                      icon: data.themedIcon,
+                      icon: badgedIcon,
                       minWidth: data.minWidth,
                       material3: data.material3,
                       height: effectiveIndicatorHeight,

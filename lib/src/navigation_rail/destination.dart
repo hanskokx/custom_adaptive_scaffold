@@ -42,6 +42,8 @@ class NavigationRailDestination extends NavigationDestination {
     super.padding,
     this.disabled = false,
     super.tooltip,
+    super.badge,
+    super.badgeStyle,
   }) : _label = label;
 
   final Widget _label;
