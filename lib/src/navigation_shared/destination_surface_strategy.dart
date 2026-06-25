@@ -178,6 +178,11 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
         railTheme.iconTheme?.resolve({WidgetState.selected})?.size ??
         navigationRailDefaultsFor(context).unselectedIconTheme!.size!;
 
+    assert(
+      railIconSize <= 72.0,
+      "NavigationRailThemeData.iconTheme size must be <= 72.0.",
+    );
+
     // In M2 with indicator enabled, selected icon color should contrast with
     // the indicator fill. Keep explicit widget/theme icon overrides intact.
     final bool hasSelectedIconOverride =
@@ -305,6 +310,15 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
     final bool material3 = theme.useMaterial3;
     final IconThemeData iconTheme = barTheme.iconTheme?.resolve(widgetState) ??
         defaults.iconTheme!.resolve(widgetState)!;
+
+    final double barIconSize = barTheme.iconTheme?.resolve(widgetState)?.size ??
+        barTheme.iconTheme?.resolve({WidgetState.selected})?.size ??
+        defaults.iconTheme!.resolve(widgetState)!.size!;
+
+    assert(
+      barIconSize <= 60.0,
+      "NavigationBarThemeData.iconTheme size must be <= 60.0.",
+    );
 
     final Widget themedIcon = IconTheme.merge(
       data: iconTheme,
