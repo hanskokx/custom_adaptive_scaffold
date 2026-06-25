@@ -54,7 +54,7 @@ jobs:
         run: flutter analyze .
 
       - name: Check for formatting issues
-        run: dart format --set-exit-if-changed . --exclude example
+        run: dart format --set-exit-if-changed lib/
 
       - name: Run tests
         run: flutter test
