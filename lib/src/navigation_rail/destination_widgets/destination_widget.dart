@@ -174,12 +174,18 @@ class _RailDestinationState extends State<RailDestination>
         : railTheme.tooltipTriggerWhenLabelHidden ?? railTheme.tooltipTrigger;
 
     // Indicator vertical centering when icon exceeds indicator height.
+    final double largeIconIndicatorCompensation =
+        (data.resolvedIconSize! - _kIndicatorHeight)
+            .clamp(0.0, double.infinity);
+
     final bool isLargeIconSize = data.resolvedIconSize != null &&
         data.resolvedIconSize! > _kIndicatorHeight;
+
     final double indicatorVerticalOffset =
         isLargeIconSize ? (data.resolvedIconSize! - _kIndicatorHeight) / 2 : 0;
 
     Offset indicatorOffset = data.indicatorOffset;
+
     bool applyXOffset = false;
 
     Widget content;
@@ -200,7 +206,8 @@ class _RailDestinationState extends State<RailDestination>
         );
 
         final Widget iconPart = NavigationIcon(
-          height: data.material3 ? _kRailIconSlotHeight : data.minWidth,
+          height: (data.material3 ? _kRailIconSlotHeight : data.minWidth) +
+              largeIconIndicatorCompensation,
           icon: data.themedIcon,
           minWidth: data.minWidth,
           material3: data.material3,
@@ -232,7 +239,9 @@ class _RailDestinationState extends State<RailDestination>
               );
             }
             content = Container(
-              constraints: BoxConstraints(minWidth: data.minWidth),
+              constraints: BoxConstraints(
+                minWidth: data.minWidth,
+              ),
               padding: widget.padding,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -243,7 +252,7 @@ class _RailDestinationState extends State<RailDestination>
                         : _verticalDestinationPaddingWithLabel,
                   ),
                   SizedBox(
-                    height: _kIndicatorHeight,
+                    height: _kIndicatorHeight + largeIconIndicatorCompensation,
                     child: Center(child: data.themedIcon),
                   ),
                   SizedBox(
@@ -373,7 +382,8 @@ class _RailDestinationState extends State<RailDestination>
                 SizedBox(height: data.material3 ? 0 : verticalPadding),
                 data.material3
                     ? SizedBox(
-                        height: _kIndicatorHeight,
+                        height:
+                            _kIndicatorHeight + largeIconIndicatorCompensation,
                         child: Center(child: data.themedIcon),
                       )
                     : data.themedIcon,
@@ -448,7 +458,8 @@ class _RailDestinationState extends State<RailDestination>
               ),
               data.material3
                   ? SizedBox(
-                      height: _kIndicatorHeight,
+                      height:
+                          _kIndicatorHeight + largeIconIndicatorCompensation,
                       child: Center(child: data.themedIcon),
                     )
                   : data.themedIcon,

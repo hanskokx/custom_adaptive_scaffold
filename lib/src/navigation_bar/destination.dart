@@ -66,6 +66,8 @@ class NavigationBarDestination extends NavigationDestination {
   Widget build(BuildContext context) {
     final NavigationDestinationInfo info =
         NavigationDestinationInfo.of(context);
+    final NavigationBarThemeData? maybeExplicitTheme =
+        NavigationBarTheme.maybeOf(context);
     final NavigationBarThemeData navigationBarTheme =
         NavigationBarTheme.of(context);
     final Animation<double> animation = info.selectedAnimation;
@@ -82,6 +84,34 @@ class NavigationBarDestination extends NavigationDestination {
     final EdgeInsetsGeometry padding =
         this.padding ?? navigationBarTheme.padding ?? EdgeInsets.zero;
 
+    final DestinationBuildData data = const BarDestinationStrategy().resolve(
+      context,
+      DestinationResolveInput(
+        icon: icon, // fallback or dummy just to extract size metrics
+        label: Text(label),
+        selected: info.index == info.selectedIndex,
+        disabled: !enabled,
+        destinationAnimation: animation,
+        indicatorShape: indicatorShape,
+      ),
+    );
+
+    final bool hasExplicitPackageDestinationCustomization =
+        maybeExplicitTheme?.destinationOverlayColor != null ||
+            maybeExplicitTheme?.destinationIndicatorShape != null;
+    final bool hasExplicitIconSizeOverride =
+        info.iconTheme != null || maybeExplicitTheme?.iconTheme != null;
+    final bool useExpandedIndicatorSlot =
+        hasExplicitPackageDestinationCustomization ||
+            hasExplicitIconSizeOverride;
+
+    final double largeIconCompensation =
+        ((data.resolvedIconSize ?? 0) - _kIndicatorHeight)
+            .clamp(0.0, double.infinity);
+    final double effectiveIndicatorHeight = useExpandedIndicatorSlot
+        ? _kIndicatorHeight + largeIconCompensation
+        : _kIndicatorHeight;
+
     return Container(
       margin: margin,
       child: _NavigationBarDestinationBuilder(
@@ -95,6 +125,7 @@ class NavigationBarDestination extends NavigationDestination {
         color: indicatorColor,
         shape: indicatorShape,
         padding: padding,
+        indicatorHeight: effectiveIndicatorHeight,
         buildIcon: (BuildContext context) {
           final NavigationDestinationInfo currentInfo =
               NavigationDestinationInfo.of(context);
@@ -131,7 +162,7 @@ class NavigationBarDestination extends NavigationDestination {
                 color: indicatorColor,
                 shape: indicatorShape,
                 width: data.minWidth,
-                height: _kIndicatorHeight,
+                height: effectiveIndicatorHeight,
               ),
               Builder(
                 builder: (BuildContext context) {
@@ -147,7 +178,7 @@ class NavigationBarDestination extends NavigationDestination {
                       icon: data.themedIcon,
                       minWidth: data.minWidth,
                       material3: data.material3,
-                      height: _kIndicatorHeight,
+                      height: effectiveIndicatorHeight,
                       addSpacing: false,
                       direction: Axis.vertical,
                     ),

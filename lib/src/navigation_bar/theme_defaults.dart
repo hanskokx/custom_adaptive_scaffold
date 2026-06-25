@@ -79,7 +79,7 @@ class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
 
   @override
   WidgetStateProperty<Color?>? get destinationOverlayColor {
-    return overlayColor;
+    return null;
   }
 }
 
@@ -162,6 +162,6 @@ class _NavigationBarDefaultsM3 extends c.NavigationBarThemeData {
 
   @override
   WidgetStateProperty<Color?>? get destinationOverlayColor {
-    return overlayColor;
+    return null;
   }
 }
