@@ -564,6 +564,8 @@ class _NavigationRailState extends State<NavigationRail>
               disabled: !widget.destinations[i].enabled,
               showLabelsWhenCollapsed: showLabelsWhenCollapsed,
               tooltip: widget.destinations[i].tooltipLabel,
+              badge: widget.destinations[i].badge,
+              badgeStyle: widget.destinations[i].badgeStyle,
             ),
           ),
         if (trailing != null && !widget.trailingAtBottom) trailing,

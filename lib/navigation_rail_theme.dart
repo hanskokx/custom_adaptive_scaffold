@@ -79,6 +79,7 @@ class NavigationRailThemeData
     this.unselectedIconTheme,
     this.unselectedLabelTextStyle,
     this.useIndicator,
+    this.badgeThemeData,
   });
 
   /// Color to be used for the [NavigationRail]'s background.
@@ -232,6 +233,15 @@ class NavigationRailThemeData
   /// label-hidden state.
   final TooltipTriggerMode? tooltipTriggerWhenLabelHidden;
 
+  /// The theme applied to badges on [NavigationRail] destinations.
+  ///
+  /// Use this to customise badge colors, text style, and size at the
+  /// navigation-rail level without affecting badges elsewhere in the app.
+  ///
+  /// When null, the ambient [BadgeTheme] (if any) or Flutter's default
+  /// [BadgeThemeData] is used.
+  final BadgeThemeData? badgeThemeData;
+
   /// Creates a copy of this object with the given fields replaced with the
   /// new values.
   @override
@@ -259,6 +269,7 @@ class NavigationRailThemeData
     TooltipTriggerMode? tooltipTriggerWhenLabelVisible,
     TooltipTriggerMode? tooltipTriggerWhenLabelHidden,
     WidgetStateProperty<IconThemeData?>? iconTheme,
+    BadgeThemeData? badgeThemeData,
   }) {
     return NavigationRailThemeData(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -291,6 +302,7 @@ class NavigationRailThemeData
       tooltipTriggerWhenLabelHidden:
           tooltipTriggerWhenLabelHidden ?? this.tooltipTriggerWhenLabelHidden,
       iconTheme: iconTheme ?? this.iconTheme,
+      badgeThemeData: badgeThemeData ?? this.badgeThemeData,
     );
   }
 
@@ -368,6 +380,8 @@ class NavigationRailThemeData
         t,
         IconThemeData.lerp,
       ),
+      badgeThemeData:
+          BadgeThemeData.lerp(a?.badgeThemeData, b?.badgeThemeData, t),
     );
   }
 
@@ -396,6 +410,7 @@ class NavigationRailThemeData
         tooltipTriggerWhenLabelVisible,
         tooltipTriggerWhenLabelHidden,
         iconTheme,
+        badgeThemeData,
       ]);
 
   @override
@@ -430,7 +445,8 @@ class NavigationRailThemeData
         other.tooltipTriggerWhenLabelVisible ==
             tooltipTriggerWhenLabelVisible &&
         other.tooltipTriggerWhenLabelHidden == tooltipTriggerWhenLabelHidden &&
-        other.iconTheme == iconTheme;
+        other.iconTheme == iconTheme &&
+        other.badgeThemeData == badgeThemeData;
   }
 
   @override
@@ -599,6 +615,13 @@ class NavigationRailThemeData
         defaultValue: null,
       ),
     );
+    properties.add(
+      DiagnosticsProperty<BadgeThemeData?>(
+        "badgeThemeData",
+        badgeThemeData,
+        defaultValue: null,
+      ),
+    );
   }
 
   factory NavigationRailThemeData.fromMaterial(
@@ -630,6 +653,7 @@ class NavigationRailThemeData
       tooltipTriggerWhenLabelVisible: null,
       tooltipTriggerWhenLabelHidden: null,
       iconTheme: null,
+      badgeThemeData: null,
     );
   }
 }
@@ -735,6 +759,7 @@ class NavigationRailTheme extends InheritedTheme
         tooltipTriggerWhenLabelHidden:
             explicitTheme.tooltipTriggerWhenLabelHidden,
         iconTheme: explicitTheme.iconTheme,
+        badgeThemeData: explicitTheme.badgeThemeData,
       );
     }
 

@@ -37,6 +37,8 @@ class RailDestination extends StatefulWidget {
     this.padding,
     this.margin,
     this.tooltip,
+    this.badge,
+    this.badgeStyle = NavigationBadgeStyle.count,
     super.key,
   });
 
@@ -61,6 +63,8 @@ class RailDestination extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
   final String? tooltip;
+  final int? badge;
+  final NavigationBadgeStyle badgeStyle;
 
   @override
   State<RailDestination> createState() => _RailDestinationState();
@@ -194,6 +198,23 @@ class _RailDestinationState extends State<RailDestination>
 
     Offset indicatorOffset = data.indicatorOffset;
 
+    // --- Badge ---
+    final bool showBadge = widget.badge != null &&
+        widget.badgeStyle != NavigationBadgeStyle.hidden;
+    final Widget? badgeLabel =
+        showBadge && widget.badgeStyle == NavigationBadgeStyle.count
+            ? Text(widget.badge! > 99 ? "99+" : "${widget.badge}")
+            : null;
+    final Widget badgedIcon = showBadge
+        ? Badge(label: badgeLabel, child: data.themedIcon)
+        : data.themedIcon;
+    // Only inject a local BadgeTheme when explicitly configured on the rail.
+    // Otherwise, preserve any ambient BadgeTheme from above in the tree.
+    final Widget effectiveBadgedIcon =
+        showBadge && railTheme.badgeThemeData != null
+            ? BadgeTheme(data: railTheme.badgeThemeData!, child: badgedIcon)
+            : badgedIcon;
+
     bool applyXOffset = false;
 
     Widget content;
@@ -216,7 +237,7 @@ class _RailDestinationState extends State<RailDestination>
         final Widget iconPart = NavigationIcon(
           height: (data.material3 ? _kRailIconSlotHeight : data.minWidth) +
               largeIconIndicatorCompensation,
-          icon: data.themedIcon,
+          icon: effectiveBadgedIcon,
           minWidth: data.minWidth,
           material3: data.material3,
           direction: Axis.horizontal,
@@ -261,7 +282,7 @@ class _RailDestinationState extends State<RailDestination>
                   ),
                   SizedBox(
                     height: _kIndicatorHeight + largeIconIndicatorCompensation,
-                    child: Center(child: data.themedIcon),
+                    child: Center(child: effectiveBadgedIcon),
                   ),
                   SizedBox(
                     height: data.material3 ? _verticalIconLabelSpacingM3 : 0,
@@ -392,9 +413,9 @@ class _RailDestinationState extends State<RailDestination>
                     ? SizedBox(
                         height:
                             _kIndicatorHeight + largeIconIndicatorCompensation,
-                        child: Center(child: data.themedIcon),
+                        child: Center(child: effectiveBadgedIcon),
                       )
-                    : data.themedIcon,
+                    : effectiveBadgedIcon,
                 SizedBox(
                   height: data.material3
                       ? lerpDouble(
@@ -468,9 +489,9 @@ class _RailDestinationState extends State<RailDestination>
                   ? SizedBox(
                       height:
                           _kIndicatorHeight + largeIconIndicatorCompensation,
-                      child: Center(child: data.themedIcon),
+                      child: Center(child: effectiveBadgedIcon),
                     )
-                  : data.themedIcon,
+                  : effectiveBadgedIcon,
               SizedBox(
                 height: data.material3 ? _verticalIconLabelSpacingM3 : 0,
               ),

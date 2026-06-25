@@ -112,16 +112,20 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: Icon(Icons.inbox_outlined),
           selectedIcon: Icon(Icons.inbox),
           label: "Inbox",
+          badge: 150,
         ),
         NavigationDestination(
           icon: Icon(Icons.article_outlined),
           selectedIcon: Icon(Icons.article),
           label: "Articles",
+          badge: 1,
         ),
         NavigationDestination(
           icon: Icon(Icons.chat_outlined),
           selectedIcon: Icon(Icons.chat),
           label: "Chat",
+          badge: 1,
+          badgeStyle: NavigationBadgeStyle.dot,
         ),
         NavigationDestination(
           icon: Icon(Icons.video_call_outlined),
