@@ -1,17 +1,35 @@
-name: Flutter Lint & Test
-run-name: ${{ github.actor }} is checking code quality 🚀
+name: "example"
 
 on:
-  workflow_dispatch:
+  schedule:
+    - cron: "0 12 * * 3"
   pull_request:
     types: [opened, synchronize]
     paths:
-      - "**/*.dart"
-      - "**/pubspec.yaml"
+      - "example/**/*.dart"
+      - "example/**/*.yaml"
+      - "lib/**/*.dart"
+      - "pubspec.yaml"
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "example/**/*.dart"
+      - "example/**/*.yaml"
+      - "lib/**/*.dart"
+      - "pubspec.yaml"
+      - .github/workflows/example.yaml
+  release:
+    types: [published]
 
 jobs:
   analyze:
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: example
 
     steps:
       - name: Checkout code
@@ -22,8 +40,8 @@ jobs:
         with:
           path: |
             ~/.pub-cache
-            .dart_tool
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+            example/.dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('example/pubspec.lock') }}
           restore-keys: |
             ${{ runner.os }}-flutter-
 
@@ -39,7 +57,8 @@ jobs:
         run: flutter analyze
 
       - name: Check for formatting issues
-        run: dart format --set-exit-if-changed ./
+        # Since the working directory is 'example', '.' refers to 'example/'
+        run: dart format --set-exit-if-changed .
 
       - name: Run tests
         run: flutter test

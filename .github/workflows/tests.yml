@@ -1,0 +1,60 @@
+name: Tests
+run-name: Code Quality Checks
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 12 * * 3"
+  push:
+    branches:
+      - main
+      - develop
+      - "release/**"
+    paths:
+      - "**.dart"
+      - "./*.yaml"
+      - .github/workflows/code-quality.yaml
+      - "!example/**"
+  release:
+    types: [published]
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "**/*.dart"
+      - "**/pubspec.yaml"
+      - "!example/**"
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            .dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock', '!example/**') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check for linting errors
+        run: flutter analyze .
+
+      - name: Check for formatting issues
+        run: dart format --set-exit-if-changed . --exclude example
+
+      - name: Run tests
+        run: flutter test
