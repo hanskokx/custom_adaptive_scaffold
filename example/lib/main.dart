@@ -383,7 +383,7 @@ class _MyHomePageState extends State<MyHomePage>
           secondaryBody: _navigationIndex == 0
               ? SlotLayout(
                   config: <Breakpoint, SlotLayoutConfig?>{
-                    Breakpoints.mediumAndUp: SlotLayout.from(
+                    Breakpoints.mediumLargeAndUp: SlotLayout.from(
                       // This overrides the default behavior of the secondaryBody
                       // disappearing as it is animating out.
                       outAnimation: AdaptiveScaffold.stayOnScreen,
@@ -593,23 +593,49 @@ class _ItemList extends StatelessWidget {
           if (!Breakpoints.mediumAndUp.isActive(context) && items.isNotEmpty)
             Padding(
               padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: FilledButton.tonalIcon(
-                  onPressed: () {
-                    final _Item firstItem = items.first;
-                    selectCard(_allItems.indexOf(firstItem));
-                    Navigator.of(context).pushNamed(
-                      _ExtractRouteArguments.routeName,
-                      arguments: _ScreenArguments(
-                        item: firstItem,
-                        selectCard: selectCard,
-                      ),
-                    );
-                  },
-                  icon: const Icon(Icons.swap_horiz),
-                  label: const Text("Show secondary pane"),
-                ),
+              child: LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  final bool compactButton = constraints.maxWidth < 240;
+
+                  return Align(
+                    alignment: Alignment.centerLeft,
+                    child: FilledButton(
+                      onPressed: () {
+                        final _Item firstItem = items.first;
+                        selectCard(_allItems.indexOf(firstItem));
+                        Navigator.of(context).pushNamed(
+                          _ExtractRouteArguments.routeName,
+                          arguments: _ScreenArguments(
+                            item: firstItem,
+                            selectCard: selectCard,
+                          ),
+                        );
+                      },
+                      style: compactButton
+                          ? FilledButton.styleFrom(
+                              minimumSize: const Size(0, 40),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 12),
+                            )
+                          : null,
+                      child: compactButton
+                          ? const Icon(Icons.swap_horiz)
+                          : const Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: <Widget>[
+                                Icon(Icons.swap_horiz),
+                                SizedBox(width: 8),
+                                Flexible(
+                                  child: Text(
+                                    "Show secondary pane",
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                    ),
+                  );
+                },
               ),
             ),
           Expanded(
@@ -677,21 +703,18 @@ class _ItemListTile extends StatelessWidget {
                 LayoutBuilder(
                   builder: (BuildContext context, BoxConstraints constraints) {
                     final double availableWidth = constraints.maxWidth;
-                    final double avatarDiameter =
-                        availableWidth.isFinite && availableWidth > 0
-                            ? (availableWidth - 8).clamp(20.0, 36.0).toDouble()
-                            : 36.0;
-                    final bool showTrailing =
-                        !availableWidth.isFinite || availableWidth >= 220;
+                    if (availableWidth.isFinite && availableWidth < 48) {
+                      final double fallbackAvatarDiameter =
+                          availableWidth.clamp(0.0, 20.0).toDouble();
 
-                    return ListTile(
-                      contentPadding: EdgeInsets.zero,
-                      minLeadingWidth: avatarDiameter,
-                      horizontalTitleGap: showTrailing ? 12 : 8,
-                      leading: SizedBox.square(
-                        dimension: avatarDiameter,
+                      if (fallbackAvatarDiameter <= 0) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return SizedBox.square(
+                        dimension: fallbackAvatarDiameter,
                         child: CircleAvatar(
-                          radius: avatarDiameter / 2,
+                          radius: fallbackAvatarDiameter / 2,
                           child: Image.asset(
                             email.image,
                             width: 100,
@@ -699,39 +722,74 @@ class _ItemListTile extends StatelessWidget {
                             fit: BoxFit.cover,
                           ),
                         ),
-                      ),
-                      title: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          Text(
-                            email.sender,
-                            style: Theme.of(context).textTheme.bodyLarge,
-                            softWrap: false,
-                            overflow: TextOverflow.clip,
+                      );
+                    }
+                    final bool compactHeader =
+                        availableWidth.isFinite && availableWidth < 180;
+                    final double avatarDiameter =
+                        availableWidth.isFinite && availableWidth > 0
+                            ? (availableWidth - (compactHeader ? 4 : 8))
+                                .clamp(20.0, compactHeader ? 28.0 : 36.0)
+                                .toDouble()
+                            : 36.0;
+                    final bool showTrailing =
+                        !availableWidth.isFinite || availableWidth >= 220;
+                    final double gap =
+                        compactHeader ? 4 : (showTrailing ? 12 : 8);
+
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        SizedBox.square(
+                          dimension: avatarDiameter,
+                          child: CircleAvatar(
+                            radius: avatarDiameter / 2,
+                            child: Image.asset(
+                              email.image,
+                              width: 100,
+                              height: 100,
+                              fit: BoxFit.cover,
+                            ),
                           ),
-                          const SizedBox(height: 3),
-                          Text(
-                            "${email.time} ago",
-                            style: Theme.of(context).textTheme.bodySmall,
-                            softWrap: false,
-                            overflow: TextOverflow.clip,
+                        ),
+                        SizedBox(width: gap),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Text(
+                                email.sender,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 3),
+                              Text(
+                                "${email.time} ago",
+                                style: Theme.of(context).textTheme.bodySmall,
+                                softWrap: false,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (showTrailing) ...<Widget>[
+                          SizedBox(width: compactHeader ? 4 : 12),
+                          Container(
+                            padding: const EdgeInsets.all(8.0),
+                            decoration: const BoxDecoration(
+                              color: Colors.white,
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(50)),
+                            ),
+                            child: Icon(
+                              Icons.star_outline,
+                              color: Colors.grey[500],
+                            ),
                           ),
                         ],
-                      ),
-                      trailing: showTrailing
-                          ? Container(
-                              padding: const EdgeInsets.all(8.0),
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(50)),
-                              ),
-                              child: Icon(
-                                Icons.star_outline,
-                                color: Colors.grey[500],
-                              ),
-                            )
-                          : null,
+                      ],
                     );
                   },
                 ),
@@ -963,62 +1021,80 @@ class _EmailTile extends StatelessWidget {
                 child: (bodyImage != "") ? Image.asset(bodyImage) : Container(),
               ),
               const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  SizedBox(
-                    width: 126,
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                        shape: WidgetStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
+              LayoutBuilder(
+                builder: (BuildContext context, BoxConstraints constraints) {
+                  final bool stackActions = constraints.maxWidth.isFinite &&
+                      constraints.maxWidth < 260;
+
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: <Widget>[
+                      SizedBox(
+                        width: stackActions
+                            ? constraints.maxWidth
+                            : (constraints.maxWidth - 8) / 2,
+                        child: OutlinedButton(
+                          onPressed: () {},
+                          style: ButtonStyle(
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                            backgroundColor: WidgetStateProperty.all<Color>(
+                              const Color.fromARGB(255, 245, 241, 248),
+                            ),
+                            side: WidgetStateProperty.all(
+                              const BorderSide(
+                                width: 0.0,
+                                color: Colors.transparent,
+                              ),
+                            ),
                           ),
-                        ),
-                        backgroundColor: WidgetStateProperty.all<Color>(
-                          const Color.fromARGB(255, 245, 241, 248),
-                        ),
-                        side: WidgetStateProperty.all(
-                          const BorderSide(
-                            width: 0.0,
-                            color: Colors.transparent,
-                          ),
-                        ),
-                      ),
-                      child: Text(
-                        "Reply",
-                        style: TextStyle(color: Colors.grey[700], fontSize: 12),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    width: 126,
-                    child: OutlinedButton(
-                      onPressed: () {},
-                      style: ButtonStyle(
-                        shape: WidgetStateProperty.all(
-                          RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                        backgroundColor: WidgetStateProperty.all<Color>(
-                          const Color.fromARGB(255, 245, 241, 248),
-                        ),
-                        side: WidgetStateProperty.all(
-                          const BorderSide(
-                            width: 0.0,
-                            color: Colors.transparent,
+                          child: Text(
+                            "Reply",
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 12,
+                            ),
                           ),
                         ),
                       ),
-                      child: Text(
-                        "Reply all",
-                        style: TextStyle(color: Colors.grey[700], fontSize: 12),
+                      SizedBox(
+                        width: stackActions
+                            ? constraints.maxWidth
+                            : (constraints.maxWidth - 8) / 2,
+                        child: OutlinedButton(
+                          onPressed: () {},
+                          style: ButtonStyle(
+                            shape: WidgetStateProperty.all(
+                              RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(30.0),
+                              ),
+                            ),
+                            backgroundColor: WidgetStateProperty.all<Color>(
+                              const Color.fromARGB(255, 245, 241, 248),
+                            ),
+                            side: WidgetStateProperty.all(
+                              const BorderSide(
+                                width: 0.0,
+                                color: Colors.transparent,
+                              ),
+                            ),
+                          ),
+                          child: Text(
+                            "Reply all",
+                            style: TextStyle(
+                              color: Colors.grey[700],
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                },
               ),
             ],
           ),
