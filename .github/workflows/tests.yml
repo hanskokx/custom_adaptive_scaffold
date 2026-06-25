@@ -1,4 +1,4 @@
-name: Tests
+name: tests
 run-name: Code Quality Checks
 
 on:
