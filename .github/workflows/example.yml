@@ -1,0 +1,64 @@
+name: "example"
+
+on:
+  schedule:
+    - cron: "0 12 * * 3"
+  pull_request:
+    types: [opened, synchronize]
+    paths:
+      - "example/**/*.dart"
+      - "example/**/*.yaml"
+      - "lib/**/*.dart"
+      - "pubspec.yaml"
+  push:
+    branches:
+      - main
+      - dev
+    paths:
+      - "example/**/*.dart"
+      - "example/**/*.yaml"
+      - "lib/**/*.dart"
+      - "pubspec.yaml"
+      - .github/workflows/example.yaml
+  release:
+    types: [published]
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: example
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pub-cache
+            example/.dart_tool
+          key: ${{ runner.os }}-flutter-${{ hashFiles('example/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check for linting errors
+        run: flutter analyze
+
+      - name: Check for formatting issues
+        # Since the working directory is 'example', '.' refers to 'example/'
+        run: dart format --set-exit-if-changed .
+
+      - name: Run tests
+        run: flutter test

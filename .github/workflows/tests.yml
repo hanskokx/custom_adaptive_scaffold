@@ -1,13 +1,28 @@
-name: Flutter Lint & Test
-run-name: ${{ github.actor }} is checking code quality 🚀
+name: tests
+run-name: Code Quality Checks
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "0 12 * * 3"
+  push:
+    branches:
+      - main
+      - develop
+      - "release/**"
+    paths:
+      - "**.dart"
+      - "./*.yaml"
+      - .github/workflows/code-quality.yaml
+      - "!example/**"
+  release:
+    types: [published]
   pull_request:
     types: [opened, synchronize]
     paths:
       - "**/*.dart"
       - "**/pubspec.yaml"
+      - "!example/**"
 
 jobs:
   analyze:
@@ -23,7 +38,7 @@ jobs:
           path: |
             ~/.pub-cache
             .dart_tool
-          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock', '!example/**') }}
           restore-keys: |
             ${{ runner.os }}-flutter-
 
@@ -36,10 +51,10 @@ jobs:
         run: flutter pub get
 
       - name: Check for linting errors
-        run: flutter analyze
+        run: flutter analyze .
 
       - name: Check for formatting issues
-        run: dart format --set-exit-if-changed ./
+        run: dart format --set-exit-if-changed lib/
 
       - name: Run tests
         run: flutter test

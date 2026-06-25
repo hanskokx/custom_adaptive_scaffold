@@ -5,8 +5,7 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:custom_adaptive_scaffold_example/adaptive_layout_demo.dart"
     as example;
-import "package:flutter/material.dart"
-    hide NavigationRail, NavigationRailThemeData;
+import "package:custom_adaptive_scaffold/material.dart";
 import "package:flutter_test/flutter_test.dart";
 
 void main() {
@@ -155,19 +154,14 @@ void main() {
     "adaptive layout navigation rail displays with correct properties",
     (WidgetTester tester) async {
       await updateScreen(620, tester);
-      final BuildContext context = tester.element(find.byType(AdaptiveLayout));
 
-      final Finder findKey = find.byKey(const Key("Primary Navigation Medium"));
-      final SlotLayoutConfig slotLayoutConfig =
-          tester.firstWidget<SlotLayoutConfig>(findKey);
-      final WidgetBuilder? widgetBuilder = slotLayoutConfig.builder;
-      final Widget Function(BuildContext) widgetFunction =
-          (widgetBuilder ?? () => Container()) as Widget Function(BuildContext);
-      final SizedBox sizedBox =
-          (((widgetFunction(context) as Builder).builder(context) as Padding)
-                  .child ??
-              () => const SizedBox()) as SizedBox;
-      expect(sizedBox.width, 72);
+      // Find the rendered NavigationRail in the active widget tree
+      final Finder navigationRailFinder = find.byType(NavigationRail);
+      expect(navigationRailFinder, findsOneWidget);
+
+      // Directly verify that its rendered width is 72
+      final Size size = tester.getSize(navigationRailFinder);
+      expect(size.width, 72);
     },
   );
 

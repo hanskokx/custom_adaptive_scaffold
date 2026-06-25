@@ -1,6 +1,6 @@
 name: custom_adaptive_scaffold
 description: Widgets to easily build adaptive layouts, including navigation elements.
-version: 5.0.0
+version: 5.0.1
 issue_tracker: https://github.com/hanskokx/custom_adaptive_scaffold/issues
 repository: https://github.com/hanskokx/custom_adaptive_scaffold
 
@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  arcane_analysis: ^1.0.3
+  arcane_analysis: ^1.0.4
   flutter_test:
     sdk: flutter
 

@@ -4,3 +4,5 @@ include: package:arcane_analysis/analysis_options.yaml
 analyzer:
   errors:
     deprecated_member_use: ignore
+  exclude:
+    - example/**

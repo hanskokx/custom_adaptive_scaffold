@@ -1,17 +1,31 @@
-[![style: arcane analysis](https://img.shields.io/badge/style-arcane_analysis-6E35AE)](https://pub.dev/packages/arcane_analysis)
+<div align="center">
 
 # (Custom) Adaptive Scaffold
 
-`AdaptiveScaffold` reacts to input from users, devices and screen elements and
-renders your Flutter application according to the
-[Material 3](https://m3.material.io/foundations/adaptive-design/overview)
-guidelines.
+`AdaptiveScaffold` reacts to input from users, devices and screen elements and renders your Flutter application according to the [Material 3](https://m3.material.io/foundations/adaptive-design/overview) guidelines.
 
-**Important**: This source code is derived from the original code found in
-`package:flutter_adaptive_scaffold` as well as the Flutter framework, itself.
-Modifications have been made to the original source code that provide some
-additional customizations, such as padding and margins, extended theming
-controls, and tooltip configuration.
+```bash
+flutter pub add custom_adaptive_scaffold
+```
+
+<!-- Badges -->
+
+[![style: arcane analysis](https://img.shields.io/badge/style-arcane_analysis-6E35AE)](https://pub.dev/packages/arcane_analysis)
+<br />
+[![tests](https://github.com/hanskokx/custom_adaptive_scaffold/actions/workflows/tests.yml/badge.svg)](https://github.com/hanskokx/custom_adaptive_scaffold/actions/workflows/tests.yml)
+[![example](https://github.com/hanskokx/custom_adaptive_scaffold/actions/workflows/example.yml/badge.svg)](https://github.com/hanskokx/custom_adaptive_scaffold/actions/workflows/example.yml)
+[![stars](https://img.shields.io/github/stars/hanskokx/custom_adaptive_scaffold.svg)](https://github.com/hanskokx/custom_adaptive_scaffold/stargazers)
+<br/>
+[![pub package](https://img.shields.io/pub/v/custom_adaptive_scaffold?logo=dart)](https://pub.dev/packages/custom_adaptive_scaffold)
+[![pub score](https://img.shields.io/pub/points/custom_adaptive_scaffold?logo=dart)](https://pub.dev/packages/custom_adaptive_scaffold/score)
+[![likes](https://img.shields.io/pub/likes/custom_adaptive_scaffold?logo=dart)](https://pub.dev/packages/custom_adaptive_scaffold/likes)
+
+</div>
+
+<img width="1060" height="852" alt="Example of a display made with AdaptiveScaffold" src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/adaptiveScaffold.gif" />
+
+**Important**: This source code is derived from the original code found in `package:flutter_adaptive_scaffold` as well as the Flutter framework, itself.
+Modifications have been made to the original source code that provide some additional customizations, such as padding and margins, extended theming controls, and tooltip configuration.
 
 ## Table of Contents
 
@@ -255,8 +269,6 @@ class _MailScreenState extends State<MailScreen> {
 
 ### Example Usage
 
-<?code-excerpt "example/lib/adaptive_scaffold_demo.dart (Example)"?>
-
 ```dart
 @override
 Widget build(BuildContext context) {
@@ -269,7 +281,7 @@ Widget build(BuildContext context) {
           color: const Color.fromARGB(255, 255, 201, 197),
           height: 400,
         ),
-      )
+      ),
   ];
   return AdaptiveScaffold(
     // An option to override the default transition duration.
@@ -288,36 +300,64 @@ Widget build(BuildContext context) {
         _selectedTab = index;
       });
     },
-    destinations: const <CustomNavigationDestination>[
-      CustomNavigationDestination(
+    destinations: const <NavigationDestination>[
+      NavigationDestination(
         icon: Icon(Icons.inbox_outlined),
         selectedIcon: Icon(Icons.inbox),
-        label: 'Inbox',
+        label: "Inbox",
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         icon: Icon(Icons.article_outlined),
         selectedIcon: Icon(Icons.article),
-        label: 'Articles',
+        label: "Articles",
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         icon: Icon(Icons.chat_outlined),
         selectedIcon: Icon(Icons.chat),
-        label: 'Chat',
+        label: "Chat",
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         icon: Icon(Icons.video_call_outlined),
         selectedIcon: Icon(Icons.video_call),
-        label: 'Video',
+        label: "Video",
       ),
-      CustomNavigationDestination(
+      NavigationDestination(
         icon: Icon(Icons.home_outlined),
         selectedIcon: Icon(Icons.home),
-        label: 'Inbox',
+        label: "Inbox",
       ),
     ],
-    smallBody: (_) => ListView.builder(
-      itemCount: children.length,
-      itemBuilder: (_, int idx) => children[idx],
+    controller: _scaffoldController,
+    smallBody: (_) => ListView(
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  const Text(
+                    "Small-screen controller demo",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "Tap to switch from body to secondaryBody on compact layouts.",
+                  ),
+                  const SizedBox(height: 12),
+                  FilledButton(
+                    onPressed: _scaffoldController.showSecondaryBody,
+                    child: const Text("Show secondaryBody"),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        ...children,
+      ],
     ),
     body: (_) => GridView.count(crossAxisCount: 2, children: children),
     mediumLargeBody: (_) =>
@@ -325,11 +365,33 @@ Widget build(BuildContext context) {
     largeBody: (_) => GridView.count(crossAxisCount: 4, children: children),
     extraLargeBody: (_) =>
         GridView.count(crossAxisCount: 5, children: children),
-    // Define a default secondaryBody.
-    // Override the default secondaryBody during the smallBreakpoint to be
-    // empty. Must use AdaptiveScaffold.emptyBuilder to ensure it is properly
-    // overridden.
-    smallSecondaryBody: AdaptiveScaffold.emptyBuilder,
+    smallSecondaryBody: (_) => Center(
+      child: Card(
+        margin: const EdgeInsets.all(16),
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Text(
+                "secondaryBody",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "This pane is shown on small screens when the controller focus is secondaryBody.",
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton.tonal(
+                onPressed: _scaffoldController.showBody,
+                child: const Text("Back to body"),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
     secondaryBody: (_) => Container(
       color: const Color.fromARGB(255, 234, 158, 192),
     ),
@@ -355,8 +417,6 @@ These are the set of widgets that are used on a lower level and offer more custo
 A `Breakpoint` controls the responsive behavior at different screens and configurations.
 
 You can either use a predefined Material3 breakpoint or create your own.
-
-<?code-excerpt "lib/src/breakpoints.dart (Breakpoints)"?>
 
 ```dart
 /// Returns a const [Breakpoint] with the given constraints.
@@ -451,8 +511,6 @@ const Breakpoint.extraLarge({this.andUp = false, this.platform})
 
 It is possible to compare Breakpoints:
 
-<?code-excerpt "lib/src/breakpoints.dart (Breakpoint operators)"?>
-
 ```dart
 /// Returns true if this [Breakpoint] is greater than the given [Breakpoint].
 bool operator >(Breakpoint breakpoint)
@@ -474,7 +532,9 @@ bool between(Breakpoint lower, Breakpoint upper)
 
 ### AdaptiveLayout
 
-!["AdaptiveLayout's Assigned Slots Displayed on Screen"](example/demo_files/screenSlots.png) `AdaptiveLayout` is the top-level widget class that arranges the layout of the slots and their animation, similar to Scaffold. It takes in several LayoutSlots and returns an appropriate layout based on the diagram above. `AdaptiveScaffold` is built upon `AdaptiveLayout` internally but abstracts some of the complexity with presets based on the Material 3 Design specification.
+<img src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/screenSlots.png" alt="AdaptiveLayout's Assigned Slots Displayed on Screen" />
+
+`AdaptiveLayout` is the top-level widget class that arranges the layout of the slots and their animation, similar to Scaffold. It takes in several LayoutSlots and returns an appropriate layout based on the diagram above. `AdaptiveScaffold` is built upon `AdaptiveLayout` internally but abstracts some of the complexity with presets based on the Material 3 Design specification.
 
 ### SlotLayout
 
@@ -486,8 +546,6 @@ SlotLayoutConfigs mapped to Breakpoints in a config and displays a widget based 
 SlotLayout.from creates a SlotLayoutConfig holds the actual widget to be displayed and the entrance animation and exit animation.
 
 ### Example Usage
-
-<?code-excerpt "example/lib/adaptive_layout_demo.dart (Example)"?>
 
 ```dart
 // AdaptiveLayout has a number of slots that take SlotLayouts and these
@@ -502,7 +560,7 @@ return AdaptiveLayout(
     config: <Breakpoint, SlotLayoutConfig>{
       Breakpoints.medium: SlotLayout.from(
         inAnimation: AdaptiveScaffold.leftOutIn,
-        key: const Key('Primary Navigation Medium'),
+        key: const Key("Primary Navigation Medium"),
         builder: (_) => AdaptiveScaffold.standardNavigationRail(
           selectedIndex: selectedNavigation,
           onDestinationSelected: (int newIndex) {
@@ -512,8 +570,10 @@ return AdaptiveLayout(
           },
           leading: const Icon(Icons.menu),
           destinations: destinations
-              .map((NavigationDestination destination) =>
-                  AdaptiveScaffold.toRailDestination(destination))
+              .map(
+                (NavigationDestination destination) =>
+                    AdaptiveScaffold.toRailDestination(destination),
+              )
               .toList(),
           backgroundColor: navRailTheme.backgroundColor,
           selectedIconTheme: navRailTheme.selectedIconTheme,
@@ -523,7 +583,7 @@ return AdaptiveLayout(
         ),
       ),
       Breakpoints.mediumLarge: SlotLayout.from(
-        key: const Key('Primary Navigation MediumLarge'),
+        key: const Key("Primary Navigation MediumLarge"),
         inAnimation: AdaptiveScaffold.leftOutIn,
         builder: (_) => AdaptiveScaffold.standardNavigationRail(
           selectedIndex: selectedNavigation,
@@ -537,15 +597,17 @@ return AdaptiveLayout(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Text(
-                'REPLY',
+                "REPLY",
                 style: headerColor,
               ),
-              const Icon(Icons.menu_open)
+              const Icon(Icons.menu_open),
             ],
           ),
           destinations: destinations
-              .map((NavigationDestination destination) =>
-                  AdaptiveScaffold.toRailDestination(destination))
+              .map(
+                (NavigationDestination destination) =>
+                    AdaptiveScaffold.toRailDestination(destination),
+              )
               .toList(),
           trailing: trailingNavRail,
           backgroundColor: navRailTheme.backgroundColor,
@@ -556,7 +618,7 @@ return AdaptiveLayout(
         ),
       ),
       Breakpoints.large: SlotLayout.from(
-        key: const Key('Primary Navigation Large'),
+        key: const Key("Primary Navigation Large"),
         inAnimation: AdaptiveScaffold.leftOutIn,
         builder: (_) => AdaptiveScaffold.standardNavigationRail(
           selectedIndex: selectedNavigation,
@@ -570,15 +632,17 @@ return AdaptiveLayout(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Text(
-                'REPLY',
+                "REPLY",
                 style: headerColor,
               ),
-              const Icon(Icons.menu_open)
+              const Icon(Icons.menu_open),
             ],
           ),
           destinations: destinations
-              .map((NavigationDestination destination) =>
-                  AdaptiveScaffold.toRailDestination(destination))
+              .map(
+                (NavigationDestination destination) =>
+                    AdaptiveScaffold.toRailDestination(destination),
+              )
               .toList(),
           trailing: trailingNavRail,
           backgroundColor: navRailTheme.backgroundColor,
@@ -589,7 +653,7 @@ return AdaptiveLayout(
         ),
       ),
       Breakpoints.extraLarge: SlotLayout.from(
-        key: const Key('Primary Navigation ExtraLarge'),
+        key: const Key("Primary Navigation ExtraLarge"),
         inAnimation: AdaptiveScaffold.leftOutIn,
         builder: (_) => AdaptiveScaffold.standardNavigationRail(
           selectedIndex: selectedNavigation,
@@ -603,15 +667,17 @@ return AdaptiveLayout(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: <Widget>[
               Text(
-                'REPLY',
+                "REPLY",
                 style: headerColor,
               ),
-              const Icon(Icons.menu_open)
+              const Icon(Icons.menu_open),
             ],
           ),
           destinations: destinations
-              .map((NavigationDestination destination) =>
-                  AdaptiveScaffold.toRailDestination(destination))
+              .map(
+                (NavigationDestination destination) =>
+                    AdaptiveScaffold.toRailDestination(destination),
+              )
               .toList(),
           trailing: trailingNavRail,
           backgroundColor: navRailTheme.backgroundColor,
@@ -628,29 +694,29 @@ return AdaptiveLayout(
   body: SlotLayout(
     config: <Breakpoint, SlotLayoutConfig>{
       Breakpoints.small: SlotLayout.from(
-        key: const Key('Body Small'),
+        key: const Key("Body Small"),
         builder: (_) => ListView.builder(
           itemCount: children.length,
           itemBuilder: (BuildContext context, int index) => children[index],
         ),
       ),
       Breakpoints.medium: SlotLayout.from(
-        key: const Key('Body Medium'),
+        key: const Key("Body Medium"),
         builder: (_) =>
             GridView.count(crossAxisCount: 2, children: children),
       ),
       Breakpoints.mediumLarge: SlotLayout.from(
-        key: const Key('Body MediumLarge'),
+        key: const Key("Body MediumLarge"),
         builder: (_) =>
             GridView.count(crossAxisCount: 3, children: children),
       ),
       Breakpoints.large: SlotLayout.from(
-        key: const Key('Body Large'),
+        key: const Key("Body Large"),
         builder: (_) =>
             GridView.count(crossAxisCount: 4, children: children),
       ),
       Breakpoints.extraLarge: SlotLayout.from(
-        key: const Key('Body ExtraLarge'),
+        key: const Key("Body ExtraLarge"),
         builder: (_) =>
             GridView.count(crossAxisCount: 5, children: children),
       ),
@@ -661,7 +727,7 @@ return AdaptiveLayout(
   bottomNavigation: SlotLayout(
     config: <Breakpoint, SlotLayoutConfig>{
       Breakpoints.small: SlotLayout.from(
-        key: const Key('Bottom Navigation Small'),
+        key: const Key("Bottom Navigation Small"),
         inAnimation: AdaptiveScaffold.bottomToTop,
         outAnimation: AdaptiveScaffold.topToBottom,
         builder: (_) => AdaptiveScaffold.standardBottomNavigationBar(
@@ -673,14 +739,15 @@ return AdaptiveLayout(
             });
           },
         ),
-      )
+      ),
     },
   ),
 );
 ```
 
 Both of the examples shown here produce the same output:
-!["Example of a display made with AdaptiveScaffold"](example/demo_files/adaptiveScaffold.gif)
+
+<img width="1060" height="852" alt="Example of a display made with AdaptiveScaffold" src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/adaptiveScaffold.gif" />
 
 ## Migrating from 4.x
 
