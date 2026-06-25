@@ -572,10 +572,15 @@ class NavigationBarTheme extends InheritedTheme
       return navigationBarTheme.data;
     }
 
-    // Read the raw ThemeData field so we only consider explicitly provided
-    // values, not merged defaults from Flutter's NavigationBarTheme.of.
+    // Prefer an in-scope Flutter m.NavigationBarTheme inherited widget so that
+    // subtree overrides provided via m.NavigationBarTheme(data: ...) are
+    // respected, just as m.NavigationRailTheme.of does.  Fall back to the raw
+    // ThemeData field only when no such widget is present.
+    final m.NavigationBarTheme? materialNavigationBarInheritedTheme =
+        context.dependOnInheritedWidgetOfExactType<m.NavigationBarTheme>();
     final m.NavigationBarThemeData materialNavigationBarTheme =
-        Theme.of(context).navigationBarTheme;
+        materialNavigationBarInheritedTheme?.data ??
+            Theme.of(context).navigationBarTheme;
 
     if (materialNavigationBarTheme is NavigationBarThemeData) {
       return materialNavigationBarTheme;

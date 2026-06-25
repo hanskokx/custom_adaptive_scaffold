@@ -214,7 +214,7 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
       data: input.disabled
           ? iconTheme.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.38),
-              size: railIconSize,
+              size: iconTheme.size ?? railIconSize,
             )
           : iconTheme,
       child: input.icon,
