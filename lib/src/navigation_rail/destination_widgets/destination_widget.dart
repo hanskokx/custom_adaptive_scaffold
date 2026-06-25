@@ -199,8 +199,8 @@ class _RailDestinationState extends State<RailDestination>
     Offset indicatorOffset = data.indicatorOffset;
 
     // --- Badge ---
-    final bool showBadge =
-        widget.badge != null && widget.badgeStyle != NavigationBadgeStyle.hidden;
+    final bool showBadge = widget.badge != null &&
+        widget.badgeStyle != NavigationBadgeStyle.hidden;
     final Widget? badgeLabel =
         showBadge && widget.badgeStyle == NavigationBadgeStyle.count
             ? Text(widget.badge! > 99 ? "99+" : "${widget.badge}")
