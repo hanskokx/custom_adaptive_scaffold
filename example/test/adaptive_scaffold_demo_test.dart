@@ -2,8 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "package:custom_adaptive_scaffold_example/adaptive_scaffold_demo.dart"
-    as example;
+import "../lib/adaptive_scaffold_demo.dart" as example;
 import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
 
