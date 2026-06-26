@@ -781,6 +781,90 @@ void main() {
     });
 
     testWidgets(
+        "navigation bar destination builder applies constructor inputs via behavior",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              // Explicit package customization enables expanded indicator slot.
+              destinationIndicatorShape: RoundedRectangleBorder(),
+              iconTheme: WidgetStatePropertyAll<IconThemeData>(
+                IconThemeData(size: 40),
+              ),
+            ),
+          ),
+          home: Scaffold(
+            body: NavigationBar(
+              selectedIndex: 1,
+              destinations: const <Widget>[
+                NavigationBarDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                  label: "Home",
+                  tooltip: "Go Home",
+                  enabled: false,
+                  padding: EdgeInsets.all(6),
+                  indicatorColor: Colors.orange,
+                  indicatorShape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(4)),
+                  ),
+                ),
+                NavigationBarDestination(
+                  icon: Icon(Icons.search_outlined),
+                  selectedIcon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // tooltip + label
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.message, "Go Home");
+
+      // disabled destination does not trigger callback
+      await tester.tap(find.text("Home"));
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsNothing);
+
+      // selected destination keeps selected icon (selectedIndex = 1)
+      expect(find.byIcon(Icons.search), findsOneWidget);
+      expect(find.byIcon(Icons.search_outlined), findsNothing);
+
+      // indicator height + shape + color are forwarded into NavigationIndicator.
+      final Iterable<custom_adaptive_scaffold.NavigationIndicator> indicators =
+          tester.widgetList<custom_adaptive_scaffold.NavigationIndicator>(
+        find.byType(custom_adaptive_scaffold.NavigationIndicator),
+      );
+      expect(indicators, isNotEmpty);
+      expect(indicators.every((i) => i.height == 40.0), isTrue);
+      expect(
+        indicators.any((i) => i.shape is RoundedRectangleBorder),
+        isTrue,
+      );
+      expect(
+        indicators.any((i) => i.color == Colors.orange),
+        isTrue,
+      );
+
+      // destination padding is applied to at least one destination container.
+      expect(
+        find.byWidgetPredicate(
+          (Widget widget) =>
+              widget is Padding && widget.padding == const EdgeInsets.all(6),
+        ),
+        findsWidgets,
+      );
+    });
+
+    testWidgets(
         "navigation rail native theme override stays on framework ink path",
         (WidgetTester tester) async {
       await tester.pumpWidget(
