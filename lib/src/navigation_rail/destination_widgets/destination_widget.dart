@@ -42,7 +42,38 @@ class RailDestination extends StatefulWidget {
     this.badgeLabel,
     this.customBadge,
     super.key,
-  });
+  })  : assert(
+          badge == null || badge > 0,
+          "RailDestination.badge must be a positive integer.",
+        ),
+        assert(
+          !(badge != null && badgeLabel != null),
+          "badge and badgeLabel cannot both be set at the same time.",
+        ),
+        assert(
+          !(badge != null && customBadge != null),
+          "badge and customBadge cannot both be set at the same time.",
+        ),
+        assert(
+          !(badgeLabel != null && customBadge != null),
+          "badgeLabel and customBadge cannot both be set at the same time.",
+        ),
+        assert(
+          customBadge == null ||
+              badgeStyle == NavigationBadgeStyle.count ||
+              badgeStyle == NavigationBadgeStyle.dot ||
+              badgeStyle == NavigationBadgeStyle.hidden,
+          "Only count, dot, and hidden styles may be combined with customBadge. "
+          "exact applies to badge (int) only.",
+        ),
+        assert(
+          badgeLabel == null ||
+              badgeStyle == NavigationBadgeStyle.count ||
+              badgeStyle == NavigationBadgeStyle.dot ||
+              badgeStyle == NavigationBadgeStyle.hidden,
+          "Only count, dot, and hidden styles may be combined with badgeLabel. "
+          "exact applies to badge (int) only.",
+        );
 
   final double? minWidth;
   final double? minExtendedWidth;

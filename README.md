@@ -138,12 +138,12 @@ The package's `NavigationDestination` is a full base class (not just a wrapper) 
 
 `NavigationDestination` supports M3-compliant small (dot) and large (labeled) badges via three mutually exclusive input properties:
 
-| Property      | Type                   | Description                                                                            |
-| ------------- | ---------------------- | -------------------------------------------------------------------------------------- |
-| `badge`       | `int?`                 | Numeric badge count. Must be > 0. Display capped to "99+" by default; see table below. |
-| `badgeLabel`  | `String?`              | Exact string shown in the badge.                                                       |
-| `customBadge` | `Badge?`               | Fully custom `Badge` widget.                                                           |
-| `badgeStyle`  | `NavigationBadgeStyle` | Controls `badge` presentation.                                                         |
+ | Property      | Type                   | Description                                                                                                         |
+ | ------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------- |
+ | `badge`       | `int?`                 | Numeric badge count. Must be > 0. Display capped to "99+" by default; see table below.                              |
+ | `badgeLabel`  | `String?`              | Exact string shown in the badge.                                                                                    |
+ | `customBadge` | `Badge?`               | Fully custom `Badge` widget.                                                                                        |
+ | `badgeStyle`  | `NavigationBadgeStyle` | Controls badge presentation across all badge input types. `exact` applies to `badge` (`int`) only; see table below. |
 
 `NavigationBadgeStyle` values:
 

@@ -5,7 +5,7 @@
   - `NavigationBadgeStyle.count` remains the default (values > 99 shown as `"99+"`).
   - `NavigationBadgeStyle.dot` and `NavigationBadgeStyle.hidden` now apply to all three badge input types (`badge`, `badgeLabel`, `customBadge`).
   - Added `NavigationDestination.badgeLabel` (`String?`) — renders a badge with an exact string label, bypassing all numeric conversion.
-  - Added `NavigationDestination.customBadge` (`Badge?`) — renders the user's fully customized `Badge` widget with the destination icon injected as its child. `badgeStyle` must not be set alongside this property.
+  - Added `NavigationDestination.customBadge` (`Badge?`) — renders the user's fully customized `Badge` widget with the destination icon injected as its child. `badgeStyle` may be `count`, `dot`, or `hidden`; `exact` is not allowed.
   - `badge`, `badgeLabel`, and `customBadge` are mutually exclusive (asserted in debug mode).
 
 ## 5.2.0
