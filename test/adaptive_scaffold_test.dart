@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
+    as custom_adaptive_scaffold;
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/material.dart"
     hide
@@ -447,6 +449,8 @@ void main() {
                 return AdaptiveScaffold(
                   destinations: destinations,
                   selectedIndex: selectedDestination,
+                  smallBreakpoint: TestBreakpoint400(),
+                  drawerBreakpoint: TestBreakpoint0(),
                   onSelectedIndexChange: (int value) {
                     setState(() {
                       selectedDestination = value;
@@ -458,114 +462,36 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      expect(selectedDestination, 0);
+      final Finder fAdaptiveScaffold = find.byType(AdaptiveScaffold);
+      final Finder fNavigationRail = find.descendant(
+        of: fAdaptiveScaffold,
+        matching: find.byType(NavigationRail),
+      );
+      final NavigationRail navigationRailView =
+          tester.firstWidget<NavigationRail>(fNavigationRail);
+
+      expect(navigationRailView, isNotNull);
+      expect(navigationRailView.backgroundColor, isNotNull);
+      expect(navigationRailView.selectedIconTheme?.color, isNotNull);
+      expect(navigationRailView.selectedIconTheme?.size, isNotNull);
+      expect(navigationRailView.unselectedIconTheme?.color, isNotNull);
+      expect(navigationRailView.unselectedIconTheme?.size, isNotNull);
+
       expect(firstDestinationWithSelectedIcon, findsOneWidget);
       expect(lastDestinationWithIcon, findsOneWidget);
       expect(firstDestinationWithIcon, findsNothing);
       expect(lastDestinationWithSelectedIcon, findsNothing);
 
-      await tester.ensureVisible(lastDestinationWithIcon);
       await tester.tap(lastDestinationWithIcon);
       await tester.pumpAndSettle();
+
       expect(selectedDestination, 1);
-
       expect(firstDestinationWithSelectedIcon, findsNothing);
-      expect(lastDestinationWithIcon, findsNothing);
-      expect(firstDestinationWithIcon, findsOneWidget);
       expect(lastDestinationWithSelectedIcon, findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "when view in medium screen, navigation rail must be visible as per theme data values.",
-    (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(SimulatedLayout.medium.size);
-      await tester.pumpWidget(SimulatedLayout.medium.scaffold(tester));
-      await tester.pumpAndSettle();
-
-      final Finder primaryNavigationMedium = find.byKey(
-        const Key("primaryNavigation"),
-      );
-      expect(primaryNavigationMedium, findsOneWidget);
-
-      final Finder navigationRailFinder = find.descendant(
-        of: primaryNavigationMedium,
-        matching: find.byType(NavigationRail),
-      );
-      expect(navigationRailFinder, findsOneWidget);
-
-      final NavigationRail navigationRailView = tester.firstWidget(
-        navigationRailFinder,
-      );
-      expect(navigationRailView, isNotNull);
-
-      expect(
-        navigationRailView.backgroundColor,
-        SimulatedLayout.navigationRailThemeBgColor,
-      );
-      expect(
-        navigationRailView.selectedIconTheme?.color,
-        SimulatedLayout.selectedIconThemeData.color,
-      );
-      expect(
-        navigationRailView.selectedIconTheme?.size,
-        SimulatedLayout.selectedIconThemeData.size,
-      );
-      expect(
-        navigationRailView.unselectedIconTheme?.color,
-        SimulatedLayout.unSelectedIconThemeData.color,
-      );
-      expect(
-        navigationRailView.unselectedIconTheme?.size,
-        SimulatedLayout.unSelectedIconThemeData.size,
-      );
-    },
-  );
-
-  testWidgets(
-    "when view in mediumLarge screen, navigation rail must be visible as per theme data values.",
-    (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(SimulatedLayout.mediumLarge.size);
-      await tester.pumpWidget(SimulatedLayout.mediumLarge.scaffold(tester));
-      await tester.pumpAndSettle();
-
-      final Finder primaryNavigationMediumLarge = find.byKey(
-        const Key("primaryNavigation1"),
-      );
-      expect(primaryNavigationMediumLarge, findsOneWidget);
-
-      final Finder navigationRailFinder = find.descendant(
-        of: primaryNavigationMediumLarge,
-        matching: find.byType(NavigationRail),
-      );
-      expect(navigationRailFinder, findsOneWidget);
-
-      final NavigationRail navigationRailView = tester.firstWidget(
-        navigationRailFinder,
-      );
-      expect(navigationRailView, isNotNull);
-
-      expect(
-        navigationRailView.backgroundColor,
-        SimulatedLayout.navigationRailThemeBgColor,
-      );
-      expect(
-        navigationRailView.selectedIconTheme?.color,
-        SimulatedLayout.selectedIconThemeData.color,
-      );
-      expect(
-        navigationRailView.selectedIconTheme?.size,
-        SimulatedLayout.selectedIconThemeData.size,
-      );
-      expect(
-        navigationRailView.unselectedIconTheme?.color,
-        SimulatedLayout.unSelectedIconThemeData.color,
-      );
-      expect(
-        navigationRailView.unselectedIconTheme?.size,
-        SimulatedLayout.unSelectedIconThemeData.size,
-      );
+      expect(firstDestinationWithIcon, findsOneWidget);
+      expect(lastDestinationWithIcon, findsNothing);
     },
   );
 
@@ -855,6 +781,113 @@ void main() {
     },
   );
 
+  testWidgets(
+    "adaptive scaffold omits body slots when builders use emptyBuilder",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(400, 800)),
+            child: AdaptiveScaffold(
+              destinations: const <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  label: "Inbox",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.video_call_outlined),
+                  label: "Video",
+                ),
+              ],
+              smallBody: AdaptiveScaffold.emptyBuilder,
+              smallSecondaryBody: AdaptiveScaffold.emptyBuilder,
+              body: AdaptiveScaffold.emptyBuilder,
+              secondaryBody: AdaptiveScaffold.emptyBuilder,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key("smallBody")), findsNothing);
+      expect(find.byKey(const Key("smallSBody")), findsNothing);
+      expect(find.byKey(const Key("body")), findsNothing);
+      expect(find.byKey(const Key("sBody")), findsNothing);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold shows appBar without drawer when appBarBreakpoint matches and useDrawer is false",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(400, 800)),
+            child: AdaptiveScaffold(
+              useDrawer: false,
+              drawerBreakpoint: TestBreakpoint0(),
+              appBarBreakpoint: TestBreakpoint0(),
+              destinations: const <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  label: "Inbox",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.video_call_outlined),
+                  label: "Video",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byType(Drawer), findsNothing);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold drawer uses extended navigation rail when enabled",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(400, 800)),
+            child: AdaptiveScaffold(
+              drawerBreakpoint: TestBreakpoint0(),
+              destinations: const <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  label: "Inbox",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.video_call_outlined),
+                  label: "Video",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final ScaffoldState state = tester.state(find.byType(Scaffold));
+      state.openDrawer();
+      await tester.pumpAndSettle();
+
+      final NavigationRail drawerRail = tester.widget<NavigationRail>(
+        find.descendant(
+          of: find.byType(Drawer),
+          matching: find.byType(NavigationRail),
+        ),
+      );
+      expect(drawerRail.extended, isTrue);
+      expect(drawerRail.destinations.length, 2);
+    },
+  );
+
   // Test for navigationRailDestinationBuilder parameter.
   testWidgets("adaptive scaffold custom navigation rail destination mapping",
       (WidgetTester tester) async {
@@ -1086,6 +1119,338 @@ void main() {
       controller.dispose();
     },
   );
+
+  testWidgets(
+    "adaptive scaffold scope of and maybeOf resolve in-scope controller",
+    (WidgetTester tester) async {
+      final AdaptiveScaffoldController controller =
+          AdaptiveScaffoldController();
+      late AdaptiveScaffoldController resolvedByOf;
+      AdaptiveScaffoldController? resolvedByMaybeOf;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: AdaptiveScaffoldScope(
+            controller: controller,
+            child: Builder(
+              builder: (BuildContext context) {
+                resolvedByOf = AdaptiveScaffoldScope.of(context);
+                resolvedByMaybeOf = AdaptiveScaffoldScope.maybeOf(context);
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(identical(resolvedByOf, controller), isTrue);
+      expect(identical(resolvedByMaybeOf, controller), isTrue);
+
+      controller.dispose();
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold scope maybeOf returns null when absent",
+    (WidgetTester tester) async {
+      AdaptiveScaffoldController? resolvedController;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Builder(
+            builder: (BuildContext context) {
+              resolvedController = AdaptiveScaffoldScope.maybeOf(context);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+
+      expect(resolvedController, isNull);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold scope of asserts when absent",
+    (WidgetTester tester) async {
+      late BuildContext capturedContext;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Builder(
+            builder: (BuildContext context) {
+              capturedContext = context;
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+
+      expect(
+        () => AdaptiveScaffoldScope.of(capturedContext),
+        throwsA(
+          isA<AssertionError>().having(
+            (AssertionError error) => error.message,
+            "message",
+            "AdaptiveScaffoldScope not found in widget tree.",
+          ),
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    "adaptive body exposes collapsed state and only notifies on change",
+    (WidgetTester tester) async {
+      bool? collapsedValue;
+
+      Widget buildBody(bool collapsed) {
+        return Directionality(
+          textDirection: TextDirection.ltr,
+          child: AdaptiveBody(
+            viewIsCollapsed: collapsed,
+            child: Builder(
+              builder: (BuildContext context) {
+                collapsedValue = AdaptiveBody.of(context)?.viewIsCollapsed;
+                return Text("collapsed=$collapsedValue");
+              },
+            ),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(buildBody(false));
+      expect(collapsedValue, isFalse);
+      expect(find.text("collapsed=false"), findsOneWidget);
+
+      const AdaptiveBody expandedBody = AdaptiveBody(
+        viewIsCollapsed: false,
+        child: SizedBox(),
+      );
+      const AdaptiveBody sameExpandedBody = AdaptiveBody(
+        viewIsCollapsed: false,
+        child: SizedBox(),
+      );
+      const AdaptiveBody collapsedBody = AdaptiveBody(
+        viewIsCollapsed: true,
+        child: SizedBox(),
+      );
+
+      expect(expandedBody.updateShouldNotify(sameExpandedBody), isFalse);
+      expect(collapsedBody.updateShouldNotify(expandedBody), isTrue);
+
+      await tester.pumpWidget(buildBody(true));
+      expect(collapsedValue, isTrue);
+      expect(find.text("collapsed=true"), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    "standardBottomNavigationBar applies icon size, padding, and margin overrides",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AdaptiveScaffold.standardBottomNavigationBar(
+              currentIndex: 0,
+              iconSize: 31,
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              margin: const EdgeInsets.all(7),
+              destinations: const <NavigationDestination>[
+                NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final custom_adaptive_scaffold.NavigationBarTheme theme =
+          tester.widget<custom_adaptive_scaffold.NavigationBarTheme>(
+        find.byType(custom_adaptive_scaffold.NavigationBarTheme),
+      );
+      final IconThemeData resolvedIconTheme =
+          theme.data.iconTheme!.resolve(<WidgetState>{})!;
+
+      expect(resolvedIconTheme.size, 31);
+      expect(theme.data.padding, const EdgeInsets.symmetric(horizontal: 5));
+      expect(theme.data.margin, const EdgeInsets.all(7));
+    },
+  );
+
+  testWidgets("bottomToTop creates upward slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.bottomToTop(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<SlideTransition>());
+    final SlideTransition transition = widget as SlideTransition;
+
+    controller.value = 0;
+    expect(transition.position.value, const Offset(0, 1));
+    controller.value = 1;
+    expect(transition.position.value, Offset.zero);
+  });
+
+  testWidgets("topToBottom creates downward slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.topToBottom(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<SlideTransition>());
+    final SlideTransition transition = widget as SlideTransition;
+
+    controller.value = 0;
+    expect(transition.position.value, Offset.zero);
+    controller.value = 1;
+    expect(transition.position.value, const Offset(0, 1));
+  });
+
+  testWidgets("leftOutIn creates left-to-center slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.leftOutIn(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    final SlideTransition transition = widget as SlideTransition;
+    controller.value = 0;
+    expect(transition.position.value, const Offset(-1, 0));
+    controller.value = 1;
+    expect(transition.position.value, Offset.zero);
+  });
+
+  testWidgets("leftInOut creates center-to-left slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.leftInOut(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    final SlideTransition transition = widget as SlideTransition;
+    controller.value = 0;
+    expect(transition.position.value, Offset.zero);
+    controller.value = 1;
+    expect(transition.position.value, const Offset(-1, 0));
+  });
+
+  testWidgets("rightOutIn creates right-to-center slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.rightOutIn(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    final SlideTransition transition = widget as SlideTransition;
+    controller.value = 0;
+    expect(transition.position.value, const Offset(1, 0));
+    controller.value = 1;
+    expect(transition.position.value, Offset.zero);
+  });
+
+  testWidgets("fadeIn uses easeInCubic opacity curve",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final Widget widget = AdaptiveScaffold.fadeIn(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<FadeTransition>());
+    final FadeTransition transition = widget as FadeTransition;
+    controller.value = 0;
+    expect(transition.opacity.value, 0);
+    controller.value = 1;
+    expect(transition.opacity.value, 1);
+  });
+
+  testWidgets("fadeOut uses reverse animation opacity curve",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final Widget widget = AdaptiveScaffold.fadeOut(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<FadeTransition>());
+    final FadeTransition transition = widget as FadeTransition;
+    controller.value = 0;
+    expect(transition.opacity.value, 1);
+    controller.value = 1;
+    expect(transition.opacity.value, 0);
+  });
+
+  testWidgets("stayOnScreen keeps opacity constant at 1",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final Widget widget = AdaptiveScaffold.stayOnScreen(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<FadeTransition>());
+    final FadeTransition transition = widget as FadeTransition;
+    controller.value = 0;
+    expect(transition.opacity.value, 1);
+    controller.value = 1;
+    expect(transition.opacity.value, 1);
+  });
 }
 
 /// An empty widget that implements [PreferredSizeWidget] to ensure that

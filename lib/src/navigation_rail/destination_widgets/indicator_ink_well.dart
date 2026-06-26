@@ -1,6 +1,9 @@
 part of "../navigation_rail.dart";
 
+/// Ink response used by rail destinations to align splash geometry with the
+/// selection indicator or full destination bounds.
 class _IndicatorInkWell extends InkResponse {
+  /// Creates an ink response for a rail destination indicator.
   const _IndicatorInkWell({
     required this.useMaterial3,
     required this.indicatorOffset,
@@ -25,12 +28,25 @@ class _IndicatorInkWell extends InkResponse {
           customBorder: customBorder,
         );
 
+  /// Whether the surrounding destination is using Material 3 behavior.
   final bool useMaterial3;
+
+  /// The center point used to place the indicator-aligned ink rect.
   final Offset indicatorOffset;
+
+  /// Whether the horizontal indicator offset should be applied directly.
   final bool applyXOffset;
+
+  /// The ambient text direction used to mirror indicator placement in RTL.
   final TextDirection textDirection;
+
+  /// The width of the indicator-aligned ink rect.
   final double indicatorWidth;
+
+  /// The height of the indicator-aligned ink rect.
   final double indicatorHeight;
+
+  /// Whether ink should be clipped to the indicator instead of the full item.
   final bool disableFullItemInk;
 
   @override
