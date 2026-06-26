@@ -2677,6 +2677,183 @@ void main() {
       expect(BadgeTheme.of(badgeContext).backgroundColor, ambientBadgeColor);
     });
 
+    testWidgets(
+        "NavigationRailThemeData.badgeThemeData wraps dot badge with BadgeTheme",
+        (WidgetTester tester) async {
+      const Color badgeColor = Color(0xFF3366FF);
+      await pumpApp(
+        tester,
+        NavigationRailTheme(
+          data: const NavigationRailThemeData(
+            badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
+          ),
+          child: NavigationRail(
+            selectedIndex: 0,
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.home),
+                label: "Home",
+                badge: 3,
+                badgeStyle: NavigationBadgeStyle.dot,
+              ).toRailDestination(),
+              const NavigationDestination(
+                icon: Icon(Icons.search),
+                label: "Search",
+              ).toRailDestination(),
+            ],
+          ),
+        ),
+      );
+
+      expect(
+        find.byWidgetPredicate(
+          (Widget w) => w is BadgeTheme && w.data.backgroundColor == badgeColor,
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("3"), findsNothing);
+    });
+
+    testWidgets(
+        "NavigationRailThemeData.badgeThemeData wraps badgeLabel badge with BadgeTheme",
+        (WidgetTester tester) async {
+      const Color badgeColor = Color(0xFF6633CC);
+      await pumpApp(
+        tester,
+        NavigationRailTheme(
+          data: const NavigationRailThemeData(
+            badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
+          ),
+          child: NavigationRail(
+            selectedIndex: 0,
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.home),
+                label: "Home",
+                badgeLabel: "Hi",
+              ).toRailDestination(),
+              const NavigationDestination(
+                icon: Icon(Icons.search),
+                label: "Search",
+              ).toRailDestination(),
+            ],
+          ),
+        ),
+      );
+
+      expect(
+        find.byWidgetPredicate(
+          (Widget w) => w is BadgeTheme && w.data.backgroundColor == badgeColor,
+        ),
+        findsOneWidget,
+      );
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("Hi"), findsOneWidget);
+    });
+
+    testWidgets("direct RailDestination accepts optional property combinations",
+        (WidgetTester tester) async {
+      int taps = 0;
+
+      await pumpApp(
+        tester,
+        Row(
+          children: [
+            RailDestination(
+              key: const Key("direct-rail-destination"),
+              icon: const Icon(Icons.home),
+              label: const Text("Home"),
+              selected: true,
+              labelType: NavigationRailLabelType.all,
+              minWidth: 88,
+              minExtendedWidth: 260,
+              iconTheme: const IconThemeData(size: 28, color: Colors.red),
+              labelTextStyle: const TextStyle(fontSize: 15),
+              onTap: () => taps += 1,
+              indexLabel: "Home tab",
+              useIndicator: true,
+              indicatorColor: Colors.orange,
+              indicatorShape: const RoundedRectangleBorder(),
+              disabled: false,
+              extended: false,
+              showLabelsWhenCollapsed: true,
+              padding: const EdgeInsets.all(6),
+              margin: const EdgeInsets.all(4),
+              tooltip: "Go Home",
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Tooltip tooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(tooltip.message, "Go Home");
+
+      final custom_adaptive_scaffold.NavigationIndicator indicator =
+          tester.widget<custom_adaptive_scaffold.NavigationIndicator>(
+        find.byType(custom_adaptive_scaffold.NavigationIndicator).first,
+      );
+      expect(indicator.color, Colors.orange);
+      expect(indicator.shape, isA<RoundedRectangleBorder>());
+
+      expect(
+        find.byWidgetPredicate(
+          (Widget w) => w is Padding && w.padding == const EdgeInsets.all(6),
+        ),
+        findsWidgets,
+      );
+
+      await tester.tap(find.byKey(const Key("direct-rail-destination")));
+      await tester.pumpAndSettle();
+      expect(taps, 1);
+    });
+
+    testWidgets("direct RailDestination reacts when extended toggles",
+        (WidgetTester tester) async {
+      bool extended = false;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) {
+              return Scaffold(
+                body: Column(
+                  children: <Widget>[
+                    ElevatedButton(
+                      onPressed: () => setState(() => extended = !extended),
+                      child: const Text("toggle-extended"),
+                    ),
+                    Row(
+                      children: [
+                        RailDestination(
+                          key: const Key("rail-toggle"),
+                          icon: const Icon(Icons.home),
+                          label: const Text("Home"),
+                          selected: true,
+                          labelType: NavigationRailLabelType.none,
+                          extended: extended,
+                          showLabelsWhenCollapsed: true,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text("toggle-extended"));
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key("rail-toggle")), findsOneWidget);
+      expect(find.text("Home"), findsOneWidget);
+    });
+
     // --- Bar rendering ---
 
     testWidgets("badge: null renders no Badge widget in bar",
