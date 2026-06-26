@@ -875,8 +875,7 @@ void main() {
       final RenderBox renderBox = tester.renderObject(
         find.byWidget(indicatorInkWell),
       );
-      final Rect rect =
-          (indicatorInkWell as dynamic).getRectCallback(renderBox)!() as Rect;
+      final Rect rect = indicatorInkWell.getRectCallback(renderBox)!();
 
       expect(indicatorInkWell.containedInkWell, isTrue);
       expect(indicatorInkWell.highlightShape, BoxShape.rectangle);
