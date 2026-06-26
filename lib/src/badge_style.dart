@@ -4,10 +4,13 @@
 /// ([NavigationDestination.badge], [NavigationDestination.badgeLabel], and
 /// [NavigationDestination.customBadge]).
 ///
-/// The numeric styles ([count], [exact]) only apply when
-/// [NavigationDestination.badge] (`int`) is set; combining them with
-/// [NavigationDestination.badgeLabel] or [NavigationDestination.customBadge]
-/// will throw an assertion error.
+/// [exact] only applies when [NavigationDestination.badge] (`int`) is set;
+/// combining it with [NavigationDestination.badgeLabel] or
+/// [NavigationDestination.customBadge] will throw an assertion error.
+///
+/// [count] is also valid with [NavigationDestination.badgeLabel] and
+/// [NavigationDestination.customBadge], where it behaves as a neutral/default
+/// style and does not alter the provided badge content.
 ///
 /// See also:
 ///
@@ -20,9 +23,9 @@ enum NavigationBadgeStyle {
   /// Values of 1–99 are shown as their string equivalent (e.g. `"3"`).
   /// Values greater than 99 are shown as `"99+"`.
   ///
-  /// **Applies to**: [NavigationDestination.badge] (`int`) only.
-  /// Setting this style alongside [NavigationDestination.badgeLabel] or
-  /// [NavigationDestination.customBadge] will throw an assertion error.
+  /// With [NavigationDestination.badgeLabel] or
+  /// [NavigationDestination.customBadge], this style is allowed and leaves the
+  /// provided label/custom badge content unchanged.
   ///
   /// This is the default style.
   count,
@@ -34,6 +37,8 @@ enum NavigationBadgeStyle {
   /// (e.g. `badge: 150` renders as `"150"`).
   ///
   /// **Applies to**: [NavigationDestination.badge] (`int`) only.
+  /// Setting this style alongside [NavigationDestination.badgeLabel] or
+  /// [NavigationDestination.customBadge] will throw an assertion error.
   exact,
 
   /// Displays a small dot indicator, overriding any badge content.

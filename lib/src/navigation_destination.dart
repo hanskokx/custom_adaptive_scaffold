@@ -101,7 +101,7 @@ class NavigationDestination extends StatelessWidget {
               badgeStyle == NavigationBadgeStyle.count ||
               badgeStyle == NavigationBadgeStyle.dot ||
               badgeStyle == NavigationBadgeStyle.hidden,
-          "Only dot and hidden styles may be combined with customBadge. "
+          "Only count, dot, and hidden styles may be combined with customBadge. "
           "exact applies to badge (int) only.",
         ),
         assert(
@@ -109,7 +109,7 @@ class NavigationDestination extends StatelessWidget {
               badgeStyle == NavigationBadgeStyle.count ||
               badgeStyle == NavigationBadgeStyle.dot ||
               badgeStyle == NavigationBadgeStyle.hidden,
-          "Only dot and hidden styles may be combined with badgeLabel. "
+          "Only count, dot, and hidden styles may be combined with badgeLabel. "
           "exact applies to badge (int) only.",
         ),
         selectedIcon = selectedIcon ?? icon,
@@ -188,15 +188,21 @@ class NavigationDestination extends StatelessWidget {
   ///
   /// Defaults to [NavigationBadgeStyle.count].
   ///
-  /// Has no effect when [badge] is null, [badgeLabel] is set, or
-  /// [customBadge] is set.
+  /// When [badge] is set, [count] and [exact] control numeric rendering,
+  /// while [dot] and [hidden] override the numeric label.
+  ///
+  /// When [badgeLabel] or [customBadge] is set, [count], [dot], and [hidden]
+  /// are allowed; [exact] is not.
   final NavigationBadgeStyle badgeStyle;
 
   /// An exact string to display as the badge label.
   ///
   /// Unlike [badge], no numeric conversion or 99+ capping is applied —
-  /// the string is shown verbatim. [badgeStyle] has no effect when this
-  /// is set.
+  /// the string is shown verbatim.
+  ///
+  /// [badgeStyle] may be [NavigationBadgeStyle.count],
+  /// [NavigationBadgeStyle.dot], or [NavigationBadgeStyle.hidden] when this
+  /// is set. [NavigationBadgeStyle.exact] is not allowed.
   ///
   /// Mutually exclusive with [badge] and [customBadge].
   final String? badgeLabel;
@@ -206,7 +212,11 @@ class NavigationDestination extends StatelessWidget {
   /// The [Badge] is reconstructed with the destination icon injected as its
   /// child, copying all other properties from the provided instance. No
   /// [BadgeTheme] is applied — the user controls the badge appearance
-  /// entirely. [badgeStyle] must not be set when this is non-null.
+  /// entirely.
+  ///
+  /// [badgeStyle] may be [NavigationBadgeStyle.count],
+  /// [NavigationBadgeStyle.dot], or [NavigationBadgeStyle.hidden] when this
+  /// is non-null. [NavigationBadgeStyle.exact] is not allowed.
   ///
   /// Mutually exclusive with [badge] and [badgeLabel].
   final Badge? customBadge;
