@@ -208,6 +208,8 @@ void main() {
       const NavigationRailThemeData a = NavigationRailThemeData(
         destinationIndicatorShape: StadiumBorder(),
         destinationOverlayColor: WidgetStatePropertyAll<Color>(Colors.red),
+        unselectedIconTheme: IconThemeData(size: 20, color: Colors.red),
+        selectedIconTheme: IconThemeData(size: 24, color: Colors.green),
         showLabelsWhenCollapsed: false,
         minWidth: 80,
         minExtendedWidth: 200,
@@ -222,6 +224,8 @@ void main() {
       const NavigationRailThemeData b = NavigationRailThemeData(
         destinationIndicatorShape: RoundedRectangleBorder(),
         destinationOverlayColor: WidgetStatePropertyAll<Color>(Colors.blue),
+        unselectedIconTheme: IconThemeData(size: 28, color: Colors.blue),
+        selectedIconTheme: IconThemeData(size: 32, color: Colors.yellow),
         showLabelsWhenCollapsed: true,
         minWidth: 100,
         minExtendedWidth: 240,
@@ -245,6 +249,8 @@ void main() {
         isNotNull,
       );
       expect(lerpLow.showLabelsWhenCollapsed, isFalse);
+      expect(lerpLow.unselectedIconTheme?.size, 22);
+      expect(lerpLow.selectedIconTheme?.size, 26);
       expect(lerpLow.minWidth, 85);
       expect(lerpLow.minExtendedWidth, 210);
       expect(lerpLow.margin, const EdgeInsets.all(6));
@@ -262,6 +268,8 @@ void main() {
       expect(lerpLow.badgeThemeData?.backgroundColor, isNotNull);
 
       expect(lerpHigh.showLabelsWhenCollapsed, isTrue);
+      expect(lerpHigh.unselectedIconTheme?.size, 26);
+      expect(lerpHigh.selectedIconTheme?.size, 30);
       expect(lerpHigh.tooltipTrigger, TooltipTriggerMode.tap);
       expect(
         lerpHigh.tooltipTriggerWhenLabelVisible,
