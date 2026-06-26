@@ -1668,6 +1668,48 @@ void main() {
     );
 
     testWidgets(
+      "bar strategy uses fallback label style when theme resolver returns null",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationBarTheme: CustomNavigationBarThemeData(
+                labelTextStyle: WidgetStateProperty.resolveWith((_) => null),
+                indicatorShape: const StadiumBorder(),
+              ),
+            ),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const BarDestinationStrategy strategy = BarDestinationStrategy();
+        final DestinationBuildData data = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: false,
+            disabled: false,
+            destinationAnimation: kAlwaysCompleteAnimation,
+          ),
+        );
+
+        final DefaultTextStyle styledLabel =
+            data.styledLabel as DefaultTextStyle;
+        expect(styledLabel.style, isNot(const TextStyle()));
+        expect(data.indicatorShape, isA<StadiumBorder>());
+      },
+    );
+
+    testWidgets(
       "bar strategy uses theme resolvers for disabled state",
       (WidgetTester tester) async {
         late BuildContext context;
@@ -2805,6 +2847,59 @@ void main() {
       expect(badge.alignment, Alignment.topLeft);
       expect(badge.offset, const Offset(-1, 2));
       expect(badge.isLabelVisible, isTrue);
+    });
+
+    testWidgets(
+        "customBadge in rail is not wrapped in BadgeTheme when theme is absent",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: const [
+            NavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+              customBadge: Badge(label: Text("Solo")),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.search),
+              label: Text("Search"),
+            ),
+          ],
+        ),
+      );
+
+      expect(find.text("Solo"), findsOneWidget);
+      expect(find.byType(BadgeTheme), findsNothing);
+    });
+
+    testWidgets(
+        "rail selected layout handles minWidth below threshold with badge",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          labelType: NavigationRailLabelType.selected,
+          minWidth: 60,
+          destinations: const [
+            NavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+              badge: 1,
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.search),
+              label: Text("Search"),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.byType(FadeTransition), findsWidgets);
     });
 
     testWidgets("badgeLabel renders custom text badge in rail",
