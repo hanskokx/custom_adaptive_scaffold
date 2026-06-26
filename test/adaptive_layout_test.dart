@@ -167,6 +167,106 @@ void main() {
     );
   });
 
+  testWidgets("AdaptiveLayout wires all constructor parameters",
+      (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(700, 2000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    Widget slotBox(String key) => SizedBox(
+          key: Key(key),
+          width: 20,
+          height: 20,
+        );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(size: Size(700, 2000)),
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: AdaptiveLayout(
+              transitionDuration: const Duration(milliseconds: 250),
+              internalAnimations: false,
+              bodyOrientation: Axis.vertical,
+              bodyRatio: 0.4,
+              topNavigation: SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  TestBreakpoint0(): SlotLayout.from(
+                    key: const Key("all-top"),
+                    builder: (_) => slotBox("all-top-box"),
+                  ),
+                },
+              ),
+              primaryNavigation: SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  TestBreakpoint0(): SlotLayout.from(
+                    key: const Key("all-primary"),
+                    builder: (_) => slotBox("all-primary-box"),
+                  ),
+                },
+              ),
+              secondaryNavigation: SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  TestBreakpoint0(): SlotLayout.from(
+                    key: const Key("all-secondary"),
+                    builder: (_) => slotBox("all-secondary-box"),
+                  ),
+                },
+              ),
+              bottomNavigation: SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  TestBreakpoint0(): SlotLayout.from(
+                    key: const Key("all-bottom"),
+                    builder: (_) => slotBox("all-bottom-box"),
+                  ),
+                },
+              ),
+              body: SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  TestBreakpoint0(): SlotLayout.from(
+                    key: const Key("all-body"),
+                    builder: (_) => Container(
+                      key: const Key("all-body-box"),
+                      color: Colors.red,
+                    ),
+                  ),
+                },
+              ),
+              secondaryBody: SlotLayout(
+                config: <Breakpoint, SlotLayoutConfig>{
+                  TestBreakpoint0(): SlotLayout.from(
+                    key: const Key("all-secondary-body"),
+                    builder: (_) => Container(
+                      key: const Key("all-secondary-body-box"),
+                      color: Colors.blue,
+                    ),
+                  ),
+                },
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key("all-top-box")), findsOneWidget);
+    expect(find.byKey(const Key("all-primary-box")), findsOneWidget);
+    expect(find.byKey(const Key("all-secondary-box")), findsOneWidget);
+    expect(find.byKey(const Key("all-bottom-box")), findsOneWidget);
+    expect(find.byKey(const Key("all-body-box")), findsOneWidget);
+    expect(find.byKey(const Key("all-secondary-body-box")), findsOneWidget);
+
+    final Offset bodyTopLeft =
+        tester.getTopLeft(find.byKey(const Key("all-body-box")));
+    final Offset secondaryBodyTopLeft =
+        tester.getTopLeft(find.byKey(const Key("all-secondary-body-box")));
+
+    // Axis.vertical + bodyRatio should stack secondary body below body.
+    expect(secondaryBodyTopLeft.dx, equals(bodyTopLeft.dx));
+    expect(secondaryBodyTopLeft.dy, greaterThan(bodyTopLeft.dy));
+  });
+
   final Finder begin = find.byKey(const Key("0"));
   final Finder end = find.byKey(const Key("400"));
   final Finder large = find.byKey(const Key("1200"));
