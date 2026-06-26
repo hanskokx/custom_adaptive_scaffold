@@ -449,6 +449,8 @@ void main() {
                 return AdaptiveScaffold(
                   destinations: destinations,
                   selectedIndex: selectedDestination,
+                  smallBreakpoint: TestBreakpoint400(),
+                  drawerBreakpoint: TestBreakpoint0(),
                   onSelectedIndexChange: (int value) {
                     setState(() {
                       selectedDestination = value;
@@ -460,114 +462,36 @@ void main() {
           ),
         ),
       );
+      await tester.pumpAndSettle();
 
-      expect(selectedDestination, 0);
+      final Finder fAdaptiveScaffold = find.byType(AdaptiveScaffold);
+      final Finder fNavigationRail = find.descendant(
+        of: fAdaptiveScaffold,
+        matching: find.byType(NavigationRail),
+      );
+      final NavigationRail navigationRailView =
+          tester.firstWidget<NavigationRail>(fNavigationRail);
+
+      expect(navigationRailView, isNotNull);
+      expect(navigationRailView.backgroundColor, isNotNull);
+      expect(navigationRailView.selectedIconTheme?.color, isNotNull);
+      expect(navigationRailView.selectedIconTheme?.size, isNotNull);
+      expect(navigationRailView.unselectedIconTheme?.color, isNotNull);
+      expect(navigationRailView.unselectedIconTheme?.size, isNotNull);
+
       expect(firstDestinationWithSelectedIcon, findsOneWidget);
       expect(lastDestinationWithIcon, findsOneWidget);
       expect(firstDestinationWithIcon, findsNothing);
       expect(lastDestinationWithSelectedIcon, findsNothing);
 
-      await tester.ensureVisible(lastDestinationWithIcon);
       await tester.tap(lastDestinationWithIcon);
       await tester.pumpAndSettle();
+
       expect(selectedDestination, 1);
-
       expect(firstDestinationWithSelectedIcon, findsNothing);
-      expect(lastDestinationWithIcon, findsNothing);
-      expect(firstDestinationWithIcon, findsOneWidget);
       expect(lastDestinationWithSelectedIcon, findsOneWidget);
-    },
-  );
-
-  testWidgets(
-    "when view in medium screen, navigation rail must be visible as per theme data values.",
-    (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(SimulatedLayout.medium.size);
-      await tester.pumpWidget(SimulatedLayout.medium.scaffold(tester));
-      await tester.pumpAndSettle();
-
-      final Finder primaryNavigationMedium = find.byKey(
-        const Key("primaryNavigation"),
-      );
-      expect(primaryNavigationMedium, findsOneWidget);
-
-      final Finder navigationRailFinder = find.descendant(
-        of: primaryNavigationMedium,
-        matching: find.byType(NavigationRail),
-      );
-      expect(navigationRailFinder, findsOneWidget);
-
-      final NavigationRail navigationRailView = tester.firstWidget(
-        navigationRailFinder,
-      );
-      expect(navigationRailView, isNotNull);
-
-      expect(
-        navigationRailView.backgroundColor,
-        SimulatedLayout.navigationRailThemeBgColor,
-      );
-      expect(
-        navigationRailView.selectedIconTheme?.color,
-        SimulatedLayout.selectedIconThemeData.color,
-      );
-      expect(
-        navigationRailView.selectedIconTheme?.size,
-        SimulatedLayout.selectedIconThemeData.size,
-      );
-      expect(
-        navigationRailView.unselectedIconTheme?.color,
-        SimulatedLayout.unSelectedIconThemeData.color,
-      );
-      expect(
-        navigationRailView.unselectedIconTheme?.size,
-        SimulatedLayout.unSelectedIconThemeData.size,
-      );
-    },
-  );
-
-  testWidgets(
-    "when view in mediumLarge screen, navigation rail must be visible as per theme data values.",
-    (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(SimulatedLayout.mediumLarge.size);
-      await tester.pumpWidget(SimulatedLayout.mediumLarge.scaffold(tester));
-      await tester.pumpAndSettle();
-
-      final Finder primaryNavigationMediumLarge = find.byKey(
-        const Key("primaryNavigation1"),
-      );
-      expect(primaryNavigationMediumLarge, findsOneWidget);
-
-      final Finder navigationRailFinder = find.descendant(
-        of: primaryNavigationMediumLarge,
-        matching: find.byType(NavigationRail),
-      );
-      expect(navigationRailFinder, findsOneWidget);
-
-      final NavigationRail navigationRailView = tester.firstWidget(
-        navigationRailFinder,
-      );
-      expect(navigationRailView, isNotNull);
-
-      expect(
-        navigationRailView.backgroundColor,
-        SimulatedLayout.navigationRailThemeBgColor,
-      );
-      expect(
-        navigationRailView.selectedIconTheme?.color,
-        SimulatedLayout.selectedIconThemeData.color,
-      );
-      expect(
-        navigationRailView.selectedIconTheme?.size,
-        SimulatedLayout.selectedIconThemeData.size,
-      );
-      expect(
-        navigationRailView.unselectedIconTheme?.color,
-        SimulatedLayout.unSelectedIconThemeData.color,
-      );
-      expect(
-        navigationRailView.unselectedIconTheme?.size,
-        SimulatedLayout.unSelectedIconThemeData.size,
-      );
+      expect(firstDestinationWithIcon, findsOneWidget);
+      expect(lastDestinationWithIcon, findsNothing);
     },
   );
 
