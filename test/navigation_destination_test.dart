@@ -12,6 +12,7 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
     as custom_adaptive_scaffold;
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
+import "package:custom_adaptive_scaffold/src/navigation_shared/destination_build_data.dart";
 import "package:custom_adaptive_scaffold/src/navigation_shared/destination_surface_strategy.dart";
 import "package:custom_adaptive_scaffold/src/navigation_shared/navigation_destination_tooltip.dart";
 import "package:flutter/gestures.dart";
@@ -1281,6 +1282,196 @@ void main() {
         );
       },
     );
+
+    testWidgets(
+      "rail strategy uses defaults, disabled styling, and large-icon offset",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(useMaterial3: false),
+            home: Directionality(
+              textDirection: TextDirection.rtl,
+              child: Builder(
+                builder: (BuildContext c) {
+                  context = c;
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
+          ),
+        );
+
+        const RailDestinationStrategy strategy = RailDestinationStrategy();
+        final DestinationBuildData data = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: false,
+            disabled: true,
+            destinationAnimation: kAlwaysCompleteAnimation,
+            iconTheme: IconThemeData(size: 40),
+            labelTextStyle: TextStyle(fontSize: 17),
+            minWidth: 80,
+            minExtendedWidth: 220,
+            padding: EdgeInsets.only(top: 10),
+          ),
+        );
+
+        final IconTheme iconTheme = data.themedIcon as IconTheme;
+        final DefaultTextStyle labelStyle =
+            data.styledLabel as DefaultTextStyle;
+
+        expect(data.minWidth, 80);
+        expect(data.minExtendedWidth, 220);
+        expect(data.textDirection, TextDirection.rtl);
+        expect(data.extendedAnimation, same(kAlwaysCompleteAnimation));
+        expect(data.indicatorOffset.dx, 40);
+        expect(data.indicatorOffset.dy, 36);
+        expect(data.indicatorColor, anyOf(isNull, isA<Color>()));
+        expect(data.indicatorShape, anyOf(isNull, isA<ShapeBorder>()));
+        expect(data.resolvedIconSize, 40);
+        expect(iconTheme.data.size, 40);
+        expect(iconTheme.data.color,
+            Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38));
+        expect(
+          labelStyle.style.color,
+          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
+        );
+      },
+    );
+
+    testWidgets(
+      "rail strategy applies M2 selected icon contrast without overrides",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(useMaterial3: false),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const RailDestinationStrategy strategy = RailDestinationStrategy();
+        final DestinationBuildData data = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: true,
+            disabled: false,
+            destinationAnimation: kAlwaysCompleteAnimation,
+            useIndicator: true,
+          ),
+        );
+
+        final IconTheme iconTheme = data.themedIcon as IconTheme;
+
+        expect(iconTheme.data.color, isNotNull);
+        expect(iconTheme.data.opacity, anyOf(isNull, 1.0));
+      },
+    );
+
+    testWidgets(
+      "bar strategy falls back to defaults when overlay and label themes are absent",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationBarTheme: const CustomNavigationBarThemeData(
+                overlayColor: null,
+                labelTextStyle: null,
+              ),
+            ),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const BarDestinationStrategy strategy = BarDestinationStrategy();
+        final DestinationBuildData data = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: false,
+            disabled: false,
+            destinationAnimation: kAlwaysCompleteAnimation,
+          ),
+        );
+
+        final DefaultTextStyle labelStyle =
+            data.styledLabel as DefaultTextStyle;
+
+        expect(data.indicatorShape, isNotNull);
+        expect(data.hoverColor.opacity, greaterThan(0));
+        expect(data.splashColor.opacity, greaterThan(data.hoverColor.opacity));
+        expect(labelStyle.style, isNot(const TextStyle()));
+      },
+    );
+
+    testWidgets(
+      "bar strategy uses focused overlay fallback for splash color",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationBarTheme: CustomNavigationBarThemeData(
+                overlayColor:
+                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.hovered)) {
+                    return Colors.blue;
+                  }
+                  if (states.contains(WidgetState.focused)) {
+                    return Colors.green;
+                  }
+                  return null;
+                }),
+              ),
+            ),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const BarDestinationStrategy strategy = BarDestinationStrategy();
+        final DestinationBuildData data = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: true,
+            disabled: false,
+            destinationAnimation: kAlwaysCompleteAnimation,
+          ),
+        );
+
+        expect(data.hoverColor, Colors.blue);
+        expect(data.splashColor, Colors.green);
+      },
+    );
   });
 
   // ---------------------------------------------------------------------------
@@ -2062,7 +2253,7 @@ void main() {
       expect(find.text("99+"), findsOneWidget);
     });
 
-    testWidgets("badgeStyle: dot renders Badge without label in bar",
+    testWidgets("badgeStyle: exact renders uncapped numeric badge in bar",
         (WidgetTester tester) async {
       await pumpApp(
         tester,
@@ -2071,8 +2262,8 @@ void main() {
             const NavigationDestination(
               icon: Icon(Icons.home),
               label: "Home",
-              badge: 3,
-              badgeStyle: NavigationBadgeStyle.dot,
+              badge: 150,
+              badgeStyle: NavigationBadgeStyle.exact,
             ).toBarDestination(),
             const NavigationDestination(
               icon: Icon(Icons.search),
@@ -2081,11 +2272,44 @@ void main() {
           ],
         ),
       );
-      expect(find.byType(Badge), findsOneWidget);
-      expect(find.text("3"), findsNothing);
+      expect(find.text("150"), findsOneWidget);
+      expect(find.text("99+"), findsNothing);
     });
 
-    testWidgets("badgeStyle: hidden suppresses Badge in bar",
+    testWidgets("customBadge is reconstructed around themed icon in bar",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBar(
+          destinations: const [
+            NavigationBarDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              customBadge: Badge(
+                label: Text("NEW"),
+                backgroundColor: Colors.purple,
+                alignment: Alignment.topLeft,
+                offset: Offset(-2, 3),
+                isLabelVisible: true,
+              ),
+            ),
+            NavigationBarDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ),
+          ],
+        ),
+      );
+
+      final Badge badge = tester.widget<Badge>(find.byType(Badge).first);
+      expect(find.text("NEW"), findsOneWidget);
+      expect(badge.backgroundColor, Colors.purple);
+      expect(badge.alignment, Alignment.topLeft);
+      expect(badge.offset, const Offset(-2, 3));
+      expect(badge.isLabelVisible, isTrue);
+    });
+
+    testWidgets("badgeLabel renders custom text badge in bar",
         (WidgetTester tester) async {
       await pumpApp(
         tester,
@@ -2094,8 +2318,7 @@ void main() {
             const NavigationDestination(
               icon: Icon(Icons.home),
               label: "Home",
-              badge: 3,
-              badgeStyle: NavigationBadgeStyle.hidden,
+              badgeLabel: "Hi",
             ).toBarDestination(),
             const NavigationDestination(
               icon: Icon(Icons.search),
@@ -2104,7 +2327,60 @@ void main() {
           ],
         ),
       );
-      expect(find.byType(Badge), findsNothing);
+
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("Hi"), findsOneWidget);
+    });
+
+    testWidgets("bar label uses explicit label padding and fallback text style",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationBarTheme: const CustomNavigationBarThemeData(
+              labelTextStyle: null,
+            ),
+          ),
+          home: Scaffold(
+            bottomNavigationBar: NavigationBarTheme(
+              data: const CustomNavigationBarThemeData(
+                labelTextStyle: null,
+                labelPadding: EdgeInsets.only(top: 9),
+              ),
+              child: NavigationBar(
+                labelTextStyle: null,
+                destinations: const [
+                  NavigationBarDestination(
+                    icon: Icon(Icons.home),
+                    label: "Home",
+                  ),
+                  NavigationBarDestination(
+                    icon: Icon(Icons.search),
+                    label: "Search",
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+
+      final Padding padding = tester.widget<Padding>(
+        find
+            .ancestor(of: find.text("Home"), matching: find.byType(Padding))
+            .first,
+      );
+      final DefaultTextStyle textStyle = tester.widget<DefaultTextStyle>(
+        find
+            .ancestor(
+              of: find.text("Home"),
+              matching: find.byType(DefaultTextStyle),
+            )
+            .first,
+      );
+
+      expect(padding.padding, const EdgeInsets.only(top: 9));
+      expect(textStyle.style, isNot(const TextStyle()));
     });
 
     testWidgets(
@@ -2114,7 +2390,7 @@ void main() {
       await pumpApp(
         tester,
         NavigationBarTheme(
-          data: const NavigationBarThemeData(
+          data: const CustomNavigationBarThemeData(
             badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
           ),
           child: NavigationBar(
@@ -2149,7 +2425,7 @@ void main() {
         BadgeTheme(
           data: const BadgeThemeData(backgroundColor: ambientBadgeColor),
           child: NavigationBarTheme(
-            data: const NavigationBarThemeData(
+            data: const CustomNavigationBarThemeData(
               badgeThemeData: null,
             ),
             child: NavigationBar(
