@@ -847,6 +847,42 @@ void main() {
       );
     });
 
+    testWidgets("navigation rail full-item ink rect spans entire destination",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            useMaterial3: true,
+            navigationRailTheme: const CustomNavigationRailThemeData(
+              destinationIndicatorShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: [
+                _buildRail(selectedIndex: 0, onTap: null),
+              ],
+            ),
+          ),
+        ),
+      );
+
+      final InkResponse indicatorInkWell = tester.allWidgets.firstWhere(
+        (Widget w) => w.runtimeType.toString() == "_IndicatorInkWell",
+      ) as InkResponse;
+      final RenderBox renderBox = tester.renderObject(
+        find.byWidget(indicatorInkWell),
+      );
+      final Rect rect =
+          (indicatorInkWell as dynamic).getRectCallback(renderBox)!() as Rect;
+
+      expect(indicatorInkWell.containedInkWell, isTrue);
+      expect(indicatorInkWell.highlightShape, BoxShape.rectangle);
+      expect(rect, Offset.zero & renderBox.size);
+    });
+
     testWidgets("standardBottomNavigationBar switches selected icon on tap",
         (WidgetTester tester) async {
       int selectedIndex = 0;

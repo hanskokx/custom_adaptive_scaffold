@@ -16,8 +16,8 @@ import "theme_defaults.dart";
 
 part "destination_layout/destination.dart";
 part "destination_widgets/destination_shared_state.dart";
-part "destination_widgets/destination_widget.dart";
 part "destination_widgets/indicator_ink_well.dart";
+part "destination_widgets/rail_destination.dart";
 
 /// A deprecated typedef alias for [NavigationRail].
 ///
