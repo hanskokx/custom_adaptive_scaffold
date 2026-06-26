@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
+    as custom_adaptive_scaffold;
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/material.dart"
     hide
@@ -953,7 +955,9 @@ void main() {
 
       final NavigationRail drawerRail = tester.widget<NavigationRail>(
         find.descendant(
-            of: find.byType(Drawer), matching: find.byType(NavigationRail)),
+          of: find.byType(Drawer),
+          matching: find.byType(NavigationRail),
+        ),
       );
       expect(drawerRail.extended, isTrue);
       expect(drawerRail.destinations.length, 2);
@@ -1317,6 +1321,43 @@ void main() {
       await tester.pumpWidget(buildBody(true));
       expect(collapsedValue, isTrue);
       expect(find.text("collapsed=true"), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    "standardBottomNavigationBar applies icon size, padding, and margin overrides",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: AdaptiveScaffold.standardBottomNavigationBar(
+              currentIndex: 0,
+              iconSize: 31,
+              padding: const EdgeInsets.symmetric(horizontal: 5),
+              margin: const EdgeInsets.all(7),
+              destinations: const <NavigationDestination>[
+                NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+                NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final custom_adaptive_scaffold.NavigationBarTheme theme =
+          tester.widget<custom_adaptive_scaffold.NavigationBarTheme>(
+        find.byType(custom_adaptive_scaffold.NavigationBarTheme),
+      );
+      final IconThemeData resolvedIconTheme =
+          theme.data.iconTheme!.resolve(<WidgetState>{})!;
+
+      expect(resolvedIconTheme.size, 31);
+      expect(theme.data.padding, const EdgeInsets.symmetric(horizontal: 5));
+      expect(theme.data.margin, const EdgeInsets.all(7));
     },
   );
 }
