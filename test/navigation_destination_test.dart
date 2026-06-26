@@ -9,8 +9,11 @@
 //   - BarDestinationStrategy and RailDestinationStrategy produce
 //     structurally parity outputs (both resolve a themed icon + styled label).
 
+import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
+    as custom_adaptive_scaffold;
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:custom_adaptive_scaffold/src/navigation_shared/destination_surface_strategy.dart";
+import "package:custom_adaptive_scaffold/src/navigation_shared/navigation_destination_tooltip.dart";
 import "package:flutter/gestures.dart";
 import "package:flutter/material.dart"
     hide
@@ -91,6 +94,230 @@ Widget _buildRail({
 }
 
 void main() {
+  group("DestinationTooltip", () {
+    testWidgets("returns child directly when message is null",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        const DestinationTooltip(
+          message: null,
+          tooltipOffset: Offset(12, 24),
+          tooltipTrigger: TooltipTriggerMode.longPress,
+          child: Text("Tooltip Child"),
+        ),
+      );
+
+      expect(find.text("Tooltip Child"), findsOneWidget);
+      expect(find.byType(Tooltip), findsNothing);
+      expect(find.byType(GestureDetector), findsNothing);
+    });
+
+    testWidgets("long press uses manual tooltip visibility",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        const DestinationTooltip(
+          message: "Tooltip Message",
+          tooltipOffset: Offset(12, 24),
+          tooltipTrigger: TooltipTriggerMode.longPress,
+          child: Text("Tooltip Child"),
+        ),
+      );
+
+      final Tooltip tooltip = tester.widget<Tooltip>(find.byType(Tooltip));
+      TooltipVisibility visibility =
+          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      final GestureDetector detector =
+          tester.widget<GestureDetector>(find.byType(GestureDetector));
+
+      expect(tooltip.triggerMode, TooltipTriggerMode.manual);
+      expect(tooltip.verticalOffset, 24);
+      expect(tooltip.margin, const EdgeInsets.only(left: 12));
+      expect(visibility.visible, isFalse);
+      expect(detector.onLongPress, isNotNull);
+      expect(detector.onSecondaryTapUp, isNull);
+
+      await tester.longPress(find.text("Tooltip Child"));
+      await tester.pump();
+
+      visibility =
+          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      expect(visibility.visible, isTrue);
+
+      await tester.pump(const Duration(milliseconds: 1700));
+      visibility =
+          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      expect(visibility.visible, isFalse);
+    });
+
+    testWidgets("tap trigger uses secondary tap handler and manual mode",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        const DestinationTooltip(
+          message: "Tooltip Message",
+          tooltipOffset: Offset.zero,
+          tooltipTrigger: TooltipTriggerMode.tap,
+          child: Text("Tooltip Child"),
+        ),
+      );
+
+      final Tooltip tooltip = tester.widget<Tooltip>(find.byType(Tooltip));
+      final GestureDetector detector =
+          tester.widget<GestureDetector>(find.byType(GestureDetector));
+
+      expect(tooltip.triggerMode, TooltipTriggerMode.manual);
+      expect(detector.onLongPress, isNull);
+      expect(detector.onSecondaryTapUp, isNotNull);
+
+      await tester.tap(find.text("Tooltip Child"), buttons: kSecondaryButton);
+      await tester.pump();
+
+      TooltipVisibility visibility =
+          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      expect(visibility.visible, isTrue);
+
+      await tester.pump(const Duration(milliseconds: 1700));
+      visibility =
+          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      expect(visibility.visible, isFalse);
+    });
+
+    testWidgets("non-manual trigger keeps tooltip always visible",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        const DestinationTooltip(
+          message: "Tooltip Message",
+          tooltipOffset: Offset.zero,
+          tooltipTrigger: TooltipTriggerMode.manual,
+          child: Text("Tooltip Child"),
+        ),
+      );
+
+      final Tooltip tooltip = tester.widget<Tooltip>(find.byType(Tooltip));
+      final TooltipVisibility visibility =
+          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      final GestureDetector detector =
+          tester.widget<GestureDetector>(find.byType(GestureDetector));
+
+      expect(tooltip.triggerMode, TooltipTriggerMode.manual);
+      expect(visibility.visible, isTrue);
+      expect(detector.onLongPress, isNull);
+      expect(detector.onSecondaryTapUp, isNull);
+    });
+  });
+
+  group("ExpandedRailDestination", () {
+    testWidgets("renders extended rail content with internal animation",
+        (WidgetTester tester) async {
+      int taps = 0;
+
+      await pumpApp(
+        tester,
+        Center(
+          child: ExpandedRailDestination(
+            icon: const Icon(Icons.home),
+            label: const Text("Expanded Home"),
+            selected: true,
+            onTap: () => taps += 1,
+            indexLabel: "Home, tab 1 of 1",
+            minWidth: 80,
+            minExtendedWidth: 240,
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            useIndicator: true,
+            indicatorColor: Colors.orange,
+            indicatorShape: const StadiumBorder(),
+          ),
+        ),
+      );
+
+      expect(find.text("Expanded Home"), findsOneWidget);
+      expect(find.byIcon(Icons.home), findsOneWidget);
+      expect(find.byType(Row), findsWidgets);
+      expect(find.byType(ClipRect), findsOneWidget);
+      expect(
+        find.byType(custom_adaptive_scaffold.NavigationIndicator),
+        findsOneWidget,
+      );
+
+      final ConstrainedBox constrainedBox = tester.widget<ConstrainedBox>(
+        find.byWidgetPredicate(
+          (Widget widget) =>
+              widget is ConstrainedBox && widget.constraints.minWidth == 240,
+        ),
+      );
+      expect(constrainedBox.constraints.minWidth, 240);
+
+      final SemanticsHandle semantics = tester.ensureSemantics();
+      expect(
+        tester.getSemantics(find.text("Expanded Home")),
+        matchesSemantics(
+          label: "Expanded Home\nHome, tab 1 of 1",
+          isSelected: true,
+          hasSelectedState: true,
+          isFocusable: true,
+          hasFocusAction: true,
+          hasTapAction: true,
+        ),
+      );
+
+      await tester.tap(find.text("Expanded Home"));
+      await tester.pump();
+      expect(taps, 1);
+      semantics.dispose();
+    });
+
+    testWidgets("updates when destination animation changes",
+        (WidgetTester tester) async {
+      const AlwaysStoppedAnimation<double> firstAnimation =
+          AlwaysStoppedAnimation<double>(0.25);
+      const AlwaysStoppedAnimation<double> secondAnimation =
+          AlwaysStoppedAnimation<double>(0.75);
+
+      Widget buildDestination(Animation<double>? animation) {
+        return MaterialApp(
+          home: Scaffold(
+            body: Center(
+              child: ExpandedRailDestination(
+                key: const Key("expanded-destination"),
+                icon: const Icon(Icons.search),
+                label: const Text("Search"),
+                selected: false,
+                disabled: true,
+                destinationAnimation: animation,
+                extendedTransitionAnimation:
+                    const AlwaysStoppedAnimation<double>(1),
+                minWidth: 72,
+                minExtendedWidth: 220,
+                padding: const EdgeInsets.all(4),
+              ),
+            ),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(buildDestination(firstAnimation));
+      expect(find.text("Search"), findsOneWidget);
+      expect(find.byIcon(Icons.search), findsOneWidget);
+
+      await tester.pumpWidget(buildDestination(secondAnimation));
+      await tester.pump();
+
+      final SemanticsHandle semantics = tester.ensureSemantics();
+      expect(
+        tester.getSemantics(find.text("Search")),
+        matchesSemantics(
+          label: "Search",
+          hasSelectedState: true,
+        ),
+      );
+      semantics.dispose();
+
+      await tester.pumpWidget(const SizedBox.shrink());
+    });
+  });
+
   group("NavigationDestination conversion", () {
     testWidgets("toBarDestination forwards tooltip",
         (WidgetTester tester) async {

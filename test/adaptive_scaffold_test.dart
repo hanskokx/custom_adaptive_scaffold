@@ -1086,6 +1086,134 @@ void main() {
       controller.dispose();
     },
   );
+
+  testWidgets(
+    "adaptive scaffold scope of and maybeOf resolve in-scope controller",
+    (WidgetTester tester) async {
+      final AdaptiveScaffoldController controller =
+          AdaptiveScaffoldController();
+      late AdaptiveScaffoldController resolvedByOf;
+      AdaptiveScaffoldController? resolvedByMaybeOf;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: AdaptiveScaffoldScope(
+            controller: controller,
+            child: Builder(
+              builder: (BuildContext context) {
+                resolvedByOf = AdaptiveScaffoldScope.of(context);
+                resolvedByMaybeOf = AdaptiveScaffoldScope.maybeOf(context);
+                return const SizedBox();
+              },
+            ),
+          ),
+        ),
+      );
+
+      expect(identical(resolvedByOf, controller), isTrue);
+      expect(identical(resolvedByMaybeOf, controller), isTrue);
+
+      controller.dispose();
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold scope maybeOf returns null when absent",
+    (WidgetTester tester) async {
+      AdaptiveScaffoldController? resolvedController;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Builder(
+            builder: (BuildContext context) {
+              resolvedController = AdaptiveScaffoldScope.maybeOf(context);
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+
+      expect(resolvedController, isNull);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold scope of asserts when absent",
+    (WidgetTester tester) async {
+      late BuildContext capturedContext;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: Builder(
+            builder: (BuildContext context) {
+              capturedContext = context;
+              return const SizedBox();
+            },
+          ),
+        ),
+      );
+
+      expect(
+        () => AdaptiveScaffoldScope.of(capturedContext),
+        throwsA(
+          isA<AssertionError>().having(
+            (AssertionError error) => error.message,
+            "message",
+            "AdaptiveScaffoldScope not found in widget tree.",
+          ),
+        ),
+      );
+    },
+  );
+
+  testWidgets(
+    "adaptive body exposes collapsed state and only notifies on change",
+    (WidgetTester tester) async {
+      bool? collapsedValue;
+
+      Widget buildBody(bool collapsed) {
+        return Directionality(
+          textDirection: TextDirection.ltr,
+          child: AdaptiveBody(
+            viewIsCollapsed: collapsed,
+            child: Builder(
+              builder: (BuildContext context) {
+                collapsedValue = AdaptiveBody.of(context)?.viewIsCollapsed;
+                return Text("collapsed=$collapsedValue");
+              },
+            ),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(buildBody(false));
+      expect(collapsedValue, isFalse);
+      expect(find.text("collapsed=false"), findsOneWidget);
+
+      const AdaptiveBody expandedBody = AdaptiveBody(
+        viewIsCollapsed: false,
+        child: SizedBox(),
+      );
+      const AdaptiveBody sameExpandedBody = AdaptiveBody(
+        viewIsCollapsed: false,
+        child: SizedBox(),
+      );
+      const AdaptiveBody collapsedBody = AdaptiveBody(
+        viewIsCollapsed: true,
+        child: SizedBox(),
+      );
+
+      expect(expandedBody.updateShouldNotify(sameExpandedBody), isFalse);
+      expect(collapsedBody.updateShouldNotify(expandedBody), isTrue);
+
+      await tester.pumpWidget(buildBody(true));
+      expect(collapsedValue, isTrue);
+      expect(find.text("collapsed=true"), findsOneWidget);
+    },
+  );
 }
 
 /// An empty widget that implements [PreferredSizeWidget] to ensure that
