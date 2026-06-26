@@ -162,7 +162,7 @@ NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 5)
 NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 150)
 
 // Uncapped — shows "150":
-NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox',e  badge: 150, badgeStyle: NavigationBadgeStyle.exact)
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 150, badgeStyle: NavigationBadgeStyle.exact)
 
 // Small dot badge:
 NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 1, badgeStyle: NavigationBadgeStyle.dot)
