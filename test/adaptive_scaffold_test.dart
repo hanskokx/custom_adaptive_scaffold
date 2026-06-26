@@ -1360,6 +1360,173 @@ void main() {
       expect(theme.data.margin, const EdgeInsets.all(7));
     },
   );
+
+  testWidgets("bottomToTop creates upward slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.bottomToTop(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<SlideTransition>());
+    final SlideTransition transition = widget as SlideTransition;
+
+    controller.value = 0;
+    expect(transition.position.value, const Offset(0, 1));
+    controller.value = 1;
+    expect(transition.position.value, Offset.zero);
+  });
+
+  testWidgets("topToBottom creates downward slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.topToBottom(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<SlideTransition>());
+    final SlideTransition transition = widget as SlideTransition;
+
+    controller.value = 0;
+    expect(transition.position.value, Offset.zero);
+    controller.value = 1;
+    expect(transition.position.value, const Offset(0, 1));
+  });
+
+  testWidgets("leftOutIn creates left-to-center slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.leftOutIn(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    final SlideTransition transition = widget as SlideTransition;
+    controller.value = 0;
+    expect(transition.position.value, const Offset(-1, 0));
+    controller.value = 1;
+    expect(transition.position.value, Offset.zero);
+  });
+
+  testWidgets("leftInOut creates center-to-left slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.leftInOut(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    final SlideTransition transition = widget as SlideTransition;
+    controller.value = 0;
+    expect(transition.position.value, Offset.zero);
+    controller.value = 1;
+    expect(transition.position.value, const Offset(-1, 0));
+  });
+
+  testWidgets("rightOutIn creates right-to-center slide transition",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final AnimatedWidget widget = AdaptiveScaffold.rightOutIn(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    final SlideTransition transition = widget as SlideTransition;
+    controller.value = 0;
+    expect(transition.position.value, const Offset(1, 0));
+    controller.value = 1;
+    expect(transition.position.value, Offset.zero);
+  });
+
+  testWidgets("fadeIn uses easeInCubic opacity curve",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final Widget widget = AdaptiveScaffold.fadeIn(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<FadeTransition>());
+    final FadeTransition transition = widget as FadeTransition;
+    controller.value = 0;
+    expect(transition.opacity.value, 0);
+    controller.value = 1;
+    expect(transition.opacity.value, 1);
+  });
+
+  testWidgets("fadeOut uses reverse animation opacity curve",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final Widget widget = AdaptiveScaffold.fadeOut(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<FadeTransition>());
+    final FadeTransition transition = widget as FadeTransition;
+    controller.value = 0;
+    expect(transition.opacity.value, 1);
+    controller.value = 1;
+    expect(transition.opacity.value, 0);
+  });
+
+  testWidgets("stayOnScreen keeps opacity constant at 1",
+      (WidgetTester tester) async {
+    final AnimationController controller = AnimationController(
+      vsync: tester,
+      duration: const Duration(milliseconds: 100),
+    );
+    addTearDown(controller.dispose);
+
+    final Widget widget = AdaptiveScaffold.stayOnScreen(
+      const SizedBox(key: Key("child")),
+      controller,
+    );
+
+    expect(widget, isA<FadeTransition>());
+    final FadeTransition transition = widget as FadeTransition;
+    controller.value = 0;
+    expect(transition.opacity.value, 1);
+    controller.value = 1;
+    expect(transition.opacity.value, 1);
+  });
 }
 
 /// An empty widget that implements [PreferredSizeWidget] to ensure that
