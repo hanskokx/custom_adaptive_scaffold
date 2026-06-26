@@ -1334,8 +1334,10 @@ void main() {
         expect(data.indicatorShape, anyOf(isNull, isA<ShapeBorder>()));
         expect(data.resolvedIconSize, 40);
         expect(iconTheme.data.size, 40);
-        expect(iconTheme.data.color,
-            Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38));
+        expect(
+          iconTheme.data.color,
+          Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
+        );
         expect(
           labelStyle.style.color,
           Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.38),
@@ -1470,6 +1472,198 @@ void main() {
 
         expect(data.hoverColor, Colors.blue);
         expect(data.splashColor, Colors.green);
+      },
+    );
+
+    testWidgets(
+      "rail strategy honors theme icon and label overrides",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationRailTheme: const NavigationRailThemeData(
+                unselectedIconTheme: IconThemeData(size: 18, color: Colors.red),
+                selectedIconTheme: IconThemeData(size: 22, color: Colors.green),
+                unselectedLabelTextStyle: TextStyle(fontSize: 13),
+                selectedLabelTextStyle: TextStyle(fontSize: 15),
+                minExtendedWidth: 280,
+              ),
+            ),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const RailDestinationStrategy strategy = RailDestinationStrategy();
+        final DestinationBuildData unselectedData = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: false,
+            disabled: false,
+            destinationAnimation: kAlwaysCompleteAnimation,
+          ),
+        );
+        final DestinationBuildData selectedData = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: true,
+            disabled: false,
+            destinationAnimation: kAlwaysCompleteAnimation,
+          ),
+        );
+
+        final IconTheme unselectedIconTheme =
+            unselectedData.themedIcon as IconTheme;
+        final IconTheme selectedIconTheme =
+            selectedData.themedIcon as IconTheme;
+        final DefaultTextStyle unselectedLabelStyle =
+            unselectedData.styledLabel as DefaultTextStyle;
+        final DefaultTextStyle selectedLabelStyle =
+            selectedData.styledLabel as DefaultTextStyle;
+
+        expect(unselectedData.minExtendedWidth, 280);
+        expect(unselectedIconTheme.data.size, 18);
+        expect(unselectedIconTheme.data.color, Colors.red);
+        expect(selectedIconTheme.data.size, 22);
+        expect(selectedIconTheme.data.color, Colors.green);
+        expect(unselectedLabelStyle.style.fontSize, 13);
+        expect(selectedLabelStyle.style.fontSize, 15);
+      },
+    );
+
+    testWidgets(
+      "bar strategy uses theme resolvers for disabled state",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationBarTheme: CustomNavigationBarThemeData(
+                iconTheme:
+                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.disabled)) {
+                    return const IconThemeData(size: 17, color: Colors.orange);
+                  }
+                  if (states.contains(WidgetState.selected)) {
+                    return const IconThemeData(size: 19, color: Colors.blue);
+                  }
+                  return const IconThemeData(size: 15, color: Colors.black);
+                }),
+                labelTextStyle:
+                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.disabled)) {
+                    return const TextStyle(fontSize: 11, color: Colors.orange);
+                  }
+                  if (states.contains(WidgetState.selected)) {
+                    return const TextStyle(fontSize: 13, color: Colors.blue);
+                  }
+                  return const TextStyle(fontSize: 9, color: Colors.black);
+                }),
+                indicatorShape: const RoundedRectangleBorder(),
+              ),
+            ),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const BarDestinationStrategy strategy = BarDestinationStrategy();
+        final DestinationBuildData data = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: true,
+            disabled: true,
+            destinationAnimation: kAlwaysCompleteAnimation,
+          ),
+        );
+
+        final DefaultTextStyle styledLabel =
+            data.styledLabel as DefaultTextStyle;
+
+        await pumpApp(tester, data.themedIcon);
+        final IconTheme themedIcon = tester.widget<IconTheme>(
+          find
+              .ancestor(
+                  of: find.byIcon(Icons.home), matching: find.byType(IconTheme))
+              .first,
+        );
+
+        expect(themedIcon.data.size, 17);
+        expect(themedIcon.data.color, Colors.orange);
+        expect(styledLabel.style.fontSize, 11);
+        expect(styledLabel.style.color, Colors.orange);
+        expect(data.indicatorShape, isA<RoundedRectangleBorder>());
+      },
+    );
+
+    testWidgets(
+      "bar strategy keeps default icon theme when only selected theme resolves",
+      (WidgetTester tester) async {
+        late BuildContext context;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationBarTheme: CustomNavigationBarThemeData(
+                iconTheme:
+                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                  if (states.contains(WidgetState.selected)) {
+                    return const IconThemeData(size: 21, color: Colors.pink);
+                  }
+                  return null;
+                }),
+              ),
+            ),
+            home: Builder(
+              builder: (BuildContext c) {
+                context = c;
+                return const SizedBox.shrink();
+              },
+            ),
+          ),
+        );
+
+        const BarDestinationStrategy strategy = BarDestinationStrategy();
+        final DestinationBuildData data = strategy.resolve(
+          context,
+          const DestinationResolveInput(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            selected: false,
+            disabled: false,
+            destinationAnimation: kAlwaysCompleteAnimation,
+          ),
+        );
+
+        await pumpApp(tester, data.themedIcon);
+        final IconTheme themedIcon = tester.widget<IconTheme>(
+          find
+              .ancestor(
+                  of: find.byIcon(Icons.home), matching: find.byType(IconTheme))
+              .first,
+        );
+        expect(themedIcon.data.size, isNot(21));
+        expect(themedIcon.data.size, isNotNull);
       },
     );
   });
@@ -2482,6 +2676,39 @@ void main() {
       expect(find.byType(Badge), findsNWidgets(3));
       expect(find.text("99+"), findsOneWidget);
       expect(find.text("1"), findsOneWidget);
+    });
+
+    testWidgets("bar widget uses default indicator color and shape fallback",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationBarTheme(
+          data: const CustomNavigationBarThemeData(
+            indicatorColor: null,
+            indicatorShape: null,
+          ),
+          child: NavigationBar(
+            destinations: const [
+              NavigationBarDestination(
+                icon: Icon(Icons.home),
+                label: "Home",
+              ),
+              NavigationBarDestination(
+                icon: Icon(Icons.search),
+                label: "Search",
+              ),
+            ],
+          ),
+        ),
+      );
+
+      final custom_adaptive_scaffold.NavigationIndicator indicator =
+          tester.widget<custom_adaptive_scaffold.NavigationIndicator>(
+        find.byType(custom_adaptive_scaffold.NavigationIndicator).first,
+      );
+
+      expect(indicator.color, isNotNull);
+      expect(indicator.shape, isNotNull);
     });
   });
 }
