@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "../lib/adaptive_layout_demo.dart" as example;
+import "package:custom_adaptive_scaffold_example/adaptive_layout_demo.dart"
+    as example;
 import "package:custom_adaptive_scaffold/material.dart";
 import "package:flutter_test/flutter_test.dart";
 
