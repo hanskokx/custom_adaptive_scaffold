@@ -1204,6 +1204,106 @@ void main() {
       );
     });
 
+    // --- Direct rail constructor assertions ---
+
+    group("RailDestination badge", () {
+      test("badge: 0 throws AssertionError", () {
+        expect(
+          () => RailDestination(
+            icon: const Icon(Icons.home),
+            label: const Text("Home"),
+            badge: 0,
+          ),
+          throwsAssertionError,
+        );
+      });
+
+      test("badge + badgeLabel mutual exclusivity throws AssertionError", () {
+        expect(
+          () => RailDestination(
+            icon: const Icon(Icons.home),
+            label: const Text("Home"),
+            badge: 5,
+            badgeLabel: "5",
+          ),
+          throwsAssertionError,
+        );
+      });
+
+      test("badge + customBadge mutual exclusivity throws AssertionError", () {
+        expect(
+          () => RailDestination(
+            icon: const Icon(Icons.home),
+            label: const Text("Home"),
+            badge: 5,
+            customBadge: const Badge(),
+          ),
+          throwsAssertionError,
+        );
+      });
+
+      test("badgeLabel + customBadge mutual exclusivity throws AssertionError",
+          () {
+        expect(
+          () => RailDestination(
+            icon: const Icon(Icons.home),
+            label: const Text("Home"),
+            badgeLabel: "hello",
+            customBadge: const Badge(),
+          ),
+          throwsAssertionError,
+        );
+      });
+
+      test("customBadge + exact throws AssertionError", () {
+        expect(
+          () => RailDestination(
+            icon: const Icon(Icons.home),
+            label: const Text("Home"),
+            customBadge: const Badge(),
+            badgeStyle: NavigationBadgeStyle.exact,
+          ),
+          throwsAssertionError,
+        );
+      });
+
+      test("badgeLabel + exact throws AssertionError", () {
+        expect(
+          () => RailDestination(
+            icon: const Icon(Icons.home),
+            label: const Text("Home"),
+            badgeLabel: "hello",
+            badgeStyle: NavigationBadgeStyle.exact,
+          ),
+          throwsAssertionError,
+        );
+      });
+
+      test("customBadge + dot does NOT throw", () {
+        expect(
+          () => const RailDestination(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            customBadge: Badge(),
+            badgeStyle: NavigationBadgeStyle.dot,
+          ),
+          returnsNormally,
+        );
+      });
+
+      test("badgeLabel + hidden does NOT throw", () {
+        expect(
+          () => const RailDestination(
+            icon: Icon(Icons.home),
+            label: Text("Home"),
+            badgeLabel: "hello",
+            badgeStyle: NavigationBadgeStyle.hidden,
+          ),
+          returnsNormally,
+        );
+      });
+    });
+
     // --- Conversion: toRailDestination ---
 
     test("toRailDestination forwards badge value", () {
