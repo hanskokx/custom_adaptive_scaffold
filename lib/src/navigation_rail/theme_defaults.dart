@@ -6,8 +6,14 @@ import "package:flutter/material.dart";
 
 import "../../navigation_rail_theme.dart" as c;
 
+/// The default minimum rail width used by the Material 2 fallback theme.
 const double navigationRailMinWidthM2 = 72.0;
 
+/// Returns the default [NavigationRailThemeData] for the active Material
+/// version.
+///
+/// Material 3 uses token-based defaults, while Material 2 falls back to the
+/// legacy hand-authored defaults until Material 2 support is removed.
 c.NavigationRailThemeData navigationRailDefaultsFor(BuildContext context) {
   // TODO(v6.0.0): Remove useMaterial3 check and M2 fallback branch.
   return Theme.of(context).useMaterial3
@@ -15,7 +21,7 @@ c.NavigationRailThemeData navigationRailDefaultsFor(BuildContext context) {
       : _NavigationRailDefaultsM2(context);
 }
 
-// Hand coded defaults based on Material Design 2.
+/// Hand-coded defaults based on Material Design 2.
 @Deprecated(
   "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
   "Migrate to Material 3 by relying on the default M3 behavior.",
@@ -90,6 +96,7 @@ class _NavigationRailDefaultsM2 extends c.NavigationRailThemeData {
 // Design token database by the script:
 //   dev/tools/gen_defaults/bin/gen_defaults.dart.
 
+/// Generated Material 3 defaults for [NavigationRail].
 class _NavigationRailDefaultsM3 extends c.NavigationRailThemeData {
   _NavigationRailDefaultsM3(this.context)
       : super(

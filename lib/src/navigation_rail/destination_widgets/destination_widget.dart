@@ -14,7 +14,16 @@ const double _kRailIndicatorWidth = 56.0;
 const double _kRailIconSlotHeight = 44.0;
 const double _kDefaultIconSize = 24.0;
 
+/// Builds a single [NavigationRail] destination across collapsed and extended
+/// rail layouts.
+///
+/// This widget resolves the effective styling, indicator behavior, tooltip
+/// behavior, and badge presentation for one destination before choosing the
+/// appropriate layout for the current [NavigationRailLabelType].
 class RailDestination extends StatefulWidget {
+  /// Creates a rail destination.
+  ///
+  /// The [icon] and [label] are required.
   const RailDestination({
     required this.icon,
     required this.label,
@@ -75,30 +84,101 @@ class RailDestination extends StatefulWidget {
           "exact applies to badge (int) only.",
         );
 
+  /// The minimum width of the collapsed destination region.
+  ///
+  /// If null, the value is resolved from the surrounding [NavigationRail]
+  /// configuration or theme.
   final double? minWidth;
+
+  /// The minimum width of the extended destination region.
+  ///
+  /// If null, the value is resolved from the surrounding [NavigationRail]
+  /// configuration or theme.
   final double? minExtendedWidth;
+
+  /// The icon displayed for this destination.
   final Widget icon;
+
+  /// The label associated with this destination.
   final Widget label;
+
+  /// The selection animation driving this destination's visual state.
+  ///
+  /// If null, an internal animation controller is used.
   final Animation<double>? destinationAnimation;
+
+  /// The label behavior for the surrounding [NavigationRail].
   final NavigationRailLabelType? labelType;
+
+  /// Whether this destination is currently selected.
   final bool? selected;
+
+  /// The animation that tracks the rail's extended transition.
   final Animation<double>? extendedTransitionAnimation;
+
+  /// The icon theme applied to [icon].
   final IconThemeData? iconTheme;
+
+  /// The text style applied to [label].
   final TextStyle? labelTextStyle;
+
+  /// Called when the destination is tapped.
   final VoidCallback? onTap;
+
+  /// The semantic position label announced for assistive technologies.
   final String? indexLabel;
+
+  /// Whether to show the selected indicator for this destination.
+  ///
+  /// If null, the value is resolved from the surrounding [NavigationRail]
+  /// configuration or theme.
   final bool? useIndicator;
+
+  /// The color of the selected indicator.
+  ///
+  /// If null, the value is resolved from the surrounding [NavigationRail]
+  /// configuration or theme.
   final Color? indicatorColor;
+
+  /// The shape of the selected indicator.
+  ///
+  /// If null, the value is resolved from the surrounding [NavigationRail]
+  /// configuration or theme.
   final ShapeBorder? indicatorShape;
+
+  /// Whether this destination is disabled.
+  ///
+  /// Disabled destinations do not respond to taps and are styled as inactive.
   final bool disabled;
+
+  /// Whether the surrounding rail is currently extended.
   final bool extended;
+
+  /// Whether labels remain visible when the rail is collapsed and [labelType]
+  /// is [NavigationRailLabelType.none].
   final bool showLabelsWhenCollapsed;
+
+  /// Padding applied inside the destination's content area.
   final EdgeInsetsGeometry? padding;
+
+  /// External margin associated with this destination.
   final EdgeInsetsGeometry? margin;
+
+  /// Tooltip text shown for this destination.
   final String? tooltip;
+
+  /// Numeric badge count displayed on the destination icon.
+  ///
+  /// Must be greater than zero when provided.
   final int? badge;
+
+  /// Controls how badge content is rendered for this destination.
   final NavigationBadgeStyle badgeStyle;
+
+  /// Text badge content displayed on the destination icon.
   final String? badgeLabel;
+
+  /// A fully custom [Badge] to display on the destination icon.
   final Badge? customBadge;
 
   @override
