@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import "dart:ui";
+
 import "package:custom_adaptive_scaffold/src/adaptive_layout.dart";
 import "package:custom_adaptive_scaffold/src/breakpoints.dart";
 import "package:custom_adaptive_scaffold/src/slot_layout.dart";
@@ -542,6 +544,195 @@ void main() {
       tester.getBottomRight(secondaryTestBreakpoint1600),
       offsetMoreOrLessEquals(const Offset(2299.1, 1990.0), epsilon: 1.0),
     );
+  });
+
+  testWidgets("adaptive layout expands body when secondaryBody config is null",
+      (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(400, 2000));
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(size: Size(400, 2000)),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: AdaptiveLayout(
+            primaryNavigation: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Primary Navigation Small"),
+                  builder: on,
+                ),
+              },
+            ),
+            secondaryNavigation: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Secondary Navigation Small"),
+                  builder: on,
+                ),
+              },
+            ),
+            topNavigation: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Top Navigation"),
+                  builder: on,
+                ),
+              },
+            ),
+            bottomNavigation: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Bottom Navigation Small"),
+                  builder: on,
+                ),
+              },
+            ),
+            body: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Test Breakpoint"),
+                  builder: (_) => Container(color: Colors.red),
+                ),
+              },
+            ),
+            secondaryBody: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig?>{
+                TestBreakpoint0(): null,
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(tester.getTopLeft(testBreakpoint), const Offset(10, 10));
+    expect(tester.getBottomRight(testBreakpoint), const Offset(390, 1990));
+  });
+
+  testWidgets("adaptive layout positions secondaryBody when body is absent",
+      (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(400, 2000));
+    await tester.pumpWidget(
+      MediaQuery(
+        data: const MediaQueryData(size: Size(400, 2000)),
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: AdaptiveLayout(
+            primaryNavigation: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Primary Navigation Small"),
+                  builder: on,
+                ),
+              },
+            ),
+            secondaryNavigation: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Secondary Navigation Small"),
+                  builder: on,
+                ),
+              },
+            ),
+            topNavigation: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Top Navigation"),
+                  builder: on,
+                ),
+              },
+            ),
+            bottomNavigation: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Bottom Navigation Small"),
+                  builder: on,
+                ),
+              },
+            ),
+            secondaryBody: SlotLayout(
+              config: <Breakpoint, SlotLayoutConfig>{
+                TestBreakpoint0(): SlotLayout.from(
+                  key: const Key("Secondary Test Breakpoint"),
+                  builder: (_) => Container(color: Colors.blue),
+                ),
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getTopLeft(secondaryTestBreakpoint),
+      Offset.zero,
+    );
+    expect(
+      tester.getBottomRight(secondaryTestBreakpoint),
+      const Offset(380, 1980),
+    );
+  });
+
+  testWidgets("adaptive layout respects foldable hinge in horizontal layout",
+      (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 2000));
+    tester.view.displayFeatures = <DisplayFeature>[
+      const DisplayFeature(
+        bounds: Rect.fromLTWH(500, 0, 20, 2000),
+        type: DisplayFeatureType.hinge,
+        state: DisplayFeatureState.postureFlat,
+      ),
+    ];
+    addTearDown(() {
+      tester.view.resetDisplayFeatures();
+      tester.view.resetPhysicalSize();
+    });
+
+    await tester.pumpWidget(await layout(width: 1000, tester: tester));
+    await tester.pumpAndSettle();
+
+    expect(tester.getTopLeft(testBreakpoint800), const Offset(10, 10));
+    expect(
+      tester.getBottomRight(testBreakpoint800),
+      const Offset(500, 1990),
+    );
+    expect(
+      tester.getTopLeft(secondaryTestBreakpoint800),
+      const Offset(500, 10),
+    );
+  });
+
+  testWidgets("adaptive layout respects foldable hinge in RTL layout",
+      (WidgetTester tester) async {
+    await tester.binding.setSurfaceSize(const Size(1000, 2000));
+    tester.view.displayFeatures = <DisplayFeature>[
+      const DisplayFeature(
+        bounds: Rect.fromLTWH(500, 0, 20, 2000),
+        type: DisplayFeatureType.fold,
+        state: DisplayFeatureState.postureFlat,
+      ),
+    ];
+    addTearDown(() {
+      tester.view.resetDisplayFeatures();
+      tester.view.resetPhysicalSize();
+    });
+
+    await tester.pumpWidget(
+      await layout(
+        width: 1000,
+        tester: tester,
+        directionality: TextDirection.rtl,
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.getTopLeft(secondaryTestBreakpoint800),
+      const Offset(10, 10),
+    );
+    expect(tester.getTopLeft(testBreakpoint800), const Offset(500, 10));
   });
 }
 

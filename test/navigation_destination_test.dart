@@ -1004,6 +1004,131 @@ void main() {
         expect(v.visible, isTrue);
       }
     });
+
+    testWidgets("showLabelsWhenCollapsed displays label for labelType.none",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          labelType: NavigationRailLabelType.none,
+          showLabelsWhenCollapsed: true,
+          destinations: const [
+            NavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.search),
+              label: Text("Search"),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Iterable<Visibility> visibilityWidgets =
+          tester.widgetList<Visibility>(find.byType(Visibility));
+      expect(
+        visibilityWidgets.every((Visibility widget) => widget.visible),
+        isTrue,
+      );
+      expect(find.text("Home"), findsOneWidget);
+    });
+
+    testWidgets("labelType.selected only shows selected label visually",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        _buildRail(
+          selectedIndex: 0,
+          onTap: null,
+          labelType: NavigationRailLabelType.selected,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FadeTransition), findsWidgets);
+    });
+
+    testWidgets(
+        "rail tooltip trigger switches based on label visibility theme settings",
+        (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const NavigationRailThemeData(
+              tooltipTriggerWhenLabelVisible: TooltipTriggerMode.tap,
+              tooltipTriggerWhenLabelHidden: TooltipTriggerMode.longPress,
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: [
+                NavigationRail(
+                  selectedIndex: 0,
+                  labelType: NavigationRailLabelType.none,
+                  destinations: const [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text("Home"),
+                      tooltip: "Go home",
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.search),
+                      label: Text("Search"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Tooltip hiddenTooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(hiddenTooltip.triggerMode, TooltipTriggerMode.manual);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(
+            navigationRailTheme: const NavigationRailThemeData(
+              tooltipTriggerWhenLabelVisible: TooltipTriggerMode.tap,
+              tooltipTriggerWhenLabelHidden: TooltipTriggerMode.longPress,
+            ),
+          ),
+          home: Scaffold(
+            body: Row(
+              children: [
+                NavigationRail(
+                  selectedIndex: 0,
+                  labelType: NavigationRailLabelType.none,
+                  showLabelsWhenCollapsed: true,
+                  destinations: const [
+                    NavigationRailDestination(
+                      icon: Icon(Icons.home),
+                      label: Text("Home"),
+                      tooltip: "Go home",
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.search),
+                      label: Text("Search"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final Tooltip visibleTooltip =
+          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      expect(visibleTooltip.triggerMode, TooltipTriggerMode.manual);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -1603,7 +1728,9 @@ void main() {
         final IconTheme themedIcon = tester.widget<IconTheme>(
           find
               .ancestor(
-                  of: find.byIcon(Icons.home), matching: find.byType(IconTheme))
+                of: find.byIcon(Icons.home),
+                matching: find.byType(IconTheme),
+              )
               .first,
         );
 
@@ -1659,7 +1786,9 @@ void main() {
         final IconTheme themedIcon = tester.widget<IconTheme>(
           find
               .ancestor(
-                  of: find.byIcon(Icons.home), matching: find.byType(IconTheme))
+                of: find.byIcon(Icons.home),
+                matching: find.byType(IconTheme),
+              )
               .first,
         );
         expect(themedIcon.data.size, isNot(21));
@@ -2642,6 +2771,64 @@ void main() {
       final Badge badge = tester.widget<Badge>(find.byType(Badge));
       final BuildContext badgeContext = tester.element(find.byWidget(badge));
       expect(BadgeTheme.of(badgeContext).backgroundColor, ambientBadgeColor);
+    });
+
+    testWidgets("customBadge is reconstructed around themed icon in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: const [
+            NavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+              customBadge: Badge(
+                label: Text("NEW"),
+                backgroundColor: Colors.teal,
+                alignment: Alignment.topLeft,
+                offset: Offset(-1, 2),
+                isLabelVisible: true,
+              ),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.search),
+              label: Text("Search"),
+            ),
+          ],
+        ),
+      );
+
+      final Badge badge = tester.widget<Badge>(find.byType(Badge).first);
+      expect(find.text("NEW"), findsOneWidget);
+      expect(badge.backgroundColor, Colors.teal);
+      expect(badge.alignment, Alignment.topLeft);
+      expect(badge.offset, const Offset(-1, 2));
+      expect(badge.isLabelVisible, isTrue);
+    });
+
+    testWidgets("badgeLabel renders custom text badge in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: const [
+            NavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+              badgeLabel: "Hi",
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.search),
+              label: Text("Search"),
+            ),
+          ],
+        ),
+      );
+
+      expect(find.byType(Badge), findsOneWidget);
+      expect(find.text("Hi"), findsOneWidget);
     });
 
     testWidgets("multiple destinations each render their own badge in bar",
