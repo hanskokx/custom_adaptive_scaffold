@@ -417,4 +417,99 @@ void main() {
       expect(theme.updateShouldNotify(differentTheme), isTrue);
     });
   });
+
+  group("Theme defaults", () {
+    testWidgets("navigation bar M2 defaults keep destinationOverlayColor null",
+        (WidgetTester tester) async {
+      late NavigationBarThemeData defaults;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          // ignore: deprecated_member_use
+          theme: ThemeData.light().copyWith(useMaterial3: false),
+          home: Builder(
+            builder: (BuildContext context) {
+              defaults = NavigationBarTheme.of(context);
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+
+      expect(defaults.destinationOverlayColor, isNull);
+      expect(
+        defaults.overlayColor
+            ?.resolve(const <WidgetState>{WidgetState.hovered}),
+        isNotNull,
+      );
+    });
+
+    testWidgets(
+        "navigation rail M2 defaults resolve destination overlay colors",
+        (WidgetTester tester) async {
+      late NavigationRailThemeData defaults;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          // ignore: deprecated_member_use
+          theme: ThemeData.light().copyWith(useMaterial3: false),
+          home: Builder(
+            builder: (BuildContext context) {
+              defaults = NavigationRailTheme.of(context);
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+
+      expect(
+        defaults.destinationOverlayColor?.resolve(
+          const <WidgetState>{WidgetState.pressed},
+        ),
+        isNotNull,
+      );
+      expect(
+        defaults.destinationOverlayColor?.resolve(
+          const <WidgetState>{WidgetState.hovered},
+        ),
+        isNotNull,
+      );
+      expect(
+        defaults.destinationOverlayColor?.resolve(const <WidgetState>{}),
+        isNull,
+      );
+    });
+
+    testWidgets(
+        "navigation rail M3 defaults resolve destination overlay colors",
+        (WidgetTester tester) async {
+      late NavigationRailThemeData defaults;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: ThemeData(useMaterial3: true),
+          home: Builder(
+            builder: (BuildContext context) {
+              defaults = NavigationRailTheme.of(context);
+              return const SizedBox.shrink();
+            },
+          ),
+        ),
+      );
+
+      expect(
+        defaults.destinationOverlayColor?.resolve(
+          const <WidgetState>{WidgetState.focused},
+        ),
+        isNotNull,
+      );
+      expect(
+        defaults.destinationOverlayColor?.resolve(
+          const <WidgetState>{WidgetState.hovered},
+        ),
+        isNotNull,
+      );
+      expect(defaults.indicatorShape, const StadiumBorder());
+    });
+  });
 }
