@@ -855,6 +855,111 @@ void main() {
     },
   );
 
+  testWidgets(
+    "adaptive scaffold omits body slots when builders use emptyBuilder",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(400, 800)),
+            child: AdaptiveScaffold(
+              destinations: const <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  label: "Inbox",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.video_call_outlined),
+                  label: "Video",
+                ),
+              ],
+              smallBody: AdaptiveScaffold.emptyBuilder,
+              smallSecondaryBody: AdaptiveScaffold.emptyBuilder,
+              body: AdaptiveScaffold.emptyBuilder,
+              secondaryBody: AdaptiveScaffold.emptyBuilder,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byKey(const Key("smallBody")), findsNothing);
+      expect(find.byKey(const Key("smallSBody")), findsNothing);
+      expect(find.byKey(const Key("body")), findsNothing);
+      expect(find.byKey(const Key("sBody")), findsNothing);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold shows appBar without drawer when appBarBreakpoint matches and useDrawer is false",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(400, 800)),
+            child: AdaptiveScaffold(
+              useDrawer: false,
+              drawerBreakpoint: TestBreakpoint0(),
+              appBarBreakpoint: TestBreakpoint0(),
+              destinations: const <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  label: "Inbox",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.video_call_outlined),
+                  label: "Video",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byType(Drawer), findsNothing);
+    },
+  );
+
+  testWidgets(
+    "adaptive scaffold drawer uses extended navigation rail when enabled",
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: MediaQuery(
+            data: const MediaQueryData(size: Size(400, 800)),
+            child: AdaptiveScaffold(
+              drawerBreakpoint: TestBreakpoint0(),
+              destinations: const <NavigationDestination>[
+                NavigationDestination(
+                  icon: Icon(Icons.inbox_outlined),
+                  label: "Inbox",
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.video_call_outlined),
+                  label: "Video",
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final ScaffoldState state = tester.state(find.byType(Scaffold));
+      state.openDrawer();
+      await tester.pumpAndSettle();
+
+      final NavigationRail drawerRail = tester.widget<NavigationRail>(
+        find.descendant(
+            of: find.byType(Drawer), matching: find.byType(NavigationRail)),
+      );
+      expect(drawerRail.extended, isTrue);
+      expect(drawerRail.destinations.length, 2);
+    },
+  );
+
   // Test for navigationRailDestinationBuilder parameter.
   testWidgets("adaptive scaffold custom navigation rail destination mapping",
       (WidgetTester tester) async {
