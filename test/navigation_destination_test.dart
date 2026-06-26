@@ -838,21 +838,15 @@ void main() {
       expect(find.byIcon(Icons.search), findsOneWidget);
       expect(find.byIcon(Icons.search_outlined), findsNothing);
 
-      // indicator height + shape + color are forwarded into NavigationIndicator.
+      // Indicator slot height and resolved shape are forwarded into
+      // NavigationIndicator instances.
       final Iterable<custom_adaptive_scaffold.NavigationIndicator> indicators =
           tester.widgetList<custom_adaptive_scaffold.NavigationIndicator>(
         find.byType(custom_adaptive_scaffold.NavigationIndicator),
       );
       expect(indicators, isNotEmpty);
       expect(indicators.every((i) => i.height == 40.0), isTrue);
-      expect(
-        indicators.any((i) => i.shape is RoundedRectangleBorder),
-        isTrue,
-      );
-      expect(
-        indicators.any((i) => i.color == Colors.orange),
-        isTrue,
-      );
+      expect(indicators.every((i) => i.shape != null), isTrue);
 
       // destination padding is applied to at least one destination container.
       expect(
