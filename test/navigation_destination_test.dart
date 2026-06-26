@@ -1036,6 +1036,33 @@ void main() {
       expect(find.text("Home"), findsOneWidget);
     });
 
+    testWidgets("showLabelsWhenCollapsed handles minWidth below threshold",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          labelType: NavigationRailLabelType.none,
+          minWidth: 60,
+          showLabelsWhenCollapsed: true,
+          destinations: const [
+            NavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.search),
+              label: Text("Search"),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text("Home"), findsOneWidget);
+      expect(find.byType(Badge), findsNothing);
+    });
+
     testWidgets("labelType.selected only shows selected label visually",
         (WidgetTester tester) async {
       await pumpApp(
@@ -1049,6 +1076,32 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(FadeTransition), findsWidgets);
+    });
+
+    testWidgets("labelType.all handles minWidth below threshold",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          minWidth: 60,
+          labelType: NavigationRailLabelType.all,
+          destinations: const [
+            NavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.search),
+              label: Text("Search"),
+            ),
+          ],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text("Home"), findsOneWidget);
+      expect(find.text("Search"), findsOneWidget);
     });
 
     testWidgets(
@@ -2847,6 +2900,42 @@ void main() {
       expect(badge.alignment, Alignment.topLeft);
       expect(badge.offset, const Offset(-1, 2));
       expect(badge.isLabelVisible, isTrue);
+    });
+
+    testWidgets(
+        "direct RailDestination updates when destinationAnimation changes",
+        (WidgetTester tester) async {
+      const AlwaysStoppedAnimation<double> firstAnimation =
+          AlwaysStoppedAnimation<double>(0.25);
+      const AlwaysStoppedAnimation<double> secondAnimation =
+          AlwaysStoppedAnimation<double>(0.75);
+
+      Widget buildRailDestination(Animation<double>? animation) {
+        return MaterialApp(
+          home: Scaffold(
+            body: Row(
+              children: [
+                RailDestination(
+                  key: const Key("rail-destination"),
+                  icon: const Icon(Icons.home),
+                  label: const Text("Home"),
+                  destinationAnimation: animation,
+                  selected: true,
+                  labelType: NavigationRailLabelType.selected,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(buildRailDestination(firstAnimation));
+      expect(find.text("Home"), findsOneWidget);
+
+      await tester.pumpWidget(buildRailDestination(secondAnimation));
+      await tester.pump();
+
+      expect(find.byType(FadeTransition), findsWidgets);
     });
 
     testWidgets(
