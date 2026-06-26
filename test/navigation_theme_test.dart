@@ -281,6 +281,22 @@ void main() {
       );
     });
 
+    test("lerp keeps selectedIconTheme null when both sides are null", () {
+      const NavigationRailThemeData a = NavigationRailThemeData(
+        unselectedIconTheme: IconThemeData(size: 20),
+        selectedIconTheme: null,
+      );
+      const NavigationRailThemeData b = NavigationRailThemeData(
+        unselectedIconTheme: IconThemeData(size: 28),
+        selectedIconTheme: null,
+      );
+
+      final NavigationRailThemeData lerp =
+          NavigationRailThemeData.lerp(a, b, 0.5)!;
+      expect(lerp.selectedIconTheme, isNull);
+      expect(lerp.unselectedIconTheme, isNotNull);
+    });
+
     test("fromMaterial fills package-only fields with null", () {
       final NavigationRailThemeData data = NavigationRailThemeData.fromMaterial(
         const m.NavigationRailThemeData(
