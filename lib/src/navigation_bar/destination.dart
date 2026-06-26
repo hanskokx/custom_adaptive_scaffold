@@ -2,6 +2,7 @@ import "package:flutter/foundation.dart" show kIsWeb;
 
 import "../../material.dart";
 import "../../navigation_bar_theme.dart";
+import "../badge_style.dart";
 import "../navigation_destination.dart";
 import "../navigation_icon.dart";
 import "../navigation_shared/destination_build_data.dart";
@@ -62,6 +63,8 @@ class NavigationBarDestination extends NavigationDestination {
     super.tooltip,
     super.badge,
     super.badgeStyle,
+    super.badgeLabel,
+    super.customBadge,
   });
 
   @override
@@ -157,24 +160,65 @@ class NavigationBarDestination extends NavigationDestination {
           );
 
           // --- Badge ---
-          final bool showBadge =
-              badge != null && badgeStyle != NavigationBadgeStyle.hidden;
-          final Widget? badgeLabel =
-              showBadge && badgeStyle == NavigationBadgeStyle.count
-                  ? Text(badge! > 99 ? "99+" : "$badge")
-                  : null;
-          final Widget barBadgedIcon = showBadge
-              ? Badge(label: badgeLabel, child: data.themedIcon)
-              : data.themedIcon;
-          // Only apply a local BadgeTheme when explicitly configured.
-          // Otherwise, preserve any ambient BadgeTheme from ancestor widgets.
-          final Widget badgedIcon =
-              showBadge && navigationBarTheme.badgeThemeData != null
-                  ? BadgeTheme(
-                      data: navigationBarTheme.badgeThemeData!,
-                      child: barBadgedIcon,
-                    )
-                  : barBadgedIcon;
+          final bool hasAnyBadge =
+              badge != null || badgeLabel != null || customBadge != null;
+          Widget effectiveBadgedIcon;
+          if (!hasAnyBadge || badgeStyle == NavigationBadgeStyle.hidden) {
+            // No badge, or hidden overrides all badge types.
+            effectiveBadgedIcon = data.themedIcon;
+          } else if (badgeStyle == NavigationBadgeStyle.dot) {
+            // Dot overrides all badge types — show a themed dot.
+            final Widget badged = Badge(child: data.themedIcon);
+            effectiveBadgedIcon = navigationBarTheme.badgeThemeData != null
+                ? BadgeTheme(
+                    data: navigationBarTheme.badgeThemeData!,
+                    child: badged,
+                  )
+                : badged;
+          } else if (customBadge != null) {
+            // User-provided Badge: reconstruct with icon as child. No BadgeTheme.
+            final Badge b = customBadge!;
+            effectiveBadgedIcon = Badge(
+              label: b.label,
+              backgroundColor: b.backgroundColor,
+              textColor: b.textColor,
+              smallSize: b.smallSize,
+              largeSize: b.largeSize,
+              textStyle: b.textStyle,
+              padding: b.padding,
+              alignment: b.alignment,
+              offset: b.offset,
+              isLabelVisible: b.isLabelVisible,
+              child: data.themedIcon,
+            );
+          } else if (badgeLabel != null) {
+            final Widget badged = Badge(
+              label: Text(badgeLabel!),
+              child: data.themedIcon,
+            );
+            effectiveBadgedIcon = navigationBarTheme.badgeThemeData != null
+                ? BadgeTheme(
+                    data: navigationBarTheme.badgeThemeData!,
+                    child: badged,
+                  )
+                : badged;
+          } else {
+            // badge != null, not dot/hidden — resolve numeric style.
+            Widget? label;
+            if (badgeStyle == NavigationBadgeStyle.count) {
+              label = Text(badge! > 99 ? "99+" : "$badge");
+            } else if (badgeStyle == NavigationBadgeStyle.exact) {
+              label = Text("$badge");
+            }
+            // dot was already handled above; null label = dot in Badge
+            final Widget badged = Badge(label: label, child: data.themedIcon);
+            effectiveBadgedIcon = navigationBarTheme.badgeThemeData != null
+                ? BadgeTheme(
+                    data: navigationBarTheme.badgeThemeData!,
+                    child: badged,
+                  )
+                : badged;
+          }
 
           return Stack(
             alignment: Alignment.center,
@@ -197,7 +241,7 @@ class NavigationBarDestination extends NavigationDestination {
                       "bar-ink-icon-${destinationInfo.index}-${selectedForKey ? "selected" : "unselected"}",
                     ),
                     child: NavigationIcon(
-                      icon: badgedIcon,
+                      icon: effectiveBadgedIcon,
                       minWidth: data.minWidth,
                       material3: data.material3,
                       height: effectiveIndicatorHeight,

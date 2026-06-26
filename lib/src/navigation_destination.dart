@@ -1,32 +1,8 @@
 import "../material.dart";
+import "badge_style.dart";
 import "navigation_bar/destination.dart";
 import "navigation_rail/destination.dart";
 import "navigation_rail/navigation_rail.dart";
-
-/// Controls how a badge is displayed on a [NavigationDestination] icon.
-///
-/// See also:
-///
-///  * [NavigationDestination.badge], which is the numeric count the badge
-///    represents.
-///  * [NavigationDestination.badgeStyle], which uses this enum.
-enum NavigationBadgeStyle {
-  /// Displays the numeric [NavigationDestination.badge] value as a label.
-  ///
-  /// Values greater than 99 are capped and shown as `"99+"`.
-  count,
-
-  /// Displays a small dot indicator regardless of the numeric value.
-  dot,
-
-  /// Suppresses the badge entirely, even when [NavigationDestination.badge]
-  /// is non-null.
-  ///
-  /// This is useful when you want to retain the badge count in widget state
-  /// without showing a visual indicator — for example, while an in-app
-  /// notification banner is already visible.
-  hidden,
-}
 
 /// A typedef alias for [NavigationDestination].
 ///
@@ -100,11 +76,41 @@ class NavigationDestination extends StatelessWidget {
     this.padding,
     this.badge,
     this.badgeStyle = NavigationBadgeStyle.count,
+    this.badgeLabel,
+    this.customBadge,
     this.enabled = true,
     this.tooltip,
   })  : assert(
           badge == null || badge > 0,
           "NavigationDestination.badge must be a positive integer.",
+        ),
+        assert(
+          !(badge != null && badgeLabel != null),
+          "badge and badgeLabel cannot both be set at the same time.",
+        ),
+        assert(
+          !(badge != null && customBadge != null),
+          "badge and customBadge cannot both be set at the same time.",
+        ),
+        assert(
+          !(badgeLabel != null && customBadge != null),
+          "badgeLabel and customBadge cannot both be set at the same time.",
+        ),
+        assert(
+          customBadge == null ||
+              badgeStyle == NavigationBadgeStyle.count ||
+              badgeStyle == NavigationBadgeStyle.dot ||
+              badgeStyle == NavigationBadgeStyle.hidden,
+          "Only dot and hidden styles may be combined with customBadge. "
+          "exact applies to badge (int) only.",
+        ),
+        assert(
+          badgeLabel == null ||
+              badgeStyle == NavigationBadgeStyle.count ||
+              badgeStyle == NavigationBadgeStyle.dot ||
+              badgeStyle == NavigationBadgeStyle.hidden,
+          "Only dot and hidden styles may be combined with badgeLabel. "
+          "exact applies to badge (int) only.",
         ),
         selectedIcon = selectedIcon ?? icon,
         _labelText = label;
@@ -167,22 +173,43 @@ class NavigationDestination extends StatelessWidget {
   /// When non-null, a badge is rendered over the top-right corner of the icon.
   /// The visual appearance is controlled by [badgeStyle]:
   ///
-  ///  * A value of `1`–`99` renders as its string equivalent (e.g. `"3"`).
-  ///  * A value greater than `99` renders as `"99+"`.
-  ///  * Set [badgeStyle] to [NavigationBadgeStyle.dot] to show a small dot
-  ///    regardless of the count.
-  ///  * Set [badgeStyle] to [NavigationBadgeStyle.hidden] to suppress the
-  ///    badge visual while retaining the count value.
+  ///  * [NavigationBadgeStyle.count] (default): values 1–99 shown as-is;
+  ///    values > 99 shown as `"99+"`.
+  ///  * [NavigationBadgeStyle.exact]: raw number, no capping.
+  ///  * [NavigationBadgeStyle.dot]: small dot, numeric value ignored.
+  ///  * [NavigationBadgeStyle.hidden]: suppresses the badge visual.
   ///
   /// Must be `null` or a positive integer (> 0). Defaults to `null`.
+  ///
+  /// Mutually exclusive with [badgeLabel] and [customBadge].
   final int? badge;
 
   /// Controls the visual presentation of [badge].
   ///
   /// Defaults to [NavigationBadgeStyle.count].
   ///
-  /// Has no effect when [badge] is null.
+  /// Has no effect when [badge] is null, [badgeLabel] is set, or
+  /// [customBadge] is set.
   final NavigationBadgeStyle badgeStyle;
+
+  /// An exact string to display as the badge label.
+  ///
+  /// Unlike [badge], no numeric conversion or 99+ capping is applied —
+  /// the string is shown verbatim. [badgeStyle] has no effect when this
+  /// is set.
+  ///
+  /// Mutually exclusive with [badge] and [customBadge].
+  final String? badgeLabel;
+
+  /// A fully customized [Badge] widget to render on the icon.
+  ///
+  /// The [Badge] is reconstructed with the destination icon injected as its
+  /// child, copying all other properties from the provided instance. No
+  /// [BadgeTheme] is applied — the user controls the badge appearance
+  /// entirely. [badgeStyle] must not be set when this is non-null.
+  ///
+  /// Mutually exclusive with [badge] and [badgeLabel].
+  final Badge? customBadge;
 
   /// The color of the selection indicator shown behind the icon.
   ///
@@ -239,6 +266,8 @@ class NavigationDestination extends StatelessWidget {
       tooltip: railTooltip,
       badge: badge,
       badgeStyle: badgeStyle,
+      badgeLabel: badgeLabel,
+      customBadge: customBadge,
     );
   }
 
@@ -263,6 +292,8 @@ class NavigationDestination extends StatelessWidget {
       tooltip: tooltip,
       badge: badge,
       badgeStyle: badgeStyle,
+      badgeLabel: badgeLabel,
+      customBadge: customBadge,
     );
   }
 

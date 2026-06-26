@@ -235,7 +235,7 @@ class NavigationRailThemeData
 
   /// The theme applied to badges on [NavigationRail] destinations.
   ///
-  /// Use this to customise badge colors, text style, and size at the
+  /// Use this to customize badge colors, text style, and size at the
   /// navigation-rail level without affecting badges elsewhere in the app.
   ///
   /// When null, the ambient [BadgeTheme] (if any) or Flutter's default

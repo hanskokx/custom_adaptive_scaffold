@@ -39,6 +39,8 @@ class RailDestination extends StatefulWidget {
     this.tooltip,
     this.badge,
     this.badgeStyle = NavigationBadgeStyle.count,
+    this.badgeLabel,
+    this.customBadge,
     super.key,
   });
 
@@ -65,6 +67,8 @@ class RailDestination extends StatefulWidget {
   final String? tooltip;
   final int? badge;
   final NavigationBadgeStyle badgeStyle;
+  final String? badgeLabel;
+  final Badge? customBadge;
 
   @override
   State<RailDestination> createState() => _RailDestinationState();
@@ -199,21 +203,56 @@ class _RailDestinationState extends State<RailDestination>
     Offset indicatorOffset = data.indicatorOffset;
 
     // --- Badge ---
-    final bool showBadge = widget.badge != null &&
-        widget.badgeStyle != NavigationBadgeStyle.hidden;
-    final Widget? badgeLabel =
-        showBadge && widget.badgeStyle == NavigationBadgeStyle.count
-            ? Text(widget.badge! > 99 ? "99+" : "${widget.badge}")
-            : null;
-    final Widget badgedIcon = showBadge
-        ? Badge(label: badgeLabel, child: data.themedIcon)
-        : data.themedIcon;
-    // Only inject a local BadgeTheme when explicitly configured on the rail.
-    // Otherwise, preserve any ambient BadgeTheme from above in the tree.
-    final Widget effectiveBadgedIcon =
-        showBadge && railTheme.badgeThemeData != null
-            ? BadgeTheme(data: railTheme.badgeThemeData!, child: badgedIcon)
-            : badgedIcon;
+    final bool hasAnyBadge = widget.badge != null ||
+        widget.badgeLabel != null ||
+        widget.customBadge != null;
+    Widget effectiveBadgedIcon;
+    if (!hasAnyBadge || widget.badgeStyle == NavigationBadgeStyle.hidden) {
+      // No badge, or hidden overrides all badge types.
+      effectiveBadgedIcon = data.themedIcon;
+    } else if (widget.badgeStyle == NavigationBadgeStyle.dot) {
+      // Dot overrides all badge types — show a themed dot.
+      final Widget badged = Badge(child: data.themedIcon);
+      effectiveBadgedIcon = railTheme.badgeThemeData != null
+          ? BadgeTheme(data: railTheme.badgeThemeData!, child: badged)
+          : badged;
+    } else if (widget.customBadge != null) {
+      // User-provided Badge: reconstruct with icon as child. No BadgeTheme.
+      final Badge b = widget.customBadge!;
+      effectiveBadgedIcon = Badge(
+        label: b.label,
+        backgroundColor: b.backgroundColor,
+        textColor: b.textColor,
+        smallSize: b.smallSize,
+        largeSize: b.largeSize,
+        textStyle: b.textStyle,
+        padding: b.padding,
+        alignment: b.alignment,
+        offset: b.offset,
+        isLabelVisible: b.isLabelVisible,
+        child: data.themedIcon,
+      );
+    } else if (widget.badgeLabel != null) {
+      final Widget badged = Badge(
+        label: Text(widget.badgeLabel!),
+        child: data.themedIcon,
+      );
+      effectiveBadgedIcon = railTheme.badgeThemeData != null
+          ? BadgeTheme(data: railTheme.badgeThemeData!, child: badged)
+          : badged;
+    } else {
+      // badge != null, not dot/hidden — resolve numeric style.
+      Widget? badgeLabel;
+      if (widget.badgeStyle == NavigationBadgeStyle.count) {
+        badgeLabel = Text(widget.badge! > 99 ? "99+" : "${widget.badge}");
+      } else if (widget.badgeStyle == NavigationBadgeStyle.exact) {
+        badgeLabel = Text("${widget.badge}");
+      }
+      final Widget badged = Badge(label: badgeLabel, child: data.themedIcon);
+      effectiveBadgedIcon = railTheme.badgeThemeData != null
+          ? BadgeTheme(data: railTheme.badgeThemeData!, child: badged)
+          : badged;
+    }
 
     bool applyXOffset = false;
 
@@ -245,7 +284,7 @@ class _RailDestinationState extends State<RailDestination>
         if (collapsed) {
           if (widget.showLabelsWhenCollapsed) {
             // Label is visible: switch to a proper column layout so the label
-            // sits below the icon and the indicator stays centred over the
+            // sits below the icon and the indicator stays centered over the
             // icon slot.  Recompute indicatorOffset the same way .all does.
             final double indicatorHorizontalPadding =
                 (data.destinationPadding.left / 2) -
@@ -519,7 +558,7 @@ class _RailDestinationState extends State<RailDestination>
       material3: data.material3,
       indicatorOffset: indicatorOffset,
       // Use Positioned.fill+Align.topCenter (centerIndicatorHorizontally=true)
-      // whenever the icon is centred inside a column — i.e. every layout
+      // whenever the icon is centered inside a column — i.e. every layout
       // except the extended/expanding none case where the label sits to the
       // right of the icon in a row.  That case is the only one that sets
       // applyXOffset=true, so tying the two flags together is exact.

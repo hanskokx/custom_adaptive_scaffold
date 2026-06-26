@@ -9,6 +9,7 @@ export "navigation_rail_theme.dart";
 export "src/adaptive_layout.dart";
 export "src/adaptive_scaffold.dart";
 export "src/adaptive_scaffold_controller.dart";
+export "src/badge_style.dart";
 export "src/breakpoints.dart";
 export "src/navigation_bar/destination.dart";
 export "src/navigation_bar/navigation_bar.dart";

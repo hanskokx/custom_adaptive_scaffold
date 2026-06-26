@@ -1085,6 +1085,115 @@ void main() {
       );
     });
 
+    test("badge + badgeLabel mutual exclusivity throws AssertionError", () {
+      expect(
+        () => NavigationDestination(
+          icon: const Icon(Icons.home),
+          label: "Home",
+          badge: 5,
+          badgeLabel: "5",
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test("badge + customBadge mutual exclusivity throws AssertionError", () {
+      expect(
+        () => NavigationDestination(
+          icon: const Icon(Icons.home),
+          label: "Home",
+          badge: 5,
+          customBadge: const Badge(),
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test("badgeLabel + customBadge mutual exclusivity throws AssertionError",
+        () {
+      expect(
+        () => NavigationDestination(
+          icon: const Icon(Icons.home),
+          label: "Home",
+          badgeLabel: "hi",
+          customBadge: const Badge(),
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test("customBadge + numeric-only badgeStyle throws AssertionError", () {
+      expect(
+        () => NavigationDestination(
+          icon: const Icon(Icons.home),
+          label: "Home",
+          customBadge: const Badge(),
+          badgeStyle: NavigationBadgeStyle.exact,
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test("customBadge + dot does NOT throw", () {
+      expect(
+        () => const NavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+          customBadge: Badge(),
+          badgeStyle: NavigationBadgeStyle.dot,
+        ),
+        returnsNormally,
+      );
+    });
+
+    test("customBadge + hidden does NOT throw", () {
+      expect(
+        () => const NavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+          customBadge: Badge(),
+          badgeStyle: NavigationBadgeStyle.hidden,
+        ),
+        returnsNormally,
+      );
+    });
+
+    test("badgeLabel + numeric-only badgeStyle throws AssertionError", () {
+      expect(
+        () => NavigationDestination(
+          icon: const Icon(Icons.home),
+          label: "Home",
+          badgeLabel: "hello",
+          badgeStyle: NavigationBadgeStyle.exact,
+        ),
+        throwsAssertionError,
+      );
+    });
+
+    test("badgeLabel + dot does NOT throw", () {
+      expect(
+        () => const NavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+          badgeLabel: "hello",
+          badgeStyle: NavigationBadgeStyle.dot,
+        ),
+        returnsNormally,
+      );
+    });
+
+    test("badgeLabel + hidden does NOT throw", () {
+      expect(
+        () => const NavigationDestination(
+          icon: Icon(Icons.home),
+          label: "Home",
+          badgeLabel: "hello",
+          badgeStyle: NavigationBadgeStyle.hidden,
+        ),
+        returnsNormally,
+      );
+    });
+
     test("badge: null does not throw", () {
       expect(
         () => const NavigationDestination(
@@ -1151,6 +1260,16 @@ void main() {
       expect(dest.badgeStyle, NavigationBadgeStyle.count);
       expect(dest.toRailDestination().badgeStyle, NavigationBadgeStyle.count);
       expect(dest.toBarDestination().badgeStyle, NavigationBadgeStyle.count);
+    });
+
+    test("toRailDestination forwards badgeStyle: exact", () {
+      const dest = NavigationDestination(
+        icon: Icon(Icons.home),
+        label: "Home",
+        badge: 3,
+        badgeStyle: NavigationBadgeStyle.exact,
+      );
+      expect(dest.toRailDestination().badgeStyle, NavigationBadgeStyle.exact);
     });
 
     // --- Conversion: toBarDestination ---
@@ -1285,6 +1404,31 @@ void main() {
         ),
       );
       expect(find.text("99+"), findsOneWidget);
+    });
+
+    testWidgets(
+        "badge: 150 with badgeStyle: exact renders '150' (no cap) in rail",
+        (WidgetTester tester) async {
+      await pumpApp(
+        tester,
+        NavigationRail(
+          selectedIndex: 0,
+          destinations: [
+            const NavigationDestination(
+              icon: Icon(Icons.home),
+              label: "Home",
+              badge: 150,
+              badgeStyle: NavigationBadgeStyle.exact,
+            ).toRailDestination(),
+            const NavigationDestination(
+              icon: Icon(Icons.search),
+              label: "Search",
+            ).toRailDestination(),
+          ],
+        ),
+      );
+      expect(find.text("150"), findsOneWidget);
+      expect(find.text("99+"), findsNothing);
     });
 
     testWidgets("badgeStyle: dot renders Badge without label in rail",

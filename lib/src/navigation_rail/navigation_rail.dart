@@ -566,6 +566,8 @@ class _NavigationRailState extends State<NavigationRail>
               tooltip: widget.destinations[i].tooltipLabel,
               badge: widget.destinations[i].badge,
               badgeStyle: widget.destinations[i].badgeStyle,
+              badgeLabel: widget.destinations[i].badgeLabel,
+              customBadge: widget.destinations[i].customBadge,
             ),
           ),
         if (trailing != null && !widget.trailingAtBottom) trailing,

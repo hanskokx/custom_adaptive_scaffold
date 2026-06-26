@@ -1,3 +1,13 @@
+## 5.2.1
+
+- **[FEAT]** Expanded badge API on `NavigationDestination`.
+  - Added `NavigationBadgeStyle.exact` — shows the raw integer without any capping (e.g. `badge: 150` renders as `"150"`).
+  - `NavigationBadgeStyle.count` remains the default (values > 99 shown as `"99+"`).
+  - `NavigationBadgeStyle.dot` and `NavigationBadgeStyle.hidden` now apply to all three badge input types (`badge`, `badgeLabel`, `customBadge`).
+  - Added `NavigationDestination.badgeLabel` (`String?`) — renders a badge with an exact string label, bypassing all numeric conversion.
+  - Added `NavigationDestination.customBadge` (`Badge?`) — renders the user's fully customized `Badge` widget with the destination icon injected as its child. `badgeStyle` must not be set alongside this property.
+  - `badge`, `badgeLabel`, and `customBadge` are mutually exclusive (asserted in debug mode).
+
 ## 5.2.0
 
 - **[FEAT]** Added M3 small and large badge support to `NavigationDestination`, `NavigationBar`, and `NavigationRail`.
@@ -291,7 +301,7 @@ NavigationBarThemeData(
 
 ## 3.0.2
 
-- **[FIX]** `AdaptiveScaffold.standardBottomNavigationBar` now normalises
+- **[FIX]** `AdaptiveScaffold.standardBottomNavigationBar` now normalizes
   plain `NavigationDestination` values to `CustomNavigationDestination` to
   prevent `_NavigationDestinationInfo` assertion failures.
 - Adds regression test.

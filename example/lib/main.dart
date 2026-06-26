@@ -227,22 +227,28 @@ class _MyHomePageState extends State<MyHomePage>
       NavigationDestination(
         label: "Inbox",
         icon: Icon(Icons.inbox),
-        badge: 150,
+        badge: 150, // shows "99+" via NavigationBadgeStyle.count (default)
       ),
       NavigationDestination(
         label: "Articles",
         icon: Icon(Icons.article_outlined),
-        badge: 1,
+        badgeLabel: "NEW", // exact string badge — no numeric conversion
       ),
       NavigationDestination(
         label: "Chat",
         icon: Icon(Icons.chat_bubble_outline),
         badge: 1,
-        badgeStyle: NavigationBadgeStyle.dot,
+        badgeStyle: NavigationBadgeStyle.dot, // small dot indicator
       ),
       NavigationDestination(
         label: "Video",
         icon: Icon(Icons.video_call_outlined),
+        // fully custom Badge — user controls every property
+        customBadge: Badge(
+          label: Text("★"),
+          backgroundColor: Colors.deepPurple,
+          textColor: Colors.white,
+        ),
       ),
     ];
 

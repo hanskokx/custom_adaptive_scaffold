@@ -203,7 +203,7 @@ class NavigationBarThemeData
 
   /// The theme applied to badges on [NavigationBar] destinations.
   ///
-  /// Use this to customise badge colors, text style, and size at the
+  /// Use this to customize badge colors, text style, and size at the
   /// navigation-bar level without affecting badges elsewhere in the app.
   ///
   /// When null, the ambient [BadgeTheme] (if any) or Flutter's default

@@ -136,12 +136,23 @@ The package's `NavigationDestination` is a full base class (not just a wrapper) 
 
 ### Badges
 
-`NavigationDestination` supports M3-compliant small (dot) and large (labeled) badges via two properties:
+`NavigationDestination` supports M3-compliant small (dot) and large (labeled) badges via three mutually exclusive input properties:
 
-| Property     | Type                   | Description                                                                                                                                |
-| ------------ | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
-| `badge`      | `int?`                 | Badge count. `null` = no badge. Values > `99` display as `"99+"`. Must be > 0.                                                             |
-| `badgeStyle` | `NavigationBadgeStyle` | `count` (default) shows the number; `dot` shows a small indicator; `hidden` suppresses the visual while keeping the count in widget state. |
+| Property      | Type                   | Description                                                                            |
+| ------------- | ---------------------- | -------------------------------------------------------------------------------------- |
+| `badge`       | `int?`                 | Numeric badge count. Must be > 0. Display capped to "99+" by default; see table below. |
+| `badgeLabel`  | `String?`              | Exact string shown in the badge.                                                       |
+| `customBadge` | `Badge?`               | Fully custom `Badge` widget.                                                           |
+| `badgeStyle`  | `NavigationBadgeStyle` | Controls `badge` presentation.                                                         |
+
+`NavigationBadgeStyle` values:
+
+| Value    | Applies to                           | Behavior                                                            |
+| -------- | ------------------------------------ | ------------------------------------------------------------------- |
+| `count`  | `badge`                              | Shows number; values > 99 display as `"99+"` **(default)**          |
+| `exact`  | `badge`                              | Shows the raw integer with no capping (e.g. `badge: 150` → `"150"`) |
+| `dot`    | `badge`, `badgeLabel`, `customBadge` | Small dot, overrides all badge content                              |
+| `hidden` | `badge`, `badgeLabel`, `customBadge` | Suppresses the badge visual while retaining the value               |
 
 ```dart
 // Large badge — shows "5":
@@ -150,16 +161,20 @@ NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 5)
 // Automatically capped — shows "99+":
 NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 150)
 
-// Small dot badge:
-NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox',
-  badge: 1, badgeStyle: NavigationBadgeStyle.dot)
+// Uncapped — shows "150":
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox',e  badge: 150, badgeStyle: NavigationBadgeStyle.exact)
 
-// Hidden — retains the count in widget state, suppresses the visual:
-NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox',
-  badge: 3, badgeStyle: NavigationBadgeStyle.hidden)
+// Small dot badge:
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badge: 1, badgeStyle: NavigationBadgeStyle.dot)
+
+// Exact string badge — no numeric conversion:
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', badgeLabel: '🔴 New')
+
+// Fully custom badge — user controls all Badge properties:
+NavigationDestination(icon: Icon(Icons.inbox), label: 'Inbox', customBadge: Badge(label: Text('★'), backgroundColor: Colors.green))
 ```
 
-Badge appearance can be themed per navigation surface via `badgeThemeData` on `NavigationRailThemeData` or `NavigationBarThemeData`. This wraps the badge in a [`BadgeTheme`](https://api.flutter.dev/flutter/material/BadgeTheme-class.html), so all `BadgeThemeData` fields (background color, text style, size, alignment) are available:
+Badge appearance can be themed per navigation surface via `badgeThemeData` on [`NavigationRailThemeData`](#extended-theme-data) or [`NavigationBarThemeData`](#extended-theme-data). This wraps the badge in a [`BadgeTheme`](https://api.flutter.dev/flutter/material/BadgeTheme-class.html), so all [`BadgeThemeData`](https://api.flutter.dev/flutter/material/BadgeThemeData-class.html) fields (background color, text style, size, alignment) are available. `badgeThemeData` has no effect on `customBadge` — that path is fully user-controlled. A `customBadge` picks up badge styling from any ambient [`BadgeTheme`](https://api.flutter.dev/flutter/material/BadgeTheme-class.html) in the widget tree, or you can set colors and sizes directly on the `Badge` widget itself.
 
 ```dart
 NavigationRailTheme(
@@ -349,26 +364,35 @@ Widget build(BuildContext context) {
         icon: Icon(Icons.inbox_outlined),
         selectedIcon: Icon(Icons.inbox),
         label: "Inbox",
+        badge: 150, // shows "99+"
       ),
       NavigationDestination(
         icon: Icon(Icons.article_outlined),
         selectedIcon: Icon(Icons.article),
         label: "Articles",
+        badgeLabel: "NEW", // exact string — no numeric conversion
       ),
       NavigationDestination(
         icon: Icon(Icons.chat_outlined),
         selectedIcon: Icon(Icons.chat),
         label: "Chat",
+        badge: 1,
+        badgeStyle: NavigationBadgeStyle.dot, // small dot
       ),
       NavigationDestination(
         icon: Icon(Icons.video_call_outlined),
         selectedIcon: Icon(Icons.video_call),
         label: "Video",
+        customBadge: Badge( // fully custom badge
+          label: Text("★"),
+          backgroundColor: Colors.deepPurple,
+          textColor: Colors.white,
+        ),
       ),
       NavigationDestination(
         icon: Icon(Icons.home_outlined),
         selectedIcon: Icon(Icons.home),
-        label: "Inbox",
+        label: "Home",
       ),
     ],
     controller: _scaffoldController,
