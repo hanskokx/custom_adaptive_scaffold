@@ -11,6 +11,8 @@ export "src/adaptive_scaffold.dart";
 export "src/adaptive_scaffold_controller.dart";
 export "src/badge_style.dart";
 export "src/breakpoints.dart";
+export "src/dual_panel/dual_panel.dart";
+export "src/dual_panel/split_view.dart";
 export "src/navigation_bar/destination.dart";
 export "src/navigation_bar/navigation_bar.dart";
 export "src/navigation_destination.dart";
