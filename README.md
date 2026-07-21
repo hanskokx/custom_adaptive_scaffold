@@ -22,7 +22,7 @@ flutter pub add custom_adaptive_scaffold
 
 </div>
 
-<img width="1060" height="852" alt="Example of a display made with AdaptiveScaffold" src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/adaptiveScaffold.gif" />
+<center><img width="1060" height="852" alt="Example of a display made with AdaptiveScaffold" src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/adaptiveScaffold.gif" /></center>
 
 **Important**: This source code is derived from the original code found in `package:flutter_adaptive_scaffold` as well as the Flutter framework, itself.
 Modifications have been made to the original source code that provide some additional customizations, such as padding and margins, extended theming controls, and tooltip configuration.
@@ -52,6 +52,11 @@ Modifications have been made to the original source code that provide some addit
     - [SlotLayout](#slotlayout)
     - [SlotLayout.from](#slotlayoutfrom)
     - [Example Usage](#example-usage-1)
+  - [DualPanel](#dualpanel)
+    - [API Summary](#api-summary)
+    - [Example Usage](#example-usage-2)
+  - [SplitView and SplitViewDetector](#splitview-and-splitviewdetector)
+    - [Example SplitView Usage](#example-splitview-usage)
   - [Migrating from 4.x](#migrating-from-4x)
     - [Full-item fill / highlight (was `destinationFillRegion`)](#full-item-fill--highlight-was-destinationfillregion)
     - [Label type per breakpoint (was `AdaptiveScaffoldNavigationThemeData`)](#label-type-per-breakpoint-was-adaptivescaffoldnavigationthemedata)
@@ -600,7 +605,7 @@ bool between(Breakpoint lower, Breakpoint upper)
 
 ### AdaptiveLayout
 
-<img src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/screenSlots.png" alt="AdaptiveLayout's Assigned Slots Displayed on Screen" />
+<center><img src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/screenSlots.png" alt="AdaptiveLayout's Assigned Slots Displayed on Screen" /></center>
 
 `AdaptiveLayout` is the top-level widget class that arranges the layout of the slots and their animation, similar to Scaffold. It takes in several LayoutSlots and returns an appropriate layout based on the diagram above. `AdaptiveScaffold` is built upon `AdaptiveLayout` internally but abstracts some of the complexity with presets based on the Material 3 Design specification.
 
@@ -815,7 +820,89 @@ return AdaptiveLayout(
 
 Both of the examples shown here produce the same output:
 
-<img width="1060" height="852" alt="Example of a display made with AdaptiveScaffold" src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/adaptiveScaffold.gif" />
+<center><img width="1060" height="852" alt="Example of a display made with AdaptiveScaffold" src="https://raw.githubusercontent.com/hanskokx/custom_adaptive_scaffold/main/example/demo_files/adaptiveScaffold.gif" /></center>
+
+## DualPanel
+
+`DualPanel` is a convenience widget that wraps [AdaptiveLayout](#adaptivelayout) to display a primary body and an optional secondary body in a responsive split layout. On narrow screens only the primary body is shown; on wide screens both panes appear side-by-side.
+
+`DualPanel` internally creates the correct [SlotLayout](#slotlayout) configuration and [AdaptiveBody](#adaptivebody-context) wrappers so you don't have to wire them up manually.
+
+### API Summary
+
+| Parameter       | Type         | Default                   | Description                                                           |
+| --------------- | ------------ | ------------------------- | --------------------------------------------------------------------- |
+| `body`          | `Widget`     | **required**              | Primary content shown on all screen sizes.                            |
+| `secondaryBody` | `Widget?`    | `null`                    | Secondary content shown alongside `body` on wide screens.             |
+| `maxWidth`      | `double?`    | `null` (no constraint)    | Maximum width for the body on wider screens.                          |
+| `breakpoint`    | `Breakpoint` | `Breakpoints.mediumAndUp` | Screen width at which the layout switches to the split configuration. |
+
+The `breakpoint` must be wider than `Breakpoints.smallAndUp` (enforced by an assertion).
+
+`DualPanel` exposes the collapsed state to descendants via [AdaptiveBody](#adaptivebody-context):
+
+```dart
+final bool isCollapsed = AdaptiveBody.of(context)?.viewIsCollapsed ?? false;
+```
+
+### Example Usage
+
+```dart
+DualPanel(
+  body: PostList(
+    onPostTap: (post) => setState(() => selectedPost = post),
+  ),
+  secondaryBody: selectedPost != null
+      ? PostDetail(post: selectedPost!)
+      : null,
+  maxWidth: 800, // Optionally constrains/centers the width of the primary panel content
+)
+```
+
+For cases where you need to know whether the layout is currently in a split (side-by-side) configuration — for example, to adjust the page title — use [SplitView](#splitview-and-splitviewdetector) and [SplitViewDetector](#splitview-and-splitviewdetector).
+
+## SplitView and SplitViewDetector
+
+`SplitView` and `SplitViewDetector` work together to expose the current split-view state to descendants.
+
+**`SplitView`** is an inherited widget that propagates a boolean indicating whether the layout is in side-by-side mode. Descendants read it with:
+
+```dart
+final bool isSplit = SplitView.isActive(context);
+```
+
+**`SplitViewDetector`** listens to [AdaptiveBody.of] and automatically updates a `ValueNotifier<bool>` that drives `SplitView`. It does not render any visible UI — it simply detects layout changes and notifies via `onChanged`.
+
+### Example SplitView Usage
+
+```dart
+class _MyScreenState extends State<MyScreen> {
+  final ValueNotifier<bool> _isSplit = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _isSplit.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return DualPanel(
+      body: SplitView(
+        notifier: _isSplit,
+        child: SplitViewDetector(
+          onChanged: (isSplit) {
+            _isSplit.value = isSplit;
+            // Update page title, etc.
+          },
+          child: MyContent(),
+        ),
+      ),
+      secondaryBody: MyDetail(),
+    );
+  }
+}
+```
 
 ## Migrating from 4.x
 

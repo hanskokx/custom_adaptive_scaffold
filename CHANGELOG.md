@@ -1,3 +1,15 @@
+## 5.3.0
+
+- **[FEAT]** Added `DualPanel` — a convenience widget that wraps `AdaptiveLayout` to display a primary body and an optional secondary body in a responsive split layout.
+  - On narrow screens only the primary body is shown; on wide screens both panes appear side-by-side.
+  - `maxWidth` parameter (optional) to cap body width on wider screens.
+  - `breakpoint` parameter to control when the layout switches to the split configuration (defaults to `Breakpoints.mediumAndUp`).
+  - Exposes collapsed state to descendants via `AdaptiveBody.of(context)?.viewIsCollapsed`.
+- **[FEAT]** Added `SplitView` and `SplitViewDetector` for detecting and propagating the current split-view state.
+  - `SplitView` — an `InheritedNotifier` that exposes whether the layout is in side-by-side mode via `SplitView.isActive(context)`.
+  - `SplitViewDetector` — listens to `AdaptiveBody.of` and automatically updates a `ValueNotifier<bool>` via `onChanged`. Renders no visible UI.
+- **[FEAT]** Added `DualPanelNavigationConfig` — configuration class for navigation elements displayed alongside a `DualPanel` shell (destinations, leading/trailing nav rail widgets).
+
 ## 5.2.1
 
 - **[FEAT]** Expanded badge API on `NavigationDestination`.
