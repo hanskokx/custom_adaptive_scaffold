@@ -6,7 +6,7 @@ import "dart:ui";
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 
-import "../../material.dart";
+import "../../material_ui.dart";
 import "../navigation_icon.dart";
 import "../navigation_shared/destination_build_data.dart";
 import "../navigation_shared/destination_surface_strategy.dart";

@@ -1,6 +1,6 @@
 import "package:flutter/foundation.dart" show kIsWeb;
 
-import "../../material.dart";
+import "../../material_ui.dart";
 import "../../navigation_bar_theme.dart";
 import "../badge_style.dart";
 import "../navigation_destination.dart";

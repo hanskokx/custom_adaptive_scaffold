@@ -10,7 +10,7 @@ import "package:material_ui/material_ui.dart"
     as m
     show NavigationRailThemeData, NavigationRailTheme;
 
-import "material.dart";
+import "material_ui.dart";
 import "src/navigation_rail/theme_defaults.dart";
 
 /// A typedef alias for [NavigationRailThemeData].

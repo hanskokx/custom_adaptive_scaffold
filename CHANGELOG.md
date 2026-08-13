@@ -1,3 +1,8 @@
+## 6.0.0-dev.1
+
+- **[BREAKING]** Updated to Flutter 3.47+ with `material_ui` package support.
+- Added `package:custom_adaptive_scaffold/material_ui.dart` package export alongside `package:custom_adaptive_scaffold/material.dart`
+
 ## 5.3.0
 
 - **[FEAT]** Added `DualPanel` — a convenience widget that wraps `AdaptiveLayout` to display a primary body and an optional secondary body in a responsive split layout.
