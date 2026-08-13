@@ -115,8 +115,8 @@ class NavigationBar extends StatelessWidget {
     this.labelPadding,
     this.maintainBottomViewPadding = false,
     this.scrollable = false,
-  })  : assert(destinations.length >= 2),
-        assert(0 <= selectedIndex && selectedIndex < destinations.length);
+  }) : assert(destinations.length >= 2),
+       assert(0 <= selectedIndex && selectedIndex < destinations.length);
 
   /// Whether the main group of items should scroll when vertical space is tight.
   final bool scrollable;
@@ -274,15 +274,17 @@ class NavigationBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final NavigationBarThemeData defaults = navigationBarDefaultsFor(context);
 
-    final NavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.of(context);
+    final NavigationBarThemeData navigationBarTheme = NavigationBarTheme.of(
+      context,
+    );
     final double effectiveHeight =
         height ?? navigationBarTheme.height ?? defaults.height!;
     final NavigationDestinationLabelBehavior effectiveLabelBehavior =
         labelBehavior ??
-            navigationBarTheme.labelBehavior ??
-            defaults.labelBehavior!;
-    final ShapeBorder effectiveIndicatorShape = indicatorShape ??
+        navigationBarTheme.labelBehavior ??
+        defaults.labelBehavior!;
+    final ShapeBorder effectiveIndicatorShape =
+        indicatorShape ??
         navigationBarTheme.indicatorShape ??
         defaults.indicatorShape!;
 
@@ -291,15 +293,15 @@ class NavigationBar extends StatelessWidget {
         final Widget destinationWidget = destinations[i];
         final NavigationBarDestination destination =
             destinationWidget is NavigationBarDestination
-                ? destinationWidget
-                : destinationWidget is NavigationDestination
-                    ? destinationWidget.toBarDestination()
-                    : NavigationBarDestination(
-                        icon: KeyedSubtree(
-                          key: destinationWidget.key,
-                          child: destinationWidget,
-                        ),
-                      );
+            ? destinationWidget
+            : destinationWidget is NavigationDestination
+            ? destinationWidget.toBarDestination()
+            : NavigationBarDestination(
+                icon: KeyedSubtree(
+                  key: destinationWidget.key,
+                  child: destinationWidget,
+                ),
+              );
 
         return Expanded(
           child: SelectableAnimatedBuilder(
@@ -332,14 +334,16 @@ class NavigationBar extends StatelessWidget {
     }
 
     return Material(
-      color: backgroundColor ??
+      color:
+          backgroundColor ??
           navigationBarTheme.backgroundColor ??
           defaults.backgroundColor!,
       elevation:
           elevation ?? navigationBarTheme.elevation ?? defaults.elevation!,
       shadowColor:
           shadowColor ?? navigationBarTheme.shadowColor ?? defaults.shadowColor,
-      surfaceTintColor: surfaceTintColor ??
+      surfaceTintColor:
+          surfaceTintColor ??
           navigationBarTheme.surfaceTintColor ??
           defaults.surfaceTintColor,
       child: SafeArea(

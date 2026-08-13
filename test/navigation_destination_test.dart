@@ -16,7 +16,8 @@ import "package:custom_adaptive_scaffold/src/navigation_shared/destination_build
 import "package:custom_adaptive_scaffold/src/navigation_shared/destination_surface_strategy.dart";
 import "package:custom_adaptive_scaffold/src/navigation_shared/navigation_destination_tooltip.dart";
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart"
+import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
     hide
         NavigationBar,
         NavigationBarTheme,
@@ -26,7 +27,6 @@ import "package:flutter/material.dart"
         NavigationRailTheme,
         NavigationRailThemeData,
         NavigationBarThemeData;
-import "package:flutter_test/flutter_test.dart";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -96,8 +96,9 @@ Widget _buildRail({
 
 void main() {
   group("DestinationTooltip", () {
-    testWidgets("returns child directly when message is null",
-        (WidgetTester tester) async {
+    testWidgets("returns child directly when message is null", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         const DestinationTooltip(
@@ -113,8 +114,9 @@ void main() {
       expect(find.byType(GestureDetector), findsNothing);
     });
 
-    testWidgets("long press uses manual tooltip visibility",
-        (WidgetTester tester) async {
+    testWidgets("long press uses manual tooltip visibility", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         const DestinationTooltip(
@@ -126,10 +128,12 @@ void main() {
       );
 
       final Tooltip tooltip = tester.widget<Tooltip>(find.byType(Tooltip));
-      TooltipVisibility visibility =
-          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
-      final GestureDetector detector =
-          tester.widget<GestureDetector>(find.byType(GestureDetector));
+      TooltipVisibility visibility = tester.widget<TooltipVisibility>(
+        find.byType(TooltipVisibility),
+      );
+      final GestureDetector detector = tester.widget<GestureDetector>(
+        find.byType(GestureDetector),
+      );
 
       expect(tooltip.triggerMode, TooltipTriggerMode.manual);
       expect(tooltip.verticalOffset, 24);
@@ -141,18 +145,21 @@ void main() {
       await tester.longPress(find.text("Tooltip Child"));
       await tester.pump();
 
-      visibility =
-          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      visibility = tester.widget<TooltipVisibility>(
+        find.byType(TooltipVisibility),
+      );
       expect(visibility.visible, isTrue);
 
       await tester.pump(const Duration(milliseconds: 1700));
-      visibility =
-          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      visibility = tester.widget<TooltipVisibility>(
+        find.byType(TooltipVisibility),
+      );
       expect(visibility.visible, isFalse);
     });
 
-    testWidgets("tap trigger uses secondary tap handler and manual mode",
-        (WidgetTester tester) async {
+    testWidgets("tap trigger uses secondary tap handler and manual mode", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         const DestinationTooltip(
@@ -164,8 +171,9 @@ void main() {
       );
 
       final Tooltip tooltip = tester.widget<Tooltip>(find.byType(Tooltip));
-      final GestureDetector detector =
-          tester.widget<GestureDetector>(find.byType(GestureDetector));
+      final GestureDetector detector = tester.widget<GestureDetector>(
+        find.byType(GestureDetector),
+      );
 
       expect(tooltip.triggerMode, TooltipTriggerMode.manual);
       expect(detector.onLongPress, isNull);
@@ -174,18 +182,21 @@ void main() {
       await tester.tap(find.text("Tooltip Child"), buttons: kSecondaryButton);
       await tester.pump();
 
-      TooltipVisibility visibility =
-          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      TooltipVisibility visibility = tester.widget<TooltipVisibility>(
+        find.byType(TooltipVisibility),
+      );
       expect(visibility.visible, isTrue);
 
       await tester.pump(const Duration(milliseconds: 1700));
-      visibility =
-          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
+      visibility = tester.widget<TooltipVisibility>(
+        find.byType(TooltipVisibility),
+      );
       expect(visibility.visible, isFalse);
     });
 
-    testWidgets("non-manual trigger keeps tooltip always visible",
-        (WidgetTester tester) async {
+    testWidgets("non-manual trigger keeps tooltip always visible", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         const DestinationTooltip(
@@ -197,10 +208,12 @@ void main() {
       );
 
       final Tooltip tooltip = tester.widget<Tooltip>(find.byType(Tooltip));
-      final TooltipVisibility visibility =
-          tester.widget<TooltipVisibility>(find.byType(TooltipVisibility));
-      final GestureDetector detector =
-          tester.widget<GestureDetector>(find.byType(GestureDetector));
+      final TooltipVisibility visibility = tester.widget<TooltipVisibility>(
+        find.byType(TooltipVisibility),
+      );
+      final GestureDetector detector = tester.widget<GestureDetector>(
+        find.byType(GestureDetector),
+      );
 
       expect(tooltip.triggerMode, TooltipTriggerMode.manual);
       expect(visibility.visible, isTrue);
@@ -210,8 +223,9 @@ void main() {
   });
 
   group("ExpandedRailDestination", () {
-    testWidgets("renders extended rail content with internal animation",
-        (WidgetTester tester) async {
+    testWidgets("renders extended rail content with internal animation", (
+      WidgetTester tester,
+    ) async {
       int taps = 0;
 
       await pumpApp(
@@ -269,8 +283,9 @@ void main() {
       semantics.dispose();
     });
 
-    testWidgets("updates when destination animation changes",
-        (WidgetTester tester) async {
+    testWidgets("updates when destination animation changes", (
+      WidgetTester tester,
+    ) async {
       const AlwaysStoppedAnimation<double> firstAnimation =
           AlwaysStoppedAnimation<double>(0.25);
       const AlwaysStoppedAnimation<double> secondAnimation =
@@ -320,8 +335,9 @@ void main() {
   });
 
   group("NavigationDestination conversion", () {
-    testWidgets("toBarDestination forwards tooltip",
-        (WidgetTester tester) async {
+    testWidgets("toBarDestination forwards tooltip", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -339,13 +355,15 @@ void main() {
         ),
       );
 
-      final Tooltip tooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      final Tooltip tooltip = tester.widget<Tooltip>(
+        find.byType(Tooltip).first,
+      );
       expect(tooltip.message, "Go Home");
     });
 
-    testWidgets("toRailDestination forwards disabled",
-        (WidgetTester tester) async {
+    testWidgets("toRailDestination forwards disabled", (
+      WidgetTester tester,
+    ) async {
       int tapped = 0;
       await pumpApp(
         tester,
@@ -371,8 +389,9 @@ void main() {
       expect(tapped, 0);
     });
 
-    testWidgets("bar tooltip falls back to label when tooltip is null",
-        (WidgetTester tester) async {
+    testWidgets("bar tooltip falls back to label when tooltip is null", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -389,13 +408,15 @@ void main() {
         ),
       );
 
-      final Tooltip tooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      final Tooltip tooltip = tester.widget<Tooltip>(
+        find.byType(Tooltip).first,
+      );
       expect(tooltip.message, "Home");
     });
 
-    testWidgets("bar tooltip is suppressed when tooltip is empty",
-        (WidgetTester tester) async {
+    testWidgets("bar tooltip is suppressed when tooltip is empty", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -413,16 +434,19 @@ void main() {
         ),
       );
 
-      final List<Tooltip> tooltips =
-          tester.widgetList<Tooltip>(find.byType(Tooltip)).toList();
-      final List<String?> messages =
-          tooltips.map((Tooltip tooltip) => tooltip.message).toList();
+      final List<Tooltip> tooltips = tester
+          .widgetList<Tooltip>(find.byType(Tooltip))
+          .toList();
+      final List<String?> messages = tooltips
+          .map((Tooltip tooltip) => tooltip.message)
+          .toList();
       expect(messages, isNot(contains("")));
       expect(messages, contains("Search"));
     });
 
-    testWidgets("bar tooltip uses themed vertical offset",
-        (WidgetTester tester) async {
+    testWidgets("bar tooltip uses themed vertical offset", (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
@@ -448,75 +472,84 @@ void main() {
         ),
       );
 
-      final Tooltip tooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      final Tooltip tooltip = tester.widget<Tooltip>(
+        find.byType(Tooltip).first,
+      );
       expect(tooltip.verticalOffset, 64);
     });
 
-    testWidgets("rail tooltip falls back to label when tooltip is null",
-        (WidgetTester tester) async {
+    testWidgets("rail tooltip falls back to label when tooltip is null", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
           selectedIndex: 0,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home),
-              label: "Home",
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.search),
-              label: "Search",
-            ),
-          ]
-              .map(
-                (NavigationDestination d) =>
-                    AdaptiveScaffold.toRailDestination(d),
-              )
-              .toList(),
+          destinations:
+              const [
+                    NavigationDestination(
+                      icon: Icon(Icons.home),
+                      label: "Home",
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.search),
+                      label: "Search",
+                    ),
+                  ]
+                  .map(
+                    (NavigationDestination d) =>
+                        AdaptiveScaffold.toRailDestination(d),
+                  )
+                  .toList(),
         ),
       );
 
-      final Tooltip tooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      final Tooltip tooltip = tester.widget<Tooltip>(
+        find.byType(Tooltip).first,
+      );
       expect(tooltip.message, "Home");
     });
 
-    testWidgets("rail tooltip is suppressed when tooltip is empty",
-        (WidgetTester tester) async {
+    testWidgets("rail tooltip is suppressed when tooltip is empty", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
           selectedIndex: 0,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.home),
-              label: "Home",
-              tooltip: "",
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.search),
-              label: "Search",
-            ),
-          ]
-              .map(
-                (NavigationDestination d) =>
-                    AdaptiveScaffold.toRailDestination(d),
-              )
-              .toList(),
+          destinations:
+              const [
+                    NavigationDestination(
+                      icon: Icon(Icons.home),
+                      label: "Home",
+                      tooltip: "",
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.search),
+                      label: "Search",
+                    ),
+                  ]
+                  .map(
+                    (NavigationDestination d) =>
+                        AdaptiveScaffold.toRailDestination(d),
+                  )
+                  .toList(),
         ),
       );
 
-      final List<Tooltip> tooltips =
-          tester.widgetList<Tooltip>(find.byType(Tooltip)).toList();
-      final List<String?> messages =
-          tooltips.map((Tooltip tooltip) => tooltip.message).toList();
+      final List<Tooltip> tooltips = tester
+          .widgetList<Tooltip>(find.byType(Tooltip))
+          .toList();
+      final List<String?> messages = tooltips
+          .map((Tooltip tooltip) => tooltip.message)
+          .toList();
       expect(messages, isNot(contains("")));
       expect(messages, contains("Search"));
     });
 
-    testWidgets("rail tooltip uses themed vertical offset",
-        (WidgetTester tester) async {
+    testWidgets("rail tooltip uses themed vertical offset", (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
@@ -527,36 +560,39 @@ void main() {
           home: Scaffold(
             body: NavigationRail(
               selectedIndex: 0,
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home),
-                  label: "Home",
-                  tooltip: "Go Home",
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.search),
-                  label: "Search",
-                ),
-              ]
-                  .map(
-                    (NavigationDestination d) =>
-                        AdaptiveScaffold.toRailDestination(d),
-                  )
-                  .toList(),
+              destinations:
+                  const [
+                        NavigationDestination(
+                          icon: Icon(Icons.home),
+                          label: "Home",
+                          tooltip: "Go Home",
+                        ),
+                        NavigationDestination(
+                          icon: Icon(Icons.search),
+                          label: "Search",
+                        ),
+                      ]
+                      .map(
+                        (NavigationDestination d) =>
+                            AdaptiveScaffold.toRailDestination(d),
+                      )
+                      .toList(),
             ),
           ),
         ),
       );
 
-      final Tooltip tooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
+      final Tooltip tooltip = tester.widget<Tooltip>(
+        find.byType(Tooltip).first,
+      );
       expect(tooltip.verticalOffset, 52);
     });
   });
 
   group("NavigationBar parity options", () {
-    testWidgets("maintainBottomViewPadding is wired to SafeArea",
-        (WidgetTester tester) async {
+    testWidgets("maintainBottomViewPadding is wired to SafeArea", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -568,15 +604,17 @@ void main() {
         ),
       );
 
-      final SafeArea safeArea =
-          tester.widget<SafeArea>(find.byType(SafeArea).first);
+      final SafeArea safeArea = tester.widget<SafeArea>(
+        find.byType(SafeArea).first,
+      );
       expect(safeArea.maintainBottomViewPadding, isTrue);
     });
   });
 
   group("NavigationBarDestination", () {
-    testWidgets("tap fires onDestinationSelected when enabled",
-        (WidgetTester tester) async {
+    testWidgets("tap fires onDestinationSelected when enabled", (
+      WidgetTester tester,
+    ) async {
       int tapped = 0;
       await pumpApp(
         tester,
@@ -587,8 +625,9 @@ void main() {
       expect(tapped, 1);
     });
 
-    testWidgets("tap does NOT fire callback when destination is disabled",
-        (WidgetTester tester) async {
+    testWidgets("tap does NOT fire callback when destination is disabled", (
+      WidgetTester tester,
+    ) async {
       int tapped = 0;
       await pumpApp(
         tester,
@@ -603,8 +642,9 @@ void main() {
       expect(tapped, 0);
     });
 
-    testWidgets("selected destination shows selectedIcon",
-        (WidgetTester tester) async {
+    testWidgets("selected destination shows selectedIcon", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         _buildBar(selectedIndex: 0, onTap: null),
@@ -614,8 +654,9 @@ void main() {
       expect(find.byIcon(Icons.home), findsNothing);
     });
 
-    testWidgets("unselected destination shows regular icon",
-        (WidgetTester tester) async {
+    testWidgets("unselected destination shows regular icon", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         _buildBar(selectedIndex: 1, onTap: null),
@@ -625,8 +666,9 @@ void main() {
       expect(find.byIcon(Icons.home_filled), findsNothing);
     });
 
-    testWidgets("selection switch updates icons immediately",
-        (WidgetTester tester) async {
+    testWidgets("selection switch updates icons immediately", (
+      WidgetTester tester,
+    ) async {
       int selectedIndex = 0;
 
       await tester.pumpWidget(
@@ -671,8 +713,9 @@ void main() {
       expect(find.byIcon(Icons.search_off), findsOneWidget);
     });
 
-    testWidgets("previous destination deselects without hover refresh",
-        (WidgetTester tester) async {
+    testWidgets("previous destination deselects without hover refresh", (
+      WidgetTester tester,
+    ) async {
       int selectedIndex = 0;
 
       await tester.pumpWidget(
@@ -714,8 +757,9 @@ void main() {
       expect(find.byIcon(Icons.home), findsOneWidget);
     });
 
-    testWidgets("navigation item overlay requires explicit opt-in",
-        (WidgetTester tester) async {
+    testWidgets("navigation item overlay requires explicit opt-in", (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
@@ -732,165 +776,172 @@ void main() {
 
       final CustomNavigationBarThemeData? explicitTheme =
           NavigationBarTheme.maybeOf(
-        tester.element(find.byType(NavigationBar)),
-      );
+            tester.element(find.byType(NavigationBar)),
+          );
       expect(explicitTheme, isNotNull);
       expect(explicitTheme!.destinationOverlayColor, isNull);
       expect(explicitTheme.destinationIndicatorShape, isNotNull);
     });
 
     testWidgets(
-        "standardBottomNavigationBar preserves explicit-only overlay intent",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            navigationBarTheme: const CustomNavigationBarThemeData(
-              destinationIndicatorShape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.zero,
+      "standardBottomNavigationBar preserves explicit-only overlay intent",
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              navigationBarTheme: const CustomNavigationBarThemeData(
+                destinationIndicatorShape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.zero,
+                ),
               ),
             ),
-          ),
-          home: Scaffold(
-            body: AdaptiveScaffold.standardBottomNavigationBar(
-              currentIndex: 0,
-              destinations: const [
-                NavigationDestination(
-                  icon: Icon(Icons.home),
-                  label: "Home",
-                ),
-                NavigationDestination(
-                  icon: Icon(Icons.search),
-                  label: "Search",
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final BuildContext barContext =
-          tester.element(find.byType(NavigationBar));
-      final CustomNavigationBarThemeData? explicitTheme =
-          NavigationBarTheme.maybeOf(barContext);
-
-      expect(explicitTheme, isNotNull);
-      expect(explicitTheme!.destinationOverlayColor, isNull);
-      expect(explicitTheme.destinationIndicatorShape, isNotNull);
-    });
-
-    testWidgets(
-        "navigation bar destination builder applies constructor inputs via behavior",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            useMaterial3: true,
-            navigationBarTheme: const CustomNavigationBarThemeData(
-              // Explicit package customization enables expanded indicator slot.
-              destinationIndicatorShape: RoundedRectangleBorder(),
-              iconTheme: WidgetStatePropertyAll<IconThemeData>(
-                IconThemeData(size: 40),
-              ),
-            ),
-          ),
-          home: Scaffold(
-            body: NavigationBar(
-              selectedIndex: 1,
-              destinations: const <Widget>[
-                NavigationBarDestination(
-                  icon: Icon(Icons.home_outlined),
-                  selectedIcon: Icon(Icons.home),
-                  label: "Home",
-                  tooltip: "Go Home",
-                  enabled: false,
-                  padding: EdgeInsets.all(6),
-                  indicatorColor: Colors.orange,
-                  indicatorShape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(4)),
+            home: Scaffold(
+              body: AdaptiveScaffold.standardBottomNavigationBar(
+                currentIndex: 0,
+                destinations: const [
+                  NavigationDestination(
+                    icon: Icon(Icons.home),
+                    label: "Home",
                   ),
-                ),
-                NavigationBarDestination(
-                  icon: Icon(Icons.search_outlined),
-                  selectedIcon: Icon(Icons.search),
-                  label: "Search",
-                ),
-              ],
+                  NavigationDestination(
+                    icon: Icon(Icons.search),
+                    label: "Search",
+                  ),
+                ],
+              ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      // tooltip + label
-      final Tooltip tooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
-      expect(tooltip.message, "Go Home");
+        final BuildContext barContext = tester.element(
+          find.byType(NavigationBar),
+        );
+        final CustomNavigationBarThemeData? explicitTheme =
+            NavigationBarTheme.maybeOf(barContext);
 
-      // disabled destination does not trigger callback
-      await tester.tap(find.text("Home"));
-      await tester.pumpAndSettle();
-      expect(find.byIcon(Icons.home_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.home), findsNothing);
-
-      // selected destination keeps selected icon (selectedIndex = 1)
-      expect(find.byIcon(Icons.search), findsOneWidget);
-      expect(find.byIcon(Icons.search_outlined), findsNothing);
-
-      // Indicator slot height and resolved shape are forwarded into
-      // NavigationIndicator instances.
-      final Iterable<custom_adaptive_scaffold.NavigationIndicator> indicators =
-          tester.widgetList<custom_adaptive_scaffold.NavigationIndicator>(
-        find.byType(custom_adaptive_scaffold.NavigationIndicator),
-      );
-      expect(indicators, isNotEmpty);
-      expect(indicators.every((i) => i.height == 40.0), isTrue);
-      expect(indicators.every((i) => i.shape != null), isTrue);
-
-      // destination padding is applied to at least one destination container.
-      expect(
-        find.byWidgetPredicate(
-          (Widget widget) =>
-              widget is Padding && widget.padding == const EdgeInsets.all(6),
-        ),
-        findsWidgets,
-      );
-    });
+        expect(explicitTheme, isNotNull);
+        expect(explicitTheme!.destinationOverlayColor, isNull);
+        expect(explicitTheme.destinationIndicatorShape, isNotNull);
+      },
+    );
 
     testWidgets(
-        "navigation rail native theme override stays on framework ink path",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            useMaterial3: true,
-            navigationRailTheme: const CustomNavigationRailThemeData(
-              backgroundColor: Colors.black,
+      "navigation bar destination builder applies constructor inputs via behavior",
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationBarTheme: const CustomNavigationBarThemeData(
+                // Explicit package customization enables expanded indicator slot.
+                destinationIndicatorShape: RoundedRectangleBorder(),
+                iconTheme: WidgetStatePropertyAll<IconThemeData>(
+                  IconThemeData(size: 40),
+                ),
+              ),
+            ),
+            home: Scaffold(
+              body: NavigationBar(
+                selectedIndex: 1,
+                destinations: const <Widget>[
+                  NavigationBarDestination(
+                    icon: Icon(Icons.home_outlined),
+                    selectedIcon: Icon(Icons.home),
+                    label: "Home",
+                    tooltip: "Go Home",
+                    enabled: false,
+                    padding: EdgeInsets.all(6),
+                    indicatorColor: Colors.orange,
+                    indicatorShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                    ),
+                  ),
+                  NavigationBarDestination(
+                    icon: Icon(Icons.search_outlined),
+                    selectedIcon: Icon(Icons.search),
+                    label: "Search",
+                  ),
+                ],
+              ),
             ),
           ),
-          home: Scaffold(
-            body: Row(
-              children: [
-                _buildRail(selectedIndex: 0, onTap: null),
-              ],
+        );
+        await tester.pumpAndSettle();
+
+        // tooltip + label
+        final Tooltip tooltip = tester.widget<Tooltip>(
+          find.byType(Tooltip).first,
+        );
+        expect(tooltip.message, "Go Home");
+
+        // disabled destination does not trigger callback
+        await tester.tap(find.text("Home"));
+        await tester.pumpAndSettle();
+        expect(find.byIcon(Icons.home_outlined), findsOneWidget);
+        expect(find.byIcon(Icons.home), findsNothing);
+
+        // selected destination keeps selected icon (selectedIndex = 1)
+        expect(find.byIcon(Icons.search), findsOneWidget);
+        expect(find.byIcon(Icons.search_outlined), findsNothing);
+
+        // Indicator slot height and resolved shape are forwarded into
+        // NavigationIndicator instances.
+        final Iterable<custom_adaptive_scaffold.NavigationIndicator>
+        indicators = tester
+            .widgetList<custom_adaptive_scaffold.NavigationIndicator>(
+              find.byType(custom_adaptive_scaffold.NavigationIndicator),
+            );
+        expect(indicators, isNotEmpty);
+        expect(indicators.every((i) => i.height == 40.0), isTrue);
+        expect(indicators.every((i) => i.shape != null), isTrue);
+
+        // destination padding is applied to at least one destination container.
+        expect(
+          find.byWidgetPredicate(
+            (Widget widget) =>
+                widget is Padding && widget.padding == const EdgeInsets.all(6),
+          ),
+          findsWidgets,
+        );
+      },
+    );
+
+    testWidgets(
+      "navigation rail native theme override stays on framework ink path",
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationRailTheme: const CustomNavigationRailThemeData(
+                backgroundColor: Colors.black,
+              ),
+            ),
+            home: Scaffold(
+              body: Row(
+                children: [
+                  _buildRail(selectedIndex: 0, onTap: null),
+                ],
+              ),
             ),
           ),
-        ),
-      );
+        );
 
-      final Widget indicatorInkWell = tester.allWidgets.firstWhere(
-        (Widget w) => w.runtimeType.toString() == "_IndicatorInkWell",
-      );
-      final InkResponse inkWell = indicatorInkWell as InkResponse;
+        final Widget indicatorInkWell = tester.allWidgets.firstWhere(
+          (Widget w) => w.runtimeType.toString() == "_IndicatorInkWell",
+        );
+        final InkResponse inkWell = indicatorInkWell as InkResponse;
 
-      expect(inkWell.customBorder, isA<StadiumBorder>());
-      expect(inkWell.splashColor, anyOf(isNull, Colors.transparent));
-      expect(inkWell.hoverColor, anyOf(isNull, Colors.transparent));
-    });
+        expect(inkWell.customBorder, isA<StadiumBorder>());
+        expect(inkWell.splashColor, anyOf(isNull, Colors.transparent));
+        expect(inkWell.hoverColor, anyOf(isNull, Colors.transparent));
+      },
+    );
 
-    testWidgets("navigation rail item shape enables whole-item ink",
-        (WidgetTester tester) async {
+    testWidgets("navigation rail item shape enables whole-item ink", (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
@@ -925,8 +976,9 @@ void main() {
       );
     });
 
-    testWidgets("navigation rail full-item ink rect spans entire destination",
-        (WidgetTester tester) async {
+    testWidgets("navigation rail full-item ink rect spans entire destination", (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
@@ -960,8 +1012,9 @@ void main() {
       expect(rect, Offset.zero & renderBox.size);
     });
 
-    testWidgets("standardBottomNavigationBar switches selected icon on tap",
-        (WidgetTester tester) async {
+    testWidgets("standardBottomNavigationBar switches selected icon on tap", (
+      WidgetTester tester,
+    ) async {
       int selectedIndex = 0;
 
       await tester.pumpWidget(
@@ -1011,8 +1064,9 @@ void main() {
   });
 
   group("NavigationRail destination", () {
-    testWidgets("tap fires onDestinationSelected when enabled",
-        (WidgetTester tester) async {
+    testWidgets("tap fires onDestinationSelected when enabled", (
+      WidgetTester tester,
+    ) async {
       int tapped = 0;
       await pumpApp(
         tester,
@@ -1025,8 +1079,9 @@ void main() {
       expect(tapped, 1);
     });
 
-    testWidgets("tap does NOT fire callback when destination is disabled",
-        (WidgetTester tester) async {
+    testWidgets("tap does NOT fire callback when destination is disabled", (
+      WidgetTester tester,
+    ) async {
       int tapped = 0;
       await pumpApp(
         tester,
@@ -1041,8 +1096,9 @@ void main() {
       expect(tapped, 0);
     });
 
-    testWidgets("selected destination has selected semantics",
-        (WidgetTester tester) async {
+    testWidgets("selected destination has selected semantics", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         _buildRail(selectedIndex: 0, onTap: null),
@@ -1061,37 +1117,40 @@ void main() {
       expect(anySelected, isTrue);
     });
 
-    testWidgets("label is hidden visually for labelType.none (collapsed rail)",
-        (WidgetTester tester) async {
-      await pumpApp(
-        tester,
-        _buildRail(
-          selectedIndex: 0,
-          onTap: null,
-          labelType: NavigationRailLabelType.none,
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      "label is hidden visually for labelType.none (collapsed rail)",
+      (WidgetTester tester) async {
+        await pumpApp(
+          tester,
+          _buildRail(
+            selectedIndex: 0,
+            onTap: null,
+            labelType: NavigationRailLabelType.none,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // In collapsed none mode the label should be maintained for semantics
-      // but not visible.
-      final Finder homeLabelFinder = find.text("Home");
-      expect(homeLabelFinder, findsWidgets);
+        // In collapsed none mode the label should be maintained for semantics
+        // but not visible.
+        final Finder homeLabelFinder = find.text("Home");
+        expect(homeLabelFinder, findsWidgets);
 
-      // The wrapping Visibility.maintain should have visible: false.
-      final Iterable<Visibility> visibilityWidgets =
-          tester.widgetList<Visibility>(
-        find.ancestor(
-          of: homeLabelFinder.first,
-          matching: find.byType(Visibility),
-        ),
-      );
-      expect(visibilityWidgets, isNotEmpty);
-      expect(visibilityWidgets.first.visible, isFalse);
-    });
+        // The wrapping Visibility.maintain should have visible: false.
+        final Iterable<Visibility> visibilityWidgets = tester
+            .widgetList<Visibility>(
+              find.ancestor(
+                of: homeLabelFinder.first,
+                matching: find.byType(Visibility),
+              ),
+            );
+        expect(visibilityWidgets, isNotEmpty);
+        expect(visibilityWidgets.first.visible, isFalse);
+      },
+    );
 
-    testWidgets("label IS visible for labelType.all",
-        (WidgetTester tester) async {
+    testWidgets("label IS visible for labelType.all", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         _buildRail(
@@ -1106,20 +1165,21 @@ void main() {
       expect(searchLabel, findsOneWidget);
 
       // No Visibility.maintain(visible: false) wrapper around the label.
-      final Iterable<Visibility> visibilityWidgets =
-          tester.widgetList<Visibility>(
-        find.ancestor(
-          of: searchLabel,
-          matching: find.byType(Visibility),
-        ),
-      );
+      final Iterable<Visibility> visibilityWidgets = tester
+          .widgetList<Visibility>(
+            find.ancestor(
+              of: searchLabel,
+              matching: find.byType(Visibility),
+            ),
+          );
       for (final v in visibilityWidgets) {
         expect(v.visible, isTrue);
       }
     });
 
-    testWidgets("showLabelsWhenCollapsed displays label for labelType.none",
-        (WidgetTester tester) async {
+    testWidgets("showLabelsWhenCollapsed displays label for labelType.none", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -1140,8 +1200,8 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final Iterable<Visibility> visibilityWidgets =
-          tester.widgetList<Visibility>(find.byType(Visibility));
+      final Iterable<Visibility> visibilityWidgets = tester
+          .widgetList<Visibility>(find.byType(Visibility));
       expect(
         visibilityWidgets.every((Visibility widget) => widget.visible),
         isTrue,
@@ -1149,8 +1209,9 @@ void main() {
       expect(find.text("Home"), findsOneWidget);
     });
 
-    testWidgets("showLabelsWhenCollapsed handles minWidth below threshold",
-        (WidgetTester tester) async {
+    testWidgets("showLabelsWhenCollapsed handles minWidth below threshold", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -1176,8 +1237,9 @@ void main() {
       expect(find.byType(Badge), findsNothing);
     });
 
-    testWidgets("labelType.selected only shows selected label visually",
-        (WidgetTester tester) async {
+    testWidgets("labelType.selected only shows selected label visually", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         _buildRail(
@@ -1191,8 +1253,9 @@ void main() {
       expect(find.byType(FadeTransition), findsWidgets);
     });
 
-    testWidgets("labelType.all handles minWidth below threshold",
-        (WidgetTester tester) async {
+    testWidgets("labelType.all handles minWidth below threshold", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -1218,83 +1281,86 @@ void main() {
     });
 
     testWidgets(
-        "rail tooltip trigger switches based on label visibility theme settings",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            navigationRailTheme: const NavigationRailThemeData(
-              tooltipTriggerWhenLabelVisible: TooltipTriggerMode.tap,
-              tooltipTriggerWhenLabelHidden: TooltipTriggerMode.longPress,
+      "rail tooltip trigger switches based on label visibility theme settings",
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              navigationRailTheme: const NavigationRailThemeData(
+                tooltipTriggerWhenLabelVisible: TooltipTriggerMode.tap,
+                tooltipTriggerWhenLabelHidden: TooltipTriggerMode.longPress,
+              ),
+            ),
+            home: Scaffold(
+              body: Row(
+                children: [
+                  NavigationRail(
+                    selectedIndex: 0,
+                    labelType: NavigationRailLabelType.none,
+                    destinations: const [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.home),
+                        label: Text("Home"),
+                        tooltip: "Go home",
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.search),
+                        label: Text("Search"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          home: Scaffold(
-            body: Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: 0,
-                  labelType: NavigationRailLabelType.none,
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text("Home"),
-                      tooltip: "Go home",
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.search),
-                      label: Text("Search"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      final Tooltip hiddenTooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
-      expect(hiddenTooltip.triggerMode, TooltipTriggerMode.manual);
+        final Tooltip hiddenTooltip = tester.widget<Tooltip>(
+          find.byType(Tooltip).first,
+        );
+        expect(hiddenTooltip.triggerMode, TooltipTriggerMode.manual);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            navigationRailTheme: const NavigationRailThemeData(
-              tooltipTriggerWhenLabelVisible: TooltipTriggerMode.tap,
-              tooltipTriggerWhenLabelHidden: TooltipTriggerMode.longPress,
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              navigationRailTheme: const NavigationRailThemeData(
+                tooltipTriggerWhenLabelVisible: TooltipTriggerMode.tap,
+                tooltipTriggerWhenLabelHidden: TooltipTriggerMode.longPress,
+              ),
+            ),
+            home: Scaffold(
+              body: Row(
+                children: [
+                  NavigationRail(
+                    selectedIndex: 0,
+                    labelType: NavigationRailLabelType.none,
+                    showLabelsWhenCollapsed: true,
+                    destinations: const [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.home),
+                        label: Text("Home"),
+                        tooltip: "Go home",
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.search),
+                        label: Text("Search"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ),
-          home: Scaffold(
-            body: Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: 0,
-                  labelType: NavigationRailLabelType.none,
-                  showLabelsWhenCollapsed: true,
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text("Home"),
-                      tooltip: "Go home",
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.search),
-                      label: Text("Search"),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      final Tooltip visibleTooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
-      expect(visibleTooltip.triggerMode, TooltipTriggerMode.manual);
-    });
+        final Tooltip visibleTooltip = tester.widget<Tooltip>(
+          find.byType(Tooltip).first,
+        );
+        expect(visibleTooltip.triggerMode, TooltipTriggerMode.manual);
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -1302,8 +1368,9 @@ void main() {
   // -------------------------------------------------------------------------
 
   group("Destination parity", () {
-    testWidgets("disabled state suppresses tap in both bar and rail",
-        (WidgetTester tester) async {
+    testWidgets("disabled state suppresses tap in both bar and rail", (
+      WidgetTester tester,
+    ) async {
       int barTaps = 0;
       int railTaps = 0;
 
@@ -1359,124 +1426,129 @@ void main() {
     });
 
     testWidgets(
-        "rail explicit iconTheme keeps indicator centered on large icon",
-        (WidgetTester tester) async {
-      const double iconSize = 40.0;
+      "rail explicit iconTheme keeps indicator centered on large icon",
+      (WidgetTester tester) async {
+        const double iconSize = 40.0;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            useMaterial3: true,
-            navigationRailTheme: const NavigationRailThemeData(
-              iconTheme: WidgetStatePropertyAll<IconThemeData>(
-                IconThemeData(size: iconSize),
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationRailTheme: const NavigationRailThemeData(
+                iconTheme: WidgetStatePropertyAll<IconThemeData>(
+                  IconThemeData(size: iconSize),
+                ),
+              ),
+            ),
+            home: Scaffold(
+              body: Row(
+                children: [
+                  NavigationRail(
+                    selectedIndex: 0,
+                    destinations: const [
+                      NavigationRailDestination(
+                        icon: Icon(Icons.home),
+                        label: Text("Home"),
+                      ),
+                      NavigationRailDestination(
+                        icon: Icon(Icons.search),
+                        label: Text("Search"),
+                      ),
+                    ],
+                  ),
+                  const Expanded(child: SizedBox()),
+                ],
               ),
             ),
           ),
-          home: Scaffold(
-            body: Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: 0,
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.home),
-                      label: Text("Home"),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.search),
-                      label: Text("Search"),
-                    ),
-                  ],
+        );
+        await tester.pumpAndSettle();
+
+        final TestGesture gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await gesture.addPointer();
+        await gesture.moveTo(tester.getCenter(find.byIcon(Icons.home)));
+        await tester.pumpAndSettle();
+
+        final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
+          (RenderObject object) =>
+              object.runtimeType.toString() == "_RenderInkFeatures",
+        );
+
+        const Rect expectedRect = Rect.fromLTRB(12.0, 6.0, 68.0, 54.0);
+        final Offset iconCenter = tester.getCenter(find.byIcon(Icons.home));
+        final Offset indicatorCenter = Offset(
+          expectedRect.center.dx,
+          expectedRect.center.dy + 8.0,
+        );
+
+        expect(
+          inkFeatures,
+          paints..rect(rect: expectedRect),
+        );
+        expect(
+          (iconCenter.dx - indicatorCenter.dx).abs(),
+          lessThanOrEqualTo(0.5),
+        );
+        expect(
+          (iconCenter.dy - indicatorCenter.dy).abs(),
+          lessThanOrEqualTo(0.5),
+        );
+      },
+    );
+
+    testWidgets(
+      "bar explicit iconTheme expands indicator slot for large icons",
+      (WidgetTester tester) async {
+        const double iconSize = 40.0;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              useMaterial3: true,
+              navigationBarTheme: const CustomNavigationBarThemeData(
+                iconTheme: WidgetStatePropertyAll<IconThemeData>(
+                  IconThemeData(size: iconSize),
                 ),
-                const Expanded(child: SizedBox()),
-              ],
+              ),
             ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      final TestGesture gesture =
-          await tester.createGesture(kind: PointerDeviceKind.mouse);
-      await gesture.addPointer();
-      await gesture.moveTo(tester.getCenter(find.byIcon(Icons.home)));
-      await tester.pumpAndSettle();
-
-      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
-        (RenderObject object) =>
-            object.runtimeType.toString() == "_RenderInkFeatures",
-      );
-
-      const Rect expectedRect = Rect.fromLTRB(12.0, 6.0, 68.0, 54.0);
-      final Offset iconCenter = tester.getCenter(find.byIcon(Icons.home));
-      final Offset indicatorCenter = Offset(
-        expectedRect.center.dx,
-        expectedRect.center.dy + 8.0,
-      );
-
-      expect(
-        inkFeatures,
-        paints..rect(rect: expectedRect),
-      );
-      expect(
-        (iconCenter.dx - indicatorCenter.dx).abs(),
-        lessThanOrEqualTo(0.5),
-      );
-      expect(
-        (iconCenter.dy - indicatorCenter.dy).abs(),
-        lessThanOrEqualTo(0.5),
-      );
-    });
-
-    testWidgets("bar explicit iconTheme expands indicator slot for large icons",
-        (WidgetTester tester) async {
-      const double iconSize = 40.0;
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            useMaterial3: true,
-            navigationBarTheme: const CustomNavigationBarThemeData(
-              iconTheme: WidgetStatePropertyAll<IconThemeData>(
-                IconThemeData(size: iconSize),
+            home: Scaffold(
+              bottomNavigationBar: NavigationBar(
+                selectedIndex: 0,
+                destinations: const [
+                  NavigationDestination(icon: Icon(Icons.home), label: "Home"),
+                  NavigationDestination(
+                    icon: Icon(Icons.search),
+                    label: "Search",
+                  ),
+                ],
               ),
             ),
           ),
-          home: Scaffold(
-            bottomNavigationBar: NavigationBar(
-              selectedIndex: 0,
-              destinations: const [
-                NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-                NavigationDestination(
-                  icon: Icon(Icons.search),
-                  label: "Search",
-                ),
-              ],
-            ),
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      final Finder iconContainer = find.ancestor(
-        of: find.byIcon(Icons.home),
-        matching: find.byType(SizedBox),
-      );
+        final Finder iconContainer = find.ancestor(
+          of: find.byIcon(Icons.home),
+          matching: find.byType(SizedBox),
+        );
 
-      final Iterable<SizedBox> sizedBoxes =
-          tester.widgetList<SizedBox>(iconContainer);
-      final bool hasExpandedIndicatorSlot = sizedBoxes.any(
-        (SizedBox box) => box.height != null && box.height! > 32.0,
-      );
+        final Iterable<SizedBox> sizedBoxes = tester.widgetList<SizedBox>(
+          iconContainer,
+        );
+        final bool hasExpandedIndicatorSlot = sizedBoxes.any(
+          (SizedBox box) => box.height != null && box.height! > 32.0,
+        );
 
-      expect(
-        hasExpandedIndicatorSlot,
-        isTrue,
-        reason:
-            "explicit large icon theme should expand bar indicator/icon slot",
-      );
-    });
+        expect(
+          hasExpandedIndicatorSlot,
+          isTrue,
+          reason:
+              "explicit large icon theme should expand bar indicator/icon slot",
+        );
+      },
+    );
 
     testWidgets(
       "bar theme iconTheme size above 60 throws assertion",
@@ -1728,8 +1800,9 @@ void main() {
             theme: ThemeData(
               useMaterial3: true,
               navigationBarTheme: CustomNavigationBarThemeData(
-                overlayColor:
-                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                overlayColor: WidgetStateProperty.resolveWith((
+                  Set<WidgetState> states,
+                ) {
                   if (states.contains(WidgetState.hovered)) {
                     return Colors.blue;
                   }
@@ -1885,8 +1958,9 @@ void main() {
             theme: ThemeData(
               useMaterial3: true,
               navigationBarTheme: CustomNavigationBarThemeData(
-                iconTheme:
-                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                iconTheme: WidgetStateProperty.resolveWith((
+                  Set<WidgetState> states,
+                ) {
                   if (states.contains(WidgetState.disabled)) {
                     return const IconThemeData(size: 17, color: Colors.orange);
                   }
@@ -1895,8 +1969,9 @@ void main() {
                   }
                   return const IconThemeData(size: 15, color: Colors.black);
                 }),
-                labelTextStyle:
-                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                labelTextStyle: WidgetStateProperty.resolveWith((
+                  Set<WidgetState> states,
+                ) {
                   if (states.contains(WidgetState.disabled)) {
                     return const TextStyle(fontSize: 11, color: Colors.orange);
                   }
@@ -1960,8 +2035,9 @@ void main() {
             theme: ThemeData(
               useMaterial3: true,
               navigationBarTheme: CustomNavigationBarThemeData(
-                iconTheme:
-                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                iconTheme: WidgetStateProperty.resolveWith((
+                  Set<WidgetState> states,
+                ) {
                   if (states.contains(WidgetState.selected)) {
                     return const IconThemeData(size: 21, color: Colors.pink);
                   }
@@ -2058,18 +2134,20 @@ void main() {
       );
     });
 
-    test("badgeLabel + customBadge mutual exclusivity throws AssertionError",
-        () {
-      expect(
-        () => NavigationDestination(
-          icon: const Icon(Icons.home),
-          label: "Home",
-          badgeLabel: "hi",
-          customBadge: const Badge(),
-        ),
-        throwsAssertionError,
-      );
-    });
+    test(
+      "badgeLabel + customBadge mutual exclusivity throws AssertionError",
+      () {
+        expect(
+          () => NavigationDestination(
+            icon: const Icon(Icons.home),
+            label: "Home",
+            badgeLabel: "hi",
+            customBadge: const Badge(),
+          ),
+          throwsAssertionError,
+        );
+      },
+    );
 
     test("customBadge + numeric-only badgeStyle throws AssertionError", () {
       expect(
@@ -2191,18 +2269,20 @@ void main() {
         );
       });
 
-      test("badgeLabel + customBadge mutual exclusivity throws AssertionError",
-          () {
-        expect(
-          () => RailDestination(
-            icon: const Icon(Icons.home),
-            label: const Text("Home"),
-            badgeLabel: "hello",
-            customBadge: const Badge(),
-          ),
-          throwsAssertionError,
-        );
-      });
+      test(
+        "badgeLabel + customBadge mutual exclusivity throws AssertionError",
+        () {
+          expect(
+            () => RailDestination(
+              icon: const Icon(Icons.home),
+              label: const Text("Home"),
+              badgeLabel: "hello",
+              customBadge: const Badge(),
+            ),
+            throwsAssertionError,
+          );
+        },
+      );
 
       test("customBadge + exact throws AssertionError", () {
         expect(
@@ -2284,9 +2364,7 @@ void main() {
       expect(dest.toRailDestination().badgeStyle, NavigationBadgeStyle.hidden);
     });
 
-    test(
-        "toRailDestination preserves badge on NavigationRailDestination passthrough",
-        () {
+    test("toRailDestination preserves badge on NavigationRailDestination passthrough", () {
       // When the destination is already a NavigationRailDestination the
       // early-return guard must not lose the badge.
       const original = NavigationRailDestination(
@@ -2344,8 +2422,9 @@ void main() {
 
     // --- Rail rendering ---
 
-    testWidgets("badge: null renders no Badge widget in rail",
-        (WidgetTester tester) async {
+    testWidgets("badge: null renders no Badge widget in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2365,8 +2444,9 @@ void main() {
       expect(find.byType(Badge), findsNothing);
     });
 
-    testWidgets("badge: 5 renders Badge with label '5' in rail",
-        (WidgetTester tester) async {
+    testWidgets("badge: 5 renders Badge with label '5' in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2388,8 +2468,9 @@ void main() {
       expect(find.text("5"), findsOneWidget);
     });
 
-    testWidgets("badge: 99 renders '99' (boundary — not capped) in rail",
-        (WidgetTester tester) async {
+    testWidgets("badge: 99 renders '99' (boundary — not capped) in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2411,8 +2492,9 @@ void main() {
       expect(find.text("99+"), findsNothing);
     });
 
-    testWidgets("badge: 100 renders '99+' (cap) in rail",
-        (WidgetTester tester) async {
+    testWidgets("badge: 100 renders '99+' (cap) in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2433,8 +2515,9 @@ void main() {
       expect(find.text("99+"), findsOneWidget);
     });
 
-    testWidgets("badge: 150 renders '99+' in rail",
-        (WidgetTester tester) async {
+    testWidgets("badge: 150 renders '99+' in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2456,32 +2539,34 @@ void main() {
     });
 
     testWidgets(
-        "badge: 150 with badgeStyle: exact renders '150' (no cap) in rail",
-        (WidgetTester tester) async {
-      await pumpApp(
-        tester,
-        NavigationRail(
-          selectedIndex: 0,
-          destinations: [
-            const NavigationDestination(
-              icon: Icon(Icons.home),
-              label: "Home",
-              badge: 150,
-              badgeStyle: NavigationBadgeStyle.exact,
-            ).toRailDestination(),
-            const NavigationDestination(
-              icon: Icon(Icons.search),
-              label: "Search",
-            ).toRailDestination(),
-          ],
-        ),
-      );
-      expect(find.text("150"), findsOneWidget);
-      expect(find.text("99+"), findsNothing);
-    });
+      "badge: 150 with badgeStyle: exact renders '150' (no cap) in rail",
+      (WidgetTester tester) async {
+        await pumpApp(
+          tester,
+          NavigationRail(
+            selectedIndex: 0,
+            destinations: [
+              const NavigationDestination(
+                icon: Icon(Icons.home),
+                label: "Home",
+                badge: 150,
+                badgeStyle: NavigationBadgeStyle.exact,
+              ).toRailDestination(),
+              const NavigationDestination(
+                icon: Icon(Icons.search),
+                label: "Search",
+              ).toRailDestination(),
+            ],
+          ),
+        );
+        expect(find.text("150"), findsOneWidget);
+        expect(find.text("99+"), findsNothing);
+      },
+    );
 
-    testWidgets("badgeStyle: dot renders Badge without label in rail",
-        (WidgetTester tester) async {
+    testWidgets("badgeStyle: dot renders Badge without label in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2504,8 +2589,9 @@ void main() {
       expect(find.text("3"), findsNothing);
     });
 
-    testWidgets("badgeStyle: hidden suppresses Badge in rail",
-        (WidgetTester tester) async {
+    testWidgets("badgeStyle: hidden suppresses Badge in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2527,8 +2613,9 @@ void main() {
       expect(find.byType(Badge), findsNothing);
     });
 
-    testWidgets("badge renders in extended rail (labelType.none, extended)",
-        (WidgetTester tester) async {
+    testWidgets("badge renders in extended rail (labelType.none, extended)", (
+      WidgetTester tester,
+    ) async {
       tester.view.physicalSize = const Size(1200, 800);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -2561,8 +2648,9 @@ void main() {
       expect(find.text("5"), findsOneWidget);
     });
 
-    testWidgets("badge renders in rail with labelType.all",
-        (WidgetTester tester) async {
+    testWidgets("badge renders in rail with labelType.all", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2585,8 +2673,9 @@ void main() {
       expect(find.text("5"), findsOneWidget);
     });
 
-    testWidgets("badge renders in rail with labelType.selected",
-        (WidgetTester tester) async {
+    testWidgets("badge renders in rail with labelType.selected", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -2609,50 +2698,14 @@ void main() {
     });
 
     testWidgets(
-        "NavigationRailThemeData.badgeThemeData wraps badge with BadgeTheme",
-        (WidgetTester tester) async {
-      const Color badgeColor = Color(0xFF0000FF);
-      await pumpApp(
-        tester,
-        NavigationRailTheme(
-          data: const NavigationRailThemeData(
-            badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
-          ),
-          child: NavigationRail(
-            selectedIndex: 0,
-            destinations: [
-              const NavigationDestination(
-                icon: Icon(Icons.home),
-                label: "Home",
-                badge: 1,
-              ).toRailDestination(),
-              const NavigationDestination(
-                icon: Icon(Icons.search),
-                label: "Search",
-              ).toRailDestination(),
-            ],
-          ),
-        ),
-      );
-      expect(
-        find.byWidgetPredicate(
-          (Widget w) => w is BadgeTheme && w.data.backgroundColor == badgeColor,
-        ),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets(
-        "NavigationRailThemeData.badgeThemeData null preserves ambient BadgeTheme",
-        (WidgetTester tester) async {
-      const Color ambientBadgeColor = Color(0xFF00FF00);
-      await pumpApp(
-        tester,
-        BadgeTheme(
-          data: const BadgeThemeData(backgroundColor: ambientBadgeColor),
-          child: NavigationRailTheme(
+      "NavigationRailThemeData.badgeThemeData wraps badge with BadgeTheme",
+      (WidgetTester tester) async {
+        const Color badgeColor = Color(0xFF0000FF);
+        await pumpApp(
+          tester,
+          NavigationRailTheme(
             data: const NavigationRailThemeData(
-              badgeThemeData: null,
+              badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
             ),
             child: NavigationRail(
               selectedIndex: 0,
@@ -2669,149 +2722,196 @@ void main() {
               ],
             ),
           ),
-        ),
-      );
-
-      final Badge badge = tester.widget<Badge>(find.byType(Badge));
-      final BuildContext badgeContext = tester.element(find.byWidget(badge));
-      expect(BadgeTheme.of(badgeContext).backgroundColor, ambientBadgeColor);
-    });
+        );
+        expect(
+          find.byWidgetPredicate(
+            (Widget w) =>
+                w is BadgeTheme && w.data.backgroundColor == badgeColor,
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets(
-        "NavigationRailThemeData.badgeThemeData wraps dot badge with BadgeTheme",
-        (WidgetTester tester) async {
-      const Color badgeColor = Color(0xFF3366FF);
-      await pumpApp(
-        tester,
-        NavigationRailTheme(
-          data: const NavigationRailThemeData(
-            badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
-          ),
-          child: NavigationRail(
-            selectedIndex: 0,
-            destinations: [
-              const NavigationDestination(
-                icon: Icon(Icons.home),
-                label: "Home",
-                badge: 3,
-                badgeStyle: NavigationBadgeStyle.dot,
-              ).toRailDestination(),
-              const NavigationDestination(
-                icon: Icon(Icons.search),
-                label: "Search",
-              ).toRailDestination(),
-            ],
-          ),
-        ),
-      );
-
-      expect(
-        find.byWidgetPredicate(
-          (Widget w) => w is BadgeTheme && w.data.backgroundColor == badgeColor,
-        ),
-        findsOneWidget,
-      );
-      expect(find.byType(Badge), findsOneWidget);
-      expect(find.text("3"), findsNothing);
-    });
-
-    testWidgets(
-        "NavigationRailThemeData.badgeThemeData wraps badgeLabel badge with BadgeTheme",
-        (WidgetTester tester) async {
-      const Color badgeColor = Color(0xFF6633CC);
-      await pumpApp(
-        tester,
-        NavigationRailTheme(
-          data: const NavigationRailThemeData(
-            badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
-          ),
-          child: NavigationRail(
-            selectedIndex: 0,
-            destinations: [
-              const NavigationDestination(
-                icon: Icon(Icons.home),
-                label: "Home",
-                badgeLabel: "Hi",
-              ).toRailDestination(),
-              const NavigationDestination(
-                icon: Icon(Icons.search),
-                label: "Search",
-              ).toRailDestination(),
-            ],
-          ),
-        ),
-      );
-
-      expect(
-        find.byWidgetPredicate(
-          (Widget w) => w is BadgeTheme && w.data.backgroundColor == badgeColor,
-        ),
-        findsOneWidget,
-      );
-      expect(find.byType(Badge), findsOneWidget);
-      expect(find.text("Hi"), findsOneWidget);
-    });
-
-    testWidgets("direct RailDestination accepts optional property combinations",
-        (WidgetTester tester) async {
-      int taps = 0;
-
-      await pumpApp(
-        tester,
-        Row(
-          children: [
-            RailDestination(
-              key: const Key("direct-rail-destination"),
-              icon: const Icon(Icons.home),
-              label: const Text("Home"),
-              selected: true,
-              labelType: NavigationRailLabelType.all,
-              minWidth: 88,
-              minExtendedWidth: 260,
-              iconTheme: const IconThemeData(size: 28, color: Colors.red),
-              labelTextStyle: const TextStyle(fontSize: 15),
-              onTap: () => taps += 1,
-              indexLabel: "Home tab",
-              useIndicator: true,
-              indicatorColor: Colors.orange,
-              indicatorShape: const RoundedRectangleBorder(),
-              disabled: false,
-              extended: false,
-              showLabelsWhenCollapsed: true,
-              padding: const EdgeInsets.all(6),
-              margin: const EdgeInsets.all(4),
-              tooltip: "Go Home",
+      "NavigationRailThemeData.badgeThemeData null preserves ambient BadgeTheme",
+      (WidgetTester tester) async {
+        const Color ambientBadgeColor = Color(0xFF00FF00);
+        await pumpApp(
+          tester,
+          BadgeTheme(
+            data: const BadgeThemeData(backgroundColor: ambientBadgeColor),
+            child: NavigationRailTheme(
+              data: const NavigationRailThemeData(
+                badgeThemeData: null,
+              ),
+              child: NavigationRail(
+                selectedIndex: 0,
+                destinations: [
+                  const NavigationDestination(
+                    icon: Icon(Icons.home),
+                    label: "Home",
+                    badge: 1,
+                  ).toRailDestination(),
+                  const NavigationDestination(
+                    icon: Icon(Icons.search),
+                    label: "Search",
+                  ).toRailDestination(),
+                ],
+              ),
             ),
-          ],
-        ),
-      );
-      await tester.pumpAndSettle();
+          ),
+        );
 
-      final Tooltip tooltip =
-          tester.widget<Tooltip>(find.byType(Tooltip).first);
-      expect(tooltip.message, "Go Home");
+        final Badge badge = tester.widget<Badge>(find.byType(Badge));
+        final BuildContext badgeContext = tester.element(find.byWidget(badge));
+        expect(BadgeTheme.of(badgeContext).backgroundColor, ambientBadgeColor);
+      },
+    );
 
-      final custom_adaptive_scaffold.NavigationIndicator indicator =
-          tester.widget<custom_adaptive_scaffold.NavigationIndicator>(
-        find.byType(custom_adaptive_scaffold.NavigationIndicator).first,
-      );
-      expect(indicator.color, Colors.orange);
-      expect(indicator.shape, isA<RoundedRectangleBorder>());
+    testWidgets(
+      "NavigationRailThemeData.badgeThemeData wraps dot badge with BadgeTheme",
+      (WidgetTester tester) async {
+        const Color badgeColor = Color(0xFF3366FF);
+        await pumpApp(
+          tester,
+          NavigationRailTheme(
+            data: const NavigationRailThemeData(
+              badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
+            ),
+            child: NavigationRail(
+              selectedIndex: 0,
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  badge: 3,
+                  badgeStyle: NavigationBadgeStyle.dot,
+                ).toRailDestination(),
+                const NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ).toRailDestination(),
+              ],
+            ),
+          ),
+        );
 
-      expect(
-        find.byWidgetPredicate(
-          (Widget w) => w is Padding && w.padding == const EdgeInsets.all(6),
-        ),
-        findsWidgets,
-      );
+        expect(
+          find.byWidgetPredicate(
+            (Widget w) =>
+                w is BadgeTheme && w.data.backgroundColor == badgeColor,
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(Badge), findsOneWidget);
+        expect(find.text("3"), findsNothing);
+      },
+    );
 
-      await tester.tap(find.byKey(const Key("direct-rail-destination")));
-      await tester.pumpAndSettle();
-      expect(taps, 1);
-    });
+    testWidgets(
+      "NavigationRailThemeData.badgeThemeData wraps badgeLabel badge with BadgeTheme",
+      (WidgetTester tester) async {
+        const Color badgeColor = Color(0xFF6633CC);
+        await pumpApp(
+          tester,
+          NavigationRailTheme(
+            data: const NavigationRailThemeData(
+              badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
+            ),
+            child: NavigationRail(
+              selectedIndex: 0,
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: "Home",
+                  badgeLabel: "Hi",
+                ).toRailDestination(),
+                const NavigationDestination(
+                  icon: Icon(Icons.search),
+                  label: "Search",
+                ).toRailDestination(),
+              ],
+            ),
+          ),
+        );
 
-    testWidgets("direct RailDestination reacts when extended toggles",
-        (WidgetTester tester) async {
+        expect(
+          find.byWidgetPredicate(
+            (Widget w) =>
+                w is BadgeTheme && w.data.backgroundColor == badgeColor,
+          ),
+          findsOneWidget,
+        );
+        expect(find.byType(Badge), findsOneWidget);
+        expect(find.text("Hi"), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      "direct RailDestination accepts optional property combinations",
+      (WidgetTester tester) async {
+        int taps = 0;
+
+        await pumpApp(
+          tester,
+          Row(
+            children: [
+              RailDestination(
+                key: const Key("direct-rail-destination"),
+                icon: const Icon(Icons.home),
+                label: const Text("Home"),
+                selected: true,
+                labelType: NavigationRailLabelType.all,
+                minWidth: 88,
+                minExtendedWidth: 260,
+                iconTheme: const IconThemeData(size: 28, color: Colors.red),
+                labelTextStyle: const TextStyle(fontSize: 15),
+                onTap: () => taps += 1,
+                indexLabel: "Home tab",
+                useIndicator: true,
+                indicatorColor: Colors.orange,
+                indicatorShape: const RoundedRectangleBorder(),
+                disabled: false,
+                extended: false,
+                showLabelsWhenCollapsed: true,
+                padding: const EdgeInsets.all(6),
+                margin: const EdgeInsets.all(4),
+                tooltip: "Go Home",
+              ),
+            ],
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final Tooltip tooltip = tester.widget<Tooltip>(
+          find.byType(Tooltip).first,
+        );
+        expect(tooltip.message, "Go Home");
+
+        final custom_adaptive_scaffold.NavigationIndicator indicator = tester
+            .widget<custom_adaptive_scaffold.NavigationIndicator>(
+              find.byType(custom_adaptive_scaffold.NavigationIndicator).first,
+            );
+        expect(indicator.color, Colors.orange);
+        expect(indicator.shape, isA<RoundedRectangleBorder>());
+
+        expect(
+          find.byWidgetPredicate(
+            (Widget w) => w is Padding && w.padding == const EdgeInsets.all(6),
+          ),
+          findsWidgets,
+        );
+
+        await tester.tap(find.byKey(const Key("direct-rail-destination")));
+        await tester.pumpAndSettle();
+        expect(taps, 1);
+      },
+    );
+
+    testWidgets("direct RailDestination reacts when extended toggles", (
+      WidgetTester tester,
+    ) async {
       bool extended = false;
 
       await tester.pumpWidget(
@@ -2856,8 +2956,9 @@ void main() {
 
     // --- Bar rendering ---
 
-    testWidgets("badge: null renders no Badge widget in bar",
-        (WidgetTester tester) async {
+    testWidgets("badge: null renders no Badge widget in bar", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -2876,8 +2977,9 @@ void main() {
       expect(find.byType(Badge), findsNothing);
     });
 
-    testWidgets("badge: 5 renders Badge with label '5' in bar",
-        (WidgetTester tester) async {
+    testWidgets("badge: 5 renders Badge with label '5' in bar", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -2898,8 +3000,9 @@ void main() {
       expect(find.text("5"), findsOneWidget);
     });
 
-    testWidgets("badge: 99 renders '99' (boundary — not capped) in bar",
-        (WidgetTester tester) async {
+    testWidgets("badge: 99 renders '99' (boundary — not capped) in bar", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -2920,8 +3023,9 @@ void main() {
       expect(find.text("99+"), findsNothing);
     });
 
-    testWidgets("badge: 100 renders '99+' (cap) in bar",
-        (WidgetTester tester) async {
+    testWidgets("badge: 100 renders '99+' (cap) in bar", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -2961,8 +3065,9 @@ void main() {
       expect(find.text("99+"), findsOneWidget);
     });
 
-    testWidgets("badgeStyle: exact renders uncapped numeric badge in bar",
-        (WidgetTester tester) async {
+    testWidgets("badgeStyle: exact renders uncapped numeric badge in bar", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -2984,8 +3089,9 @@ void main() {
       expect(find.text("99+"), findsNothing);
     });
 
-    testWidgets("customBadge is reconstructed around themed icon in bar",
-        (WidgetTester tester) async {
+    testWidgets("customBadge is reconstructed around themed icon in bar", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -3017,8 +3123,9 @@ void main() {
       expect(badge.isLabelVisible, isTrue);
     });
 
-    testWidgets("badgeLabel renders custom text badge in bar",
-        (WidgetTester tester) async {
+    testWidgets("badgeLabel renders custom text badge in bar", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -3040,101 +3147,68 @@ void main() {
       expect(find.text("Hi"), findsOneWidget);
     });
 
-    testWidgets("bar label uses explicit label padding and fallback text style",
-        (WidgetTester tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(
-            navigationBarTheme: const CustomNavigationBarThemeData(
-              labelTextStyle: null,
-            ),
-          ),
-          home: Scaffold(
-            bottomNavigationBar: NavigationBarTheme(
-              data: const CustomNavigationBarThemeData(
+    testWidgets(
+      "bar label uses explicit label padding and fallback text style",
+      (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(
+              navigationBarTheme: const CustomNavigationBarThemeData(
                 labelTextStyle: null,
-                labelPadding: EdgeInsets.only(top: 9),
-              ),
-              child: NavigationBar(
-                labelTextStyle: null,
-                destinations: const [
-                  NavigationBarDestination(
-                    icon: Icon(Icons.home),
-                    label: "Home",
-                  ),
-                  NavigationBarDestination(
-                    icon: Icon(Icons.search),
-                    label: "Search",
-                  ),
-                ],
               ),
             ),
+            home: Scaffold(
+              bottomNavigationBar: NavigationBarTheme(
+                data: const CustomNavigationBarThemeData(
+                  labelTextStyle: null,
+                  labelPadding: EdgeInsets.only(top: 9),
+                ),
+                child: NavigationBar(
+                  labelTextStyle: null,
+                  destinations: const [
+                    NavigationBarDestination(
+                      icon: Icon(Icons.home),
+                      label: "Home",
+                    ),
+                    NavigationBarDestination(
+                      icon: Icon(Icons.search),
+                      label: "Search",
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
-        ),
-      );
+        );
 
-      final Padding padding = tester.widget<Padding>(
-        find
-            .ancestor(of: find.text("Home"), matching: find.byType(Padding))
-            .first,
-      );
-      final DefaultTextStyle textStyle = tester.widget<DefaultTextStyle>(
-        find
-            .ancestor(
-              of: find.text("Home"),
-              matching: find.byType(DefaultTextStyle),
-            )
-            .first,
-      );
+        final Padding padding = tester.widget<Padding>(
+          find
+              .ancestor(of: find.text("Home"), matching: find.byType(Padding))
+              .first,
+        );
+        final DefaultTextStyle textStyle = tester.widget<DefaultTextStyle>(
+          find
+              .ancestor(
+                of: find.text("Home"),
+                matching: find.byType(DefaultTextStyle),
+              )
+              .first,
+        );
 
-      expect(padding.padding, const EdgeInsets.only(top: 9));
-      expect(textStyle.style, isNot(const TextStyle()));
-    });
+        expect(padding.padding, const EdgeInsets.only(top: 9));
+        expect(textStyle.style, isNot(const TextStyle()));
+      },
+    );
 
     testWidgets(
-        "NavigationBarThemeData.badgeThemeData wraps badge with BadgeTheme",
-        (WidgetTester tester) async {
-      const Color badgeColor = Color(0xFFFF0000);
-      await pumpApp(
-        tester,
-        NavigationBarTheme(
-          data: const CustomNavigationBarThemeData(
-            badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
-          ),
-          child: NavigationBar(
-            destinations: [
-              const NavigationDestination(
-                icon: Icon(Icons.home),
-                label: "Home",
-                badge: 1,
-              ).toBarDestination(),
-              const NavigationDestination(
-                icon: Icon(Icons.search),
-                label: "Search",
-              ).toBarDestination(),
-            ],
-          ),
-        ),
-      );
-      expect(
-        find.byWidgetPredicate(
-          (Widget w) => w is BadgeTheme && w.data.backgroundColor == badgeColor,
-        ),
-        findsOneWidget,
-      );
-    });
-
-    testWidgets(
-        "NavigationBarThemeData.badgeThemeData null preserves ambient BadgeTheme",
-        (WidgetTester tester) async {
-      const Color ambientBadgeColor = Color(0xFF00AA00);
-      await pumpApp(
-        tester,
-        BadgeTheme(
-          data: const BadgeThemeData(backgroundColor: ambientBadgeColor),
-          child: NavigationBarTheme(
+      "NavigationBarThemeData.badgeThemeData wraps badge with BadgeTheme",
+      (WidgetTester tester) async {
+        const Color badgeColor = Color(0xFFFF0000);
+        await pumpApp(
+          tester,
+          NavigationBarTheme(
             data: const CustomNavigationBarThemeData(
-              badgeThemeData: null,
+              badgeThemeData: BadgeThemeData(backgroundColor: badgeColor),
             ),
             child: NavigationBar(
               destinations: [
@@ -3150,16 +3224,55 @@ void main() {
               ],
             ),
           ),
-        ),
-      );
+        );
+        expect(
+          find.byWidgetPredicate(
+            (Widget w) =>
+                w is BadgeTheme && w.data.backgroundColor == badgeColor,
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
-      final Badge badge = tester.widget<Badge>(find.byType(Badge));
-      final BuildContext badgeContext = tester.element(find.byWidget(badge));
-      expect(BadgeTheme.of(badgeContext).backgroundColor, ambientBadgeColor);
-    });
+    testWidgets(
+      "NavigationBarThemeData.badgeThemeData null preserves ambient BadgeTheme",
+      (WidgetTester tester) async {
+        const Color ambientBadgeColor = Color(0xFF00AA00);
+        await pumpApp(
+          tester,
+          BadgeTheme(
+            data: const BadgeThemeData(backgroundColor: ambientBadgeColor),
+            child: NavigationBarTheme(
+              data: const CustomNavigationBarThemeData(
+                badgeThemeData: null,
+              ),
+              child: NavigationBar(
+                destinations: [
+                  const NavigationDestination(
+                    icon: Icon(Icons.home),
+                    label: "Home",
+                    badge: 1,
+                  ).toBarDestination(),
+                  const NavigationDestination(
+                    icon: Icon(Icons.search),
+                    label: "Search",
+                  ).toBarDestination(),
+                ],
+              ),
+            ),
+          ),
+        );
 
-    testWidgets("customBadge is reconstructed around themed icon in rail",
-        (WidgetTester tester) async {
+        final Badge badge = tester.widget<Badge>(find.byType(Badge));
+        final BuildContext badgeContext = tester.element(find.byWidget(badge));
+        expect(BadgeTheme.of(badgeContext).backgroundColor, ambientBadgeColor);
+      },
+    );
+
+    testWidgets("customBadge is reconstructed around themed icon in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -3193,96 +3306,100 @@ void main() {
     });
 
     testWidgets(
-        "direct RailDestination updates when destinationAnimation changes",
-        (WidgetTester tester) async {
-      const AlwaysStoppedAnimation<double> firstAnimation =
-          AlwaysStoppedAnimation<double>(0.25);
-      const AlwaysStoppedAnimation<double> secondAnimation =
-          AlwaysStoppedAnimation<double>(0.75);
+      "direct RailDestination updates when destinationAnimation changes",
+      (WidgetTester tester) async {
+        const AlwaysStoppedAnimation<double> firstAnimation =
+            AlwaysStoppedAnimation<double>(0.25);
+        const AlwaysStoppedAnimation<double> secondAnimation =
+            AlwaysStoppedAnimation<double>(0.75);
 
-      Widget buildRailDestination(Animation<double>? animation) {
-        return MaterialApp(
-          home: Scaffold(
-            body: Row(
-              children: [
-                RailDestination(
-                  key: const Key("rail-destination"),
-                  icon: const Icon(Icons.home),
-                  label: const Text("Home"),
-                  destinationAnimation: animation,
-                  selected: true,
-                  labelType: NavigationRailLabelType.selected,
-                ),
-              ],
+        Widget buildRailDestination(Animation<double>? animation) {
+          return MaterialApp(
+            home: Scaffold(
+              body: Row(
+                children: [
+                  RailDestination(
+                    key: const Key("rail-destination"),
+                    icon: const Icon(Icons.home),
+                    label: const Text("Home"),
+                    destinationAnimation: animation,
+                    selected: true,
+                    labelType: NavigationRailLabelType.selected,
+                  ),
+                ],
+              ),
             ),
+          );
+        }
+
+        await tester.pumpWidget(buildRailDestination(firstAnimation));
+        expect(find.text("Home"), findsOneWidget);
+
+        await tester.pumpWidget(buildRailDestination(secondAnimation));
+        await tester.pump();
+
+        expect(find.byType(FadeTransition), findsWidgets);
+      },
+    );
+
+    testWidgets(
+      "customBadge in rail is not wrapped in BadgeTheme when theme is absent",
+      (WidgetTester tester) async {
+        await pumpApp(
+          tester,
+          NavigationRail(
+            selectedIndex: 0,
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.home),
+                label: Text("Home"),
+                customBadge: Badge(label: Text("Solo")),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
           ),
         );
-      }
 
-      await tester.pumpWidget(buildRailDestination(firstAnimation));
-      expect(find.text("Home"), findsOneWidget);
-
-      await tester.pumpWidget(buildRailDestination(secondAnimation));
-      await tester.pump();
-
-      expect(find.byType(FadeTransition), findsWidgets);
-    });
+        expect(find.text("Solo"), findsOneWidget);
+        expect(find.byType(BadgeTheme), findsNothing);
+      },
+    );
 
     testWidgets(
-        "customBadge in rail is not wrapped in BadgeTheme when theme is absent",
-        (WidgetTester tester) async {
-      await pumpApp(
-        tester,
-        NavigationRail(
-          selectedIndex: 0,
-          destinations: const [
-            NavigationRailDestination(
-              icon: Icon(Icons.home),
-              label: Text("Home"),
-              customBadge: Badge(label: Text("Solo")),
-            ),
-            NavigationRailDestination(
-              icon: Icon(Icons.search),
-              label: Text("Search"),
-            ),
-          ],
-        ),
-      );
+      "rail selected layout handles minWidth below threshold with badge",
+      (WidgetTester tester) async {
+        await pumpApp(
+          tester,
+          NavigationRail(
+            selectedIndex: 0,
+            labelType: NavigationRailLabelType.selected,
+            minWidth: 60,
+            destinations: const [
+              NavigationRailDestination(
+                icon: Icon(Icons.home),
+                label: Text("Home"),
+                badge: 1,
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.search),
+                label: Text("Search"),
+              ),
+            ],
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(find.text("Solo"), findsOneWidget);
-      expect(find.byType(BadgeTheme), findsNothing);
-    });
+        expect(find.byType(Badge), findsOneWidget);
+        expect(find.byType(FadeTransition), findsWidgets);
+      },
+    );
 
-    testWidgets(
-        "rail selected layout handles minWidth below threshold with badge",
-        (WidgetTester tester) async {
-      await pumpApp(
-        tester,
-        NavigationRail(
-          selectedIndex: 0,
-          labelType: NavigationRailLabelType.selected,
-          minWidth: 60,
-          destinations: const [
-            NavigationRailDestination(
-              icon: Icon(Icons.home),
-              label: Text("Home"),
-              badge: 1,
-            ),
-            NavigationRailDestination(
-              icon: Icon(Icons.search),
-              label: Text("Search"),
-            ),
-          ],
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      expect(find.byType(Badge), findsOneWidget);
-      expect(find.byType(FadeTransition), findsWidgets);
-    });
-
-    testWidgets("badgeLabel renders custom text badge in rail",
-        (WidgetTester tester) async {
+    testWidgets("badgeLabel renders custom text badge in rail", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationRail(
@@ -3305,8 +3422,9 @@ void main() {
       expect(find.text("Hi"), findsOneWidget);
     });
 
-    testWidgets("multiple destinations each render their own badge in bar",
-        (WidgetTester tester) async {
+    testWidgets("multiple destinations each render their own badge in bar", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBar(
@@ -3339,8 +3457,9 @@ void main() {
       expect(find.text("1"), findsOneWidget);
     });
 
-    testWidgets("bar widget uses default indicator color and shape fallback",
-        (WidgetTester tester) async {
+    testWidgets("bar widget uses default indicator color and shape fallback", (
+      WidgetTester tester,
+    ) async {
       await pumpApp(
         tester,
         NavigationBarTheme(
@@ -3363,10 +3482,10 @@ void main() {
         ),
       );
 
-      final custom_adaptive_scaffold.NavigationIndicator indicator =
-          tester.widget<custom_adaptive_scaffold.NavigationIndicator>(
-        find.byType(custom_adaptive_scaffold.NavigationIndicator).first,
-      );
+      final custom_adaptive_scaffold.NavigationIndicator indicator = tester
+          .widget<custom_adaptive_scaffold.NavigationIndicator>(
+            find.byType(custom_adaptive_scaffold.NavigationIndicator).first,
+          );
 
       expect(indicator.color, isNotNull);
       expect(indicator.shape, isNotNull);

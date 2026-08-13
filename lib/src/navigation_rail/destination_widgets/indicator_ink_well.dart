@@ -22,11 +22,11 @@ class _IndicatorInkWell extends InkResponse {
     super.hoverColor,
     super.overlayColor,
   }) : super(
-          containedInkWell: true,
-          highlightShape: BoxShape.rectangle,
-          borderRadius: customBorder == null ? borderRadius : null,
-          customBorder: customBorder,
-        );
+         containedInkWell: true,
+         highlightShape: BoxShape.rectangle,
+         borderRadius: customBorder == null ? borderRadius : null,
+         customBorder: customBorder,
+       );
 
   /// Whether the surrounding destination is using Material 3 behavior.
   final bool useMaterial3;
@@ -52,23 +52,24 @@ class _IndicatorInkWell extends InkResponse {
   @override
   RectCallback? getRectCallback(RenderBox referenceBox) {
     final double boxWidth = referenceBox.size.width;
-    double indicatorHorizontalCenter =
-        applyXOffset ? indicatorOffset.dx : boxWidth / 2;
+    double indicatorHorizontalCenter = applyXOffset
+        ? indicatorOffset.dx
+        : boxWidth / 2;
     if (textDirection == TextDirection.rtl) {
       indicatorHorizontalCenter = boxWidth - indicatorHorizontalCenter;
     }
     if (disableFullItemInk) {
       return () => Rect.fromCenter(
-            center: Offset(indicatorHorizontalCenter, indicatorOffset.dy),
-            width: indicatorWidth,
-            height: indicatorHeight,
-          );
+        center: Offset(indicatorHorizontalCenter, indicatorOffset.dy),
+        width: indicatorWidth,
+        height: indicatorHeight,
+      );
     }
     return () => Rect.fromLTRB(
-          0,
-          0,
-          referenceBox.size.width,
-          referenceBox.size.height,
-        );
+      0,
+      0,
+      referenceBox.size.width,
+      referenceBox.size.height,
+    );
   }
 }

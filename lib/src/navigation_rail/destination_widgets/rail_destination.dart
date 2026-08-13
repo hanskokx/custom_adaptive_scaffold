@@ -51,38 +51,38 @@ class RailDestination extends StatefulWidget {
     this.badgeLabel,
     this.customBadge,
     super.key,
-  })  : assert(
-          badge == null || badge > 0,
-          "RailDestination.badge must be a positive integer.",
-        ),
-        assert(
-          !(badge != null && badgeLabel != null),
-          "badge and badgeLabel cannot both be set at the same time.",
-        ),
-        assert(
-          !(badge != null && customBadge != null),
-          "badge and customBadge cannot both be set at the same time.",
-        ),
-        assert(
-          !(badgeLabel != null && customBadge != null),
-          "badgeLabel and customBadge cannot both be set at the same time.",
-        ),
-        assert(
-          customBadge == null ||
-              badgeStyle == NavigationBadgeStyle.count ||
-              badgeStyle == NavigationBadgeStyle.dot ||
-              badgeStyle == NavigationBadgeStyle.hidden,
-          "Only count, dot, and hidden styles may be combined with customBadge. "
-          "exact applies to badge (int) only.",
-        ),
-        assert(
-          badgeLabel == null ||
-              badgeStyle == NavigationBadgeStyle.count ||
-              badgeStyle == NavigationBadgeStyle.dot ||
-              badgeStyle == NavigationBadgeStyle.hidden,
-          "Only count, dot, and hidden styles may be combined with badgeLabel. "
-          "exact applies to badge (int) only.",
-        );
+  }) : assert(
+         badge == null || badge > 0,
+         "RailDestination.badge must be a positive integer.",
+       ),
+       assert(
+         !(badge != null && badgeLabel != null),
+         "badge and badgeLabel cannot both be set at the same time.",
+       ),
+       assert(
+         !(badge != null && customBadge != null),
+         "badge and customBadge cannot both be set at the same time.",
+       ),
+       assert(
+         !(badgeLabel != null && customBadge != null),
+         "badgeLabel and customBadge cannot both be set at the same time.",
+       ),
+       assert(
+         customBadge == null ||
+             badgeStyle == NavigationBadgeStyle.count ||
+             badgeStyle == NavigationBadgeStyle.dot ||
+             badgeStyle == NavigationBadgeStyle.hidden,
+         "Only count, dot, and hidden styles may be combined with customBadge. "
+         "exact applies to badge (int) only.",
+       ),
+       assert(
+         badgeLabel == null ||
+             badgeStyle == NavigationBadgeStyle.count ||
+             badgeStyle == NavigationBadgeStyle.dot ||
+             badgeStyle == NavigationBadgeStyle.hidden,
+         "Only count, dot, and hidden styles may be combined with badgeLabel. "
+         "exact applies to badge (int) only.",
+       );
 
   /// The minimum width of the collapsed destination region.
   ///
@@ -209,14 +209,15 @@ class _RailDestinationState extends State<RailDestination>
   }
 
   void _initControllers() {
-    _destinationAnimation = widget.destinationAnimation ??
-        AnimationController(
-          duration: kThemeAnimationDuration,
-          vsync: this,
-        )
-      ..addListener(() {
-        setState(() {});
-      });
+    _destinationAnimation =
+        widget.destinationAnimation ??
+              AnimationController(
+                duration: kThemeAnimationDuration,
+                vsync: this,
+              )
+          ..addListener(() {
+            setState(() {});
+          });
 
     _extendedController = AnimationController(
       duration: kThemeAnimationDuration,
@@ -304,7 +305,8 @@ class _RailDestinationState extends State<RailDestination>
     final double indicatorOffsetBaseline = alignIndicatorToCustomLargeIconCenter
         ? _kDefaultIconSize
         : _kIndicatorHeight;
-    final bool isLargeIconSize = data.resolvedIconSize != null &&
+    final bool isLargeIconSize =
+        data.resolvedIconSize != null &&
         data.resolvedIconSize! > indicatorOffsetBaseline;
 
     final double indicatorVerticalOffset = isLargeIconSize
@@ -314,7 +316,8 @@ class _RailDestinationState extends State<RailDestination>
     Offset indicatorOffset = data.indicatorOffset;
 
     // --- Badge ---
-    final bool hasAnyBadge = widget.badge != null ||
+    final bool hasAnyBadge =
+        widget.badge != null ||
         widget.badgeLabel != null ||
         widget.customBadge != null;
     Widget effectiveBadgedIcon;
@@ -373,10 +376,12 @@ class _RailDestinationState extends State<RailDestination>
       // Compact — label is hidden, icon is centered vertically.
       case NavigationRailLabelType.none:
         // indicatorOffset from the strategy is already correct for this case.
-        final double compactIndicatorHorizontalPadding =
-            collapsed ? 0.0 : data.destinationPadding.left;
-        final double compactIndicatorVerticalPadding =
-            collapsed ? 0.0 : data.destinationPadding.top;
+        final double compactIndicatorHorizontalPadding = collapsed
+            ? 0.0
+            : data.destinationPadding.left;
+        final double compactIndicatorVerticalPadding = collapsed
+            ? 0.0
+            : data.destinationPadding.top;
         indicatorOffset = Offset(
           compactIndicatorHorizontalPadding + (data.minWidth / 2),
           compactIndicatorVerticalPadding +
@@ -385,7 +390,8 @@ class _RailDestinationState extends State<RailDestination>
         );
 
         final Widget iconPart = NavigationIcon(
-          height: (data.material3 ? _kRailIconSlotHeight : data.minWidth) +
+          height:
+              (data.material3 ? _kRailIconSlotHeight : data.minWidth) +
               largeIconIndicatorCompensation,
           icon: effectiveBadgedIcon,
           minWidth: data.minWidth,
@@ -399,10 +405,10 @@ class _RailDestinationState extends State<RailDestination>
             // icon slot.  Recompute indicatorOffset the same way .all does.
             final double indicatorHorizontalPadding =
                 (data.destinationPadding.left / 2) -
-                    (data.destinationPadding.right / 2);
+                (data.destinationPadding.right / 2);
             final double indicatorVerticalPadding =
                 data.destinationPadding.top +
-                    (data.material3 ? 0 : _verticalDestinationPaddingWithLabel);
+                (data.material3 ? 0 : _verticalDestinationPaddingWithLabel);
             indicatorOffset = Offset(
               data.minWidth / 2 + indicatorHorizontalPadding,
               indicatorVerticalPadding +
@@ -498,7 +504,8 @@ class _RailDestinationState extends State<RailDestination>
                       ),
                     ),
                     SizedBox(
-                      width: _horizontalDestinationPadding *
+                      width:
+                          _horizontalDestinationPadding *
                           extendedAnimation.value,
                     ),
                   ],
@@ -519,14 +526,15 @@ class _RailDestinationState extends State<RailDestination>
         final Interval interval = (widget.selected ?? false)
             ? const Interval(0.25, 0.75)
             : const Interval(0.75, 1.0);
-        final Animation<double> labelFadeAnimation =
-            _destinationAnimation.drive(CurveTween(curve: interval));
+        final Animation<double> labelFadeAnimation = _destinationAnimation
+            .drive(CurveTween(curve: interval));
         final double minHeight = data.material3 ? 0 : data.minWidth;
 
         final double indicatorHorizontalPadding =
             (data.destinationPadding.left / 2) -
-                (data.destinationPadding.right / 2);
-        final double indicatorVerticalPadding = data.destinationPadding.top +
+            (data.destinationPadding.right / 2);
+        final double indicatorVerticalPadding =
+            data.destinationPadding.top +
             (data.material3 ? 0 : _verticalDestinationPaddingWithLabel);
         indicatorOffset = Offset(
           data.minWidth / 2 + indicatorHorizontalPadding,
@@ -548,14 +556,16 @@ class _RailDestinationState extends State<RailDestination>
             minWidth: data.minWidth,
             minHeight: minHeight,
           ),
-          padding: widget.padding ??
+          padding:
+              widget.padding ??
               const EdgeInsets.symmetric(
                 horizontal: _horizontalDestinationPadding,
               ),
           child: ClipRect(
             child: Column(
-              mainAxisSize:
-                  data.material3 ? MainAxisSize.min : MainAxisSize.max,
+              mainAxisSize: data.material3
+                  ? MainAxisSize.min
+                  : MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 SizedBox(height: data.material3 ? 0 : verticalPadding),
@@ -601,8 +611,9 @@ class _RailDestinationState extends State<RailDestination>
 
         final double indicatorHorizontalPadding =
             (data.destinationPadding.left / 2) -
-                (data.destinationPadding.right / 2);
-        final double indicatorVerticalPadding = data.destinationPadding.top +
+            (data.destinationPadding.right / 2);
+        final double indicatorVerticalPadding =
+            data.destinationPadding.top +
             (data.material3 ? 0 : _verticalDestinationPaddingWithLabel);
         indicatorOffset = Offset(
           data.minWidth / 2 + indicatorHorizontalPadding,
@@ -624,7 +635,8 @@ class _RailDestinationState extends State<RailDestination>
             minWidth: data.minWidth,
             minHeight: minHeight,
           ),
-          padding: widget.padding ??
+          padding:
+              widget.padding ??
               const EdgeInsets.symmetric(
                 horizontal: _horizontalDestinationPadding,
               ),
@@ -632,8 +644,9 @@ class _RailDestinationState extends State<RailDestination>
             mainAxisSize: data.material3 ? MainAxisSize.min : MainAxisSize.max,
             children: <Widget>[
               SizedBox(
-                height:
-                    data.material3 ? 0 : _verticalDestinationPaddingWithLabel,
+                height: data.material3
+                    ? 0
+                    : _verticalDestinationPaddingWithLabel,
               ),
               data.material3
                   ? SizedBox(

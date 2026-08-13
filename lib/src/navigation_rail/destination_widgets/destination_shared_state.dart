@@ -97,48 +97,49 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
         railTheme.destinationIndicatorShape != null;
     final bool hasExplicitCustomInkOverride =
         effectivedestinationOverlayColor != null ||
-            hasExplicitNavigationItemIndicatorShape;
+        hasExplicitNavigationItemIndicatorShape;
     final bool useFrameworkDefaultInk = !hasExplicitCustomInkOverride;
-    final bool disableFullItemInk = useFrameworkDefaultInk ||
+    final bool disableFullItemInk =
+        useFrameworkDefaultInk ||
         (effectivedestinationOverlayColor == null &&
             !hasExplicitNavigationItemIndicatorShape);
     final Color onSurfaceColor = Theme.of(context).colorScheme.onSurface;
     final WidgetStateProperty<Color?> iconOverlayColor =
         WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.pressed) ||
-          states.contains(WidgetState.focused)) {
-        return onSurfaceColor.withValues(alpha: 0.12);
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return onSurfaceColor.withValues(alpha: 0.08);
-      }
-      return null;
-    });
+          if (states.contains(WidgetState.pressed) ||
+              states.contains(WidgetState.focused)) {
+            return onSurfaceColor.withValues(alpha: 0.12);
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return onSurfaceColor.withValues(alpha: 0.08);
+          }
+          return null;
+        });
     final WidgetStateProperty<Color?> fullItemOverlayColor =
         WidgetStateProperty.resolveWith((Set<WidgetState> states) {
-      if (states.contains(WidgetState.pressed) ||
-          states.contains(WidgetState.focused)) {
-        return widget.splashColor;
-      }
-      if (states.contains(WidgetState.hovered)) {
-        return widget.hoverColor;
-      }
-      return null;
-    });
+          if (states.contains(WidgetState.pressed) ||
+              states.contains(WidgetState.focused)) {
+            return widget.splashColor;
+          }
+          if (states.contains(WidgetState.hovered)) {
+            return widget.hoverColor;
+          }
+          return null;
+        });
     final WidgetStateProperty<Color?> effectiveInkOverlayColor =
         useFrameworkDefaultInk
-            ? effectivedestinationOverlayColor ?? fullItemOverlayColor
-            : (disableFullItemInk
-                ? iconOverlayColor
-                : effectivedestinationOverlayColor ?? fullItemOverlayColor);
+        ? effectivedestinationOverlayColor ?? fullItemOverlayColor
+        : (disableFullItemInk
+              ? iconOverlayColor
+              : effectivedestinationOverlayColor ?? fullItemOverlayColor);
     final ShapeBorder? effectiveNavigationItemIndicatorShape =
         useFrameworkDefaultInk
-            ? (railTheme.destinationIndicatorShape ??
-                railTheme.indicatorShape ??
-                const StadiumBorder())
-            : (disableFullItemInk
-                ? null
-                : railTheme.destinationIndicatorShape ??
+        ? (railTheme.destinationIndicatorShape ??
+              railTheme.indicatorShape ??
+              const StadiumBorder())
+        : (disableFullItemInk
+              ? null
+              : railTheme.destinationIndicatorShape ??
                     railTheme.indicatorShape ??
                     const StadiumBorder());
 
@@ -147,8 +148,8 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
     final double selectedIndicatorWidth = !widget.material3
         ? widget.indicatorWidth
         : (widget.minWidth < widget.indicatorWidth
-            ? widget.minWidth
-            : widget.indicatorWidth);
+              ? widget.minWidth
+              : widget.indicatorWidth);
 
     const double kDefaultIconSize = 24.0;
     final double largeIconIndicatorCompensation =
@@ -158,8 +159,9 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
     final double selectedIndicatorHeight = widget.material3
         ? _kIndicatorHeight + largeIconIndicatorCompensation
         : widget.indicatorWidth;
-    final double indicatorCenteringHeight =
-        widget.material3 ? selectedIndicatorHeight : _kIndicatorHeight;
+    final double indicatorCenteringHeight = widget.material3
+        ? selectedIndicatorHeight
+        : _kIndicatorHeight;
 
     final Widget iconInteractionIndicator = widget.centerIndicatorHorizontally
         ? Positioned.fill(
@@ -167,7 +169,8 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
               alignment: Alignment.topCenter,
               child: Padding(
                 padding: EdgeInsets.only(
-                  top: widget.indicatorOffset.dy -
+                  top:
+                      widget.indicatorOffset.dy -
                       (indicatorCenteringHeight / 2),
                 ),
                 child: NavigationIndicator(
@@ -218,8 +221,9 @@ class _WrappedRailDestinationState extends State<WrappedRailDestination> {
             applyXOffset: widget.applyXOffset,
             textDirection: widget.textDirection,
             statesController: _statesController,
-            indicatorHeight:
-                widget.material3 ? selectedIndicatorHeight : _kIndicatorHeight,
+            indicatorHeight: widget.material3
+                ? selectedIndicatorHeight
+                : _kIndicatorHeight,
             child: widget.child,
           ),
         ),

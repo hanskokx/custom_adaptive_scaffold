@@ -9,7 +9,9 @@ import "dart:math";
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart"
+import "package:flutter/services.dart";
+import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
     hide
         NavigationDestination,
         NavigationRail,
@@ -23,12 +25,11 @@ import "package:flutter/material.dart"
         NavigationDrawerDestination,
         NavigationDrawerTheme,
         NavigationDrawerThemeData;
-import "package:flutter/services.dart";
-import "package:flutter_test/flutter_test.dart";
 
 void main() {
-  testWidgets("Navigation bar updates destinations when tapped",
-      (WidgetTester tester) async {
+  testWidgets("Navigation bar updates destinations when tapped", (
+    WidgetTester tester,
+  ) async {
     var mutatedIndex = -1;
     final Widget widget = _buildWidget(
       NavigationBar(
@@ -54,8 +55,9 @@ void main() {
     expect(mutatedIndex, 0);
   });
 
-  testWidgets("NavigationBar can update background color",
-      (WidgetTester tester) async {
+  testWidgets("NavigationBar can update background color", (
+    WidgetTester tester,
+  ) async {
     const Color color = Colors.yellow;
 
     await tester.pumpWidget(
@@ -77,8 +79,9 @@ void main() {
     expect(_getMaterial(tester).color, equals(color));
   });
 
-  testWidgets("NavigationBar can update elevation",
-      (WidgetTester tester) async {
+  testWidgets("NavigationBar can update elevation", (
+    WidgetTester tester,
+  ) async {
     const elevation = 42.0;
 
     await tester.pumpWidget(
@@ -100,8 +103,9 @@ void main() {
     expect(_getMaterial(tester).elevation, equals(elevation));
   });
 
-  testWidgets("NavigationBar adds bottom padding to height",
-      (WidgetTester tester) async {
+  testWidgets("NavigationBar adds bottom padding to height", (
+    WidgetTester tester,
+  ) async {
     const bottomPadding = 40.0;
 
     await tester.pumpWidget(
@@ -119,8 +123,9 @@ void main() {
       ),
     );
 
-    final double defaultSize =
-        tester.getSize(find.byType(NavigationBar)).height;
+    final double defaultSize = tester
+        .getSize(find.byType(NavigationBar))
+        .height;
     expect(defaultSize, 80);
 
     await tester.pumpWidget(
@@ -148,167 +153,180 @@ void main() {
   });
 
   testWidgets(
-      "NavigationBar respects the notch/system navigation bar in landscape mode",
-      (
-    WidgetTester tester,
-  ) async {
-    const safeAreaPadding = 40.0;
-    Widget navigationBar() {
-      return NavigationBar(
-        destinations: const <Widget>[
-          NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
-          NavigationDestination(
-            key: Key("Center"),
-            icon: Icon(Icons.center_focus_strong),
-            label: "Center",
+    "NavigationBar respects the notch/system navigation bar in landscape mode",
+    (
+      WidgetTester tester,
+    ) async {
+      const safeAreaPadding = 40.0;
+      Widget navigationBar() {
+        return NavigationBar(
+          destinations: const <Widget>[
+            NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
+            NavigationDestination(
+              key: Key("Center"),
+              icon: Icon(Icons.center_focus_strong),
+              label: "Center",
+            ),
+            NavigationDestination(
+              icon: Icon(Icons.access_alarm),
+              label: "Alarm",
+            ),
+          ],
+          onDestinationSelected: (int i) {},
+        );
+      }
+
+      await tester.pumpWidget(_buildWidget(navigationBar()));
+      final double defaultWidth = tester
+          .getSize(find.byType(NavigationBar))
+          .width;
+      final Finder defaultCenterItem = find.byKey(const Key("Center"));
+      final Offset center = tester.getCenter(defaultCenterItem);
+      expect(center.dx, defaultWidth / 2);
+
+      await tester.pumpWidget(
+        _buildWidget(
+          MediaQuery(
+            data: const MediaQueryData(
+              padding: EdgeInsets.only(left: safeAreaPadding),
+            ),
+            child: navigationBar(),
           ),
-          NavigationDestination(icon: Icon(Icons.access_alarm), label: "Alarm"),
-        ],
-        onDestinationSelected: (int i) {},
+        ),
       );
-    }
 
-    await tester.pumpWidget(_buildWidget(navigationBar()));
-    final double defaultWidth =
-        tester.getSize(find.byType(NavigationBar)).width;
-    final Finder defaultCenterItem = find.byKey(const Key("Center"));
-    final Offset center = tester.getCenter(defaultCenterItem);
-    expect(center.dx, defaultWidth / 2);
-
-    await tester.pumpWidget(
-      _buildWidget(
-        MediaQuery(
-          data: const MediaQueryData(
-            padding: EdgeInsets.only(left: safeAreaPadding),
-          ),
-          child: navigationBar(),
+      // The position of center item of navigation bar should indicate whether
+      // the safe area is sufficiently respected, when safe area is on the left side.
+      // e.g. Android device with system navigation bar in landscape mode.
+      final Finder leftPaddedCenterItem = find.byKey(const Key("Center"));
+      final Offset leftPaddedCenter = tester.getCenter(leftPaddedCenterItem);
+      expect(
+        leftPaddedCenter.dx,
+        closeTo(
+          (defaultWidth + safeAreaPadding) / 2.0,
+          precisionErrorTolerance,
         ),
-      ),
-    );
+      );
 
-    // The position of center item of navigation bar should indicate whether
-    // the safe area is sufficiently respected, when safe area is on the left side.
-    // e.g. Android device with system navigation bar in landscape mode.
-    final Finder leftPaddedCenterItem = find.byKey(const Key("Center"));
-    final Offset leftPaddedCenter = tester.getCenter(leftPaddedCenterItem);
-    expect(
-      leftPaddedCenter.dx,
-      closeTo((defaultWidth + safeAreaPadding) / 2.0, precisionErrorTolerance),
-    );
-
-    await tester.pumpWidget(
-      _buildWidget(
-        MediaQuery(
-          data: const MediaQueryData(
-            padding: EdgeInsets.only(right: safeAreaPadding),
-          ),
-          child: navigationBar(),
-        ),
-      ),
-    );
-
-    // The position of center item of navigation bar should indicate whether
-    // the safe area is sufficiently respected, when safe area is on the right side.
-    // e.g. Android device with system navigation bar in landscape mode.
-    final Finder rightPaddedCenterItem = find.byKey(const Key("Center"));
-    final Offset rightPaddedCenter = tester.getCenter(rightPaddedCenterItem);
-    expect(
-      rightPaddedCenter.dx,
-      closeTo((defaultWidth - safeAreaPadding) / 2, precisionErrorTolerance),
-    );
-
-    await tester.pumpWidget(
-      _buildWidget(
-        MediaQuery(
-          data: const MediaQueryData(
-            padding: EdgeInsets.fromLTRB(
-              safeAreaPadding,
-              0,
-              safeAreaPadding,
-              safeAreaPadding,
+      await tester.pumpWidget(
+        _buildWidget(
+          MediaQuery(
+            data: const MediaQueryData(
+              padding: EdgeInsets.only(right: safeAreaPadding),
             ),
+            child: navigationBar(),
           ),
-          child: navigationBar(),
         ),
-      ),
-    );
+      );
 
-    // The position of center item of navigation bar should indicate whether
-    // the safe area is sufficiently respected, when safe areas are on both sides.
-    // e.g. iOS device with both sides of round corner.
-    final Finder paddedCenterItem = find.byKey(const Key("Center"));
-    final Offset paddedCenter = tester.getCenter(paddedCenterItem);
-    expect(paddedCenter.dx, closeTo(defaultWidth / 2, precisionErrorTolerance));
-  });
+      // The position of center item of navigation bar should indicate whether
+      // the safe area is sufficiently respected, when safe area is on the right side.
+      // e.g. Android device with system navigation bar in landscape mode.
+      final Finder rightPaddedCenterItem = find.byKey(const Key("Center"));
+      final Offset rightPaddedCenter = tester.getCenter(rightPaddedCenterItem);
+      expect(
+        rightPaddedCenter.dx,
+        closeTo((defaultWidth - safeAreaPadding) / 2, precisionErrorTolerance),
+      );
+
+      await tester.pumpWidget(
+        _buildWidget(
+          MediaQuery(
+            data: const MediaQueryData(
+              padding: EdgeInsets.fromLTRB(
+                safeAreaPadding,
+                0,
+                safeAreaPadding,
+                safeAreaPadding,
+              ),
+            ),
+            child: navigationBar(),
+          ),
+        ),
+      );
+
+      // The position of center item of navigation bar should indicate whether
+      // the safe area is sufficiently respected, when safe areas are on both sides.
+      // e.g. iOS device with both sides of round corner.
+      final Finder paddedCenterItem = find.byKey(const Key("Center"));
+      final Offset paddedCenter = tester.getCenter(paddedCenterItem);
+      expect(
+        paddedCenter.dx,
+        closeTo(defaultWidth / 2, precisionErrorTolerance),
+      );
+    },
+  );
 
   testWidgets(
-      "Material2 - NavigationBar uses proper defaults when no parameters are given",
-      (
-    WidgetTester tester,
-  ) async {
-    // M2 settings that were hand coded.
-    await tester.pumpWidget(
-      _buildWidget(
-        NavigationBar(
-          destinations: const <Widget>[
-            NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
-            NavigationDestination(
-              icon: Icon(Icons.access_alarm),
-              label: "Alarm",
-            ),
-          ],
-          onDestinationSelected: (int i) {},
+    "Material2 - NavigationBar uses proper defaults when no parameters are given",
+    (
+      WidgetTester tester,
+    ) async {
+      // M2 settings that were hand coded.
+      await tester.pumpWidget(
+        _buildWidget(
+          NavigationBar(
+            destinations: const <Widget>[
+              NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
+              NavigationDestination(
+                icon: Icon(Icons.access_alarm),
+                label: "Alarm",
+              ),
+            ],
+            onDestinationSelected: (int i) {},
+          ),
+          useMaterial3: false,
         ),
-        useMaterial3: false,
-      ),
-    );
+      );
 
-    expect(_getMaterial(tester).color, const Color(0xffeaeaea));
-    expect(_getMaterial(tester).surfaceTintColor, null);
-    expect(_getMaterial(tester).elevation, 0);
-    expect(tester.getSize(find.byType(NavigationBar)).height, 80);
-    expect(_getIndicatorDecoration(tester)?.color, const Color(0x3d2196f3));
-    expect(
-      _getIndicatorDecoration(tester)?.shape,
-      const RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(Radius.circular(16)),
-      ),
-    );
-  });
+      expect(_getMaterial(tester).color, const Color(0xffeaeaea));
+      expect(_getMaterial(tester).surfaceTintColor, null);
+      expect(_getMaterial(tester).elevation, 0);
+      expect(tester.getSize(find.byType(NavigationBar)).height, 80);
+      expect(_getIndicatorDecoration(tester)?.color, const Color(0x3d2196f3));
+      expect(
+        _getIndicatorDecoration(tester)?.shape,
+        const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+      );
+    },
+  );
 
   testWidgets(
-      "Material3 - NavigationBar uses proper defaults when no parameters are given",
-      (
-    WidgetTester tester,
-  ) async {
-    // M3 settings from the token database.
-    final theme = ThemeData();
-    await tester.pumpWidget(
-      _buildWidget(
-        NavigationBar(
-          destinations: const <Widget>[
-            NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
-            NavigationDestination(
-              icon: Icon(Icons.access_alarm),
-              label: "Alarm",
-            ),
-          ],
-          onDestinationSelected: (int i) {},
+    "Material3 - NavigationBar uses proper defaults when no parameters are given",
+    (
+      WidgetTester tester,
+    ) async {
+      // M3 settings from the token database.
+      final theme = ThemeData();
+      await tester.pumpWidget(
+        _buildWidget(
+          NavigationBar(
+            destinations: const <Widget>[
+              NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
+              NavigationDestination(
+                icon: Icon(Icons.access_alarm),
+                label: "Alarm",
+              ),
+            ],
+            onDestinationSelected: (int i) {},
+          ),
+          useMaterial3: theme.useMaterial3,
         ),
-        useMaterial3: theme.useMaterial3,
-      ),
-    );
+      );
 
-    expect(_getMaterial(tester).color, theme.colorScheme.surfaceContainer);
-    expect(_getMaterial(tester).surfaceTintColor, Colors.transparent);
-    expect(_getMaterial(tester).elevation, 3);
-    expect(tester.getSize(find.byType(NavigationBar)).height, 80);
-    expect(
-      _getIndicatorDecoration(tester)?.color,
-      theme.colorScheme.secondaryContainer,
-    );
-    expect(_getIndicatorDecoration(tester)?.shape, const StadiumBorder());
-  });
+      expect(_getMaterial(tester).color, theme.colorScheme.surfaceContainer);
+      expect(_getMaterial(tester).surfaceTintColor, Colors.transparent);
+      expect(_getMaterial(tester).elevation, 3);
+      expect(tester.getSize(find.byType(NavigationBar)).height, 80);
+      expect(
+        _getIndicatorDecoration(tester)?.color,
+        theme.colorScheme.secondaryContainer,
+      );
+      expect(_getIndicatorDecoration(tester)?.shape, const StadiumBorder());
+    },
+  );
 
   testWidgets("Material2 - NavigationBar shows tooltips with text scaling", (
     WidgetTester tester,
@@ -434,91 +452,99 @@ void main() {
   });
 
   testWidgets(
-      "Material3 - NavigationBar label can scale and has maxScaleFactor", (
-    WidgetTester tester,
-  ) async {
-    const label = "A";
+    "Material3 - NavigationBar label can scale and has maxScaleFactor",
+    (
+      WidgetTester tester,
+    ) async {
+      const label = "A";
 
-    Widget buildApp({required TextScaler textScaler}) {
-      return MediaQuery(
-        data: MediaQueryData(textScaler: textScaler),
-        child: Localizations(
-          locale: const Locale("en", "US"),
-          delegates: const <LocalizationsDelegate<dynamic>>[
-            DefaultMaterialLocalizations.delegate,
-            DefaultWidgetsLocalizations.delegate,
-          ],
-          child: MaterialApp(
-            home: Navigator(
-              onGenerateRoute: (RouteSettings settings) {
-                return MaterialPageRoute<void>(
-                  builder: (BuildContext context) {
-                    return Scaffold(
-                      bottomNavigationBar: NavigationBar(
-                        destinations: const <NavigationDestination>[
-                          NavigationDestination(
-                            label: label,
-                            icon: Icon(Icons.ac_unit),
-                          ),
-                          NavigationDestination(
-                            label: "B",
-                            icon: Icon(Icons.battery_alert),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                );
-              },
+      Widget buildApp({required TextScaler textScaler}) {
+        return MediaQuery(
+          data: MediaQueryData(textScaler: textScaler),
+          child: Localizations(
+            locale: const Locale("en", "US"),
+            delegates: const <LocalizationsDelegate<dynamic>>[
+              DefaultMaterialLocalizations.delegate,
+              DefaultWidgetsLocalizations.delegate,
+            ],
+            child: MaterialApp(
+              home: Navigator(
+                onGenerateRoute: (RouteSettings settings) {
+                  return MaterialPageRoute<void>(
+                    builder: (BuildContext context) {
+                      return Scaffold(
+                        bottomNavigationBar: NavigationBar(
+                          destinations: const <NavigationDestination>[
+                            NavigationDestination(
+                              label: label,
+                              icon: Icon(Icons.ac_unit),
+                            ),
+                            NavigationDestination(
+                              label: "B",
+                              icon: Icon(Icons.battery_alert),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  );
+                },
+              ),
             ),
           ),
+        );
+      }
+
+      await tester.pumpWidget(buildApp(textScaler: TextScaler.noScaling));
+      expect(find.text(label), findsOneWidget);
+      expect(
+        _sizeAlmostEqual(
+          tester.getSize(find.text(label)),
+          const Size(12.5, 16.0),
         ),
+        true,
       );
-    }
 
-    await tester.pumpWidget(buildApp(textScaler: TextScaler.noScaling));
-    expect(find.text(label), findsOneWidget);
-    expect(
-      _sizeAlmostEqual(
-        tester.getSize(find.text(label)),
-        const Size(12.5, 16.0),
-      ),
-      true,
-    );
+      await tester.pumpWidget(
+        buildApp(textScaler: const TextScaler.linear(1.1)),
+      );
+      await tester.pumpAndSettle();
 
-    await tester.pumpWidget(buildApp(textScaler: const TextScaler.linear(1.1)));
-    await tester.pumpAndSettle();
+      expect(
+        _sizeAlmostEqual(
+          tester.getSize(find.text(label)),
+          const Size(13.7, 18.0),
+        ),
+        true,
+      );
 
-    expect(
-      _sizeAlmostEqual(
-        tester.getSize(find.text(label)),
-        const Size(13.7, 18.0),
-      ),
-      true,
-    );
+      await tester.pumpWidget(
+        buildApp(textScaler: const TextScaler.linear(1.3)),
+      );
 
-    await tester.pumpWidget(buildApp(textScaler: const TextScaler.linear(1.3)));
+      expect(
+        _sizeAlmostEqual(
+          tester.getSize(find.text(label)),
+          const Size(16.1, 21.0),
+        ),
+        true,
+      );
 
-    expect(
-      _sizeAlmostEqual(
-        tester.getSize(find.text(label)),
-        const Size(16.1, 21.0),
-      ),
-      true,
-    );
+      await tester.pumpWidget(buildApp(textScaler: const TextScaler.linear(4)));
+      expect(
+        _sizeAlmostEqual(
+          tester.getSize(find.text(label)),
+          const Size(16.1, 21.0),
+        ),
+        true,
+      );
+    },
+  );
 
-    await tester.pumpWidget(buildApp(textScaler: const TextScaler.linear(4)));
-    expect(
-      _sizeAlmostEqual(
-        tester.getSize(find.text(label)),
-        const Size(16.1, 21.0),
-      ),
-      true,
-    );
-  });
-
-  testWidgets("Custom tooltips in NavigationBarDestination",
-      (WidgetTester tester) async {
+  // TODO(any): These tests are known to fail due to a bug (https://github.com/flutter/flutter/issues/191063).
+  testWidgets("Custom tooltips in NavigationBarDestination", (
+    WidgetTester tester,
+  ) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -698,8 +724,9 @@ void main() {
     );
   });
 
-  testWidgets("Navigation bar semantics with some labels hidden",
-      (WidgetTester tester) async {
+  testWidgets("Navigation bar semantics with some labels hidden", (
+    WidgetTester tester,
+  ) async {
     Widget widget({int selectedIndex = 0}) {
       return _buildWidget(
         NavigationBar(
@@ -781,8 +808,9 @@ void main() {
     );
   });
 
-  testWidgets("Navigation bar does not grow with text scale factor",
-      (WidgetTester tester) async {
+  testWidgets("Navigation bar does not grow with text scale factor", (
+    WidgetTester tester,
+  ) async {
     const animationMilliseconds = 800;
 
     Widget widget({TextScaler textScaler = TextScaler.noScaling}) {
@@ -790,8 +818,9 @@ void main() {
         MediaQuery(
           data: MediaQueryData(textScaler: textScaler),
           child: NavigationBar(
-            animationDuration:
-                const Duration(milliseconds: animationMilliseconds),
+            animationDuration: const Duration(
+              milliseconds: animationMilliseconds,
+            ),
             destinations: const <NavigationDestination>[
               NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
               NavigationDestination(
@@ -805,8 +834,9 @@ void main() {
     }
 
     await tester.pumpWidget(widget());
-    final double initialHeight =
-        tester.getSize(find.byType(NavigationBar)).height;
+    final double initialHeight = tester
+        .getSize(find.byType(NavigationBar))
+        .height;
 
     await tester.pumpWidget(widget(textScaler: const TextScaler.linear(2)));
     final double newHeight = tester.getSize(find.byType(NavigationBar)).height;
@@ -814,8 +844,9 @@ void main() {
     expect(newHeight, equals(initialHeight));
   });
 
-  testWidgets("Material3 - Navigation indicator renders ripple",
-      (WidgetTester tester) async {
+  testWidgets("Material3 - Navigation indicator renders ripple", (
+    WidgetTester tester,
+  ) async {
     // This is a regression test for https://github.com/flutter/flutter/issues/116751.
     var selectedIndex = 0;
 
@@ -842,8 +873,9 @@ void main() {
 
     await tester.pumpWidget(buildWidget());
 
-    final TestGesture gesture =
-        await tester.createGesture(kind: PointerDeviceKind.mouse);
+    final TestGesture gesture = await tester.createGesture(
+      kind: PointerDeviceKind.mouse,
+    );
     await gesture.addPointer();
     await gesture.moveTo(tester.getCenter(find.byIcon(Icons.access_alarm)));
     await tester.pumpAndSettle();
@@ -1146,11 +1178,13 @@ void main() {
 
       await tester.pumpWidget(buildWidget());
 
-      final TestGesture gesture =
-          await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer();
-      await gesture
-          .moveTo(tester.getCenter(find.byType(NavigationDestination).last));
+      await gesture.moveTo(
+        tester.getCenter(find.byType(NavigationDestination).last),
+      );
       await tester.pumpAndSettle();
 
       // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.alwaysShow` (default).
@@ -1165,8 +1199,9 @@ void main() {
           labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
         ),
       );
-      await gesture
-          .moveTo(tester.getCenter(find.byType(NavigationDestination).last));
+      await gesture.moveTo(
+        tester.getCenter(find.byType(NavigationDestination).last),
+      );
       await tester.pumpAndSettle();
 
       await expectLater(
@@ -1180,8 +1215,9 @@ void main() {
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         ),
       );
-      await gesture
-          .moveTo(tester.getCenter(find.byType(NavigationDestination).first));
+      await gesture.moveTo(
+        tester.getCenter(find.byType(NavigationDestination).first),
+      );
       await tester.pumpAndSettle();
 
       await expectLater(
@@ -1189,8 +1225,9 @@ void main() {
         matchesGoldenFile("indicator_onlyShowSelected_selected_m3.png"),
       );
 
-      await gesture
-          .moveTo(tester.getCenter(find.byType(NavigationDestination).last));
+      await gesture.moveTo(
+        tester.getCenter(find.byType(NavigationDestination).last),
+      );
       await tester.pumpAndSettle();
 
       await expectLater(
@@ -1256,8 +1293,9 @@ void main() {
     skip: true,
   );
 
-  testWidgets("Navigation indicator scale transform",
-      (WidgetTester tester) async {
+  testWidgets("Navigation indicator scale transform", (
+    WidgetTester tester,
+  ) async {
     var selectedIndex = 0;
 
     Widget buildNavigationBar() {
@@ -1313,87 +1351,92 @@ void main() {
   });
 
   testWidgets(
-      "Material3 - Navigation destination updates indicator color and shape", (
-    WidgetTester tester,
-  ) async {
-    final theme = ThemeData();
-    const color = Color(0xff0000ff);
-    const ShapeBorder shape = RoundedRectangleBorder();
+    "Material3 - Navigation destination updates indicator color and shape",
+    (
+      WidgetTester tester,
+    ) async {
+      final theme = ThemeData();
+      const color = Color(0xff0000ff);
+      const ShapeBorder shape = RoundedRectangleBorder();
 
-    Widget buildNavigationBar({
-      Color? indicatorColor,
-      ShapeBorder? indicatorShape,
-    }) {
-      return MaterialApp(
-        theme: theme,
-        home: Scaffold(
-          bottomNavigationBar: RepaintBoundary(
-            child: NavigationBar(
-              indicatorColor: indicatorColor,
-              indicatorShape: indicatorShape,
-              destinations: const <Widget>[
-                NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
-                NavigationDestination(
-                  icon: Icon(Icons.access_alarm),
-                  label: "Alarm",
-                ),
-              ],
-              onDestinationSelected: (int i) {},
+      Widget buildNavigationBar({
+        Color? indicatorColor,
+        ShapeBorder? indicatorShape,
+      }) {
+        return MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            bottomNavigationBar: RepaintBoundary(
+              child: NavigationBar(
+                indicatorColor: indicatorColor,
+                indicatorShape: indicatorShape,
+                destinations: const <Widget>[
+                  NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
+                  NavigationDestination(
+                    icon: Icon(Icons.access_alarm),
+                    label: "Alarm",
+                  ),
+                ],
+                onDestinationSelected: (int i) {},
+              ),
             ),
           ),
-        ),
+        );
+      }
+
+      await tester.pumpWidget(buildNavigationBar());
+
+      // Test default indicator color and shape.
+      expect(
+        _getIndicatorDecoration(tester)?.color,
+        theme.colorScheme.secondaryContainer,
       );
-    }
+      expect(_getIndicatorDecoration(tester)?.shape, const StadiumBorder());
 
-    await tester.pumpWidget(buildNavigationBar());
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await gesture.addPointer();
+      await gesture.moveTo(
+        tester.getCenter(find.byType(NavigationIndicator).last),
+      );
+      await tester.pumpAndSettle();
 
-    // Test default indicator color and shape.
-    expect(
-      _getIndicatorDecoration(tester)?.color,
-      theme.colorScheme.secondaryContainer,
-    );
-    expect(_getIndicatorDecoration(tester)?.shape, const StadiumBorder());
+      // Test default indicator color and shape with ripple.
 
-    final TestGesture gesture =
-        await tester.createGesture(kind: PointerDeviceKind.mouse);
-    await gesture.addPointer();
-    await gesture
-        .moveTo(tester.getCenter(find.byType(NavigationIndicator).last));
-    await tester.pumpAndSettle();
+      // This test is skipped because it is a golden test that requires a specific
+      // environment to run correctly, which is not available in the Flutter repo.
 
-    // Test default indicator color and shape with ripple.
+      // await expectLater(
+      //   find.byType(NavigationBar),
+      //   matchesGoldenFile(
+      //     "m3.navigation_bar.default.indicator.inkwell.shape.png",
+      //   ),
+      // );
 
-    // This test is skipped because it is a golden test that requires a specific
-    // environment to run correctly, which is not available in the Flutter repo.
+      await tester.pumpWidget(
+        buildNavigationBar(indicatorColor: color, indicatorShape: shape),
+      );
 
-    // await expectLater(
-    //   find.byType(NavigationBar),
-    //   matchesGoldenFile(
-    //     "m3.navigation_bar.default.indicator.inkwell.shape.png",
-    //   ),
-    // );
+      // Test custom indicator color and shape.
+      expect(_getIndicatorDecoration(tester)?.color, color);
+      expect(_getIndicatorDecoration(tester)?.shape, shape);
 
-    await tester.pumpWidget(
-      buildNavigationBar(indicatorColor: color, indicatorShape: shape),
-    );
+      // Test custom indicator color and shape with ripple.
 
-    // Test custom indicator color and shape.
-    expect(_getIndicatorDecoration(tester)?.color, color);
-    expect(_getIndicatorDecoration(tester)?.shape, shape);
+      // This test is skipped because it is a golden test that requires a specific
+      // environment to run correctly, which is not available in the Flutter repo.
 
-    // Test custom indicator color and shape with ripple.
+      // await expectLater(
+      //   find.byType(NavigationBar),
+      //   matchesGoldenFile("m3.navigation_bar.custom.indicator.inkwell.shape.png"),
+      // );
+    },
+  );
 
-    // This test is skipped because it is a golden test that requires a specific
-    // environment to run correctly, which is not available in the Flutter repo.
-
-    // await expectLater(
-    //   find.byType(NavigationBar),
-    //   matchesGoldenFile("m3.navigation_bar.custom.indicator.inkwell.shape.png"),
-    // );
-  });
-
-  testWidgets("Destinations respect their disabled state",
-      (WidgetTester tester) async {
+  testWidgets("Destinations respect their disabled state", (
+    WidgetTester tester,
+  ) async {
     var selectedIndex = 0;
 
     await tester.pumpWidget(
@@ -1428,171 +1471,131 @@ void main() {
   });
 
   testWidgets(
-      "NavigationBar respects overlayColor in active/pressed/hovered states", (
-    WidgetTester tester,
-  ) async {
-    tester.binding.focusManager.highlightStrategy =
-        FocusHighlightStrategy.alwaysTraditional;
-    const hoverColor = Color(0xff0000ff);
-    const focusColor = Color(0xff00ffff);
-    const pressedColor = Color(0xffff00ff);
-    final WidgetStateProperty<Color?> overlayColor =
-        WidgetStateProperty.resolveWith<Color>((
-      Set<WidgetState> states,
-    ) {
-      if (states.contains(WidgetState.hovered)) {
-        return hoverColor;
-      }
-      if (states.contains(WidgetState.focused)) {
-        return focusColor;
-      }
-      if (states.contains(WidgetState.pressed)) {
-        return pressedColor;
-      }
-      return Colors.transparent;
-    });
+    "NavigationBar respects overlayColor in active/pressed/hovered states",
+    (
+      WidgetTester tester,
+    ) async {
+      tester.binding.focusManager.highlightStrategy =
+          FocusHighlightStrategy.alwaysTraditional;
+      const hoverColor = Color(0xff0000ff);
+      const focusColor = Color(0xff00ffff);
+      const pressedColor = Color(0xffff00ff);
+      final WidgetStateProperty<Color?> overlayColor =
+          WidgetStateProperty.resolveWith<Color>((
+            Set<WidgetState> states,
+          ) {
+            if (states.contains(WidgetState.hovered)) {
+              return hoverColor;
+            }
+            if (states.contains(WidgetState.focused)) {
+              return focusColor;
+            }
+            if (states.contains(WidgetState.pressed)) {
+              return pressedColor;
+            }
+            return Colors.transparent;
+          });
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          bottomNavigationBar: RepaintBoundary(
-            child: NavigationBar(
-              overlayColor: overlayColor,
-              destinations: const <Widget>[
-                NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
-                NavigationDestination(
-                  icon: Icon(Icons.access_alarm),
-                  label: "Alarm",
-                ),
-              ],
-              onDestinationSelected: (int i) {},
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: RepaintBoundary(
+              child: NavigationBar(
+                overlayColor: overlayColor,
+                destinations: const <Widget>[
+                  NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
+                  NavigationDestination(
+                    icon: Icon(Icons.access_alarm),
+                    label: "Alarm",
+                  ),
+                ],
+                onDestinationSelected: (int i) {},
+              ),
             ),
           ),
         ),
-      ),
-    );
+      );
 
-    final TestGesture gesture =
-        await tester.createGesture(kind: PointerDeviceKind.mouse);
-    await gesture.addPointer();
-    await gesture
-        .moveTo(tester.getCenter(find.byType(NavigationIndicator).last));
-    await tester.pumpAndSettle();
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
+      await gesture.addPointer();
+      await gesture.moveTo(
+        tester.getCenter(find.byType(NavigationIndicator).last),
+      );
+      await tester.pumpAndSettle();
 
-    final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
-      (RenderObject object) =>
-          object.runtimeType.toString() == "_RenderInkFeatures",
-    );
+      final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
+        (RenderObject object) =>
+            object.runtimeType.toString() == "_RenderInkFeatures",
+      );
 
-    // Test hovered state.
-    expect(
-      inkFeatures,
-      kIsWeb
-          ? (paints
-            ..rrect()
-            ..rrect()
-            ..circle(color: hoverColor))
-          : (paints..circle(color: hoverColor)),
-    );
+      // Test hovered state.
+      expect(
+        inkFeatures,
+        kIsWeb
+            ? (paints
+                ..rrect()
+                ..rrect()
+                ..circle(color: hoverColor))
+            : (paints..circle(color: hoverColor)),
+      );
 
-    await gesture.down(tester.getCenter(find.byType(NavigationIndicator).last));
-    await tester.pumpAndSettle();
+      await gesture.down(
+        tester.getCenter(find.byType(NavigationIndicator).last),
+      );
+      await tester.pumpAndSettle();
 
-    // Test pressed state.
-    expect(
-      inkFeatures,
-      kIsWeb
-          ? (paints
-            ..circle()
-            ..circle()
-            ..circle(color: pressedColor))
-          : (paints
-            ..circle()
-            ..circle(color: pressedColor)),
-    );
+      // Test pressed state.
+      expect(
+        inkFeatures,
+        kIsWeb
+            ? (paints
+                ..circle()
+                ..circle()
+                ..circle(color: pressedColor))
+            : (paints
+                ..circle()
+                ..circle(color: pressedColor)),
+      );
 
-    await gesture.up();
-    await tester.pumpAndSettle();
+      await gesture.up();
+      await tester.pumpAndSettle();
 
-    // Press tab to focus the navigation bar.
-    await tester.sendKeyEvent(LogicalKeyboardKey.tab);
-    await tester.pumpAndSettle();
+      // Press tab to focus the navigation bar.
+      await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+      await tester.pumpAndSettle();
 
-    // Test focused state.
-    expect(
-      inkFeatures,
-      kIsWeb
-          ? (paints
-            ..circle()
-            ..circle(color: focusColor))
-          : (paints
-            ..circle()
-            ..circle(color: focusColor)),
-    );
-  });
+      // Test focused state.
+      expect(
+        inkFeatures,
+        kIsWeb
+            ? (paints
+                ..circle()
+                ..circle(color: focusColor))
+            : (paints
+                ..circle()
+                ..circle(color: focusColor)),
+      );
+    },
+  );
 
   testWidgets(
-      "NavigationBar.labelPadding overrides NavigationDestination.label padding",
-      (
-    WidgetTester tester,
-  ) async {
-    const EdgeInsetsGeometry labelPadding = EdgeInsets.all(8);
-    Widget buildNavigationBar({EdgeInsetsGeometry? labelPadding}) {
-      return MaterialApp(
-        home: Scaffold(
-          bottomNavigationBar: NavigationBar(
-            labelPadding: labelPadding,
-            destinations: const <Widget>[
-              NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-              NavigationDestination(
-                icon: Icon(Icons.settings),
-                label: "Settings",
-              ),
-            ],
-            onDestinationSelected: (int i) {},
-          ),
-        ),
-      );
-    }
-
-    await tester.pumpWidget(buildNavigationBar());
-    expect(_getLabelPadding(tester, "Home"), const EdgeInsets.only(top: 4));
-    expect(_getLabelPadding(tester, "Settings"), const EdgeInsets.only(top: 4));
-
-    await tester.pumpWidget(buildNavigationBar(labelPadding: labelPadding));
-    expect(_getLabelPadding(tester, "Home"), labelPadding);
-    expect(_getLabelPadding(tester, "Settings"), labelPadding);
-  });
-
-  group("Material 2", () {
-    // These tests are only relevant for Material 2. Once Material 2
-    // support is deprecated and the APIs are removed, these tests
-    // can be deleted.
-
-    testWidgets(
-        "Material2 - Navigation destination updates indicator color and shape",
-        (
+    "NavigationBar.labelPadding overrides NavigationDestination.label padding",
+    (
       WidgetTester tester,
     ) async {
-      final theme = ThemeData(useMaterial3: false);
-      const color = Color(0xff0000ff);
-      const ShapeBorder shape = RoundedRectangleBorder();
-
-      Widget buildNavigationBar({
-        Color? indicatorColor,
-        ShapeBorder? indicatorShape,
-      }) {
+      const EdgeInsetsGeometry labelPadding = EdgeInsets.all(8);
+      Widget buildNavigationBar({EdgeInsetsGeometry? labelPadding}) {
         return MaterialApp(
-          theme: theme,
           home: Scaffold(
             bottomNavigationBar: NavigationBar(
-              indicatorColor: indicatorColor,
-              indicatorShape: indicatorShape,
+              labelPadding: labelPadding,
               destinations: const <Widget>[
-                NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
+                NavigationDestination(icon: Icon(Icons.home), label: "Home"),
                 NavigationDestination(
-                  icon: Icon(Icons.access_alarm),
-                  label: "Alarm",
+                  icon: Icon(Icons.settings),
+                  label: "Settings",
                 ),
               ],
               onDestinationSelected: (int i) {},
@@ -1602,33 +1605,85 @@ void main() {
       }
 
       await tester.pumpWidget(buildNavigationBar());
-
-      // Test default indicator color and shape.
+      expect(_getLabelPadding(tester, "Home"), const EdgeInsets.only(top: 4));
       expect(
-        _getIndicatorDecoration(tester)?.color,
-        // Original test value was 0.24.
-        // The actual calcuated value is 0.2392156862745098, which is rounded to
-        // 0.24. Thus, we use 61 / 255 to match the actual value.
-        theme.colorScheme.secondary.withValues(alpha: 61 / 255),
-      );
-      expect(
-        _getIndicatorDecoration(tester)?.shape,
-        const RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
-        ),
+        _getLabelPadding(tester, "Settings"),
+        const EdgeInsets.only(top: 4),
       );
 
-      await tester.pumpWidget(
-        buildNavigationBar(indicatorColor: color, indicatorShape: shape),
-      );
+      await tester.pumpWidget(buildNavigationBar(labelPadding: labelPadding));
+      expect(_getLabelPadding(tester, "Home"), labelPadding);
+      expect(_getLabelPadding(tester, "Settings"), labelPadding);
+    },
+  );
 
-      // Test custom indicator color and shape.
-      expect(_getIndicatorDecoration(tester)?.color, color);
-      expect(_getIndicatorDecoration(tester)?.shape, shape);
-    });
+  group("Material 2", () {
+    // These tests are only relevant for Material 2. Once Material 2
+    // support is deprecated and the APIs are removed, these tests
+    // can be deleted.
 
-    testWidgets("Material2 - Navigation indicator renders ripple",
-        (WidgetTester tester) async {
+    testWidgets(
+      "Material2 - Navigation destination updates indicator color and shape",
+      (
+        WidgetTester tester,
+      ) async {
+        final theme = ThemeData(useMaterial3: false);
+        const color = Color(0xff0000ff);
+        const ShapeBorder shape = RoundedRectangleBorder();
+
+        Widget buildNavigationBar({
+          Color? indicatorColor,
+          ShapeBorder? indicatorShape,
+        }) {
+          return MaterialApp(
+            theme: theme,
+            home: Scaffold(
+              bottomNavigationBar: NavigationBar(
+                indicatorColor: indicatorColor,
+                indicatorShape: indicatorShape,
+                destinations: const <Widget>[
+                  NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
+                  NavigationDestination(
+                    icon: Icon(Icons.access_alarm),
+                    label: "Alarm",
+                  ),
+                ],
+                onDestinationSelected: (int i) {},
+              ),
+            ),
+          );
+        }
+
+        await tester.pumpWidget(buildNavigationBar());
+
+        // Test default indicator color and shape.
+        expect(
+          _getIndicatorDecoration(tester)?.color,
+          // Original test value was 0.24.
+          // The actual calcuated value is 0.2392156862745098, which is rounded to
+          // 0.24. Thus, we use 61 / 255 to match the actual value.
+          theme.colorScheme.secondary.withValues(alpha: 61 / 255),
+        );
+        expect(
+          _getIndicatorDecoration(tester)?.shape,
+          const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+          ),
+        );
+
+        await tester.pumpWidget(
+          buildNavigationBar(indicatorColor: color, indicatorShape: shape),
+        );
+
+        // Test custom indicator color and shape.
+        expect(_getIndicatorDecoration(tester)?.color, color);
+        expect(_getIndicatorDecoration(tester)?.shape, shape);
+      },
+    );
+
+    testWidgets("Material2 - Navigation indicator renders ripple", (
+      WidgetTester tester,
+    ) async {
       // This is a regression test for https://github.com/flutter/flutter/issues/116751.
       var selectedIndex = 0;
 
@@ -1656,8 +1711,9 @@ void main() {
 
       await tester.pumpWidget(buildWidget());
 
-      final TestGesture gesture =
-          await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer();
       await gesture.moveTo(tester.getCenter(find.byIcon(Icons.access_alarm)));
       await tester.pumpAndSettle();
@@ -1965,11 +2021,13 @@ void main() {
 
         await tester.pumpWidget(buildWidget());
 
-        final TestGesture gesture =
-            await tester.createGesture(kind: PointerDeviceKind.mouse);
+        final TestGesture gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
         await gesture.addPointer();
-        await gesture
-            .moveTo(tester.getCenter(find.byType(NavigationDestination).last));
+        await gesture.moveTo(
+          tester.getCenter(find.byType(NavigationDestination).last),
+        );
         await tester.pumpAndSettle();
 
         // Test ripple when NavigationBar is using `NavigationDestinationLabelBehavior.alwaysShow` (default).
@@ -1984,8 +2042,9 @@ void main() {
             labelBehavior: NavigationDestinationLabelBehavior.alwaysHide,
           ),
         );
-        await gesture
-            .moveTo(tester.getCenter(find.byType(NavigationDestination).last));
+        await gesture.moveTo(
+          tester.getCenter(find.byType(NavigationDestination).last),
+        );
         await tester.pumpAndSettle();
 
         await expectLater(
@@ -1999,8 +2058,9 @@ void main() {
             labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           ),
         );
-        await gesture
-            .moveTo(tester.getCenter(find.byType(NavigationDestination).first));
+        await gesture.moveTo(
+          tester.getCenter(find.byType(NavigationDestination).first),
+        );
         await tester.pumpAndSettle();
 
         await expectLater(
@@ -2008,8 +2068,9 @@ void main() {
           matchesGoldenFile("indicator_onlyShowSelected_selected_m2.png"),
         );
 
-        await gesture
-            .moveTo(tester.getCenter(find.byType(NavigationDestination).last));
+        await gesture.moveTo(
+          tester.getCenter(find.byType(NavigationDestination).last),
+        );
         await tester.pumpAndSettle();
 
         await expectLater(
@@ -2022,8 +2083,9 @@ void main() {
       skip: true,
     );
 
-    testWidgets("Destination icon does not rebuild when tapped",
-        (WidgetTester tester) async {
+    testWidgets("Destination icon does not rebuild when tapped", (
+      WidgetTester tester,
+    ) async {
       // This is a regression test for https://github.com/flutter/flutter/issues/122811.
 
       Widget buildNavigationBar() {
@@ -2071,198 +2133,214 @@ void main() {
   });
 
   testWidgets(
-      "NavigationBar.labelPadding overrides NavigationDestination.label padding",
-      (
-    WidgetTester tester,
-  ) async {
-    const selectedText = "Home";
-    const unselectedText = "Settings";
-    const EdgeInsetsGeometry labelPadding = EdgeInsets.all(8);
-    Widget buildNavigationBar({EdgeInsetsGeometry? labelPadding}) {
-      return MaterialApp(
-        home: Scaffold(
-          bottomNavigationBar: NavigationBar(
-            labelPadding: labelPadding,
-            destinations: const <Widget>[
-              NavigationDestination(
-                icon: Icon(Icons.home),
-                label: selectedText,
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.settings),
-                label: unselectedText,
-              ),
-            ],
-            onDestinationSelected: (int i) {},
+    "NavigationBar.labelPadding overrides NavigationDestination.label padding",
+    (
+      WidgetTester tester,
+    ) async {
+      const selectedText = "Home";
+      const unselectedText = "Settings";
+      const EdgeInsetsGeometry labelPadding = EdgeInsets.all(8);
+      Widget buildNavigationBar({EdgeInsetsGeometry? labelPadding}) {
+        return MaterialApp(
+          home: Scaffold(
+            bottomNavigationBar: NavigationBar(
+              labelPadding: labelPadding,
+              destinations: const <Widget>[
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: selectedText,
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.settings),
+                  label: unselectedText,
+                ),
+              ],
+              onDestinationSelected: (int i) {},
+            ),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(buildNavigationBar());
+      expect(
+        _getLabelPadding(tester, selectedText),
+        const EdgeInsets.only(top: 4),
+      );
+      expect(
+        _getLabelPadding(tester, unselectedText),
+        const EdgeInsets.only(top: 4),
+      );
+
+      await tester.pumpWidget(buildNavigationBar(labelPadding: labelPadding));
+      expect(_getLabelPadding(tester, selectedText), labelPadding);
+      expect(_getLabelPadding(tester, unselectedText), labelPadding);
+    },
+  );
+
+  testWidgets(
+    "NavigationBar.labelTextStyle overrides NavigationDestination.label text style",
+    (
+      WidgetTester tester,
+    ) async {
+      const selectedText = "Home";
+      const unselectedText = "Settings";
+      const disabledText = "Bookmark";
+      final theme = ThemeData();
+      Widget buildNavigationBar({
+        WidgetStateProperty<TextStyle?>? labelTextStyle,
+      }) {
+        return MaterialApp(
+          theme: theme,
+          home: Scaffold(
+            bottomNavigationBar: NavigationBar(
+              labelTextStyle: labelTextStyle,
+              destinations: const <Widget>[
+                NavigationDestination(
+                  icon: Icon(Icons.home),
+                  label: selectedText,
+                ),
+                NavigationDestination(
+                  icon: Icon(Icons.settings),
+                  label: unselectedText,
+                ),
+                NavigationDestination(
+                  enabled: false,
+                  icon: Icon(Icons.bookmark),
+                  label: disabledText,
+                ),
+              ],
+            ),
+          ),
+        );
+      }
+
+      await tester.pumpWidget(buildNavigationBar());
+
+      // Test selected label text style.
+      expect(_getLabelStyle(tester, selectedText).fontSize, equals(12.0));
+      expect(
+        _getLabelStyle(tester, selectedText).color,
+        equals(theme.colorScheme.onSurface),
+      );
+
+      // Test unselected label text style.
+      expect(_getLabelStyle(tester, unselectedText).fontSize, equals(12.0));
+      expect(
+        _getLabelStyle(tester, unselectedText).color,
+        equals(theme.colorScheme.onSurfaceVariant),
+      );
+
+      // Test disabled label text style.
+      expect(_getLabelStyle(tester, disabledText).fontSize, equals(12.0));
+      expect(
+        _getLabelStyle(tester, disabledText).color,
+        equals(theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
+      );
+
+      const selectedTextStyle = TextStyle(
+        fontSize: 15,
+        color: Color(0xFF00FF00),
+      );
+      const unselectedTextStyle = TextStyle(
+        fontSize: 15,
+        color: Color(0xFF0000FF),
+      );
+      const disabledTextStyle = TextStyle(
+        fontSize: 16,
+        color: Color(0xFFFF0000),
+      );
+      await tester.pumpWidget(
+        buildNavigationBar(
+          labelTextStyle: const WidgetStateProperty<TextStyle?>.fromMap(
+            <WidgetStatesConstraint, TextStyle?>{
+              WidgetState.disabled: disabledTextStyle,
+              WidgetState.selected: selectedTextStyle,
+              WidgetState.any: unselectedTextStyle,
+            },
           ),
         ),
       );
-    }
 
-    await tester.pumpWidget(buildNavigationBar());
-    expect(
-      _getLabelPadding(tester, selectedText),
-      const EdgeInsets.only(top: 4),
-    );
-    expect(
-      _getLabelPadding(tester, unselectedText),
-      const EdgeInsets.only(top: 4),
-    );
+      // Test selected label text style.
+      expect(
+        _getLabelStyle(tester, selectedText).fontSize,
+        equals(selectedTextStyle.fontSize),
+      );
+      expect(
+        _getLabelStyle(tester, selectedText).color,
+        equals(selectedTextStyle.color),
+      );
 
-    await tester.pumpWidget(buildNavigationBar(labelPadding: labelPadding));
-    expect(_getLabelPadding(tester, selectedText), labelPadding);
-    expect(_getLabelPadding(tester, unselectedText), labelPadding);
-  });
+      // Test unselected label text style.
+      expect(
+        _getLabelStyle(tester, unselectedText).fontSize,
+        equals(unselectedTextStyle.fontSize),
+      );
+      expect(
+        _getLabelStyle(tester, unselectedText).color,
+        equals(unselectedTextStyle.color),
+      );
+
+      // Test disabled label text style.
+      expect(
+        _getLabelStyle(tester, disabledText).fontSize,
+        equals(disabledTextStyle.fontSize),
+      );
+      expect(
+        _getLabelStyle(tester, disabledText).color,
+        equals(disabledTextStyle.color),
+      );
+    },
+  );
 
   testWidgets(
-      "NavigationBar.labelTextStyle overrides NavigationDestination.label text style",
-      (
-    WidgetTester tester,
-  ) async {
-    const selectedText = "Home";
-    const unselectedText = "Settings";
-    const disabledText = "Bookmark";
-    final theme = ThemeData();
-    Widget buildNavigationBar({
-      WidgetStateProperty<TextStyle?>? labelTextStyle,
-    }) {
-      return MaterialApp(
-        theme: theme,
-        home: Scaffold(
-          bottomNavigationBar: NavigationBar(
-            labelTextStyle: labelTextStyle,
-            destinations: const <Widget>[
-              NavigationDestination(
-                icon: Icon(Icons.home),
-                label: selectedText,
+    "NavigationBar.maintainBottomViewPadding can consume bottom MediaQuery.padding",
+    (
+      WidgetTester tester,
+    ) async {
+      const double bottomPadding = 40;
+      const TextDirection textDirection = TextDirection.ltr;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Directionality(
+            textDirection: textDirection,
+            child: MediaQuery(
+              data: const MediaQueryData(
+                padding: EdgeInsets.only(bottom: bottomPadding),
               ),
-              NavigationDestination(
-                icon: Icon(Icons.settings),
-                label: unselectedText,
+              child: Scaffold(
+                bottomNavigationBar: NavigationBar(
+                  maintainBottomViewPadding: true,
+                  destinations: const <Widget>[
+                    NavigationDestination(
+                      icon: Icon(Icons.ac_unit),
+                      label: "AC",
+                    ),
+                    NavigationDestination(
+                      icon: Icon(Icons.access_alarm),
+                      label: "Alarm",
+                    ),
+                  ],
+                ),
               ),
-              NavigationDestination(
-                enabled: false,
-                icon: Icon(Icons.bookmark),
-                label: disabledText,
-              ),
-            ],
+            ),
           ),
         ),
       );
-    }
 
-    await tester.pumpWidget(buildNavigationBar());
+      final double safeAreaBottomPadding = tester
+          .widget<Padding>(find.byType(Padding).first)
+          .padding
+          .resolve(textDirection)
+          .bottom;
+      expect(safeAreaBottomPadding, equals(0));
+    },
+  );
 
-    // Test selected label text style.
-    expect(_getLabelStyle(tester, selectedText).fontSize, equals(12.0));
-    expect(
-      _getLabelStyle(tester, selectedText).color,
-      equals(theme.colorScheme.onSurface),
-    );
-
-    // Test unselected label text style.
-    expect(_getLabelStyle(tester, unselectedText).fontSize, equals(12.0));
-    expect(
-      _getLabelStyle(tester, unselectedText).color,
-      equals(theme.colorScheme.onSurfaceVariant),
-    );
-
-    // Test disabled label text style.
-    expect(_getLabelStyle(tester, disabledText).fontSize, equals(12.0));
-    expect(
-      _getLabelStyle(tester, disabledText).color,
-      equals(theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.38)),
-    );
-
-    const selectedTextStyle = TextStyle(fontSize: 15, color: Color(0xFF00FF00));
-    const unselectedTextStyle =
-        TextStyle(fontSize: 15, color: Color(0xFF0000FF));
-    const disabledTextStyle = TextStyle(fontSize: 16, color: Color(0xFFFF0000));
-    await tester.pumpWidget(
-      buildNavigationBar(
-        labelTextStyle: const WidgetStateProperty<
-            TextStyle?>.fromMap(<WidgetStatesConstraint, TextStyle?>{
-          WidgetState.disabled: disabledTextStyle,
-          WidgetState.selected: selectedTextStyle,
-          WidgetState.any: unselectedTextStyle,
-        }),
-      ),
-    );
-
-    // Test selected label text style.
-    expect(
-      _getLabelStyle(tester, selectedText).fontSize,
-      equals(selectedTextStyle.fontSize),
-    );
-    expect(
-      _getLabelStyle(tester, selectedText).color,
-      equals(selectedTextStyle.color),
-    );
-
-    // Test unselected label text style.
-    expect(
-      _getLabelStyle(tester, unselectedText).fontSize,
-      equals(unselectedTextStyle.fontSize),
-    );
-    expect(
-      _getLabelStyle(tester, unselectedText).color,
-      equals(unselectedTextStyle.color),
-    );
-
-    // Test disabled label text style.
-    expect(
-      _getLabelStyle(tester, disabledText).fontSize,
-      equals(disabledTextStyle.fontSize),
-    );
-    expect(
-      _getLabelStyle(tester, disabledText).color,
-      equals(disabledTextStyle.color),
-    );
-  });
-
-  testWidgets(
-      "NavigationBar.maintainBottomViewPadding can consume bottom MediaQuery.padding",
-      (
+  testWidgets("NavigationBar does not crash at zero area", (
     WidgetTester tester,
   ) async {
-    const double bottomPadding = 40;
-    const TextDirection textDirection = TextDirection.ltr;
-
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Directionality(
-          textDirection: textDirection,
-          child: MediaQuery(
-            data: const MediaQueryData(
-              padding: EdgeInsets.only(bottom: bottomPadding),
-            ),
-            child: Scaffold(
-              bottomNavigationBar: NavigationBar(
-                maintainBottomViewPadding: true,
-                destinations: const <Widget>[
-                  NavigationDestination(icon: Icon(Icons.ac_unit), label: "AC"),
-                  NavigationDestination(
-                    icon: Icon(Icons.access_alarm),
-                    label: "Alarm",
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-
-    final double safeAreaBottomPadding = tester
-        .widget<Padding>(find.byType(Padding).first)
-        .padding
-        .resolve(textDirection)
-        .bottom;
-    expect(safeAreaBottomPadding, equals(0));
-  });
-
-  testWidgets("NavigationBar does not crash at zero area",
-      (WidgetTester tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Center(
@@ -2299,13 +2377,14 @@ Material _getMaterial(WidgetTester tester) {
 
 ShapeDecoration? _getIndicatorDecoration(WidgetTester tester) {
   return tester
-      .firstWidget<Ink>(
-        find.descendant(
-          of: find.byType(FadeTransition),
-          matching: find.byType(Ink),
-        ),
-      )
-      .decoration as ShapeDecoration?;
+          .firstWidget<Ink>(
+            find.descendant(
+              of: find.byType(FadeTransition),
+              matching: find.byType(Ink),
+            ),
+          )
+          .decoration
+      as ShapeDecoration?;
 }
 
 class IconWithRandomColor extends StatelessWidget {

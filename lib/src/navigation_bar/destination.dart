@@ -69,18 +69,22 @@ class NavigationBarDestination extends NavigationDestination {
 
   @override
   Widget build(BuildContext context) {
-    final NavigationDestinationInfo info =
-        NavigationDestinationInfo.of(context);
+    final NavigationDestinationInfo info = NavigationDestinationInfo.of(
+      context,
+    );
     final NavigationBarThemeData? maybeExplicitTheme =
         NavigationBarTheme.maybeOf(context);
-    final NavigationBarThemeData navigationBarTheme =
-        NavigationBarTheme.of(context);
+    final NavigationBarThemeData navigationBarTheme = NavigationBarTheme.of(
+      context,
+    );
     final Animation<double> animation = info.selectedAnimation;
 
-    final Color indicatorColor = info.indicatorColor ??
+    final Color indicatorColor =
+        info.indicatorColor ??
         navigationBarTheme.indicatorColor ??
         navigationBarDefaultsFor(context).indicatorColor!;
-    final ShapeBorder indicatorShape = info.indicatorShape ??
+    final ShapeBorder indicatorShape =
+        info.indicatorShape ??
         navigationBarTheme.indicatorShape ??
         navigationBarDefaultsFor(context).indicatorShape!;
 
@@ -103,16 +107,18 @@ class NavigationBarDestination extends NavigationDestination {
 
     final bool hasExplicitPackageDestinationCustomization =
         maybeExplicitTheme?.destinationOverlayColor != null ||
-            maybeExplicitTheme?.destinationIndicatorShape != null;
+        maybeExplicitTheme?.destinationIndicatorShape != null;
     final bool hasExplicitIconSizeOverride =
         info.iconTheme != null || maybeExplicitTheme?.iconTheme != null;
     final bool useExpandedIndicatorSlot =
         hasExplicitPackageDestinationCustomization ||
-            hasExplicitIconSizeOverride;
+        hasExplicitIconSizeOverride;
 
     final double largeIconCompensation =
-        ((data.resolvedIconSize ?? 0) - _kIndicatorHeight)
-            .clamp(0.0, double.infinity);
+        ((data.resolvedIconSize ?? 0) - _kIndicatorHeight).clamp(
+          0.0,
+          double.infinity,
+        );
     final double effectiveIndicatorHeight = useExpandedIndicatorSlot
         ? _kIndicatorHeight + largeIconCompensation
         : _kIndicatorHeight;
@@ -146,18 +152,18 @@ class NavigationBarDestination extends NavigationDestination {
             child: isSelected ? selectedIcon : icon,
           );
 
-          final DestinationBuildData data =
-              const BarDestinationStrategy().resolve(
-            context,
-            DestinationResolveInput(
-              icon: activeIcon,
-              label: Text(label),
-              selected: isSelected,
-              disabled: !enabled,
-              destinationAnimation: animation,
-              indicatorShape: indicatorShape,
-            ),
-          );
+          final DestinationBuildData data = const BarDestinationStrategy()
+              .resolve(
+                context,
+                DestinationResolveInput(
+                  icon: activeIcon,
+                  label: Text(label),
+                  selected: isSelected,
+                  disabled: !enabled,
+                  destinationAnimation: animation,
+                  indicatorShape: indicatorShape,
+                ),
+              );
 
           // --- Badge ---
           final bool hasAnyBadge =
@@ -263,10 +269,12 @@ class NavigationBarDestination extends NavigationDestination {
               NavigationDestinationInfo.of(context);
           final bool isSelected =
               currentInfo.index == currentInfo.selectedIndex;
-          final NavigationBarThemeData barTheme =
-              NavigationBarTheme.of(context);
-          final NavigationBarThemeData defaults =
-              navigationBarDefaultsFor(context);
+          final NavigationBarThemeData barTheme = NavigationBarTheme.of(
+            context,
+          );
+          final NavigationBarThemeData defaults = navigationBarDefaultsFor(
+            context,
+          );
 
           final Set<WidgetState> widgetState = {
             if (!enabled) WidgetState.disabled,
@@ -275,18 +283,20 @@ class NavigationBarDestination extends NavigationDestination {
 
           final TextStyle? textStyle =
               currentInfo.labelTextStyle?.resolve(widgetState) ??
-                  barTheme.labelTextStyle?.resolve(widgetState) ??
-                  defaults.labelTextStyle!.resolve(widgetState);
+              barTheme.labelTextStyle?.resolve(widgetState) ??
+              defaults.labelTextStyle!.resolve(widgetState);
 
           return Padding(
-            padding: currentInfo.labelPadding ??
+            padding:
+                currentInfo.labelPadding ??
                 barTheme.labelPadding ??
                 defaults.labelPadding ??
                 const EdgeInsets.only(top: 4),
             child: MediaQuery.withClampedTextScaling(
               maxScaleFactor: _kMaxLabelTextScaleFactor,
               child: DefaultTextStyle(
-                style: textStyle ??
+                style:
+                    textStyle ??
                     Theme.of(context).textTheme.labelMedium ??
                     const TextStyle(),
                 child: Text(label),

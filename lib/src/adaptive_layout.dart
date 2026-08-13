@@ -469,10 +469,12 @@ class _AdaptiveLayoutDelegate extends MultiChildLayoutDelegate {
       }
     }
 
-    final double remainingWidth =
-        clampNonNegative(size.width - rightMargin - leftMargin);
-    final double remainingHeight =
-        clampNonNegative(size.height - bottomMargin - topMargin);
+    final double remainingWidth = clampNonNegative(
+      size.width - rightMargin - leftMargin,
+    );
+    final double remainingHeight = clampNonNegative(
+      size.height - bottomMargin - topMargin,
+    );
     final double halfWidth = size.width / 2;
     final double halfHeight = size.height / 2;
     final double hingeWidth = hinge != null ? hinge!.right - hinge!.left : 0;

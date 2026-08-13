@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 import "../../navigation_rail_theme.dart" as c;
 
@@ -28,16 +28,16 @@ c.NavigationRailThemeData navigationRailDefaultsFor(BuildContext context) {
 )
 class _NavigationRailDefaultsM2 extends c.NavigationRailThemeData {
   _NavigationRailDefaultsM2(BuildContext context)
-      : _theme = Theme.of(context),
-        _colors = Theme.of(context).colorScheme,
-        super(
-          elevation: 0,
-          groupAlignment: -1,
-          labelType: NavigationRailLabelType.none,
-          useIndicator: false,
-          minWidth: navigationRailMinWidthM2,
-          minExtendedWidth: 256,
-        );
+    : _theme = Theme.of(context),
+      _colors = Theme.of(context).colorScheme,
+      super(
+        elevation: 0,
+        groupAlignment: -1,
+        labelType: NavigationRailLabelType.none,
+        useIndicator: false,
+        minWidth: navigationRailMinWidthM2,
+        minExtendedWidth: 256,
+      );
 
   final ThemeData _theme;
   final ColorScheme _colors;
@@ -47,8 +47,9 @@ class _NavigationRailDefaultsM2 extends c.NavigationRailThemeData {
 
   @override
   TextStyle? get unselectedLabelTextStyle {
-    return _theme.textTheme.bodyLarge!
-        .copyWith(color: _colors.onSurface.withValues(alpha: 0.64));
+    return _theme.textTheme.bodyLarge!.copyWith(
+      color: _colors.onSurface.withValues(alpha: 0.64),
+    );
   }
 
   @override
@@ -99,14 +100,14 @@ class _NavigationRailDefaultsM2 extends c.NavigationRailThemeData {
 /// Generated Material 3 defaults for [NavigationRail].
 class _NavigationRailDefaultsM3 extends c.NavigationRailThemeData {
   _NavigationRailDefaultsM3(this.context)
-      : super(
-          elevation: 0.0,
-          groupAlignment: -1,
-          labelType: NavigationRailLabelType.none,
-          useIndicator: true,
-          minWidth: 80.0,
-          minExtendedWidth: 256,
-        );
+    : super(
+        elevation: 0.0,
+        groupAlignment: -1,
+        labelType: NavigationRailLabelType.none,
+        useIndicator: true,
+        minWidth: 80.0,
+        minExtendedWidth: 256,
+      );
 
   final BuildContext context;
   late final ColorScheme _colors = Theme.of(context).colorScheme;

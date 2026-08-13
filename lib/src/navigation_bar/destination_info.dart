@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Inherited widget for passing data from the [NavigationBar] to the
 /// [NavigationBar.destinations] children widgets.
@@ -116,8 +116,8 @@ class NavigationDestinationInfo extends InheritedWidget {
   /// Used by widgets that are implementing a navigation destination info to
   /// get information like the selected animation and destination number.
   static NavigationDestinationInfo of(BuildContext context) {
-    final NavigationDestinationInfo? result =
-        context.dependOnInheritedWidgetOfExactType<NavigationDestinationInfo>();
+    final NavigationDestinationInfo? result = context
+        .dependOnInheritedWidgetOfExactType<NavigationDestinationInfo>();
     assert(
       result != null,
       "Navigation destinations need a NavigationDestinationInfo parent, "

@@ -1,4 +1,4 @@
-import "package:flutter/material.dart"
+import "package:material_ui/material_ui.dart"
     hide
         NavigationBarTheme,
         NavigationBarThemeData,
@@ -136,8 +136,8 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
 
     final ShapeBorder? indicatorShape = useIndicator
         ? input.indicatorShape ??
-            railTheme.indicatorShape ??
-            defaults.indicatorShape
+              railTheme.indicatorShape ??
+              defaults.indicatorShape
         : null;
 
     assert(
@@ -151,11 +151,13 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     final bool material3 = theme.useMaterial3;
 
     final EdgeInsets destinationPadding =
-        (input.padding ?? railTheme.padding ?? EdgeInsets.zero)
-            .resolve(textDirection);
+        (input.padding ?? railTheme.padding ?? EdgeInsets.zero).resolve(
+          textDirection,
+        );
     final double minWidth =
         input.minWidth ?? railTheme.minWidth ?? defaults.minWidth!;
-    final double rawMinExtendedWidth = input.minExtendedWidth ??
+    final double rawMinExtendedWidth =
+        input.minExtendedWidth ??
         railTheme.minExtendedWidth ??
         defaults.minExtendedWidth!;
     final double minExtendedWidth = rawMinExtendedWidth;
@@ -163,14 +165,15 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     // --- Icon and label theming ---
     final IconThemeData unselectedIconTheme =
         (input.selected ? null : input.iconTheme) ??
-            railTheme.unselectedIconTheme ??
-            defaults.unselectedIconTheme!;
+        railTheme.unselectedIconTheme ??
+        defaults.unselectedIconTheme!;
     final IconThemeData selectedIconTheme =
         (input.selected ? input.iconTheme : null) ??
-            railTheme.selectedIconTheme ??
-            defaults.selectedIconTheme!;
+        railTheme.selectedIconTheme ??
+        defaults.selectedIconTheme!;
 
-    final double railIconSize = railTheme.iconTheme
+    final double railIconSize =
+        railTheme.iconTheme
             ?.resolve(
               input.selected ? {WidgetState.selected} : {},
             )
@@ -187,28 +190,30 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     // the indicator fill. Keep explicit widget/theme icon overrides intact.
     final bool hasSelectedIconOverride =
         (input.selected && input.iconTheme != null) ||
-            railTheme.selectedIconTheme != null;
+        railTheme.selectedIconTheme != null;
     final IconThemeData effectiveSelectedIconTheme =
         !material3 && useIndicator && !hasSelectedIconOverride
-            ? selectedIconTheme.copyWith(
-                color: theme.colorScheme.onSecondary,
-                opacity: 1.0,
-              )
-            : selectedIconTheme;
+        ? selectedIconTheme.copyWith(
+            color: theme.colorScheme.onSecondary,
+            opacity: 1.0,
+          )
+        : selectedIconTheme;
 
     final TextStyle unselectedLabelTextStyle =
         (input.selected ? null : input.labelTextStyle) ??
-            railTheme.unselectedLabelTextStyle ??
-            defaults.unselectedLabelTextStyle!;
+        railTheme.unselectedLabelTextStyle ??
+        defaults.unselectedLabelTextStyle!;
     final TextStyle selectedLabelTextStyle =
         (input.selected ? input.labelTextStyle : null) ??
-            railTheme.selectedLabelTextStyle ??
-            defaults.selectedLabelTextStyle!;
+        railTheme.selectedLabelTextStyle ??
+        defaults.selectedLabelTextStyle!;
 
-    final IconThemeData iconTheme =
-        input.selected ? effectiveSelectedIconTheme : unselectedIconTheme;
-    final TextStyle labelTextStyle =
-        input.selected ? selectedLabelTextStyle : unselectedLabelTextStyle;
+    final IconThemeData iconTheme = input.selected
+        ? effectiveSelectedIconTheme
+        : unselectedIconTheme;
+    final TextStyle labelTextStyle = input.selected
+        ? selectedLabelTextStyle
+        : unselectedLabelTextStyle;
 
     final Widget themedIcon = IconTheme(
       data: input.disabled
@@ -236,8 +241,9 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     // --- Compact indicator offset (labelType.none / expanded layout) ---
     final bool isLargeIconSize =
         iconTheme.size != null && iconTheme.size! > _kIndicatorHeight;
-    final double indicatorVerticalOffset =
-        isLargeIconSize ? (iconTheme.size! - _kIndicatorHeight) / 2 : 0;
+    final double indicatorVerticalOffset = isLargeIconSize
+        ? (iconTheme.size! - _kIndicatorHeight) / 2
+        : 0;
 
     final Offset indicatorOffset = Offset(
       minWidth / 2,
@@ -251,8 +257,8 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
     // can render a NavigationIndicator fill independent of the ripple tint.
     final Color? indicatorColor = useIndicator
         ? input.indicatorColor ??
-            railTheme.indicatorColor ??
-            defaults.indicatorColor
+              railTheme.indicatorColor ??
+              defaults.indicatorColor
         : null;
 
     // --- Interaction colors ---
@@ -273,10 +279,12 @@ class RailDestinationStrategy extends DestinationSurfaceStrategy {
       textDirection: textDirection,
       extendedAnimation: extendedAnimation,
       indicatorOffset: indicatorOffset,
-      splashColor:
-          splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12),
-      hoverColor:
-          splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04),
+      splashColor: splashAlphaModified
+          ? splashBase
+          : splashBase.withValues(alpha: 0.12),
+      hoverColor: splashAlphaModified
+          ? splashBase
+          : splashBase.withValues(alpha: 0.04),
       resolvedIconSize: iconTheme.size,
     );
   }
@@ -308,10 +316,12 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
 
     // --- Icon theming ---
     final bool material3 = theme.useMaterial3;
-    final IconThemeData iconTheme = barTheme.iconTheme?.resolve(widgetState) ??
+    final IconThemeData iconTheme =
+        barTheme.iconTheme?.resolve(widgetState) ??
         defaults.iconTheme!.resolve(widgetState)!;
 
-    final double barIconSize = barTheme.iconTheme?.resolve(widgetState)?.size ??
+    final double barIconSize =
+        barTheme.iconTheme?.resolve(widgetState)?.size ??
         barTheme.iconTheme?.resolve({WidgetState.selected})?.size ??
         defaults.iconTheme!.resolve(widgetState)!.size!;
 
@@ -328,7 +338,7 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
     // --- Label theming ---
     final TextStyle? labelTextStyle =
         barTheme.labelTextStyle?.resolve(widgetState) ??
-            defaults.labelTextStyle!.resolve(widgetState);
+        defaults.labelTextStyle!.resolve(widgetState);
 
     final Widget styledLabel = DefaultTextStyle(
       style: labelTextStyle ?? theme.textTheme.labelMedium ?? const TextStyle(),
@@ -338,11 +348,12 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
     // --- Geometry ---
     final TextDirection textDirection = Directionality.of(context);
 
-    final ShapeBorder indicatorShape = input.indicatorShape ??
+    final ShapeBorder indicatorShape =
+        input.indicatorShape ??
         barTheme.indicatorShape ??
         defaults.indicatorShape!;
 
-// --- Interaction colors ---
+    // --- Interaction colors ---
     // Define the states combining selection with user interactions
     final Set<WidgetState> hoverStates = {
       if (input.disabled) WidgetState.disabled,
@@ -358,21 +369,25 @@ class BarDestinationStrategy extends DestinationSurfaceStrategy {
 
     // Resolve custom overlay colors from the theme if provided
     Color? hoverColor = barTheme.overlayColor?.resolve(hoverStates);
-    Color? splashColor = barTheme.overlayColor?.resolve(pressedStates) ??
+    Color? splashColor =
+        barTheme.overlayColor?.resolve(pressedStates) ??
         barTheme.overlayColor?.resolve({...pressedStates, WidgetState.focused});
 
     // Fallback to default indicator-based behavior if no overlayColor is defined
     if (hoverColor == null || splashColor == null) {
-      final Color splashBase = barTheme.indicatorColor ??
+      final Color splashBase =
+          barTheme.indicatorColor ??
           defaults.indicatorColor ??
           theme.colorScheme.secondaryContainer;
       final bool splashAlphaModified =
           (splashBase.a * 255.0).round().clamp(0, 255) < 255;
 
-      hoverColor ??=
-          splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.04);
-      splashColor ??=
-          splashAlphaModified ? splashBase : splashBase.withValues(alpha: 0.12);
+      hoverColor ??= splashAlphaModified
+          ? splashBase
+          : splashBase.withValues(alpha: 0.04);
+      splashColor ??= splashAlphaModified
+          ? splashBase
+          : splashBase.withValues(alpha: 0.12);
     }
 
     return DestinationBuildData(

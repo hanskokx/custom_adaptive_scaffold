@@ -5,9 +5,10 @@
 import "dart:ui" show Offset, lerpDouble;
 
 import "package:flutter/foundation.dart";
-import "package:flutter/material.dart" as m
-    show NavigationRailThemeData, NavigationRailTheme;
 import "package:flutter/rendering.dart";
+import "package:material_ui/material_ui.dart"
+    as m
+    show NavigationRailThemeData, NavigationRailTheme;
 
 import "material.dart";
 import "src/navigation_rail/theme_defaults.dart";
@@ -334,14 +335,14 @@ class NavigationRailThemeData
       ),
       unselectedIconTheme:
           a?.unselectedIconTheme == null && b?.unselectedIconTheme == null
-              ? null
-              : IconThemeData.lerp(
-                  a?.unselectedIconTheme,
-                  b?.unselectedIconTheme,
-                  t,
-                ),
-      selectedIconTheme: a?.selectedIconTheme == null &&
-              b?.selectedIconTheme == null
+          ? null
+          : IconThemeData.lerp(
+              a?.unselectedIconTheme,
+              b?.unselectedIconTheme,
+              t,
+            ),
+      selectedIconTheme:
+          a?.selectedIconTheme == null && b?.selectedIconTheme == null
           ? null
           : IconThemeData.lerp(a?.selectedIconTheme, b?.selectedIconTheme, t),
       groupAlignment: lerpDouble(a?.groupAlignment, b?.groupAlignment, t),
@@ -360,8 +361,9 @@ class NavigationRailThemeData
         b?.destinationIndicatorShape,
         t,
       ),
-      showLabelsWhenCollapsed:
-          t < 0.5 ? a?.showLabelsWhenCollapsed : b?.showLabelsWhenCollapsed,
+      showLabelsWhenCollapsed: t < 0.5
+          ? a?.showLabelsWhenCollapsed
+          : b?.showLabelsWhenCollapsed,
       minWidth: lerpDouble(a?.minWidth, b?.minWidth, t),
       minExtendedWidth: lerpDouble(a?.minExtendedWidth, b?.minExtendedWidth, t),
       margin: EdgeInsetsGeometry.lerp(a?.margin, b?.margin, t),
@@ -380,38 +382,41 @@ class NavigationRailThemeData
         t,
         IconThemeData.lerp,
       ),
-      badgeThemeData:
-          BadgeThemeData.lerp(a?.badgeThemeData, b?.badgeThemeData, t),
+      badgeThemeData: BadgeThemeData.lerp(
+        a?.badgeThemeData,
+        b?.badgeThemeData,
+        t,
+      ),
     );
   }
 
   @override
   int get hashCode => Object.hashAll(<Object?>[
-        backgroundColor,
-        elevation,
-        unselectedLabelTextStyle,
-        selectedLabelTextStyle,
-        unselectedIconTheme,
-        selectedIconTheme,
-        groupAlignment,
-        labelType,
-        useIndicator,
-        indicatorColor,
-        indicatorShape,
-        destinationOverlayColor,
-        destinationIndicatorShape,
-        showLabelsWhenCollapsed,
-        minWidth,
-        minExtendedWidth,
-        margin,
-        padding,
-        tooltipOffset,
-        tooltipTrigger,
-        tooltipTriggerWhenLabelVisible,
-        tooltipTriggerWhenLabelHidden,
-        iconTheme,
-        badgeThemeData,
-      ]);
+    backgroundColor,
+    elevation,
+    unselectedLabelTextStyle,
+    selectedLabelTextStyle,
+    unselectedIconTheme,
+    selectedIconTheme,
+    groupAlignment,
+    labelType,
+    useIndicator,
+    indicatorColor,
+    indicatorShape,
+    destinationOverlayColor,
+    destinationIndicatorShape,
+    showLabelsWhenCollapsed,
+    minWidth,
+    minExtendedWidth,
+    margin,
+    padding,
+    tooltipOffset,
+    tooltipTrigger,
+    tooltipTriggerWhenLabelVisible,
+    tooltipTriggerWhenLabelHidden,
+    iconTheme,
+    badgeThemeData,
+  ]);
 
   @override
   bool operator ==(Object other) {
@@ -690,8 +695,8 @@ class NavigationRailTheme extends InheritedTheme
   /// NavigationRailThemeData theme = NavigationRailTheme.of(context);
   /// ```
   static NavigationRailThemeData? maybeOf(BuildContext context) {
-    final NavigationRailTheme? navigationRailTheme =
-        context.dependOnInheritedWidgetOfExactType<NavigationRailTheme>();
+    final NavigationRailTheme? navigationRailTheme = context
+        .dependOnInheritedWidgetOfExactType<NavigationRailTheme>();
 
     if (navigationRailTheme != null) {
       return navigationRailTheme.data;
@@ -707,18 +712,18 @@ class NavigationRailTheme extends InheritedTheme
 
     final bool hasAnyExplicitValue =
         materialNavigationRailTheme.backgroundColor != null ||
-            materialNavigationRailTheme.elevation != null ||
-            materialNavigationRailTheme.unselectedLabelTextStyle != null ||
-            materialNavigationRailTheme.selectedLabelTextStyle != null ||
-            materialNavigationRailTheme.unselectedIconTheme != null ||
-            materialNavigationRailTheme.selectedIconTheme != null ||
-            materialNavigationRailTheme.groupAlignment != null ||
-            materialNavigationRailTheme.labelType != null ||
-            materialNavigationRailTheme.useIndicator != null ||
-            materialNavigationRailTheme.indicatorColor != null ||
-            materialNavigationRailTheme.indicatorShape != null ||
-            materialNavigationRailTheme.minWidth != null ||
-            materialNavigationRailTheme.minExtendedWidth != null;
+        materialNavigationRailTheme.elevation != null ||
+        materialNavigationRailTheme.unselectedLabelTextStyle != null ||
+        materialNavigationRailTheme.selectedLabelTextStyle != null ||
+        materialNavigationRailTheme.unselectedIconTheme != null ||
+        materialNavigationRailTheme.selectedIconTheme != null ||
+        materialNavigationRailTheme.groupAlignment != null ||
+        materialNavigationRailTheme.labelType != null ||
+        materialNavigationRailTheme.useIndicator != null ||
+        materialNavigationRailTheme.indicatorColor != null ||
+        materialNavigationRailTheme.indicatorShape != null ||
+        materialNavigationRailTheme.minWidth != null ||
+        materialNavigationRailTheme.minExtendedWidth != null;
 
     if (!hasAnyExplicitValue) {
       return null;

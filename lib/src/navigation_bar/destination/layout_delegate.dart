@@ -14,7 +14,7 @@ part of "../destination.dart";
 /// [_NavigationBarDestinationBuilder].
 class _NavigationDestinationLayoutDelegate extends MultiChildLayoutDelegate {
   _NavigationDestinationLayoutDelegate({required this.animation})
-      : super(relayout: animation);
+    : super(relayout: animation);
 
   /// The selection animation that indicates whether or not this destination is
   /// selected.

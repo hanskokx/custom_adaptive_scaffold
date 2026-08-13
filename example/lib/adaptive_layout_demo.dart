@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart"
+import "package:material_ui/material_ui.dart"
     hide NavigationDestination, NavigationRailTheme, NavigationRailThemeData;
 
 void main() {

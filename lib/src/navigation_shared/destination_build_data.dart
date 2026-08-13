@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Height of the selection indicator, matching Material 3 spec.
 const double kDestinationIndicatorHeight = 32.0;

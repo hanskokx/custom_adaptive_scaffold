@@ -132,21 +132,21 @@ class NavigationRail extends StatefulWidget {
     this.scrollable = false,
     this.mainAxisAlignment,
     this.showLabelsWhenCollapsed,
-  })  : assert(
-          selectedIndex == null ||
-              (0 <= selectedIndex && selectedIndex < destinations.length),
-        ),
-        assert(elevation == null || elevation > 0),
-        assert(minWidth == null || minWidth > 0),
-        assert(minExtendedWidth == null || minExtendedWidth > 0),
-        assert(
-          (minWidth == null || minExtendedWidth == null) ||
-              minExtendedWidth >= minWidth,
-        ),
-        assert(
-          !extended ||
-              (labelType == null || labelType == NavigationRailLabelType.none),
-        );
+  }) : assert(
+         selectedIndex == null ||
+             (0 <= selectedIndex && selectedIndex < destinations.length),
+       ),
+       assert(elevation == null || elevation > 0),
+       assert(minWidth == null || minWidth > 0),
+       assert(minExtendedWidth == null || minExtendedWidth > 0),
+       assert(
+         (minWidth == null || minExtendedWidth == null) ||
+             minExtendedWidth >= minWidth,
+       ),
+       assert(
+         !extended ||
+             (labelType == null || labelType == NavigationRailLabelType.none),
+       );
 
   /// Sets the color of the Container that holds all of the [NavigationRail]'s
   /// contents.
@@ -443,51 +443,64 @@ class _NavigationRailState extends State<NavigationRail>
 
   @override
   Widget build(BuildContext context) {
-    final NavigationRailThemeData navigationRailTheme =
-        NavigationRailTheme.of(context);
+    final NavigationRailThemeData navigationRailTheme = NavigationRailTheme.of(
+      context,
+    );
     final NavigationRailThemeData defaults = navigationRailDefaultsFor(context);
-    final MaterialLocalizations localizations =
-        MaterialLocalizations.of(context);
+    final MaterialLocalizations localizations = MaterialLocalizations.of(
+      context,
+    );
 
-    final Color backgroundColor = widget.backgroundColor ??
+    final Color backgroundColor =
+        widget.backgroundColor ??
         navigationRailTheme.backgroundColor ??
         defaults.backgroundColor!;
-    final double elevation = widget.elevation ??
+    final double elevation =
+        widget.elevation ??
         navigationRailTheme.elevation ??
         defaults.elevation!;
 
     final TextStyle unselectedLabelTextStyle =
         widget.unselectedLabelTextStyle ??
-            navigationRailTheme.unselectedLabelTextStyle ??
-            defaults.unselectedLabelTextStyle!;
-    final TextStyle selectedLabelTextStyle = widget.selectedLabelTextStyle ??
+        navigationRailTheme.unselectedLabelTextStyle ??
+        defaults.unselectedLabelTextStyle!;
+    final TextStyle selectedLabelTextStyle =
+        widget.selectedLabelTextStyle ??
         navigationRailTheme.selectedLabelTextStyle ??
         defaults.selectedLabelTextStyle!;
-    final IconThemeData unselectedIconTheme = widget.unselectedIconTheme ??
+    final IconThemeData unselectedIconTheme =
+        widget.unselectedIconTheme ??
         navigationRailTheme.iconTheme?.resolve({}) ??
         navigationRailTheme.unselectedIconTheme ??
         defaults.unselectedIconTheme!;
-    final IconThemeData selectedIconTheme = widget.selectedIconTheme ??
+    final IconThemeData selectedIconTheme =
+        widget.selectedIconTheme ??
         navigationRailTheme.iconTheme?.resolve({WidgetState.selected}) ??
         navigationRailTheme.selectedIconTheme ??
         defaults.selectedIconTheme!;
 
-    final double groupAlignment = widget.groupAlignment ??
+    final double groupAlignment =
+        widget.groupAlignment ??
         navigationRailTheme.groupAlignment ??
         defaults.groupAlignment!;
-    final NavigationRailLabelType labelType = widget.labelType ??
+    final NavigationRailLabelType labelType =
+        widget.labelType ??
         navigationRailTheme.labelType ??
         defaults.labelType!;
-    final bool useIndicator = widget.useIndicator ??
+    final bool useIndicator =
+        widget.useIndicator ??
         navigationRailTheme.useIndicator ??
         defaults.useIndicator!;
-    final Color? indicatorColor = widget.indicatorColor ??
+    final Color? indicatorColor =
+        widget.indicatorColor ??
         navigationRailTheme.indicatorColor ??
         defaults.indicatorColor;
-    final ShapeBorder? indicatorShape = widget.indicatorShape ??
+    final ShapeBorder? indicatorShape =
+        widget.indicatorShape ??
         navigationRailTheme.indicatorShape ??
         defaults.indicatorShape;
-    final bool showLabelsWhenCollapsed = widget.showLabelsWhenCollapsed ??
+    final bool showLabelsWhenCollapsed =
+        widget.showLabelsWhenCollapsed ??
         navigationRailTheme.showLabelsWhenCollapsed ??
         false;
 
@@ -497,11 +510,12 @@ class _NavigationRailState extends State<NavigationRail>
     final IconThemeData effectiveUnselectedIconTheme =
         // TODO(v6.0.0): Remove useMaterial3 check and M2 fallback branch.
         Theme.of(context).useMaterial3
-            ? unselectedIconTheme
-            : unselectedIconTheme.copyWith(
-                opacity: unselectedIconTheme.opacity ??
-                    defaults.unselectedIconTheme!.opacity,
-              );
+        ? unselectedIconTheme
+        : unselectedIconTheme.copyWith(
+            opacity:
+                unselectedIconTheme.opacity ??
+                defaults.unselectedIconTheme!.opacity,
+          );
 
     final bool isRTLDirection = Directionality.of(context) == TextDirection.rtl;
     final EdgeInsetsGeometry? railDestinationMargin =
@@ -627,12 +641,14 @@ class _NavigationRailState extends State<NavigationRail>
 
   void _initControllers() {
     _destinationControllers = List<AnimationController>.generate(
-        widget.destinations.length, (int index) {
-      return AnimationController(
-        duration: kThemeAnimationDuration,
-        vsync: this,
-      )..addListener(_rebuild);
-    });
+      widget.destinations.length,
+      (int index) {
+        return AnimationController(
+          duration: kThemeAnimationDuration,
+          vsync: this,
+        )..addListener(_rebuild);
+      },
+    );
     _destinationAnimations = _destinationControllers
         .map((AnimationController controller) => controller.view)
         .toList();

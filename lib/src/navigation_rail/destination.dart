@@ -29,11 +29,11 @@ typedef CustomNavigationRailDestination = NavigationRailDestination;
 class NavigationRailDestination extends NavigationDestination {
   /// Creates a navigation rail destination.
   ///
-  /// [icon] and [label] are required. [label] is a widget (rather than a
+  /// [icon] and [_label] are required. [_label] is a widget (rather than a
   /// string) so the caller can pass a pre-styled [Text] or any other widget.
   const NavigationRailDestination({
     required super.icon,
-    required Widget label,
+    required this._label,
     super.key,
     super.selectedIcon,
     super.indicatorColor,
@@ -46,7 +46,7 @@ class NavigationRailDestination extends NavigationDestination {
     super.badgeStyle,
     super.badgeLabel,
     super.customBadge,
-  }) : _label = label;
+  });
 
   final Widget _label;
 

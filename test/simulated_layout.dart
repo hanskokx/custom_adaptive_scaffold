@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart"
-    hide NavigationDestination, NavigationRailThemeData;
 import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
+    hide NavigationDestination, NavigationRailThemeData;
 
 import "test_breakpoints.dart";
 
@@ -45,22 +45,22 @@ class TestScaffold extends StatefulWidget {
 
   static const List<NavigationDestination> destinations =
       <NavigationDestination>[
-    NavigationDestination(
-      key: Key("Inbox"),
-      icon: Icon(Icons.inbox),
-      label: "Inbox",
-    ),
-    NavigationDestination(
-      key: Key("Articles"),
-      icon: Icon(Icons.article),
-      label: "Articles",
-    ),
-    NavigationDestination(
-      key: Key("Chat"),
-      icon: Icon(Icons.chat),
-      label: "Chat",
-    ),
-  ];
+        NavigationDestination(
+          key: Key("Inbox"),
+          icon: Icon(Icons.inbox),
+          label: "Inbox",
+        ),
+        NavigationDestination(
+          key: Key("Articles"),
+          icon: Icon(Icons.article),
+          label: "Articles",
+        ),
+        NavigationDestination(
+          key: Key("Chat"),
+          icon: Icon(Icons.chat),
+          label: "Chat",
+        ),
+      ];
 
   @override
   State<TestScaffold> createState() => TestScaffoldState();
@@ -150,11 +150,10 @@ enum SimulatedLayout {
   );
 
   const SimulatedLayout({
-    required double width,
+    required this._width,
     required this.navSlotKey,
-    double height = 2000,
-  })  : _width = width,
-        _height = height;
+    this._height = 2000,
+  });
 
   final double _width;
   final double _height;

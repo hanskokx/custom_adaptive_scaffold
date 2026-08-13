@@ -6,3 +6,10 @@ analyzer:
     deprecated_member_use: ignore
   exclude:
     - example/**
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**

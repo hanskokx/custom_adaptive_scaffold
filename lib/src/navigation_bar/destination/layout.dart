@@ -104,8 +104,9 @@ class _DestinationLayoutAnimationBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final NavigationDestinationInfo info =
-        NavigationDestinationInfo.of(context);
+    final NavigationDestinationInfo info = NavigationDestinationInfo.of(
+      context,
+    );
     switch (info.labelBehavior) {
       case NavigationDestinationLabelBehavior.alwaysShow:
         return builder(context, kAlwaysCompleteAnimation);

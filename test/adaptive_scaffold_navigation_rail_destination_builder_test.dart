@@ -1,5 +1,6 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart"
+import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
     hide
         NavigationBar,
         NavigationBarTheme,
@@ -7,7 +8,6 @@ import "package:flutter/material.dart"
         NavigationRailDestination,
         NavigationRail,
         NavigationRailThemeData;
-import "package:flutter_test/flutter_test.dart";
 
 void main() {
   group("navigationRailDestinationBuilder index accuracy", () {
@@ -73,7 +73,8 @@ void main() {
         expect(
           builderCallCount,
           greaterThan(0),
-          reason: "navigationRailDestinationBuilder must be called at large "
+          reason:
+              "navigationRailDestinationBuilder must be called at large "
               "breakpoints, not bypassed",
         );
       },

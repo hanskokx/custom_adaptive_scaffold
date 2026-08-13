@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Default indicator dimensions matching the Material 3 spec.
 const double _kCircularIndicatorDiameter = 56.0;
@@ -98,8 +98,9 @@ class NavigationIndicator extends StatelessWidget {
         // indicator always settles visually even if the controller stops just
         // above 0.0 and never hits an exact dismissed status.
         final double t = animation.value.clamp(0.0, 1.0);
-        final double emphasized =
-            CurveTween(curve: Curves.easeInOutCubicEmphasized).transform(t);
+        final double emphasized = CurveTween(
+          curve: Curves.easeInOutCubicEmphasized,
+        ).transform(t);
         final double scale = t == 0.0
             ? 0.0
             : Tween<double>(begin: 0.4, end: 1.0).transform(emphasized);

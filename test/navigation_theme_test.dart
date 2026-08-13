@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart"
+import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
     hide
         NavigationDestination,
         NavigationRail,
@@ -17,13 +18,13 @@ import "package:flutter/material.dart"
         NavigationDrawerDestination,
         NavigationDrawerTheme,
         NavigationDrawerThemeData;
-import "package:flutter/material.dart" as m
+import "package:material_ui/material_ui.dart"
+    as m
     show
         NavigationBarTheme,
         NavigationBarThemeData,
         NavigationRailTheme,
         NavigationRailThemeData;
-import "package:flutter_test/flutter_test.dart";
 
 void main() {
   group("NavigationBarThemeData package fields", () {
@@ -51,10 +52,16 @@ void main() {
         badgeThemeData: BadgeThemeData(backgroundColor: Colors.yellow),
       );
 
-      final NavigationBarThemeData lerpLow =
-          NavigationBarThemeData.lerp(a, b, 0.25)!;
-      final NavigationBarThemeData lerpHigh =
-          NavigationBarThemeData.lerp(a, b, 0.75)!;
+      final NavigationBarThemeData lerpLow = NavigationBarThemeData.lerp(
+        a,
+        b,
+        0.25,
+      )!;
+      final NavigationBarThemeData lerpHigh = NavigationBarThemeData.lerp(
+        a,
+        b,
+        0.75,
+      )!;
 
       expect(lerpLow.destinationIndicatorShape, isA<ShapeBorder>());
       expect(
@@ -113,8 +120,9 @@ void main() {
   });
 
   group("NavigationBarTheme package bridge", () {
-    testWidgets("maybeOf picks up in-scope Flutter NavigationBarTheme",
-        (WidgetTester tester) async {
+    testWidgets("maybeOf picks up in-scope Flutter NavigationBarTheme", (
+      WidgetTester tester,
+    ) async {
       NavigationBarThemeData? captured;
 
       await tester.pumpWidget(
@@ -137,8 +145,9 @@ void main() {
       expect(captured!.height, 123);
     });
 
-    testWidgets("of merges explicit package values over defaults",
-        (WidgetTester tester) async {
+    testWidgets("of merges explicit package values over defaults", (
+      WidgetTester tester,
+    ) async {
       late NavigationBarThemeData resolved;
 
       await tester.pumpWidget(
@@ -146,8 +155,9 @@ void main() {
           home: NavigationBarTheme(
             data: const NavigationBarThemeData(
               destinationIndicatorShape: RoundedRectangleBorder(),
-              destinationOverlayColor:
-                  WidgetStatePropertyAll<Color>(Colors.purple),
+              destinationOverlayColor: WidgetStatePropertyAll<Color>(
+                Colors.purple,
+              ),
               tooltipOffset: Offset(3, 4),
               tooltipTriggerWhenLabelVisible: TooltipTriggerMode.tap,
               badgeThemeData: BadgeThemeData(backgroundColor: Colors.orange),
@@ -175,8 +185,9 @@ void main() {
       expect(resolved.badgeThemeData?.backgroundColor, Colors.orange);
     });
 
-    testWidgets("wrap and updateShouldNotify use data equality",
-        (WidgetTester tester) async {
+    testWidgets("wrap and updateShouldNotify use data equality", (
+      WidgetTester tester,
+    ) async {
       const NavigationBarTheme theme = NavigationBarTheme(
         data: NavigationBarThemeData(height: 80),
         child: SizedBox(),
@@ -238,10 +249,16 @@ void main() {
         badgeThemeData: BadgeThemeData(backgroundColor: Colors.yellow),
       );
 
-      final NavigationRailThemeData lerpLow =
-          NavigationRailThemeData.lerp(a, b, 0.25)!;
-      final NavigationRailThemeData lerpHigh =
-          NavigationRailThemeData.lerp(a, b, 0.75)!;
+      final NavigationRailThemeData lerpLow = NavigationRailThemeData.lerp(
+        a,
+        b,
+        0.25,
+      )!;
+      final NavigationRailThemeData lerpHigh = NavigationRailThemeData.lerp(
+        a,
+        b,
+        0.75,
+      )!;
 
       expect(lerpLow.destinationIndicatorShape, isA<ShapeBorder>());
       expect(
@@ -291,8 +308,11 @@ void main() {
         selectedIconTheme: null,
       );
 
-      final NavigationRailThemeData lerp =
-          NavigationRailThemeData.lerp(a, b, 0.5)!;
+      final NavigationRailThemeData lerp = NavigationRailThemeData.lerp(
+        a,
+        b,
+        0.5,
+      )!;
       expect(lerp.selectedIconTheme, isNull);
       expect(lerp.unselectedIconTheme, isNotNull);
     });
@@ -328,26 +348,28 @@ void main() {
 
   group("NavigationRailTheme package bridge", () {
     testWidgets(
-        "maybeOf returns null when Flutter theme has no explicit values",
-        (WidgetTester tester) async {
-      NavigationRailThemeData? captured;
+      "maybeOf returns null when Flutter theme has no explicit values",
+      (WidgetTester tester) async {
+        NavigationRailThemeData? captured;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Builder(
-            builder: (BuildContext context) {
-              captured = NavigationRailTheme.maybeOf(context);
-              return const SizedBox.shrink();
-            },
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Builder(
+              builder: (BuildContext context) {
+                captured = NavigationRailTheme.maybeOf(context);
+                return const SizedBox.shrink();
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(captured, isNull);
-    });
+        expect(captured, isNull);
+      },
+    );
 
-    testWidgets("maybeOf picks up in-scope Flutter NavigationRailTheme",
-        (WidgetTester tester) async {
+    testWidgets("maybeOf picks up in-scope Flutter NavigationRailTheme", (
+      WidgetTester tester,
+    ) async {
       NavigationRailThemeData? captured;
 
       await tester.pumpWidget(
@@ -370,8 +392,9 @@ void main() {
       expect(captured!.minWidth, 91);
     });
 
-    testWidgets("of merges explicit package values over defaults",
-        (WidgetTester tester) async {
+    testWidgets("of merges explicit package values over defaults", (
+      WidgetTester tester,
+    ) async {
       late NavigationRailThemeData resolved;
 
       await tester.pumpWidget(
@@ -380,8 +403,9 @@ void main() {
             body: NavigationRailTheme(
               data: const NavigationRailThemeData(
                 destinationIndicatorShape: RoundedRectangleBorder(),
-                destinationOverlayColor:
-                    WidgetStatePropertyAll<Color>(Colors.purple),
+                destinationOverlayColor: WidgetStatePropertyAll<Color>(
+                  Colors.purple,
+                ),
                 showLabelsWhenCollapsed: true,
                 tooltipOffset: Offset(3, 4),
                 tooltipTriggerWhenLabelHidden: TooltipTriggerMode.longPress,
@@ -415,8 +439,9 @@ void main() {
       expect(resolved.badgeThemeData?.backgroundColor, Colors.orange);
     });
 
-    testWidgets("wrap and updateShouldNotify use data equality",
-        (WidgetTester tester) async {
+    testWidgets("wrap and updateShouldNotify use data equality", (
+      WidgetTester tester,
+    ) async {
       const NavigationRailTheme theme = NavigationRailTheme(
         data: NavigationRailThemeData(minWidth: 80),
         child: SizedBox(),
@@ -443,97 +468,102 @@ void main() {
   });
 
   group("Theme defaults", () {
-    testWidgets("navigation bar M2 defaults keep destinationOverlayColor null",
-        (WidgetTester tester) async {
-      late NavigationBarThemeData defaults;
+    testWidgets(
+      "navigation bar M2 defaults keep destinationOverlayColor null",
+      (WidgetTester tester) async {
+        late NavigationBarThemeData defaults;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          // ignore: deprecated_member_use
-          theme: ThemeData.light().copyWith(useMaterial3: false),
-          home: Builder(
-            builder: (BuildContext context) {
-              defaults = NavigationBarTheme.of(context);
-              return const SizedBox.shrink();
-            },
+        await tester.pumpWidget(
+          MaterialApp(
+            // ignore: deprecated_member_use
+            theme: ThemeData.light().copyWith(useMaterial3: false),
+            home: Builder(
+              builder: (BuildContext context) {
+                defaults = NavigationBarTheme.of(context);
+                return const SizedBox.shrink();
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(defaults.destinationOverlayColor, isNull);
-      expect(
-        defaults.overlayColor
-            ?.resolve(const <WidgetState>{WidgetState.hovered}),
-        isNotNull,
-      );
-    });
+        expect(defaults.destinationOverlayColor, isNull);
+        expect(
+          defaults.overlayColor?.resolve(const <WidgetState>{
+            WidgetState.hovered,
+          }),
+          isNotNull,
+        );
+      },
+    );
 
     testWidgets(
-        "navigation rail M2 defaults resolve destination overlay colors",
-        (WidgetTester tester) async {
-      late NavigationRailThemeData defaults;
+      "navigation rail M2 defaults resolve destination overlay colors",
+      (WidgetTester tester) async {
+        late NavigationRailThemeData defaults;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          // ignore: deprecated_member_use
-          theme: ThemeData.light().copyWith(useMaterial3: false),
-          home: Builder(
-            builder: (BuildContext context) {
-              defaults = NavigationRailTheme.of(context);
-              return const SizedBox.shrink();
-            },
+        await tester.pumpWidget(
+          MaterialApp(
+            // ignore: deprecated_member_use
+            theme: ThemeData.light().copyWith(useMaterial3: false),
+            home: Builder(
+              builder: (BuildContext context) {
+                defaults = NavigationRailTheme.of(context);
+                return const SizedBox.shrink();
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(
-        defaults.destinationOverlayColor?.resolve(
-          const <WidgetState>{WidgetState.pressed},
-        ),
-        isNotNull,
-      );
-      expect(
-        defaults.destinationOverlayColor?.resolve(
-          const <WidgetState>{WidgetState.hovered},
-        ),
-        isNotNull,
-      );
-      expect(
-        defaults.destinationOverlayColor?.resolve(const <WidgetState>{}),
-        isNull,
-      );
-    });
+        expect(
+          defaults.destinationOverlayColor?.resolve(
+            const <WidgetState>{WidgetState.pressed},
+          ),
+          isNotNull,
+        );
+        expect(
+          defaults.destinationOverlayColor?.resolve(
+            const <WidgetState>{WidgetState.hovered},
+          ),
+          isNotNull,
+        );
+        expect(
+          defaults.destinationOverlayColor?.resolve(const <WidgetState>{}),
+          isNull,
+        );
+      },
+    );
 
     testWidgets(
-        "navigation rail M3 defaults resolve destination overlay colors",
-        (WidgetTester tester) async {
-      late NavigationRailThemeData defaults;
+      "navigation rail M3 defaults resolve destination overlay colors",
+      (WidgetTester tester) async {
+        late NavigationRailThemeData defaults;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: ThemeData(useMaterial3: true),
-          home: Builder(
-            builder: (BuildContext context) {
-              defaults = NavigationRailTheme.of(context);
-              return const SizedBox.shrink();
-            },
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: ThemeData(useMaterial3: true),
+            home: Builder(
+              builder: (BuildContext context) {
+                defaults = NavigationRailTheme.of(context);
+                return const SizedBox.shrink();
+              },
+            ),
           ),
-        ),
-      );
+        );
 
-      expect(
-        defaults.destinationOverlayColor?.resolve(
-          const <WidgetState>{WidgetState.focused},
-        ),
-        isNotNull,
-      );
-      expect(
-        defaults.destinationOverlayColor?.resolve(
-          const <WidgetState>{WidgetState.hovered},
-        ),
-        isNotNull,
-      );
-      expect(defaults.indicatorShape, const StadiumBorder());
-    });
+        expect(
+          defaults.destinationOverlayColor?.resolve(
+            const <WidgetState>{WidgetState.focused},
+          ),
+          isNotNull,
+        );
+        expect(
+          defaults.destinationOverlayColor?.resolve(
+            const <WidgetState>{WidgetState.hovered},
+          ),
+          isNotNull,
+        );
+        expect(defaults.indicatorShape, const StadiumBorder());
+      },
+    );
   });
 }

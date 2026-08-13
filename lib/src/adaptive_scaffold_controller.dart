@@ -108,8 +108,8 @@ class AdaptiveScaffoldScope
   /// Throws a [FlutterError] assertion if no [AdaptiveScaffoldScope] ancestor
   /// is found. Use [maybeOf] when the scope may be absent.
   static AdaptiveScaffoldController of(BuildContext context) {
-    final AdaptiveScaffoldScope? scope =
-        context.dependOnInheritedWidgetOfExactType<AdaptiveScaffoldScope>();
+    final AdaptiveScaffoldScope? scope = context
+        .dependOnInheritedWidgetOfExactType<AdaptiveScaffoldScope>();
 
     assert(scope != null, "AdaptiveScaffoldScope not found in widget tree.");
 
@@ -119,8 +119,8 @@ class AdaptiveScaffoldScope
   /// Returns the nearest [AdaptiveScaffoldController], or `null` if none is
   /// found.
   static AdaptiveScaffoldController? maybeOf(BuildContext context) {
-    final AdaptiveScaffoldScope? scope =
-        context.dependOnInheritedWidgetOfExactType<AdaptiveScaffoldScope>();
+    final AdaptiveScaffoldScope? scope = context
+        .dependOnInheritedWidgetOfExactType<AdaptiveScaffoldScope>();
     return scope?.notifier;
   }
 }

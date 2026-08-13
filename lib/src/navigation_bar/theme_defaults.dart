@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 import "../../navigation_bar_theme.dart" as c;
 
@@ -20,17 +20,17 @@ c.NavigationBarThemeData navigationBarDefaultsFor(BuildContext context) {
 )
 class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
   _NavigationBarDefaultsM2(BuildContext context)
-      : _theme = Theme.of(context),
-        _colors = Theme.of(context).colorScheme,
-        super(
-          height: 80.0,
-          elevation: 0.0,
-          labelPadding: const EdgeInsets.only(top: 4),
-          indicatorShape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
-          ),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        );
+    : _theme = Theme.of(context),
+      _colors = Theme.of(context).colorScheme,
+      super(
+        height: 80.0,
+        elevation: 0.0,
+        labelPadding: const EdgeInsets.only(top: 4),
+        indicatorShape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(16)),
+        ),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      );
 
   final ThemeData _theme;
   final ColorScheme _colors;
@@ -39,10 +39,10 @@ class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
   // default color regardless of light/dark mode.
   @override
   Color? get backgroundColor => ElevationOverlay.colorWithOverlay(
-        _colors.surface,
-        _colors.onSurface,
-        3.0,
-      );
+    _colors.surface,
+    _colors.onSurface,
+    3.0,
+  );
 
   @override
   WidgetStateProperty<IconThemeData?>? get iconTheme {
@@ -92,12 +92,12 @@ class _NavigationBarDefaultsM2 extends c.NavigationBarThemeData {
 
 class _NavigationBarDefaultsM3 extends c.NavigationBarThemeData {
   _NavigationBarDefaultsM3(this.context)
-      : super(
-          height: 80.0,
-          elevation: 3.0,
-          labelPadding: const EdgeInsets.only(top: 4),
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-        );
+    : super(
+        height: 80.0,
+        elevation: 3.0,
+        labelPadding: const EdgeInsets.only(top: 4),
+        labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
+      );
 
   final BuildContext context;
   late final ColorScheme _colors = Theme.of(context).colorScheme;
@@ -120,8 +120,8 @@ class _NavigationBarDefaultsM3 extends c.NavigationBarThemeData {
         color: states.contains(WidgetState.disabled)
             ? _colors.onSurfaceVariant.withValues(alpha: 0.38)
             : states.contains(WidgetState.selected)
-                ? _colors.onSecondaryContainer
-                : _colors.onSurfaceVariant,
+            ? _colors.onSecondaryContainer
+            : _colors.onSurfaceVariant,
       );
     });
   }
@@ -140,8 +140,8 @@ class _NavigationBarDefaultsM3 extends c.NavigationBarThemeData {
         color: states.contains(WidgetState.disabled)
             ? _colors.onSurfaceVariant.withValues(alpha: 0.38)
             : states.contains(WidgetState.selected)
-                ? _colors.onSurface
-                : _colors.onSurfaceVariant,
+            ? _colors.onSurface
+            : _colors.onSurfaceVariant,
       );
     });
   }

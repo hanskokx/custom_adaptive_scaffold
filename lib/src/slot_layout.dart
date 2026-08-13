@@ -22,8 +22,10 @@ class SlotLayout extends StatefulWidget {
     BuildContext context,
     Map<Breakpoint, SlotLayoutConfig?> config,
   ) {
-    final Breakpoint? breakpoint =
-        Breakpoint.activeBreakpointIn(context, config.keys.toList());
+    final Breakpoint? breakpoint = Breakpoint.activeBreakpointIn(
+      context,
+      config.keys.toList(),
+    );
     return breakpoint != null && config.containsKey(breakpoint)
         ? config[breakpoint]
         : null;
@@ -80,17 +82,16 @@ class SlotLayout extends StatefulWidget {
     Duration? outDuration,
     Curve? inCurve,
     Curve? outCurve,
-  }) =>
-      SlotLayoutConfig._(
-        builder: builder,
-        inAnimation: inAnimation,
-        outAnimation: outAnimation,
-        inDuration: inDuration,
-        outDuration: outDuration,
-        inCurve: inCurve,
-        outCurve: outCurve,
-        key: key,
-      );
+  }) => SlotLayoutConfig._(
+    builder: builder,
+    inAnimation: inAnimation,
+    outAnimation: outAnimation,
+    inDuration: inDuration,
+    outDuration: outDuration,
+    inCurve: inCurve,
+    outCurve: outCurve,
+    key: key,
+  );
 
   @override
   State<SlotLayout> createState() => _SlotLayoutState();
