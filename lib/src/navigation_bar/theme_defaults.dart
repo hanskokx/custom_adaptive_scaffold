@@ -7,7 +7,7 @@ import "package:material_ui/material_ui.dart";
 import "../../navigation_bar_theme.dart" as c;
 
 c.NavigationBarThemeData navigationBarDefaultsFor(BuildContext context) {
-  // TODO(v6.0.0): Remove useMaterial3 check and M2 fallback branch.
+  // TODO(v7.0.0): Remove useMaterial3 check and M2 fallback branch.
   return Theme.of(context).useMaterial3
       ? _NavigationBarDefaultsM3(context)
       : _NavigationBarDefaultsM2(context);

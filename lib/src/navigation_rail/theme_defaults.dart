@@ -15,7 +15,7 @@ const double navigationRailMinWidthM2 = 72.0;
 /// Material 3 uses token-based defaults, while Material 2 falls back to the
 /// legacy hand-authored defaults until Material 2 support is removed.
 c.NavigationRailThemeData navigationRailDefaultsFor(BuildContext context) {
-  // TODO(v6.0.0): Remove useMaterial3 check and M2 fallback branch.
+  // TODO(v7.0.0): Remove useMaterial3 check and M2 fallback branch.
   return Theme.of(context).useMaterial3
       ? _NavigationRailDefaultsM3(context)
       : _NavigationRailDefaultsM2(context);

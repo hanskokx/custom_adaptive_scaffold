@@ -432,25 +432,25 @@ class AdaptiveScaffold extends StatefulWidget {
     Widget? trailing,
     void Function(int)? onDestinationSelected,
     double? groupAlignment,
-    // TODO(v6.0.0): Remove to deprecate M2.
+    // TODO(v7.0.0): Remove to deprecate M2.
     @Deprecated(
       "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
       "Migrate to Material 3 by relying on the default M3 behavior.",
     )
     IconThemeData? selectedIconTheme,
-    // TODO(v6.0.0): Remove to deprecate M2.
+    // TODO(v7.0.0): Remove to deprecate M2.
     @Deprecated(
       "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
       "Migrate to Material 3 by relying on the default M3 behavior.",
     )
     IconThemeData? unselectedIconTheme,
-    // TODO(v6.0.0): Remove to deprecate M2.
+    // TODO(v7.0.0): Remove to deprecate M2.
     @Deprecated(
       "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
       "Migrate to Material 3 by relying on the default M3 behavior.",
     )
     TextStyle? selectedLabelTextStyle,
-    // TODO(v6.0.0): Remove to deprecate M2.
+    // TODO(v7.0.0): Remove to deprecate M2.
     @Deprecated(
       "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
       "Migrate to Material 3 by relying on the default M3 behavior.",
@@ -535,7 +535,7 @@ class AdaptiveScaffold extends StatefulWidget {
   static Builder standardBottomNavigationBar({
     required List<NavigationDestination> destinations,
     int? currentIndex,
-    // TODO(v6.0.0): Remove to deprecate M2.
+    // TODO(v7.0.0): Remove to deprecate M2.
     @Deprecated(
       "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
       "Migrate to Material 3 by relying on the default M3 behavior. "
@@ -545,14 +545,14 @@ class AdaptiveScaffold extends StatefulWidget {
     Duration animationDuration = const Duration(milliseconds: 180),
     ValueChanged<int>? onDestinationSelected,
     bool? scrollable,
-    // TODO(v6.0.0): Remove to deprecate M2.
+    // TODO(v7.0.0): Remove to deprecate M2.
     @Deprecated(
       "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
       "Migrate to Material 3 by relying on the default M3 behavior. "
       "To override this property, instead use NavigationBarThemeData.padding.",
     )
     EdgeInsetsGeometry? padding,
-    // TODO(v6.0.0): Remove to deprecate M2.
+    // TODO(v7.0.0): Remove to deprecate M2.
     @Deprecated(
       "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
       "Migrate to Material 3 by relying on the default M3 behavior. "

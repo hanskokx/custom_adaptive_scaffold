@@ -100,7 +100,7 @@ class NavigationBarThemeData
 
   /// Overrides the default value of [NavigationBar.surfaceTintColor].
   @override
-  // TODO(v6.0.0): Remove to deprecate M2.
+  // TODO(v7.0.0): Remove to deprecate M2.
   @Deprecated(
     "Flutter has deprecated surfaceTintColor in modern Material 3 algorithms. "
     "Use [shadowColor] and [elevation] to cast shadows instead. "
@@ -139,7 +139,7 @@ class NavigationBarThemeData
   @override
   final WidgetStateProperty<Color?>? overlayColor;
 
-  // TODO(v6.0.0): Update comment when deprecating M2.
+  // TODO(v7.0.0): Update comment when deprecating M2.
   /// Overlay colors for the full navigation item container by widget state.
   ///
   /// This is separate from [overlayColor], which can still be used by custom
@@ -148,7 +148,7 @@ class NavigationBarThemeData
   /// This has no effect when [ThemeData.useMaterial3] is false.
   final WidgetStateProperty<Color?>? destinationOverlayColor;
 
-  // TODO(v6.0.0): Switch to WidgetStateProperty<ShapeBorder?> when deprecating M2.
+  // TODO(v7.0.0): Switch to WidgetStateProperty<ShapeBorder?> when deprecating M2.
   /// Shape of the full navigation item container ink well.
   ///
   /// Defaults to [StadiumBorder] at resolution sites when this is null.

@@ -94,7 +94,7 @@ class NavigationRailThemeData
   /// The style to merge with the default text style for
   /// [NavigationRailDestination] labels, when the destination is not selected.
   @override
-  // TODO(v6.0.0): Remove to deprecate M2.
+  // TODO(v7.0.0): Remove to deprecate M2.
   @Deprecated(
     "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
     "Migrate to Material 3 by relying on the default M3 behavior.",
@@ -104,7 +104,7 @@ class NavigationRailThemeData
   /// The style to merge with the default text style for
   /// [NavigationRailDestination] labels, when the destination is selected.
   @override
-  // TODO(v6.0.0): Remove to deprecate M2.
+  // TODO(v7.0.0): Remove to deprecate M2.
   @Deprecated(
     "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
     "Migrate to Material 3 by relying on the default M3 behavior.",
@@ -114,7 +114,7 @@ class NavigationRailThemeData
   /// The theme to merge with the default icon theme for
   /// [NavigationRailDestination] icons, when the destination is not selected.
   @override
-  // TODO(v6.0.0): Remove to deprecate M2.
+  // TODO(v7.0.0): Remove to deprecate M2.
   @Deprecated(
     "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
     "Migrate to Material 3 by relying on the default M3 behavior.",
@@ -124,7 +124,7 @@ class NavigationRailThemeData
   /// The theme to merge with the default icon theme for
   /// [NavigationRailDestination] icons, when the destination is selected.
   @override
-  // TODO(v6.0.0): Remove to deprecate M2.
+  // TODO(v7.0.0): Remove to deprecate M2.
   @Deprecated(
     "Material 2 is deprecated in Flutter and will be removed in v6.0.0 of this package. "
     "Migrate to Material 3 by relying on the default M3 behavior.",
@@ -148,7 +148,7 @@ class NavigationRailThemeData
   /// Whether or not the selected [NavigationRailDestination] should include a
   /// [NavigationIndicator].
   @override
-  // TODO(v6.0.0): Remove to deprecate M2.
+  // TODO(v7.0.0): Remove to deprecate M2.
   @Deprecated(
     "Material 3 enforces the use of the selection indicator. To customize its "
     "appearance, use [indicatorColor] and [indicatorShape] instead of "
@@ -166,7 +166,7 @@ class NavigationRailThemeData
   @override
   final ShapeBorder? indicatorShape;
 
-  // TODO(v6.0.0): Update comment when deprecating M2.
+  // TODO(v7.0.0): Update comment when deprecating M2.
   /// Overlay colors for the full navigation item container by widget state.
   ///
   /// This has no effect when [ThemeData.useMaterial3] is false.
