@@ -424,9 +424,7 @@ class _RailDestinationState extends State<RailDestination>
               );
             }
             content = Container(
-              constraints: BoxConstraints(
-                minWidth: data.minWidth,
-              ),
+              constraints: BoxConstraints(minWidth: data.minWidth),
               padding: widget.padding,
               child: Column(
                 mainAxisSize: MainAxisSize.min,

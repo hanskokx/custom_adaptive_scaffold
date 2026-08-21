@@ -309,9 +309,6 @@ class NavigationDestination extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RailDestination(
-      icon: icon,
-      label: _labelWidget,
-    );
+    return RailDestination(icon: icon, label: _labelWidget);
   }
 }

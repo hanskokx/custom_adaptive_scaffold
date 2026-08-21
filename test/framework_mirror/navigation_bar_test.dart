@@ -572,15 +572,15 @@ void main() {
 
     expect(find.text("A"), findsOneWidget);
     await tester.longPress(find.text("A"));
-    expect(find.byTooltip("A tooltip"), findsOneWidget);
+    expect(findByTooltip("A tooltip"), findsOneWidget);
 
     expect(find.text("B"), findsOneWidget);
     await tester.longPress(find.text("B"));
-    expect(find.byTooltip("B"), findsOneWidget);
+    expect(findByTooltip("B"), findsOneWidget);
 
     expect(find.text("C"), findsOneWidget);
     await tester.longPress(find.text("C"));
-    expect(find.byTooltip("C"), findsNothing);
+    expect(findByTooltip("C"), findsNothing);
   });
 
   testWidgets("Navigation bar semantics", (WidgetTester tester) async {
@@ -2423,4 +2423,42 @@ TextStyle _getLabelStyle(WidgetTester tester, String text) {
       )
       .text
       .style!;
+}
+
+/// Finds [RawTooltip] or [Tooltip] widgets with the given `message`.
+///
+/// ## Sample code
+///
+/// ```dart
+/// expect(findByTooltip('Back'), findsOneWidget);
+/// expect(findByTooltip(RegExp('Back.*')), findsNWidgets(2));
+/// ```
+///
+/// If the `skipOffstage` argument is true (the default), then this skips
+/// nodes that are [Offstage] or that are from inactive [Route]s.
+///
+/// This was copied from flutter_test, which uses flutter/material.dart.
+///
+Finder findByTooltip(Pattern message, {bool skipOffstage = true}) {
+  return find.byWidgetPredicate((Widget widget) {
+    // Compare RawTooltip's semantics tooltip with the given message.
+    // However, Tooltip's message needs to be checked directly if:
+    // 1. Tooltip.excludeFromSemantics is true, since in this case Tooltip
+    //    provides no semantics tooltip to the underlying RawTooltip.
+    // 2. Tooltip.message and Tooltip.richMessage are empty, since in this
+    //    case no RawTooltip is created.
+    if (widget is Tooltip) {
+      final String tooltipMessage =
+          widget.message ?? widget.richMessage!.toPlainText();
+      if ((widget.excludeFromSemantics ?? false) || tooltipMessage.isEmpty) {
+        return message is RegExp
+            ? message.hasMatch(tooltipMessage)
+            : tooltipMessage == message;
+      }
+    }
+    return widget is RawTooltip &&
+        (message is RegExp
+            ? message.hasMatch(widget.semanticsTooltip ?? "")
+            : widget.semanticsTooltip == message);
+  }, skipOffstage: skipOffstage);
 }
