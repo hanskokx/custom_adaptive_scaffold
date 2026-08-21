@@ -541,7 +541,6 @@ void main() {
     },
   );
 
-  // TODO(any): These tests are known to fail due to a bug (https://github.com/flutter/flutter/issues/191063).
   testWidgets("Custom tooltips in NavigationBarDestination", (
     WidgetTester tester,
   ) async {
