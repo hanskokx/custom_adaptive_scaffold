@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart"
+import "package:flutter/rendering.dart";
+import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
     hide
         NavigationDestination,
         NavigationRail,
@@ -17,8 +19,6 @@ import "package:flutter/material.dart"
         NavigationDrawerDestination,
         NavigationDrawerTheme,
         NavigationDrawerThemeData;
-import "package:flutter/rendering.dart";
-import "package:flutter_test/flutter_test.dart";
 
 void main() {
   test("copyWith, ==, hashCode basics", () {
@@ -154,10 +154,12 @@ void main() {
                   color: unselectedIconColor,
                   opacity: unselectedIconOpacity,
                 ),
-                selectedLabelTextStyle:
-                    TextStyle(fontSize: selectedLabelFontSize),
-                unselectedLabelTextStyle:
-                    TextStyle(fontSize: unselectedLabelFontSize),
+                selectedLabelTextStyle: TextStyle(
+                  fontSize: selectedLabelFontSize,
+                ),
+                unselectedLabelTextStyle: TextStyle(
+                  fontSize: unselectedLabelFontSize,
+                ),
                 groupAlignment: groupAlignment,
                 labelType: labelType,
                 useIndicator: useIndicator,
@@ -248,10 +250,12 @@ void main() {
                   color: unselectedIconColor,
                   opacity: unselectedIconOpacity,
                 ),
-                selectedLabelTextStyle:
-                    const TextStyle(fontSize: selectedLabelFontSize),
-                unselectedLabelTextStyle:
-                    const TextStyle(fontSize: unselectedLabelFontSize),
+                selectedLabelTextStyle: const TextStyle(
+                  fontSize: selectedLabelFontSize,
+                ),
+                unselectedLabelTextStyle: const TextStyle(
+                  fontSize: unselectedLabelFontSize,
+                ),
                 groupAlignment: groupAlignment,
                 labelType: labelType,
                 useIndicator: useIndicator,
@@ -390,13 +394,14 @@ Material _railMaterial(WidgetTester tester) {
 
 ShapeDecoration? _indicatorDecoration(WidgetTester tester) {
   return tester
-      .firstWidget<Ink>(
-        find.descendant(
-          of: find.byType(NavigationIndicator),
-          matching: find.byType(Ink),
-        ),
-      )
-      .decoration as ShapeDecoration?;
+          .firstWidget<Ink>(
+            find.descendant(
+              of: find.byType(NavigationIndicator),
+              matching: find.byType(Ink),
+            ),
+          )
+          .decoration
+      as ShapeDecoration?;
 }
 
 IconThemeData _selectedIconTheme(WidgetTester tester) {

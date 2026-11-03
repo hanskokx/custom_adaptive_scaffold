@@ -5,10 +5,11 @@
 import "dart:ui" show Offset, lerpDouble;
 
 import "package:flutter/foundation.dart";
-import "package:flutter/material.dart" as m
-    show NavigationBarThemeData, NavigationBarTheme;
-import "package:flutter/material.dart";
 import "package:flutter/rendering.dart";
+import "package:material_ui/material_ui.dart"
+    as m
+    show NavigationBarThemeData, NavigationBarTheme;
+import "package:material_ui/material_ui.dart";
 
 import "src/navigation_bar/theme_defaults.dart";
 
@@ -99,7 +100,7 @@ class NavigationBarThemeData
 
   /// Overrides the default value of [NavigationBar.surfaceTintColor].
   @override
-  // TODO(v6.0.0): Remove to deprecate M2.
+  // TODO(v7.0.0): Remove to deprecate M2.
   @Deprecated(
     "Flutter has deprecated surfaceTintColor in modern Material 3 algorithms. "
     "Use [shadowColor] and [elevation] to cast shadows instead. "
@@ -138,7 +139,7 @@ class NavigationBarThemeData
   @override
   final WidgetStateProperty<Color?>? overlayColor;
 
-  // TODO(v6.0.0): Update comment when deprecating M2.
+  // TODO(v7.0.0): Update comment when deprecating M2.
   /// Overlay colors for the full navigation item container by widget state.
   ///
   /// This is separate from [overlayColor], which can still be used by custom
@@ -147,7 +148,7 @@ class NavigationBarThemeData
   /// This has no effect when [ThemeData.useMaterial3] is false.
   final WidgetStateProperty<Color?>? destinationOverlayColor;
 
-  // TODO(v6.0.0): Switch to WidgetStateProperty<ShapeBorder?> when deprecating M2.
+  // TODO(v7.0.0): Switch to WidgetStateProperty<ShapeBorder?> when deprecating M2.
   /// Shape of the full navigation item container ink well.
   ///
   /// Defaults to [StadiumBorder] at resolution sites when this is null.
@@ -331,35 +332,38 @@ class NavigationBarThemeData
       tooltipTriggerWhenLabelHidden: t < 0.5
           ? a?.tooltipTriggerWhenLabelHidden
           : b?.tooltipTriggerWhenLabelHidden,
-      badgeThemeData:
-          BadgeThemeData.lerp(a?.badgeThemeData, b?.badgeThemeData, t),
+      badgeThemeData: BadgeThemeData.lerp(
+        a?.badgeThemeData,
+        b?.badgeThemeData,
+        t,
+      ),
     );
   }
 
   @override
   int get hashCode => Object.hashAll([
-        height,
-        backgroundColor,
-        elevation,
-        shadowColor,
-        surfaceTintColor,
-        indicatorColor,
-        indicatorShape,
-        labelTextStyle,
-        iconTheme,
-        labelBehavior,
-        overlayColor,
-        destinationOverlayColor,
-        destinationIndicatorShape,
-        margin,
-        padding,
-        tooltipOffset,
-        labelPadding,
-        tooltipTrigger,
-        tooltipTriggerWhenLabelVisible,
-        tooltipTriggerWhenLabelHidden,
-        badgeThemeData,
-      ]);
+    height,
+    backgroundColor,
+    elevation,
+    shadowColor,
+    surfaceTintColor,
+    indicatorColor,
+    indicatorShape,
+    labelTextStyle,
+    iconTheme,
+    labelBehavior,
+    overlayColor,
+    destinationOverlayColor,
+    destinationIndicatorShape,
+    margin,
+    padding,
+    tooltipOffset,
+    labelPadding,
+    tooltipTrigger,
+    tooltipTriggerWhenLabelVisible,
+    tooltipTriggerWhenLabelHidden,
+    badgeThemeData,
+  ]);
 
   @override
   bool operator ==(Object other) {
@@ -402,8 +406,9 @@ class NavigationBarThemeData
       ColorProperty("backgroundColor", backgroundColor, defaultValue: null),
     );
     properties.add(DoubleProperty("elevation", elevation, defaultValue: null));
-    properties
-        .add(ColorProperty("shadowColor", shadowColor, defaultValue: null));
+    properties.add(
+      ColorProperty("shadowColor", shadowColor, defaultValue: null),
+    );
     properties.add(
       ColorProperty(
         "surfaceTintColor",
@@ -590,8 +595,8 @@ class NavigationBarTheme extends InheritedTheme
   /// ```
   static NavigationBarThemeData? maybeOf(BuildContext context) {
     // The user is using NavigationBarTheme from this package.
-    final NavigationBarTheme? navigationBarTheme =
-        context.dependOnInheritedWidgetOfExactType<NavigationBarTheme>();
+    final NavigationBarTheme? navigationBarTheme = context
+        .dependOnInheritedWidgetOfExactType<NavigationBarTheme>();
     if (navigationBarTheme != null) {
       return navigationBarTheme.data;
     }
@@ -600,11 +605,11 @@ class NavigationBarTheme extends InheritedTheme
     // subtree overrides provided via m.NavigationBarTheme(data: ...) are
     // respected, just as m.NavigationRailTheme.of does.  Fall back to the raw
     // ThemeData field only when no such widget is present.
-    final m.NavigationBarTheme? materialNavigationBarInheritedTheme =
-        context.dependOnInheritedWidgetOfExactType<m.NavigationBarTheme>();
+    final m.NavigationBarTheme? materialNavigationBarInheritedTheme = context
+        .dependOnInheritedWidgetOfExactType<m.NavigationBarTheme>();
     final m.NavigationBarThemeData materialNavigationBarTheme =
         materialNavigationBarInheritedTheme?.data ??
-            Theme.of(context).navigationBarTheme;
+        Theme.of(context).navigationBarTheme;
 
     if (materialNavigationBarTheme is NavigationBarThemeData) {
       return materialNavigationBarTheme;
@@ -612,17 +617,17 @@ class NavigationBarTheme extends InheritedTheme
 
     final bool hasAnyExplicitValue =
         materialNavigationBarTheme.height != null ||
-            materialNavigationBarTheme.backgroundColor != null ||
-            materialNavigationBarTheme.elevation != null ||
-            materialNavigationBarTheme.shadowColor != null ||
-            materialNavigationBarTheme.surfaceTintColor != null ||
-            materialNavigationBarTheme.indicatorColor != null ||
-            materialNavigationBarTheme.indicatorShape != null ||
-            materialNavigationBarTheme.labelTextStyle != null ||
-            materialNavigationBarTheme.iconTheme != null ||
-            materialNavigationBarTheme.labelBehavior != null ||
-            materialNavigationBarTheme.overlayColor != null ||
-            materialNavigationBarTheme.labelPadding != null;
+        materialNavigationBarTheme.backgroundColor != null ||
+        materialNavigationBarTheme.elevation != null ||
+        materialNavigationBarTheme.shadowColor != null ||
+        materialNavigationBarTheme.surfaceTintColor != null ||
+        materialNavigationBarTheme.indicatorColor != null ||
+        materialNavigationBarTheme.indicatorShape != null ||
+        materialNavigationBarTheme.labelTextStyle != null ||
+        materialNavigationBarTheme.iconTheme != null ||
+        materialNavigationBarTheme.labelBehavior != null ||
+        materialNavigationBarTheme.overlayColor != null ||
+        materialNavigationBarTheme.labelPadding != null;
 
     if (!hasAnyExplicitValue) {
       return null;

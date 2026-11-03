@@ -73,15 +73,15 @@ under the same names (`NavigationBar`, `NavigationRail`, `NavigationDestination`
 **Option 1 — Use the package's re-exported Material** (recommended):
 
 ```dart
-// Replace `import 'package:flutter/material.dart'; with:
-import "package:custom_adaptive_scaffold/material.dart";
+// Replace `import 'package:material_ui/material_ui.dart'; with:
+import "package:custom_adaptive_scaffold/material_ui.dart";
 import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
 ```
 
 **Option 2 — Hide the Flutter originals**:
 
 ```dart
-import 'package:flutter/material.dart' hide
+import 'package:material_ui/material_ui.dart' hide
     NavigationBar,
     NavigationRail,
     NavigationDestination,
@@ -99,7 +99,7 @@ import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
 Every package widget that shadows a Flutter name also exports a `Custom*` typedef (e.g. `CustomNavigationBar`, `CustomNavigationRail`, `CustomNavigationDestination`, `CustomNavigationBarThemeData`, `CustomNavigationRailThemeData`, `CustomNavigationIndicator`). Rename your existing usages with the `Custom` prefix and import both packages without hiding:
 
 ```dart
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart';
 
 // Use CustomNavigationBar, CustomNavigationRail, etc.

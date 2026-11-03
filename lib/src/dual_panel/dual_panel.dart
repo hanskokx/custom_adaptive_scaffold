@@ -1,4 +1,4 @@
-import "package:flutter/material.dart" hide NavigationDestination;
+import "package:material_ui/material_ui.dart" hide NavigationDestination;
 
 import "../adaptive_layout.dart";
 import "../adaptive_scaffold_controller.dart";
@@ -70,9 +70,9 @@ class DualPanel extends StatefulWidget {
     this.breakpoint = Breakpoints.mediumAndUp,
     super.key,
   }) : assert(
-          breakpoint > Breakpoints.smallAndUp,
-          "breakpoint must be wider than Breakpoints.smallAndUp",
-        );
+         breakpoint > Breakpoints.smallAndUp,
+         "breakpoint must be wider than Breakpoints.smallAndUp",
+       );
 
   @override
   State<DualPanel> createState() => _DualPanelState();

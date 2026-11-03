@@ -1,11 +1,12 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart";
 
 void main() {
   group("DualPanel", () {
-    testWidgets("shows only body on narrow screen",
-        (WidgetTester tester) async {
+    testWidgets("shows only body on narrow screen", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -26,8 +27,9 @@ void main() {
       expect(find.text("Secondary"), findsNothing);
     });
 
-    testWidgets("shows both body and secondaryBody on wide screen",
-        (WidgetTester tester) async {
+    testWidgets("shows both body and secondaryBody on wide screen", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(800, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -48,8 +50,9 @@ void main() {
       expect(find.text("Secondary"), findsOneWidget);
     });
 
-    testWidgets("does not show secondaryBody when null",
-        (WidgetTester tester) async {
+    testWidgets("does not show secondaryBody when null", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(800, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -69,8 +72,9 @@ void main() {
       expect(find.byType(SlotLayout), findsWidgets);
     });
 
-    testWidgets("applies maxWidth constraint to body",
-        (WidgetTester tester) async {
+    testWidgets("applies maxWidth constraint to body", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(800, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -120,8 +124,9 @@ void main() {
       expect(find.text("Secondary"), findsNothing);
     });
 
-    testWidgets("custom breakpoint shows secondary at threshold",
-        (WidgetTester tester) async {
+    testWidgets("custom breakpoint shows secondary at threshold", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -143,8 +148,9 @@ void main() {
       expect(find.text("Secondary"), findsOneWidget);
     });
 
-    testWidgets("AdaptiveBody reports collapsed on narrow screen",
-        (WidgetTester tester) async {
+    testWidgets("AdaptiveBody reports collapsed on narrow screen", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -169,8 +175,9 @@ void main() {
       expect(collapsed, isTrue);
     });
 
-    testWidgets("AdaptiveBody reports expanded on wide screen",
-        (WidgetTester tester) async {
+    testWidgets("AdaptiveBody reports expanded on wide screen", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(800, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 

@@ -1,11 +1,12 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart";
 import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart";
 
 void main() {
   group("SplitView", () {
-    testWidgets("isActive returns false when no SplitView ancestor",
-        (WidgetTester tester) async {
+    testWidgets("isActive returns false when no SplitView ancestor", (
+      WidgetTester tester,
+    ) async {
       bool? result;
       await tester.pumpWidget(
         MaterialApp(
@@ -21,8 +22,9 @@ void main() {
       expect(result, isFalse);
     });
 
-    testWidgets("isActive returns true when notifier is true",
-        (WidgetTester tester) async {
+    testWidgets("isActive returns true when notifier is true", (
+      WidgetTester tester,
+    ) async {
       bool? result;
       final ValueNotifier<bool> notifier = ValueNotifier<bool>(true);
 
@@ -44,8 +46,9 @@ void main() {
       notifier.dispose();
     });
 
-    testWidgets("isActive returns false when notifier is false",
-        (WidgetTester tester) async {
+    testWidgets("isActive returns false when notifier is false", (
+      WidgetTester tester,
+    ) async {
       bool? result;
       final ValueNotifier<bool> notifier = ValueNotifier<bool>(false);
 
@@ -69,39 +72,42 @@ void main() {
   });
 
   group("SplitViewDetector", () {
-    testWidgets("calls onChanged with true when AdaptiveBody is not collapsed",
-        (WidgetTester tester) async {
-      await tester.binding.setSurfaceSize(const Size(800, 800));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets(
+      "calls onChanged with true when AdaptiveBody is not collapsed",
+      (WidgetTester tester) async {
+        await tester.binding.setSurfaceSize(const Size(800, 800));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      bool? reportedState;
-      final ValueNotifier<bool> notifier = ValueNotifier<bool>(false);
+        bool? reportedState;
+        final ValueNotifier<bool> notifier = ValueNotifier<bool>(false);
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: MediaQuery(
-            data: const MediaQueryData(size: Size(800, 800)),
-            child: SplitView(
-              notifier: notifier,
-              child: AdaptiveBody(
-                viewIsCollapsed: false,
-                child: SplitViewDetector(
-                  onChanged: (v) => reportedState = v,
-                  child: const SizedBox(),
+        await tester.pumpWidget(
+          MaterialApp(
+            home: MediaQuery(
+              data: const MediaQueryData(size: Size(800, 800)),
+              child: SplitView(
+                notifier: notifier,
+                child: AdaptiveBody(
+                  viewIsCollapsed: false,
+                  child: SplitViewDetector(
+                    onChanged: (v) => reportedState = v,
+                    child: const SizedBox(),
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      expect(reportedState, isTrue);
-      notifier.dispose();
-    });
+        expect(reportedState, isTrue);
+        notifier.dispose();
+      },
+    );
 
-    testWidgets("calls onChanged with false when AdaptiveBody is collapsed",
-        (WidgetTester tester) async {
+    testWidgets("calls onChanged with false when AdaptiveBody is collapsed", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -131,8 +137,9 @@ void main() {
       notifier.dispose();
     });
 
-    testWidgets("does not crash when unmounted before postFrameCallback",
-        (WidgetTester tester) async {
+    testWidgets("does not crash when unmounted before postFrameCallback", (
+      WidgetTester tester,
+    ) async {
       await tester.binding.setSurfaceSize(const Size(800, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
 

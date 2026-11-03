@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// A widget that animates from 0 (unselected) to 1.0 (selected) and back,
 /// managing an [AnimationController] internally.

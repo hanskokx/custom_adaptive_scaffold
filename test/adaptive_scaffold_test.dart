@@ -5,21 +5,22 @@
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart"
     as custom_adaptive_scaffold;
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart"
+import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
     hide
         NavigationDestination,
         NavigationRailDestination,
         NavigationRail,
         NavigationRailThemeData,
         NavigationBar;
-import "package:flutter_test/flutter_test.dart";
 
 import "simulated_layout.dart";
 import "test_breakpoints.dart";
 
 void main() {
-  testWidgets("adaptive scaffold lays out slots as expected",
-      (WidgetTester tester) async {
+  testWidgets("adaptive scaffold lays out slots as expected", (
+    WidgetTester tester,
+  ) async {
     final Finder smallBody = find.byKey(const Key("smallBody"));
     final Finder body = find.byKey(const Key("body"));
     final Finder mediumLargeBody = find.byKey(const Key("mediumLargeBody"));
@@ -116,8 +117,9 @@ void main() {
     expect(tester.getBottomRight(primaryNav3), const Offset(208, 2000));
   });
 
-  testWidgets("adaptive scaffold animations work correctly",
-      (WidgetTester tester) async {
+  testWidgets("adaptive scaffold animations work correctly", (
+    WidgetTester tester,
+  ) async {
     final Finder b = find.byKey(const Key("body"));
     final Finder sBody = find.byKey(const Key("sBody"));
 
@@ -169,18 +171,21 @@ void main() {
     expect(tester.getBottomRight(sBody), const Offset(800, 2000));
   });
 
-  testWidgets("adaptive scaffold animations can be disabled",
-      (WidgetTester tester) async {
+  testWidgets("adaptive scaffold animations can be disabled", (
+    WidgetTester tester,
+  ) async {
     final Finder b = find.byKey(const Key("body"));
     final Finder sBody = find.byKey(const Key("sBody"));
 
     await tester.binding.setSurfaceSize(SimulatedLayout.small.size);
-    await tester
-        .pumpWidget(SimulatedLayout.small.scaffold(tester, animations: false));
+    await tester.pumpWidget(
+      SimulatedLayout.small.scaffold(tester, animations: false),
+    );
 
     await tester.binding.setSurfaceSize(SimulatedLayout.medium.size);
-    await tester
-        .pumpWidget(SimulatedLayout.medium.scaffold(tester, animations: false));
+    await tester.pumpWidget(
+      SimulatedLayout.medium.scaffold(tester, animations: false),
+    );
 
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
@@ -194,15 +199,19 @@ void main() {
   // The goal of this test is to run through each of the navigation elements
   // and test whether tapping on that element will update the selected index
   // globally
-  testWidgets("tapping navigation elements calls onSelectedIndexChange",
-      (WidgetTester tester) async {
+  testWidgets("tapping navigation elements calls onSelectedIndexChange", (
+    WidgetTester tester,
+  ) async {
     // for each screen size there is a different navigational element that
     // we want to test tapping to set the selected index
-    await Future.forEach(SimulatedLayout.values,
-        (SimulatedLayout region) async {
+    await Future.forEach(SimulatedLayout.values, (
+      SimulatedLayout region,
+    ) async {
       int selectedIndex = 0;
-      final MaterialApp app =
-          region.scaffold(tester, initialIndex: selectedIndex);
+      final MaterialApp app = region.scaffold(
+        tester,
+        initialIndex: selectedIndex,
+      );
       await tester.binding.setSurfaceSize(region.size);
       await tester.pumpWidget(app);
       await tester.pumpAndSettle();
@@ -218,10 +227,13 @@ void main() {
       expect(icon.icon, isNotNull);
 
       // Find the icon in the application to tap
-      final Widget navigationSlot =
-          tester.widget(find.byKey(Key(region.navSlotKey)));
-      final Finder target =
-          find.widgetWithIcon(navigationSlot.runtimeType, icon.icon!);
+      final Widget navigationSlot = tester.widget(
+        find.byKey(Key(region.navSlotKey)),
+      );
+      final Finder target = find.widgetWithIcon(
+        navigationSlot.runtimeType,
+        icon.icon!,
+      );
       expect(target, findsOneWidget);
 
       await tester.tap(target);
@@ -267,8 +279,9 @@ void main() {
   testWidgets(
     "adaptive scaffold displays leading widget in navigation rail",
     (WidgetTester tester) async {
-      await Future.forEach(SimulatedLayout.values,
-          (SimulatedLayout region) async {
+      await Future.forEach(SimulatedLayout.values, (
+        SimulatedLayout region,
+      ) async {
         final MaterialApp app = region.scaffold(tester);
         await tester.binding.setSurfaceSize(region.size);
         await tester.pumpWidget(app);
@@ -296,11 +309,14 @@ void main() {
   testWidgets(
     "adaptive scaffold selectedIndex can be set to null",
     (WidgetTester tester) async {
-      await Future.forEach(SimulatedLayout.values,
-          (SimulatedLayout region) async {
+      await Future.forEach(SimulatedLayout.values, (
+        SimulatedLayout region,
+      ) async {
         int? selectedIndex;
-        final MaterialApp app =
-            region.scaffold(tester, initialIndex: selectedIndex);
+        final MaterialApp app = region.scaffold(
+          tester,
+          initialIndex: selectedIndex,
+        );
         await tester.binding.setSurfaceSize(region.size);
         await tester.pumpWidget(app);
         await tester.pumpAndSettle();
@@ -442,22 +458,23 @@ void main() {
           home: MediaQuery(
             data: const MediaQueryData(size: Size(700, 900)),
             child: StatefulBuilder(
-              builder: (
-                BuildContext context,
-                void Function(void Function()) setState,
-              ) {
-                return AdaptiveScaffold(
-                  destinations: destinations,
-                  selectedIndex: selectedDestination,
-                  smallBreakpoint: TestBreakpoint400(),
-                  drawerBreakpoint: TestBreakpoint0(),
-                  onSelectedIndexChange: (int value) {
-                    setState(() {
-                      selectedDestination = value;
-                    });
+              builder:
+                  (
+                    BuildContext context,
+                    void Function(void Function()) setState,
+                  ) {
+                    return AdaptiveScaffold(
+                      destinations: destinations,
+                      selectedIndex: selectedDestination,
+                      smallBreakpoint: TestBreakpoint400(),
+                      drawerBreakpoint: TestBreakpoint0(),
+                      onSelectedIndexChange: (int value) {
+                        setState(() {
+                          selectedDestination = value;
+                        });
+                      },
+                    );
                   },
-                );
-              },
             ),
           ),
         ),
@@ -469,8 +486,8 @@ void main() {
         of: fAdaptiveScaffold,
         matching: find.byType(NavigationRail),
       );
-      final NavigationRail navigationRailView =
-          tester.firstWidget<NavigationRail>(fNavigationRail);
+      final NavigationRail navigationRailView = tester
+          .firstWidget<NavigationRail>(fNavigationRail);
 
       expect(navigationRailView, isNotNull);
       expect(navigationRailView.backgroundColor, isNotNull);
@@ -553,22 +570,23 @@ void main() {
           home: MediaQuery(
             data: const MediaQueryData(size: Size(450, 900)),
             child: StatefulBuilder(
-              builder: (
-                BuildContext context,
-                void Function(void Function()) setState,
-              ) {
-                return AdaptiveScaffold(
-                  destinations: destinations,
-                  selectedIndex: selectedDestination,
-                  smallBreakpoint: TestBreakpoint400(),
-                  drawerBreakpoint: TestBreakpoint400(),
-                  onSelectedIndexChange: (int value) {
-                    setState(() {
-                      selectedDestination = value;
-                    });
+              builder:
+                  (
+                    BuildContext context,
+                    void Function(void Function()) setState,
+                  ) {
+                    return AdaptiveScaffold(
+                      destinations: destinations,
+                      selectedIndex: selectedDestination,
+                      smallBreakpoint: TestBreakpoint400(),
+                      drawerBreakpoint: TestBreakpoint400(),
+                      onSelectedIndexChange: (int value) {
+                        setState(() {
+                          selectedDestination = value;
+                        });
+                      },
+                    );
                   },
-                );
-              },
             ),
           ),
         ),
@@ -616,19 +634,19 @@ void main() {
     (WidgetTester tester) async {
       const List<NavigationRailDestination> destinations =
           <NavigationRailDestination>[
-        NavigationRailDestination(
-          icon: Icon(Icons.home),
-          label: Text("Home"),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.account_circle),
-          label: Text("Profile"),
-        ),
-        NavigationRailDestination(
-          icon: Icon(Icons.settings),
-          label: Text("Settings"),
-        ),
-      ];
+            NavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.account_circle),
+              label: Text("Profile"),
+            ),
+            NavigationRailDestination(
+              icon: Icon(Icons.settings),
+              label: Text("Settings"),
+            ),
+          ];
 
       const double groupAlignment = 1.0;
 
@@ -646,8 +664,9 @@ void main() {
           ),
         ),
       );
-      final NavigationRail rail =
-          tester.widget<NavigationRail>(find.byType(NavigationRail));
+      final NavigationRail rail = tester.widget<NavigationRail>(
+        find.byType(NavigationRail),
+      );
       expect(rail.groupAlignment, equals(groupAlignment));
     },
   );
@@ -694,8 +713,10 @@ void main() {
     (WidgetTester tester) async {
       await tester.binding.setSurfaceSize(SimulatedLayout.medium.size);
       await tester.pumpWidget(
-        SimulatedLayout.medium
-            .scaffold(tester, appBarBreakpoint: AppBarAlwaysOnBreakpoint()),
+        SimulatedLayout.medium.scaffold(
+          tester,
+          appBarBreakpoint: AppBarAlwaysOnBreakpoint(),
+        ),
       );
       await tester.pumpAndSettle();
 
@@ -706,8 +727,10 @@ void main() {
 
       await tester.binding.setSurfaceSize(SimulatedLayout.mediumLarge.size);
       await tester.pumpWidget(
-        SimulatedLayout.mediumLarge
-            .scaffold(tester, appBarBreakpoint: AppBarAlwaysOnBreakpoint()),
+        SimulatedLayout.mediumLarge.scaffold(
+          tester,
+          appBarBreakpoint: AppBarAlwaysOnBreakpoint(),
+        ),
       );
       expect(drawer, findsNothing);
       await tester.pumpAndSettle();
@@ -889,8 +912,9 @@ void main() {
   );
 
   // Test for navigationRailDestinationBuilder parameter.
-  testWidgets("adaptive scaffold custom navigation rail destination mapping",
-      (WidgetTester tester) async {
+  testWidgets("adaptive scaffold custom navigation rail destination mapping", (
+    WidgetTester tester,
+  ) async {
     const List<NavigationDestination> destinations = <NavigationDestination>[
       NavigationDestination(
         icon: Icon(Icons.home),
@@ -959,8 +983,9 @@ void main() {
         ),
       );
 
-      final NavigationRail rail =
-          tester.widget<NavigationRail>(find.byType(NavigationRail));
+      final NavigationRail rail = tester.widget<NavigationRail>(
+        find.byType(NavigationRail),
+      );
       expect(rail.labelType, NavigationRailLabelType.all);
     },
   );
@@ -1272,12 +1297,13 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      final custom_adaptive_scaffold.NavigationBarTheme theme =
-          tester.widget<custom_adaptive_scaffold.NavigationBarTheme>(
-        find.byType(custom_adaptive_scaffold.NavigationBarTheme),
-      );
-      final IconThemeData resolvedIconTheme =
-          theme.data.iconTheme!.resolve(<WidgetState>{})!;
+      final custom_adaptive_scaffold.NavigationBarTheme theme = tester
+          .widget<custom_adaptive_scaffold.NavigationBarTheme>(
+            find.byType(custom_adaptive_scaffold.NavigationBarTheme),
+          );
+      final IconThemeData resolvedIconTheme = theme.data.iconTheme!.resolve(
+        <WidgetState>{},
+      )!;
 
       expect(resolvedIconTheme.size, 31);
       expect(theme.data.padding, const EdgeInsets.symmetric(horizontal: 5));
@@ -1285,8 +1311,9 @@ void main() {
     },
   );
 
-  testWidgets("bottomToTop creates upward slide transition",
-      (WidgetTester tester) async {
+  testWidgets("bottomToTop creates upward slide transition", (
+    WidgetTester tester,
+  ) async {
     final AnimationController controller = AnimationController(
       vsync: tester,
       duration: const Duration(milliseconds: 100),
@@ -1307,8 +1334,9 @@ void main() {
     expect(transition.position.value, Offset.zero);
   });
 
-  testWidgets("topToBottom creates downward slide transition",
-      (WidgetTester tester) async {
+  testWidgets("topToBottom creates downward slide transition", (
+    WidgetTester tester,
+  ) async {
     final AnimationController controller = AnimationController(
       vsync: tester,
       duration: const Duration(milliseconds: 100),
@@ -1329,8 +1357,9 @@ void main() {
     expect(transition.position.value, const Offset(0, 1));
   });
 
-  testWidgets("leftOutIn creates left-to-center slide transition",
-      (WidgetTester tester) async {
+  testWidgets("leftOutIn creates left-to-center slide transition", (
+    WidgetTester tester,
+  ) async {
     final AnimationController controller = AnimationController(
       vsync: tester,
       duration: const Duration(milliseconds: 100),
@@ -1349,8 +1378,9 @@ void main() {
     expect(transition.position.value, Offset.zero);
   });
 
-  testWidgets("leftInOut creates center-to-left slide transition",
-      (WidgetTester tester) async {
+  testWidgets("leftInOut creates center-to-left slide transition", (
+    WidgetTester tester,
+  ) async {
     final AnimationController controller = AnimationController(
       vsync: tester,
       duration: const Duration(milliseconds: 100),
@@ -1369,8 +1399,9 @@ void main() {
     expect(transition.position.value, const Offset(-1, 0));
   });
 
-  testWidgets("rightOutIn creates right-to-center slide transition",
-      (WidgetTester tester) async {
+  testWidgets("rightOutIn creates right-to-center slide transition", (
+    WidgetTester tester,
+  ) async {
     final AnimationController controller = AnimationController(
       vsync: tester,
       duration: const Duration(milliseconds: 100),
@@ -1389,8 +1420,9 @@ void main() {
     expect(transition.position.value, Offset.zero);
   });
 
-  testWidgets("fadeIn uses easeInCubic opacity curve",
-      (WidgetTester tester) async {
+  testWidgets("fadeIn uses easeInCubic opacity curve", (
+    WidgetTester tester,
+  ) async {
     final AnimationController controller = AnimationController(
       vsync: tester,
       duration: const Duration(milliseconds: 100),
@@ -1410,8 +1442,9 @@ void main() {
     expect(transition.opacity.value, 1);
   });
 
-  testWidgets("fadeOut uses reverse animation opacity curve",
-      (WidgetTester tester) async {
+  testWidgets("fadeOut uses reverse animation opacity curve", (
+    WidgetTester tester,
+  ) async {
     final AnimationController controller = AnimationController(
       vsync: tester,
       duration: const Duration(milliseconds: 100),
@@ -1431,8 +1464,9 @@ void main() {
     expect(transition.opacity.value, 0);
   });
 
-  testWidgets("stayOnScreen keeps opacity constant at 1",
-      (WidgetTester tester) async {
+  testWidgets("stayOnScreen keeps opacity constant at 1", (
+    WidgetTester tester,
+  ) async {
     final AnimationController controller = AnimationController(
       vsync: tester,
       duration: const Duration(milliseconds: 100),

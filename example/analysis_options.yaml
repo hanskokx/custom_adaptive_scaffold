@@ -1,7 +1,15 @@
 include: package:arcane_analysis/analysis_options.yaml
 
-# TODO(v6.0.0): Remove to deprecate M2.
+# TODO(v7.0.0): Remove to deprecate M2.
 analyzer:
   errors:
     deprecated_member_use: ignore
     directives_ordering: ignore
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**

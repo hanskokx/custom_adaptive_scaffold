@@ -25,8 +25,9 @@ class _NavigationBarDestinationSemantics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final MaterialLocalizations localizations =
-        MaterialLocalizations.of(context);
+    final MaterialLocalizations localizations = MaterialLocalizations.of(
+      context,
+    );
     final NavigationDestinationInfo destinationInfo =
         NavigationDestinationInfo.of(context);
     // The AnimationStatusBuilder will make sure that the semantics update to

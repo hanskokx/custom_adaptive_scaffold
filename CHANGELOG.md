@@ -1,3 +1,9 @@
+## 6.0.0
+
+- **[BREAKING]** Updated to Flutter 3.47.0+ and Dart 3.13.0 for minimum supported versions.
+- **[BREAKING]** Now uses and exports the `material_ui` package with custom overrides.
+- Added `package:custom_adaptive_scaffold/material_ui.dart` package export alongside `package:custom_adaptive_scaffold/material.dart` (legacy support).
+
 ## 5.3.0
 
 - **[FEAT]** Added `DualPanel` — a convenience widget that wraps `AdaptiveLayout` to display a primary body and an optional secondary body in a responsive split layout.

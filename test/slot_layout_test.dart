@@ -4,9 +4,9 @@
 
 import "package:custom_adaptive_scaffold/src/breakpoints.dart";
 import "package:custom_adaptive_scaffold/src/slot_layout.dart";
-import "package:flutter/material.dart";
 import "package:flutter/widgets.dart";
 import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart";
 
 void main() {
   testWidgets(
@@ -130,14 +130,14 @@ void main() {
                   ),
                   inAnimation: (Widget widget, Animation<double> animation) =>
                       ScaleTransition(
-                    scale: animation,
-                    child: widget,
-                  ),
+                        scale: animation,
+                        child: widget,
+                      ),
                   outAnimation: (Widget widget, Animation<double> animation) =>
                       FadeTransition(
-                    opacity: animation,
-                    child: widget,
-                  ),
+                        opacity: animation,
+                        child: widget,
+                      ),
                   inDuration: const Duration(seconds: 1),
                   outDuration: const Duration(seconds: 2),
                   inCurve: Curves.easeIn,
@@ -152,14 +152,14 @@ void main() {
                   ),
                   inAnimation: (Widget widget, Animation<double> animation) =>
                       ScaleTransition(
-                    scale: animation,
-                    child: widget,
-                  ),
+                        scale: animation,
+                        child: widget,
+                      ),
                   outAnimation: (Widget widget, Animation<double> animation) =>
                       FadeTransition(
-                    opacity: animation,
-                    child: widget,
-                  ),
+                        opacity: animation,
+                        child: widget,
+                      ),
                   inDuration: const Duration(seconds: 1),
                   outDuration: const Duration(seconds: 2),
                   inCurve: Curves.easeIn,
@@ -186,8 +186,9 @@ void main() {
       ); // Halfway through the outDuration.
 
       // Verify that the outAnimation is in progress for smallBox.
-      final FadeTransition fadeTransitionMid =
-          tester.widget(find.byType(FadeTransition));
+      final FadeTransition fadeTransitionMid = tester.widget(
+        find.byType(FadeTransition),
+      );
       expect(fadeTransitionMid.opacity.value, lessThan(1.0));
       expect(fadeTransitionMid.opacity.value, greaterThan(0.0));
 

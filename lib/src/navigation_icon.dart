@@ -1,4 +1,4 @@
-import "package:flutter/material.dart";
+import "package:material_ui/material_ui.dart";
 
 /// Compact icon body widget shared by both rail and bar destinations.
 ///
@@ -44,8 +44,9 @@ class NavigationIcon extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // _kVerticalDestinationSpacingM3 = 12.0 → half-spacing = 6.0
-    final Widget? spacing =
-        (material3 && addSpacing) ? const SizedBox(height: 12.0 / 2) : null;
+    final Widget? spacing = (material3 && addSpacing)
+        ? const SizedBox(height: 12.0 / 2)
+        : null;
 
     final List<Widget> children = <Widget>[
       if (spacing != null) spacing,

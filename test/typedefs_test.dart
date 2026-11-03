@@ -3,7 +3,8 @@
 // found in the LICENSE file.
 
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
-import "package:flutter/material.dart"
+import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
     hide
         NavigationDestination,
         NavigationRail,
@@ -17,7 +18,6 @@ import "package:flutter/material.dart"
         NavigationDrawerDestination,
         NavigationDrawerTheme,
         NavigationDrawerThemeData;
-import "package:flutter_test/flutter_test.dart";
 
 void main() {
   group("Type aliases", () {
@@ -35,9 +35,9 @@ void main() {
     test("CustomNavigationDestination aliases NavigationDestination", () {
       const CustomNavigationDestination destination =
           CustomNavigationDestination(
-        icon: Icon(Icons.home),
-        label: "Home",
-      );
+            icon: Icon(Icons.home),
+            label: "Home",
+          );
 
       expect(destination, isA<NavigationDestination>());
       expect(destination.toBarDestination(), isA<NavigationBarDestination>());
@@ -47,25 +47,27 @@ void main() {
     test("CustomNavigationBarDestination aliases NavigationDestination", () {
       const CustomNavigationBarDestination destination =
           CustomNavigationBarDestination(
-        icon: Icon(Icons.home),
-        label: "Home",
-      );
+            icon: Icon(Icons.home),
+            label: "Home",
+          );
 
       expect(destination, isA<NavigationDestination>());
       expect(destination.toBarDestination(), isA<NavigationBarDestination>());
     });
 
-    test("CustomNavigationRailDestination aliases NavigationRailDestination",
-        () {
-      const CustomNavigationRailDestination destination =
-          CustomNavigationRailDestination(
-        icon: Icon(Icons.home),
-        label: Text("Home"),
-      );
+    test(
+      "CustomNavigationRailDestination aliases NavigationRailDestination",
+      () {
+        const CustomNavigationRailDestination destination =
+            CustomNavigationRailDestination(
+              icon: Icon(Icons.home),
+              label: Text("Home"),
+            );
 
-      expect(destination, isA<NavigationRailDestination>());
-      expect(destination.labelWidget, isA<Text>());
-    });
+        expect(destination, isA<NavigationRailDestination>());
+        expect(destination.labelWidget, isA<Text>());
+      },
+    );
 
     test("CustomNavigationBar aliases NavigationBar", () {
       final CustomNavigationBar bar = CustomNavigationBar(
@@ -120,8 +122,9 @@ void main() {
       expect(data, isA<NavigationRailThemeData>());
     });
 
-    testWidgets("CustomNavigationBarTheme aliases NavigationBarTheme",
-        (WidgetTester tester) async {
+    testWidgets("CustomNavigationBarTheme aliases NavigationBarTheme", (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: CustomNavigationBarTheme(
@@ -134,8 +137,9 @@ void main() {
       expect(find.byType(NavigationBarTheme), findsOneWidget);
     });
 
-    testWidgets("CustomNavigationRailTheme aliases NavigationRailTheme",
-        (WidgetTester tester) async {
+    testWidgets("CustomNavigationRailTheme aliases NavigationRailTheme", (
+      WidgetTester tester,
+    ) async {
       await tester.pumpWidget(
         const MaterialApp(
           home: Scaffold(
@@ -150,25 +154,27 @@ void main() {
       expect(find.byType(NavigationRailTheme), findsOneWidget);
     });
 
-    test("NavigationRailDestinationBuilder typedef matches function signature",
-        () {
-      NavigationRailDestination builder(
-        int index,
-        NavigationDestination destination,
-      ) {
-        return NavigationRailDestination(
-          icon: destination.icon,
-          label: Text("$index:${destination.label}"),
+    test(
+      "NavigationRailDestinationBuilder typedef matches function signature",
+      () {
+        NavigationRailDestination builder(
+          int index,
+          NavigationDestination destination,
+        ) {
+          return NavigationRailDestination(
+            icon: destination.icon,
+            label: Text("$index:${destination.label}"),
+          );
+        }
+
+        final NavigationRailDestination result = builder(
+          2,
+          const NavigationDestination(icon: Icon(Icons.home), label: "Home"),
         );
-      }
 
-      final NavigationRailDestination result = builder(
-        2,
-        const NavigationDestination(icon: Icon(Icons.home), label: "Home"),
-      );
-
-      expect(result, isA<NavigationRailDestination>());
-      expect((result.labelWidget as Text).data, "2:Home");
-    });
+        expect(result, isA<NavigationRailDestination>());
+        expect((result.labelWidget as Text).data, "2:Home");
+      },
+    );
   });
 }

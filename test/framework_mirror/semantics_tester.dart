@@ -81,13 +81,13 @@ class TestSemantics {
     this.traversalChildIdentifier,
     this.locale,
     this.hintOverrides,
-  })  : assert(
-          flags is int ||
-              flags is List<SemanticsFlag> ||
-              flags is SemanticsFlags,
-        ),
-        assert(actions is int || actions is List<SemanticsAction>),
-        tags = tags?.toSet() ?? <SemanticsTag>{};
+  }) : assert(
+         flags is int ||
+             flags is List<SemanticsFlag> ||
+             flags is SemanticsFlags,
+       ),
+       assert(actions is int || actions is List<SemanticsAction>),
+       tags = tags?.toSet() ?? <SemanticsTag>{};
 
   /// Creates an object with some test semantics data, with the [id] and [rect]
   /// set to the appropriate values for the root node.
@@ -124,15 +124,15 @@ class TestSemantics {
     this.traversalChildIdentifier,
     this.locale,
     this.hintOverrides,
-  })  : id = 0,
-        assert(
-          flags is int ||
-              flags is List<SemanticsFlag> ||
-              flags is SemanticsFlags,
-        ),
-        assert(actions is int || actions is List<SemanticsAction>),
-        rect = TestSemantics.rootRect,
-        tags = tags?.toSet() ?? <SemanticsTag>{};
+  }) : id = 0,
+       assert(
+         flags is int ||
+             flags is List<SemanticsFlag> ||
+             flags is SemanticsFlags,
+       ),
+       assert(actions is int || actions is List<SemanticsAction>),
+       rect = TestSemantics.rootRect,
+       tags = tags?.toSet() ?? <SemanticsTag>{};
 
   /// Creates an object with some test semantics data, with the [id] and [rect]
   /// set to the appropriate values for direct children of the root node.
@@ -179,14 +179,14 @@ class TestSemantics {
     this.traversalChildIdentifier,
     this.locale,
     this.hintOverrides,
-  })  : assert(
-          flags is int ||
-              flags is List<SemanticsFlag> ||
-              flags is SemanticsFlags,
-        ),
-        assert(actions is int || actions is List<SemanticsAction>),
-        transform = _applyRootChildScale(transform),
-        tags = tags?.toSet() ?? <SemanticsTag>{};
+  }) : assert(
+         flags is int ||
+             flags is List<SemanticsFlag> ||
+             flags is SemanticsFlags,
+       ),
+       assert(actions is int || actions is List<SemanticsAction>),
+       transform = _applyRootChildScale(transform),
+       tags = tags?.toSet() ?? <SemanticsTag>{};
 
   /// The unique identifier for this node.
   ///
@@ -500,8 +500,9 @@ class TestSemantics {
           ? 0
           : node.childrenCountInTraversalOrder;
     } else {
-      childrenCount =
-          node.mergeAllDescendantsIntoThisNode ? 0 : node.childrenCount;
+      childrenCount = node.mergeAllDescendantsIntoThisNode
+          ? 0
+          : node.childrenCount;
     }
 
     if (children.length != childrenCount) {
@@ -582,8 +583,9 @@ class TestSemantics {
     }
     var result = true;
     final Iterator<TestSemantics> it = children.iterator;
-    for (final SemanticsNode child
-        in node.debugListChildrenInOrder(childOrder)) {
+    for (final SemanticsNode child in node.debugListChildrenInOrder(
+      childOrder,
+    )) {
       it.moveNext();
       final bool childMatches = it.current._matches(
         child,
@@ -848,8 +850,9 @@ class SemanticsTester {
 
       if (flagsCollection != null) {
         final SemanticsFlags expectedFlags = flagsCollection;
-        final SemanticsFlags actualFlags =
-            node.getSemanticsData().flagsCollection;
+        final SemanticsFlags actualFlags = node
+            .getSemanticsData()
+            .flagsCollection;
         if (expectedFlags != actualFlags) {
           return false;
         }
@@ -857,10 +860,14 @@ class SemanticsTester {
       // `flags` are deprecated and only support the first 31 flags.
       else if (flags != null) {
         final Iterable<SemanticsFlag> expectedFlagValues = flags;
-        final Set<String> expectedFlags =
-            expectedFlagValues.map((SemanticsFlag flag) => flag.name).toSet();
-        final Set<String> actualFlags =
-            node.getSemanticsData().flagsCollection.toStrings().toSet();
+        final Set<String> expectedFlags = expectedFlagValues
+            .map((SemanticsFlag flag) => flag.name)
+            .toSet();
+        final Set<String> actualFlags = node
+            .getSemanticsData()
+            .flagsCollection
+            .toStrings()
+            .toSet();
         if (expectedFlags.difference(actualFlags).isNotEmpty ||
             actualFlags.difference(expectedFlags).isNotEmpty) {
           return false;
@@ -914,7 +921,12 @@ class SemanticsTester {
 
     visit(
       ancestor ??
-          tester.binding.renderViews.first.owner!.semanticsOwner!
+          tester
+              .binding
+              .renderViews
+              .first
+              .owner!
+              .semanticsOwner!
               .rootSemanticsNode!,
     );
 
@@ -973,7 +985,12 @@ class SemanticsTester {
     DebugSemanticsDumpOrder childOrder,
   ) {
     final SemanticsNode? node = tester
-        .binding.renderViews.first.owner?.semanticsOwner?.rootSemanticsNode;
+        .binding
+        .renderViews
+        .first
+        .owner
+        ?.semanticsOwner
+        ?.rootSemanticsNode;
     return _generateSemanticsTestForNode(node, 0, childOrder);
   }
 
@@ -982,8 +999,9 @@ class SemanticsTester {
     if (flags is SemanticsFlags) {
       return '<SemanticsFlag>[${flags.toStrings().join(', ')}]';
     } else if (flags is int) {
-      list = SemanticsFlag.values
-          .where((SemanticsFlag flag) => (flag.index & flags) != 0);
+      list = SemanticsFlag.values.where(
+        (SemanticsFlag flag) => (flag.index & flags) != 0,
+      );
     } else {
       list = flags as List<SemanticsFlag>;
     }
@@ -1086,8 +1104,9 @@ class SemanticsTester {
     }
     if (node.hasChildren) {
       buf.writeln("  children: <TestSemantics>[");
-      for (final SemanticsNode child
-          in node.debugListChildrenInOrder(childOrder)) {
+      for (final SemanticsNode child in node.debugListChildrenInOrder(
+        childOrder,
+      )) {
         buf
           ..write(_generateSemanticsTestForNode(child, 2, childOrder))
           ..writeln(",");
@@ -1127,7 +1146,13 @@ class _HasSemantics extends Matcher {
     Map<dynamic, dynamic> matchState,
   ) {
     final bool doesMatch = _semantics._matches(
-      item.tester.binding.renderViews.first.owner?.semanticsOwner
+      item
+          .tester
+          .binding
+          .renderViews
+          .first
+          .owner
+          ?.semanticsOwner
           ?.rootSemanticsNode,
       matchState,
       ignoreTransform: ignoreTransform,
@@ -1137,10 +1162,10 @@ class _HasSemantics extends Matcher {
       childOrder: childOrder,
     );
     if (!doesMatch) {
-      matchState["would-match"] =
-          item.generateTestSemanticsExpressionForCurrentSemanticsTree(
-        childOrder,
-      );
+      matchState["would-match"] = item
+          .generateTestSemanticsExpressionForCurrentSemanticsTree(
+            childOrder,
+          );
     }
     if (item.tester.binding.renderViews.first.owner?.semanticsOwner == null) {
       matchState["additional-notes"] =
@@ -1175,7 +1200,12 @@ class _HasSemantics extends Matcher {
         .add("Current SemanticsNode tree:\n")
         .add(
           _indent(
-            RendererBinding.instance.renderViews.first.owner?.semanticsOwner
+            RendererBinding
+                .instance
+                .renderViews
+                .first
+                .owner
+                ?.semanticsOwner
                 ?.rootSemanticsNode
                 ?.toStringDeep(childOrder: childOrder),
           ),
@@ -1235,22 +1265,22 @@ class _IncludesNodeWith extends Matcher {
     this.minValue,
     this.maxValue,
   }) : assert(
-          label != null ||
-              value != null ||
-              actions != null ||
-              flags != null ||
-              flagsCollection != null ||
-              tags != null ||
-              increasedValue != null ||
-              decreasedValue != null ||
-              scrollPosition != null ||
-              scrollExtentMax != null ||
-              scrollExtentMin != null ||
-              maxValueLength != null ||
-              currentValueLength != null ||
-              inputType != null,
-          minValue != null || maxValue != null,
-        );
+         label != null ||
+             value != null ||
+             actions != null ||
+             flags != null ||
+             flagsCollection != null ||
+             tags != null ||
+             increasedValue != null ||
+             decreasedValue != null ||
+             scrollPosition != null ||
+             scrollExtentMax != null ||
+             scrollExtentMin != null ||
+             maxValueLength != null ||
+             currentValueLength != null ||
+             inputType != null,
+         minValue != null || maxValue != null,
+       );
   final AttributedString? attributedLabel;
   final AttributedString? attributedValue;
   final AttributedString? attributedHint;
@@ -1317,8 +1347,9 @@ class _IncludesNodeWith extends Matcher {
     Map<dynamic, dynamic> matchState,
     bool verbose,
   ) {
-    return mismatchDescription
-        .add("could not find node with $_configAsString.\n$_matcherHelp");
+    return mismatchDescription.add(
+      "could not find node with $_configAsString.\n$_matcherHelp",
+    );
   }
 
   String get _configAsString {

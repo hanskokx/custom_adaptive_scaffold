@@ -7,7 +7,10 @@ library;
 import "package:custom_adaptive_scaffold/custom_adaptive_scaffold.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
-import "package:flutter/material.dart"
+import "package:flutter/rendering.dart";
+import "package:flutter/services.dart";
+import "package:flutter_test/flutter_test.dart";
+import "package:material_ui/material_ui.dart"
     hide
         NavigationDestination,
         NavigationRail,
@@ -21,11 +24,9 @@ import "package:flutter/material.dart"
         NavigationDrawerDestination,
         NavigationDrawerTheme,
         NavigationDrawerThemeData;
-import "package:flutter/material.dart" as m
+import "package:material_ui/material_ui.dart"
+    as m
     show NavigationBarTheme, NavigationBarThemeData;
-import "package:flutter/rendering.dart";
-import "package:flutter/services.dart";
-import "package:flutter_test/flutter_test.dart";
 
 void main() {
   test("copyWith, ==, hashCode basics", () {
@@ -57,8 +58,9 @@ void main() {
     expect(description, <String>[]);
   });
 
-  testWidgets("NavigationBarThemeData implements debugFillProperties",
-      (WidgetTester tester) async {
+  testWidgets("NavigationBarThemeData implements debugFillProperties", (
+    WidgetTester tester,
+  ) async {
     final builder = DiagnosticPropertiesBuilder();
     const NavigationBarThemeData(
       height: 200.0,
@@ -68,8 +70,9 @@ void main() {
       surfaceTintColor: Color(0x00000097),
       indicatorColor: Color(0x00000096),
       indicatorShape: CircleBorder(),
-      labelTextStyle:
-          WidgetStatePropertyAll<TextStyle>(TextStyle(fontSize: 7.0)),
+      labelTextStyle: WidgetStatePropertyAll<TextStyle>(
+        TextStyle(fontSize: 7.0),
+      ),
       iconTheme: WidgetStatePropertyAll<IconThemeData>(
         IconThemeData(color: Color(0x00000097)),
       ),
@@ -132,8 +135,9 @@ void main() {
                 elevation: elevation,
                 indicatorColor: indicatorColor,
                 indicatorShape: indicatorShape,
-                iconTheme:
-                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                iconTheme: WidgetStateProperty.resolveWith((
+                  Set<WidgetState> states,
+                ) {
                   if (states.contains(WidgetState.selected)) {
                     return const IconThemeData(
                       size: selectedIconSize,
@@ -147,8 +151,9 @@ void main() {
                     opacity: unselectedIconOpacity,
                   );
                 }),
-                labelTextStyle:
-                    WidgetStateProperty.resolveWith((Set<WidgetState> states) {
+                labelTextStyle: WidgetStateProperty.resolveWith((
+                  Set<WidgetState> states,
+                ) {
                   if (states.contains(WidgetState.selected)) {
                     return const TextStyle(fontSize: selectedLabelFontSize);
                   }
@@ -190,8 +195,9 @@ void main() {
       const elevation = 42.0;
       const NavigationDestinationLabelBehavior labelBehavior =
           NavigationDestinationLabelBehavior.alwaysShow;
-      const EdgeInsetsGeometry labelPadding =
-          EdgeInsets.symmetric(horizontal: 16.0);
+      const EdgeInsetsGeometry labelPadding = EdgeInsets.symmetric(
+        horizontal: 16.0,
+      );
 
       await tester.pumpWidget(
         MaterialApp(
@@ -255,11 +261,13 @@ void main() {
 
       await tester.pumpWidget(buildWidget());
 
-      final TestGesture gesture =
-          await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer();
-      await gesture
-          .moveTo(tester.getCenter(find.byType(NavigationDestination).last));
+      await gesture.moveTo(
+        tester.getCenter(find.byType(NavigationDestination).last),
+      );
       await tester.pumpAndSettle();
 
       await expectLater(
@@ -309,25 +317,26 @@ void main() {
       const pressedColor = Color(0xffff00ff);
       final WidgetStateProperty<Color?> overlayColor =
           WidgetStateProperty.resolveWith<Color>((
-        Set<WidgetState> states,
-      ) {
-        if (states.contains(WidgetState.hovered)) {
-          return hoverColor;
-        }
-        if (states.contains(WidgetState.focused)) {
-          return focusColor;
-        }
-        if (states.contains(WidgetState.pressed)) {
-          return pressedColor;
-        }
-        return Colors.transparent;
-      });
+            Set<WidgetState> states,
+          ) {
+            if (states.contains(WidgetState.hovered)) {
+              return hoverColor;
+            }
+            if (states.contains(WidgetState.focused)) {
+              return focusColor;
+            }
+            if (states.contains(WidgetState.pressed)) {
+              return pressedColor;
+            }
+            return Colors.transparent;
+          });
 
       await tester.pumpWidget(
         MaterialApp(
           theme: ThemeData(
-            navigationBarTheme:
-                NavigationBarThemeData(overlayColor: overlayColor),
+            navigationBarTheme: NavigationBarThemeData(
+              overlayColor: overlayColor,
+            ),
           ),
           home: Scaffold(
             bottomNavigationBar: RepaintBoundary(
@@ -346,11 +355,13 @@ void main() {
         ),
       );
 
-      final TestGesture gesture =
-          await tester.createGesture(kind: PointerDeviceKind.mouse);
+      final TestGesture gesture = await tester.createGesture(
+        kind: PointerDeviceKind.mouse,
+      );
       await gesture.addPointer();
-      await gesture
-          .moveTo(tester.getCenter(find.byType(NavigationIndicator).last));
+      await gesture.moveTo(
+        tester.getCenter(find.byType(NavigationIndicator).last),
+      );
       await tester.pumpAndSettle();
 
       final RenderObject inkFeatures = tester.allRenderObjects.firstWhere(
@@ -363,14 +374,15 @@ void main() {
         inkFeatures,
         kIsWeb
             ? (paints
-              ..rrect()
-              ..rrect()
-              ..circle(color: hoverColor))
+                ..rrect()
+                ..rrect()
+                ..circle(color: hoverColor))
             : (paints..circle(color: hoverColor)),
       );
 
-      await gesture
-          .down(tester.getCenter(find.byType(NavigationIndicator).last));
+      await gesture.down(
+        tester.getCenter(find.byType(NavigationIndicator).last),
+      );
       await tester.pumpAndSettle();
 
       // Test pressed state.
@@ -378,12 +390,12 @@ void main() {
         inkFeatures,
         kIsWeb
             ? (paints
-              ..circle()
-              ..circle()
-              ..circle(color: pressedColor))
+                ..circle()
+                ..circle()
+                ..circle(color: pressedColor))
             : (paints
-              ..circle()
-              ..circle(color: pressedColor)),
+                ..circle()
+                ..circle(color: pressedColor)),
       );
 
       await gesture.up();
@@ -398,11 +410,11 @@ void main() {
         inkFeatures,
         kIsWeb
             ? (paints
-              ..circle()
-              ..circle(color: focusColor))
+                ..circle()
+                ..circle(color: focusColor))
             : (paints
-              ..circle()
-              ..circle(color: focusColor)),
+                ..circle()
+                ..circle(color: focusColor)),
       );
     },
   );
@@ -438,13 +450,14 @@ Material _barMaterial(WidgetTester tester) {
 
 ShapeDecoration? _indicator(WidgetTester tester) {
   return tester
-      .firstWidget<Ink>(
-        find.descendant(
-          of: find.byType(FadeTransition),
-          matching: find.byType(Ink),
-        ),
-      )
-      .decoration as ShapeDecoration?;
+          .firstWidget<Ink>(
+            find.descendant(
+              of: find.byType(FadeTransition),
+              matching: find.byType(Ink),
+            ),
+          )
+          .decoration
+      as ShapeDecoration?;
 }
 
 IconThemeData _selectedIconTheme(WidgetTester tester) {
