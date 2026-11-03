@@ -339,7 +339,6 @@ void main() {
         child: Localizations(
           locale: const Locale("en", "US"),
           delegates: const <LocalizationsDelegate<dynamic>>[
-            DefaultMaterialLocalizations.delegate,
             DefaultWidgetsLocalizations.delegate,
           ],
           child: MaterialApp(
